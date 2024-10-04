@@ -1,0 +1,14 @@
+{
+  "name": "nn",
+  "version": "1.0.0",
+  "description": "",
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+	"scripts": {
+		"spellcheck": "cspell --no-progress **/*.{ts,tsx,json,md,tex}"
+	},
+  "devDependencies": {
+    "cspell": "^8.14.4"
+  }
+}

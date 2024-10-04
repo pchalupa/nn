@@ -1,0 +1,12 @@
+# Node
+node_modules/
+
+# LaTex
+*.aux
+*.fdb_latexmk
+*.fls
+*.pdf
+*.synctex.gz
+
+# Logs
+*.log

@@ -1,14 +1,20 @@
 \documentclass{article}
 \usepackage{enumitem}
 \usepackage{todonotes}
+\usepackage{csquotes}
+\usepackage[english]{babel}
+\usepackage[style=iso-authoryear,backend=biber]{biblatex}
 
+\addbibresource{bibliography.bib}
+
+\title{Local-First Architecture at the Context of Web Applications}
 \begin{document}
 	\begin{titlepage}
 		\begin{center}
 			\textbf{UNICORN VYSOKÁ ŠKOLA S.R.O.}
 			\vfill
-			\textbf{\LARGE Local-First Architecture at the Context of Web Applications}\\
-			\vspace{10mm}
+			\textbf{\LARGE Local-First Architecture in the Context of Web Applications\\}
+			\vspace{5mm}
 			\textbf{Local-First Architektura v kontextu webových aplikací}
 			\vfill
 			\textbf{Author: Petr Chalupa}
@@ -20,35 +26,29 @@
 		\end{center}
 	\end{titlepage}
 	\section{Aim of this Thesis}
-	The aim of this thesis is to provide a theoretical overview of the local-first architecture in the context of we applications. This thesis will describe characteristics and requirements of this type of architecture as well as advantages and disadvantages compared to three-layered architecture.\\
-	The practical part of this thesis will be focused on building an framework adhering the local-first principles. This framework will be demonstrated on an example web application.
+	The aim of this thesis is to provide a theoretical overview of local-first architecture in the context of web applications. It will describe the characteristics and requirements of this architecture, as well as its advantages and disadvantages when compared to the traditional three-layered architecture.\\
+	The practical part of the thesis will focus on building a framework that adheres to local-first principles, which will be demonstrated through a sample web application.
 	\section{Structure}
 	\begin{enumerate}
 		\item Introduction
 		\item Theoretical part
 		\begin{enumerate}[label=\arabic{enumi}.\arabic*]
 			\item Characteristics of Local-First Architecture
-			\item Comparison with three-layered architecture
-			\item Typical use cases
+			\item Comparison with Three-Layered Architecture
+			\item Typical Use Cases
 		\end{enumerate}
 		\item Practical part
 		\begin{enumerate}[label=\arabic{enumi}.\arabic*]
-			\item Example web application
+			\item Framework Design
+			\item Example Web Application
 		\end{enumerate}
 		\item Conclusion
 	\end{enumerate}
-	\section{Literature}
-	\todo{Use ISO 690}
-	\begin{enumerate}
-		\item \textit{Local-First Software: You Own Your Data, in spite of the Cloud} by Martin Kleppmann
-		\item \textit{Local-first software: Returning data ownership to users} by Martin Kleppmann
-		\item \textit{Understanding Distributed Systems: What every developer should know about large distributed applications} by Roberto Vitillo
-		\item \textit{Design Patterns: Elements of Reusable Object-Oriented Software} by Erich Gamma, Richard Helm, Ralph Johnson, John Vlissides
-		\item \textit{Clean Architecture: A Craftsman's Guide to Software Structure and Design} by Robert C. Martin
-	\end{enumerate}
+	\nocite{*}
+	\printbibliography[title={Literature},heading=bibnumbered]
 	\section{Time Plan}
 	\begin{enumerate}
-		\item November 2024: Submit of the Assignment
-		\item June 2025: Submit of the Thesis
+		\item November 2024: Submit the Assignment
+		\item June 2025: Submit the Thesis
 	\end{enumerate}
 \end{document}

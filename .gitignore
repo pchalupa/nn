@@ -7,6 +7,10 @@ node_modules/
 *.fls
 *.pdf
 *.synctex.gz
+*.bbl
+*.bcf
+*.blg
+*.run.xml
 
 # Logs
 *.log

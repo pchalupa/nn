@@ -1,5 +1,5 @@
 # Node
-node_modules/
+node_modules
 
 # LaTex
 *.aux
@@ -14,3 +14,9 @@ node_modules/
 
 # Logs
 *.log
+
+# Turbo
+.turbo
+
+# Misc
+.DS_Store

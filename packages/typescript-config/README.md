@@ -1,0 +1,1 @@
+# @nn/typescript-config

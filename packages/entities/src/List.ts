@@ -5,10 +5,6 @@ export class List<Item extends { id: string }> {
 		this.data = data;
 	}
 
-	public byId(id: string) {
-		return this.data.get(id);
-	}
-
 	public page(skip: number, limit: number) {
 		return this.data.entries().drop(skip).take(limit).toArray();
 	}

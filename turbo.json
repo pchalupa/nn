@@ -4,6 +4,9 @@
 	"tasks": {
 		"ts:check": {
 			"dependsOn": ["^ts:check"]
+		},
+		"test": {
+			"dependsOn": ["^test"]
 		}
 	}
 }

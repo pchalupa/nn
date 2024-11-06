@@ -4,7 +4,7 @@
 	"description": "Hybrid logical clock",
 	"keywords": [],
 	"repository": "https://github.com/pchalupa/nn",
-	"homepage": "https://github.com/pchalupa/nn/packages/entities#readme",
+	"homepage": "https://github.com/pchalupa/nn/packages/clock#readme",
 	"bugs": {
 		"url": "https://github.com/pchalupa/nn/issues"
 	},

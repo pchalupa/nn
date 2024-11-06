@@ -2,5 +2,5 @@ packages:
   - 'example'
   - 'packages/*'
 catalog:
+  vitest: '2.1.4'
   typescript: '5.6.3'
-  jest: '29.7.0'

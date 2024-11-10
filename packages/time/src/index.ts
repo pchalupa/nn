@@ -64,8 +64,8 @@ export class Time extends GlobalTime {
 	/** Returns a time from a timestamp */
 	public static fromTimestamp(timestamp: string): Time {
 		const match = timestamp.split(TIMESTAMP_DELIMITER);
-		const time = new Date(match?.at(0) ?? 0).getTime();
-		const counter = parseInt(match?.at(1) ?? '0', 16);
+		const time = new Date(match?.at(0) || 0).getTime();
+		const counter = parseInt(match?.at(1) || '0', 16);
 
 		return new Time(time, counter);
 	}

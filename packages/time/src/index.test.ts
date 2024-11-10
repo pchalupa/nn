@@ -36,6 +36,8 @@ describe('Time', () => {
 		expect(Time.fromTimestamp('1970-01-01T00:00:00.000Z+00000').getCounter()).toBe(0);
 		expect(Time.fromTimestamp('2024-11-10T12:39:10.776Z+00002').getTime()).toBe(1731242350776);
 		expect(Time.fromTimestamp('2024-11-10T12:39:10.776Z+00002').getCounter()).toBe(2);
+		expect(Time.fromTimestamp('').getTime()).toBe(0);
+		expect(Time.fromTimestamp('').getCounter()).toBe(0);
 	});
 
 	it('should return true if time is after another time', () => {

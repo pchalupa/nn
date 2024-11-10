@@ -3,10 +3,16 @@
 	"ui": "tui",
 	"tasks": {
 		"ts:check": {
+			"persistent": false,
 			"dependsOn": ["^ts:check"]
 		},
 		"test": {
+			"persistent": false,
 			"dependsOn": ["^test"]
+		},
+		"test:watch": {
+			"persistent": true,
+			"dependsOn": ["^test:watch"]
 		}
 	}
 }

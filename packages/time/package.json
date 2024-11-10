@@ -18,7 +18,8 @@
 	},
 	"scripts": {
 		"ts:check": "tsc --noEmit",
-		"test": "vitest"
+		"test": "vitest run",
+		"test:watch": "vitest watch"
 	},
 	"devDependencies": {
 		"@nn/typescript-config": "workspace:",

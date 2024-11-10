@@ -9,7 +9,8 @@
 		"ts:check": "turbo run ts:check",
 		"format:check": "prettier --check .",
 		"spellcheck": "cspell --no-progress **/*.{ts,tsx,json,md,tex}",
-		"test": "turbo run test"
+		"test": "turbo run test",
+		"test:watch": "turbo run test:watch"
 	},
 	"devDependencies": {
 		"cspell": "^8.14.4",

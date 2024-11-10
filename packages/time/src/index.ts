@@ -1,7 +1,7 @@
 const TIMESTAMP_DELIMITER = '+' as const;
 
 class GlobalTime {
-	/** Physical  time in milliseconds */
+	/** Physical time in milliseconds */
 	protected static time: number = 0;
 	/** Logical time */
 	protected static counter: number = 0;
@@ -31,7 +31,10 @@ export class Time extends GlobalTime {
 		return this.counter;
 	}
 
-	/** Returns the timestamp as a string */
+	/**
+	 * Returns the timestamp as a string
+	 * @example '2024-11-10T12:39:10.776Z+00002'
+	 */
 	public toString(): string {
 		const time = new Date(this.time).toISOString();
 		const counter = ('00000' + this.counter.toString(16)).slice(-5);

@@ -4,7 +4,7 @@
 	"description": "Hybrid logical clock",
 	"keywords": [],
 	"repository": "https://github.com/pchalupa/nn",
-	"homepage": "https://github.com/pchalupa/nn/packages/clock#readme",
+	"homepage": "https://github.com/pchalupa/nn/packages/time#readme",
 	"bugs": {
 		"url": "https://github.com/pchalupa/nn/issues"
 	},
@@ -23,7 +23,7 @@
 	},
 	"devDependencies": {
 		"@nn/typescript-config": "workspace:",
-		"vitest": "catalog:",
-		"typescript": "catalog:"
+		"typescript": "catalog:",
+		"vitest": "catalog:"
 	}
 }

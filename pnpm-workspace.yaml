@@ -2,4 +2,6 @@ packages:
   - 'example'
   - 'packages/*'
 catalog:
-  typescript: '^5.5.5'
+  vitest: '2.1.4'
+  typescript: '5.6.3'
+  eslint: '9.14.0'

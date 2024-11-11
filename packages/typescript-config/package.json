@@ -1,7 +1,7 @@
 {
 	"name": "@nn/typescript-config",
 	"version": "0.0.0",
-	"description": "Shared TypeScript configuration.",
+	"description": "Shared TypeScript configuration",
 	"keywords": [
 		"typescript",
 		"config"

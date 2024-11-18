@@ -1,10 +1,12 @@
 \documentclass{article}
 \usepackage{enumitem}
-\usepackage{todonotes}
 \usepackage{csquotes}
 \usepackage[english]{babel}
 \usepackage[style=iso-authoryear,backend=biber]{biblatex}
+\usepackage{setspace}
 
+% Formatting Settings
+\onehalfspacing
 \addbibresource{bibliography.bib}
 
 \title{Local-First Architecture at the Context of Web Applications}
@@ -19,23 +21,27 @@
 			\vfill
 			\textbf{Author: Petr Chalupa}
 			\vfill
-			\textbf{Supervisor: \todo{Add supervisor}}
+			\textbf{Supervisor: Ing. Michal Kökörčený, Ph.D.}
 			\vfill
 			\textbf{Prague, 2024}
 			\vfill
 		\end{center}
 	\end{titlepage}
-	\section{Aim of this Thesis}
-	The aim of this thesis is to provide a theoretical overview of local-first architecture in the context of web applications. It will describe the characteristics and requirements of this architecture, as well as its advantages and disadvantages when compared to the traditional three-layered architecture.\\
-	The practical part of the thesis will focus on building a framework that adheres to local-first principles, which will be demonstrated through a sample web application.
+	\newpage
+	\section{The Aim of this Thesis}
+	The aim of this thesis is to provide a theoretical overview of local-first architecture in the context of web applications. It is going to describe the characteristics of local-first architecture, as well as its advantages and disadvantages when compared to the traditional three-layered architecture. Additionally, it will cover topics such as Conflict-Free Replicated Data Types (CRDTs), replication strategies, and consistency models. The thesis will also discuss the concept of data ownership and how it relates to local-first software.
+	The practical part of the thesis will focus on building a framework that adheres to local-first principles, which will be demonstrated through a example web application. The example application will be a simple task manager that will be able to work offline and synchronize data when the connection is restored.
 	\section{Structure}
 	\begin{enumerate}
 		\item Introduction
-		\item Theoretical part
+		\item Theoretical Part
 		\begin{enumerate}[label=\arabic{enumi}.\arabic*]
-			\item Characteristics of Local-First Architecture
+			\item Key Principles of Local-First Software
 			\item Comparison with Three-Layered Architecture
-			\item Typical Use Cases
+			\item Conflict Free Replicated Data Types
+			\item Replication Strategies
+			\item Consistency Models
+			\item Data Ownership
 		\end{enumerate}
 		\item Practical part
 		\begin{enumerate}[label=\arabic{enumi}.\arabic*]
@@ -48,7 +54,8 @@
 	\printbibliography[title={Literature},heading=bibnumbered]
 	\section{Time Plan}
 	\begin{enumerate}
-		\item November 2024: Submit the Assignment
-		\item June 2025: Submit the Thesis
+		\item January 2025: Submit the Assignment
+		\item September 2025: Submit the Thesis
+		\item February 2026: Defend the Thesis
 	\end{enumerate}
 \end{document}

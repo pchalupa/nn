@@ -6,7 +6,7 @@ const TODO = [{ id: 'foo', title: 'Test', status: 'todo' }];
 const IN_PROGRESS = [{ id: 'foo', title: 'Test', status: 'in-progress' }];
 const DONE = [{ id: 'foo', title: 'Test', status: 'done' }];
 
-const Home = () => (
+const Index = () => (
 	<div className="flex flex-row h-full gap-x-2">
 		<Column title="To-Do" data={TODO} />
 		<Column title="In Progress" data={IN_PROGRESS} />
@@ -15,5 +15,5 @@ const Home = () => (
 );
 
 export const Route = createFileRoute('/')({
-	component: Home,
+	component: Index,
 });

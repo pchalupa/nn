@@ -1,0 +1,29 @@
+{
+	"name": "@nn/time",
+	"version": "0.0.0",
+	"description": "Hybrid logical clock",
+	"keywords": [],
+	"repository": "https://github.com/pchalupa/nn",
+	"homepage": "https://github.com/pchalupa/nn/packages/time#readme",
+	"bugs": {
+		"url": "https://github.com/pchalupa/nn/issues"
+	},
+	"author": "pchalupa <chalupa.petr93@gmail.com> (https://github.com/pchalupa)",
+	"license": "MIT",
+	"exports": {
+		"./*": {
+			"import": "./src/*",
+			"require": "./src/*"
+		}
+	},
+	"scripts": {
+		"ts:check": "tsc --noEmit",
+		"test": "vitest run",
+		"test:watch": "vitest watch"
+	},
+	"devDependencies": {
+		"@nn/typescript-config": "workspace:",
+		"typescript": "catalog:",
+		"vitest": "catalog:"
+	}
+}

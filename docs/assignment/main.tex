@@ -1,13 +1,15 @@
 \documentclass{article}
 \usepackage{enumitem}
-\usepackage{todonotes}
 \usepackage{csquotes}
 \usepackage[english]{babel}
 \usepackage[style=iso-authoryear,backend=biber]{biblatex}
+\usepackage{setspace}
 
+% Formatting Settings
+\onehalfspacing
 \addbibresource{bibliography.bib}
 
-\title{Local-First Architecture at the Context of Web Applications}
+\title{Local-First Architecture in the Context of Web Applications}
 \begin{document}
 	\begin{titlepage}
 		\begin{center}
@@ -15,32 +17,38 @@
 			\vfill
 			\textbf{\LARGE Local-First Architecture in the Context of Web Applications\\}
 			\vspace{5mm}
-			\textbf{Local-First Architektura v kontextu webových aplikací}
+			\textbf{Local-First architektura v kontextu webových aplikací}
 			\vfill
 			\textbf{Author: Petr Chalupa}
 			\vfill
-			\textbf{Supervisor: \todo{Add supervisor}}
+			\textbf{Supervisor: Ing. Michal Kökörčený, Ph.D.}
 			\vfill
 			\textbf{Prague, 2024}
 			\vfill
 		\end{center}
 	\end{titlepage}
-	\section{Aim of this Thesis}
-	The aim of this thesis is to provide a theoretical overview of local-first architecture in the context of web applications. It will describe the characteristics and requirements of this architecture, as well as its advantages and disadvantages when compared to the traditional three-layered architecture.\\
-	The practical part of the thesis will focus on building a framework that adheres to local-first principles, which will be demonstrated through a sample web application.
+	\newpage
+	\section{The Aim of this Thesis}
+	The objective of this thesis is to provide a theoretical overview of local-first architecture in the context of web applications. It will describe the characteristics of local-first architecture and analyze its advantages and disadvantages compared to the traditional three-layered architecture. The theoretical part will also cover key topics such as Conflict-Free Replicated Data Types (CRDTs), replication strategies, and consistency models.
+
+	The practical part of the thesis will focus on designing and implementing a framework that adheres to local-first principles. This framework will be demonstrated through a sample web application: a simple task manager in the form of a kanban board. The application will support offline functionality, synchronize data seamlessly when a connection is restored, and enable real-time collaboration.
+
 	\section{Structure}
 	\begin{enumerate}
 		\item Introduction
-		\item Theoretical part
+		\item Theoretical Part
 		\begin{enumerate}[label=\arabic{enumi}.\arabic*]
-			\item Characteristics of Local-First Architecture
+			\item Key Principles of Local-First Software
 			\item Comparison with Three-Layered Architecture
-			\item Typical Use Cases
+			\item Conflict-Free Replicated Data Types
+			\item Replication Strategies
+			\item Consistency Models
 		\end{enumerate}
-		\item Practical part
+		\item Practical Part
 		\begin{enumerate}[label=\arabic{enumi}.\arabic*]
-			\item Framework Design
-			\item Example Web Application
+			\item Description of the Example Project
+			\item Framework Architecture
+			\item Testing Strategy
 		\end{enumerate}
 		\item Conclusion
 	\end{enumerate}
@@ -48,7 +56,7 @@
 	\printbibliography[title={Literature},heading=bibnumbered]
 	\section{Time Plan}
 	\begin{enumerate}
-		\item November 2024: Submit the Assignment
-		\item June 2025: Submit the Thesis
+		\item December 2024: Submit the Assignment
+		\item January 2026: Submit the Thesis
 	\end{enumerate}
 \end{document}

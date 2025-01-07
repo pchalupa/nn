@@ -7,7 +7,7 @@ const IN_PROGRESS = [{ id: 'foo', title: 'Test', status: 'in-progress' }];
 const DONE = [{ id: 'foo', title: 'Test', status: 'done' }];
 
 const Index = () => (
-	<div className="flex flex-row h-full gap-x-2">
+	<div className="flex h-full flex-row gap-x-2">
 		<Column title="To-Do" data={TODO} />
 		<Column title="In Progress" data={IN_PROGRESS} />
 		<Column title="Done" data={DONE} />

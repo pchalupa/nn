@@ -10,24 +10,24 @@
 
 // Import Routes
 
-import { Route as rootRoute } from './routes/__root';
-import { Route as IndexImport } from './routes/index';
+import { Route as rootRoute } from "./routes/__root";
+import { Route as IndexImport } from "./routes/index";
 
 // Create/Update Routes
 
 const IndexRoute = IndexImport.update({
-	path: '/',
+	path: "/",
 	getParentRoute: () => rootRoute,
 } as any);
 
 // Populate the FileRoutesByPath interface
 
-declare module '@tanstack/react-router' {
+declare module "@tanstack/react-router" {
 	interface FileRoutesByPath {
-		'/': {
-			id: '/';
-			path: '/';
-			fullPath: '/';
+		"/": {
+			id: "/";
+			path: "/";
+			fullPath: "/";
 			preLoaderRoute: typeof IndexImport;
 			parentRoute: typeof rootRoute;
 		};
@@ -37,24 +37,24 @@ declare module '@tanstack/react-router' {
 // Create and export the route tree
 
 export interface FileRoutesByFullPath {
-	'/': typeof IndexRoute;
+	"/": typeof IndexRoute;
 }
 
 export interface FileRoutesByTo {
-	'/': typeof IndexRoute;
+	"/": typeof IndexRoute;
 }
 
 export interface FileRoutesById {
 	__root__: typeof rootRoute;
-	'/': typeof IndexRoute;
+	"/": typeof IndexRoute;
 }
 
 export interface FileRouteTypes {
 	fileRoutesByFullPath: FileRoutesByFullPath;
-	fullPaths: '/';
+	fullPaths: "/";
 	fileRoutesByTo: FileRoutesByTo;
-	to: '/';
-	id: '__root__' | '/';
+	to: "/";
+	id: "__root__" | "/";
 	fileRoutesById: FileRoutesById;
 }
 

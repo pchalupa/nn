@@ -22,12 +22,18 @@
 			"recommended": true
 		}
 	},
-	"javascript": {
-		"linter": {
-			"enabled": true
-		},
-		"formatter": {
-			"enabled": true
+	"overrides": [
+		{
+			"include": ["example/src/routeTree.gen.ts"],
+			"organizeImports": {
+				"enabled": false
+			},
+			"formatter": {
+				"enabled": false
+			},
+			"linter": {
+				"enabled": false
+			}
 		}
-	}
+	]
 }

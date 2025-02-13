@@ -1,25 +1,31 @@
-import { createFileRoute } from '@tanstack/react-router';
-import { Column } from '../components/Column';
+import { createFileRoute } from "@tanstack/react-router";
+import { Column } from "../components/Column";
 
 // Mock data
 const TODO = [
 	{
-		id: 'a',
-		title: 'Design App',
-		status: 'todo',
-		description: 'Design the high fidelity of the application according to the wireframe',
+		id: "a",
+		title: "Design App",
+		status: "todo",
+		description: "Design the high fidelity of the application according to the wireframe",
 	},
 ];
+
 const IN_PROGRESS = [
 	{
-		id: 'a',
-		title: 'Interview & Prototyping',
-		status: 'in-progress',
-		description: 'Do user interviews for several hours with several users who meet the criteria',
+		id: "a",
+		title: "Interview & Prototyping",
+		status: "in-progress",
+		description: "Do user interviews for several hours with several users who meet the criteria",
 	},
 ];
 const DONE = [
-	{ id: 'a', title: 'Flow identification', status: 'done', description: 'Identify the app flow mentioned bellow' },
+	{
+		id: "a",
+		title: "Flow identification",
+		status: "done",
+		description: "Identify the app flow mentioned bellow",
+	},
 ];
 
 const Index = () => {
@@ -37,6 +43,6 @@ const Index = () => {
 	);
 };
 
-export const Route = createFileRoute('/')({
+export const Route = createFileRoute("/")({
 	component: Index,
 });

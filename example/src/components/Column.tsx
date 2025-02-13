@@ -1,5 +1,5 @@
-import { Button } from './Button';
-import { Ticket } from './Ticket';
+import { Button } from "./Button";
+import { Ticket } from "./Ticket";
 
 interface ColumnProps {
 	title: string;
@@ -15,8 +15,8 @@ export const Column = ({ title, data, onAddClick }: ColumnProps) => (
 		</div>
 		<hr className="border-sky-600" />
 		<div className="flex flex-col gap-y-2">
-			{data.map(({ title, description }) => (
-				<Ticket title={title} description={description} />
+			{data.map(({ id, title, description }) => (
+				<Ticket key={id} title={title} description={description} />
 			))}
 		</div>
 	</section>

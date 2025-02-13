@@ -1,4 +1,4 @@
-import { classNames, ButtonStyleVariants } from './index.styles';
+import { type ButtonStyleVariants, classNames } from "./index.styles";
 
 export interface ButtonProps extends ButtonStyleVariants {
 	text: string;

@@ -7,14 +7,14 @@
 	"license": "MIT",
 	"scripts": {
 		"ts:check": "turbo run ts:check",
-		"format:check": "prettier --check .",
+		"code:check": "biome check .",
 		"spellcheck": "cspell --no-progress **/*.{ts,tsx,json,md,tex}",
 		"test": "turbo run test",
 		"test:watch": "turbo run test:watch"
 	},
 	"devDependencies": {
+		"@biomejs/biome": "1.9.4",
 		"cspell": "^8.14.4",
-		"prettier": "^3.4.2",
 		"turbo": "^2.3.3"
 	},
 	"packageManager": "pnpm@9.7.0"

@@ -4,7 +4,7 @@
 	"private": true,
 	"type": "module",
 	"scripts": {
-		"dev": "vite --port=3001",
+		"dev": "vite --port=3000",
 		"test": "vitest run",
 		"test:watch": "vitest watch",
 		"ts:check": "tsc --noEmit",
@@ -14,6 +14,7 @@
 	},
 	"dependencies": {
 		"@nn/entities": "workspace:*",
+		"@nn/store": "workspace:*",
 		"@tanstack/react-router": "^1.62.1",
 		"react": "catalog:",
 		"react-dom": "catalog:",
@@ -25,8 +26,8 @@
 		"@testing-library/jest-dom": "^6.6.3",
 		"@testing-library/react": "^16.1.0",
 		"@testing-library/user-event": "^14.5.2",
-		"@types/react": "^18.3.3",
-		"@types/react-dom": "^18.3.0",
+		"@types/react": "catalog:",
+		"@types/react-dom": "catalog:",
 		"@vitejs/plugin-react": "^4.3.2",
 		"prettier-plugin-tailwindcss": "^0.6.9",
 		"tailwindcss": "4.0.0-beta.8",

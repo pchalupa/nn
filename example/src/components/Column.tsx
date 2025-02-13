@@ -1,10 +1,10 @@
-import { useStore } from '../store';
-import { Button } from './Button';
-import { Ticket } from './Ticket';
+import { useStore } from "../store";
+import { Button } from "./Button";
+import { Ticket } from "./Ticket";
 
 interface ColumnProps {
 	title: string;
-	status: 'todo' | 'in-progress' | 'done';
+	status: "todo" | "in-progress" | "done";
 	onAddClick?: () => void;
 }
 
@@ -14,7 +14,7 @@ export const Column = ({ title, status }: ColumnProps) => {
 	const handleOnCLick = () => {
 		data.push({
 			id: `test-${Math.random()}`,
-			data: { id: Math.random().toString(), title: status, status, description: 'test' },
+			data: { id: Math.random().toString(), title: status, status, description: "test" },
 		});
 	};
 

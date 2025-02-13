@@ -1,6 +1,6 @@
-import { createFileRoute } from '@tanstack/react-router';
-import { useStore } from '../store';
-import { Column } from '../components/Column';
+import { createFileRoute } from "@tanstack/react-router";
+import { Column } from "../components/Column";
+import { useStore } from "../store";
 
 const Stats = () => {
 	const data = useStore((store) => store.tickets);
@@ -30,6 +30,6 @@ const Index = () => {
 	);
 };
 
-export const Route = createFileRoute('/')({
+export const Route = createFileRoute("/")({
 	component: Index,
 });

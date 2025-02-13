@@ -1,10 +1,11 @@
-const TIMESTAMP_DELIMITER = '+' as const;
+const TIMESTAMP_DELIMITER = "+" as const;
 
+// biome-ignore lint/complexity/noStaticOnlyClass: This class is used to store global time
 class GlobalTime {
 	/** Physical time in milliseconds */
-	protected static time: number = 0;
+	protected static time = 0;
 	/** Logical time */
-	protected static counter: number = 0;
+	protected static counter = 0;
 }
 
 /** Represents time using a Hybrid Logical Clock (HLC) model */
@@ -37,7 +38,7 @@ export class Time extends GlobalTime {
 	 */
 	public toString(): string {
 		const time = new Date(this.time).toISOString();
-		const counter = ('00000' + this.counter.toString(16)).slice(-5);
+		const counter = `00000${this.counter.toString(16)}`.slice(-5);
 
 		return [time, counter].join(TIMESTAMP_DELIMITER);
 	}
@@ -65,7 +66,7 @@ export class Time extends GlobalTime {
 	public static fromTimestamp(timestamp: string): Time {
 		const match = timestamp.split(TIMESTAMP_DELIMITER);
 		const time = new Date(match?.at(0) || 0).getTime();
-		const counter = parseInt(match?.at(1) || '0', 16);
+		const counter = Number.parseInt(match?.at(1) || "0", 16);
 
 		return new Time(time, counter);
 	}

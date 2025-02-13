@@ -29,7 +29,6 @@
 		"@types/react": "catalog:",
 		"@types/react-dom": "catalog:",
 		"@vitejs/plugin-react": "^4.3.2",
-		"prettier-plugin-tailwindcss": "^0.6.9",
 		"tailwindcss": "4.0.0-beta.8",
 		"vite": "^5.4.8",
 		"vitest": "catalog:",

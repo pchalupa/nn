@@ -15,8 +15,8 @@ export const Column = ({ title, data, onAddClick }: ColumnProps) => (
 		</div>
 		<hr className="border-sky-600" />
 		<div className="flex flex-col gap-y-2">
-			{data.map(({ title, description }) => (
-				<Ticket key={data.id} title={title} description={description} />
+			{data.map(({ id, title, description }) => (
+				<Ticket key={id} title={title} description={description} />
 			))}
 		</div>
 	</section>

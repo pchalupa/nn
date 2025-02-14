@@ -1,4 +1,4 @@
-import { createStore, use, type Schema } from '@nn/store';
+import { type Schema, createStore, use } from "@nn/react";
 
 const schema: Schema = {
 	tickets: [],

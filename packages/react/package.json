@@ -1,7 +1,7 @@
 {
-	"name": "@nn/store",
+	"name": "@nn/react",
 	"version": "0.0.0",
-	"description": "State management library",
+	"description": "React state management library",
 	"keywords": [],
 	"repository": "https://github.com/pchalupa/nn",
 	"homepage": "https://github.com/pchalupa/nn/packages/time#readme",
@@ -20,9 +20,16 @@
 		"test": "vitest run",
 		"test:watch": "vitest watch"
 	},
+	"dependencies": {
+		"@nn/store": "workspace:*"
+	},
 	"devDependencies": {
+		"@types/react": "catalog:",
 		"@nn/typescript-config": "workspace:",
 		"typescript": "catalog:",
 		"vitest": "catalog:"
+	},
+	"peerDependencies": {
+		"react": "catalog:"
 	}
 }

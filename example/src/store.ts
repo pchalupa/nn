@@ -1,8 +1,16 @@
-import { type Schema, createStore, use } from "@nn/react";
+import { createStore, use } from "@nn/react";
 
-const schema: Schema = {
-	tickets: [],
+type Ticket = {
+	id: string;
+	title: string;
+	description: string;
+	status: "todo" | "in-progress" | "done";
 };
-const store = createStore({ schema });
+
+const store = createStore({
+	schema: ({ collection }) => ({
+		tickets: collection<Ticket>(),
+	}),
+});
 
 export const useStore = use(store);

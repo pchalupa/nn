@@ -2,8 +2,10 @@ packages:
   - 'example'
   - 'packages/*'
 catalog:
-  vitest: '2.1.9'
+  "@types/react": "^19.0.8"
+  "@types/react-dom": "^19.0.3"
+  vitest: '3.0.5'
   typescript: '5.6.3'
   eslint: '9.14.0'
-  react: '18.3.1'
-  'react-dom': '18.3.1'
+  react: '19.0.0'
+  'react-dom': '19.0.0'

@@ -1,6 +1,6 @@
-import { useStore } from "../store";
-import { Button } from "./Button";
-import { Ticket } from "./Ticket";
+import { useStore } from "../../store";
+import { Ticket } from "../Ticket";
+import { Header } from "./parts/Header";
 
 interface ColumnProps {
 	title: string;
@@ -17,10 +17,7 @@ export const Column = ({ title, status }: ColumnProps) => {
 
 	return (
 		<section className="flex w-full flex-col gap-y-2 rounded bg-sky-100 px-2 py-4">
-			<div className="flex flex-row items-center justify-between">
-				<h3 className="text-sm uppercase">{title}</h3>
-				<Button text="+" onClick={handleOnCLick} />
-			</div>
+			<Header title={title} onAddClick={handleOnCLick} />
 			<hr className="border-sky-600" />
 			<div className="flex flex-col gap-y-2">
 				{data.map((data) => (

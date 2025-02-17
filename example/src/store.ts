@@ -7,8 +7,15 @@ type Ticket = {
 	status: "todo" | "in-progress" | "done";
 };
 
+type User = {
+	id: string;
+	name: string;
+	email: string;
+};
+
 const store = createStore({
-	schema: ({ collection }) => ({
+	schema: ({ document, collection }) => ({
+		user: document<User>(),
 		tickets: collection<Ticket>(),
 	}),
 });

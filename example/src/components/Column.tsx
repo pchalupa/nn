@@ -9,13 +9,10 @@ interface ColumnProps {
 }
 
 export const Column = ({ title, status }: ColumnProps) => {
-	const data = useStore((store) => store.tickets.filter((doc) => doc?.data?.status === status));
+	const data = useStore((store) => store.tickets.filter((ticket) => ticket.status === status));
 
 	const handleOnCLick = () => {
-		data.push({
-			id: `test-${Math.random()}`,
-			data: { id: Math.random().toString(), title: status, status, description: "test" },
-		});
+		data.push({ id: Math.random().toString(), title: status, status, description: "test" });
 	};
 
 	return (
@@ -26,7 +23,7 @@ export const Column = ({ title, status }: ColumnProps) => {
 			</div>
 			<hr className="border-sky-600" />
 			<div className="flex flex-col gap-y-2">
-				{data.map(({ data }) => (
+				{data.map((data) => (
 					<Ticket key={data.id} title={data?.title} description={data?.description} />
 				))}
 			</div>

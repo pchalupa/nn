@@ -18,7 +18,7 @@ const Index = () => {
 	return (
 		<div className="flex flex-row">
 			<div className="min-h-screen bg-sky-100">
-				<h1 className="p-4 text-2xl font-bold">Kanban Board</h1>
+				<h1 className="p-4 font-bold text-2xl">Kanban Board</h1>
 				<Stats />
 			</div>
 			<div className="flex h-full flex-1 flex-row gap-x-2 p-4">

@@ -1,11 +1,11 @@
-import type { Store } from "@nn/store";
+import { Store } from "@nn/store";
 import { useRef, useSyncExternalStore } from "react";
 import { getSnapshot } from "./getSnapshot";
 import { subscribe } from "./subscribe";
 
-export { createStore } from "@nn/store";
-
 export type Selector<Schema, Slice = unknown> = (store: Schema) => Slice;
+
+export const createStore = Store.createWithOptions;
 
 export function use<Schema extends object>(store: Store<Schema>) {
 	const createArrayProxy = (data: object) =>

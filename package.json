@@ -10,7 +10,10 @@
 		"code:check": "biome check .",
 		"spellcheck": "cspell --no-progress **/*.{ts,tsx,json,md,tex}",
 		"test": "turbo run test",
-		"test:watch": "turbo run test:watch"
+		"test:watch": "turbo run test:watch",
+		"changeset:add": "changeset ",
+		"changeset:version": "changeset version",
+		"changeset:publish": "changeset publish"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "1.9.4",

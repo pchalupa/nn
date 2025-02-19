@@ -47,6 +47,9 @@ importers:
       '@nn/entities':
         specifier: workspace:*
         version: link:../packages/entities
+      '@nn/react':
+        specifier: workspace:*
+        version: link:../packages/react
       '@tanstack/react-router':
         specifier: ~1.105.0
         version: 1.105.0(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
@@ -105,6 +108,40 @@ importers:
       typescript:
         specifier: 'catalog:'
         version: 5.6.3
+
+  packages/react:
+    dependencies:
+      '@nn/store':
+        specifier: workspace:*
+        version: link:../store
+      react:
+        specifier: 'catalog:'
+        version: 19.0.0
+    devDependencies:
+      '@nn/typescript-config':
+        specifier: 'workspace:'
+        version: link:../typescript-config
+      '@types/react':
+        specifier: 'catalog:'
+        version: 19.0.8
+      typescript:
+        specifier: 'catalog:'
+        version: 5.6.3
+      vitest:
+        specifier: 'catalog:'
+        version: 3.0.5(@types/node@22.9.0)(jiti@2.4.2)(jsdom@25.0.1)(lightningcss@1.29.1)(tsx@4.19.2)(yaml@2.5.1)
+
+  packages/store:
+    devDependencies:
+      '@nn/typescript-config':
+        specifier: 'workspace:'
+        version: link:../typescript-config
+      typescript:
+        specifier: 'catalog:'
+        version: 5.6.3
+      vitest:
+        specifier: 'catalog:'
+        version: 3.0.5(@types/node@22.9.0)(jiti@2.4.2)(jsdom@25.0.1)(lightningcss@1.29.1)(tsx@4.19.2)(yaml@2.5.1)
 
   packages/time:
     devDependencies:

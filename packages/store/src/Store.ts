@@ -28,6 +28,10 @@ export class Store<Schema extends object> {
 		this.subscribers.forEach((listener) => listener());
 	}
 
+	getSnapshot<Type>(selector: (store: Schema) => Type): Type {
+		return selector(this.schema);
+	}
+
 	static createWithOptions<Schema extends object>(options: Options<Schema>) {
 		const schema = options.schema({ document: createDocumentOf, collection: Collection.createCollectionOf });
 		const subscribers = new Subscribers();

@@ -1,14 +1,15 @@
-import { Collection } from "./Collection";
-import { createDocumentOf } from "./Document";
-import { Snapshot } from "./Snapshot";
 import { Subscribers } from "./Subscribers";
+import { Collection } from "./schema/Collection";
+import { createDocumentOf } from "./schema/Document";
+import type { Snapshot } from "./snapshot/Snapshot";
+import { SnapshotManager } from "./snapshot/SnapshotManager";
 
 type Options<SchemaType> = { schema: Schema<SchemaType> };
 type Schema<Type> = (entity: Entities) => Type;
 type Entities = { document: typeof createDocumentOf; collection: typeof Collection.createCollectionOf };
 
 export class Store<Schema extends object> {
-	public snapshots = new Map();
+	private snapshotManager = new SnapshotManager();
 	private subscribers: Subscribers = new Subscribers();
 
 	constructor(private _schema: Schema) {}
@@ -30,13 +31,13 @@ export class Store<Schema extends object> {
 		this.subscribers.forEach((listener) => listener());
 	}
 
-	getSnapshot<Type>(selector: (store: Schema) => Type): Snapshot<Type> {
-		if (this.snapshots.has(selector)) return this.snapshots.get(selector);
-
+	getSnapshotOf<Type>(selector: (store: Schema) => Type): Snapshot<Type> {
+		let snapshot = this.snapshotManager.getSnapshotById<Type>(selector);
 		const onPush = () => this.notifySubscribers();
-		const snapshot = new Snapshot(selector(this.schema), onPush);
 
-		this.snapshots.set(selector, snapshot);
+		if (!snapshot) {
+			snapshot = this.snapshotManager.createSnapshot<Type>(selector, selector(this.schema), onPush);
+		}
 
 		return snapshot;
 	}

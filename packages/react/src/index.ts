@@ -8,13 +8,14 @@ export type Selector<Schema, Slice = unknown> = (store: Schema) => Slice;
 export const createStore = Store.createWithOptions;
 
 export function use<Schema extends object>(store: Store<Schema>) {
-	return function useStore<T>(selector: Selector<Schema, T>): T {
+	return function useStore<Type>(selector: Selector<Schema, Type>) {
 		const selectorFn = useRef(selector);
 		const subscribeFn = useRef(subscribe(Math.random().toString(), store));
 		const getSnapshotFn = useRef(getSnapshot(selectorFn.current, store));
 
+		// TODO: get snapshot key here
 		useSyncExternalStore(subscribeFn.current, getSnapshotFn.current);
 
-		return store.snapshots.get(selectorFn.current);
+		return store.getSnapshotOf<Type>(selectorFn.current);
 	};
 }

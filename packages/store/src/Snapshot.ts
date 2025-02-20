@@ -1,24 +1,24 @@
-export class Snapshot<Type> {
+export class Snapshot<Type = unknown> {
 	constructor(
 		private data: Type,
-		private onPush: (value: object) => void,
+		private onPush: () => void,
 	) {}
 
 	get length() {
 		return 0;
 	}
 
-	map<T>(fn: (data: object) => T) {
+	get id() {
+		return JSON.stringify(this.data);
+	}
+
+	map<T>(fn: (data: Type) => T) {
 		// console.log("Mapping", this.data);
 		return this.data.map(fn);
 	}
 
 	push(value: object) {
 		this.data.push(value);
-		this.onPush(value);
-	}
-
-	key() {
-		return JSON.stringify(this.data);
+		this.onPush();
 	}
 }

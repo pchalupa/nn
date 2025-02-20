@@ -1,16 +1,16 @@
 import { Subscribers } from "./Subscribers";
+import { InMemoryRepository } from "./repository/InMemoryRepository";
+import type { Snapshot } from "./repository/snapshot/Snapshot";
 import { Collection } from "./schema/Collection";
 import { createDocumentOf } from "./schema/Document";
-import type { Snapshot } from "./snapshot/Snapshot";
-import { SnapshotManager } from "./snapshot/SnapshotManager";
 
 type Options<SchemaType> = { schema: Schema<SchemaType> };
 type Schema<Type> = (entity: Entities) => Type;
 type Entities = { document: typeof createDocumentOf; collection: typeof Collection.createCollectionOf };
 
 export class Store<Schema extends object> {
-	private snapshotManager = new SnapshotManager();
 	private subscribers: Subscribers = new Subscribers();
+	private repository = new InMemoryRepository();
 
 	constructor(private _schema: Schema) {}
 
@@ -32,11 +32,19 @@ export class Store<Schema extends object> {
 	}
 
 	getSnapshotOf<Type>(selector: (store: Schema) => Type): Snapshot<Type> {
-		let snapshot = this.snapshotManager.getSnapshotById<Type>(selector);
-		const onPush = () => this.notifySubscribers();
+		let snapshot = this.repository.getSnapshotById<Type>(selector);
 
 		if (!snapshot) {
-			snapshot = this.snapshotManager.createSnapshot<Type>(selector, selector(this.schema), onPush);
+			const onPush = () => {
+				this.notifySubscribers();
+
+				// Notify repository
+				// I need to select the correct place in repository to update
+
+				// this.repository.update(selector(this.schema));
+			};
+
+			snapshot = this.repository.createSnapshot<Type>(selector, selector(this.schema), onPush);
 		}
 
 		return snapshot;

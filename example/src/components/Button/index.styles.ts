@@ -3,7 +3,7 @@ import { type VariantProps, tv } from "tailwind-variants";
 export type ButtonStyleVariants = VariantProps<typeof classNames>;
 
 export const classNames = tv({
-	base: "px-2 py-1 font-semibold shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2",
+	base: "flex px-2 py-1 font-semibold shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2",
 	variants: {
 		color: {
 			primary: "bg-indigo-600 text-white hover:bg-indigo-500 focus-visible:outline-indigo-600 active:bg-indigo-400",

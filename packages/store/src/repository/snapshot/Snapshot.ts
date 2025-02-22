@@ -1,8 +1,9 @@
+import type { SnapshotDelegate } from "./SnapshotDelegate";
+
 export class Snapshot<Type = unknown> {
-	constructor(
-		private data: Type,
-		private onPush: (value: Type) => void,
-	) {}
+	public delegate?: SnapshotDelegate;
+
+	constructor(private data: Type) {}
 
 	get length() {
 		return this.data.length;
@@ -18,6 +19,6 @@ export class Snapshot<Type = unknown> {
 
 	push(value: Type) {
 		this.data.push(value);
-		this.onPush(value);
+		this.delegate?.onPush?.(value);
 	}
 }

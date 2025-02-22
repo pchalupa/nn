@@ -1,5 +1,5 @@
 import { Store } from "@nn/store";
-import { useRef, useSyncExternalStore } from "react";
+import { useDebugValue, useRef, useSyncExternalStore } from "react";
 import { getSnapshot } from "./getSnapshot";
 import { subscribe } from "./subscribe";
 
@@ -16,6 +16,10 @@ export function use<Schema extends object>(store: Store<Schema>) {
 		// TODO: get snapshot key here
 		useSyncExternalStore(subscribeFn.current, getSnapshotFn.current);
 
-		return store.getSnapshotOf<Type>(selectorFn.current);
+		const snapshot = store.getSnapshotOf<Type>(selectorFn.current);
+
+		useDebugValue(snapshot);
+
+		return snapshot;
 	};
 }

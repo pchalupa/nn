@@ -14,4 +14,8 @@ export class SnapshotManager {
 
 		return snapshot;
 	}
+
+	invalidateSnapshot(id: unknown) {
+		this.snapshots.delete(id);
+	}
 }

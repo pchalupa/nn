@@ -1,13 +1,13 @@
 import { Repository } from "./Repository";
 
 export class InMemoryRepository extends Repository {
-	private data = new Map();
+	data = new Map<string, unknown>();
 
-	get(id: unknown) {
+	get(id: string) {
 		return this.data.get(id);
 	}
 
-	set(id: unknown, value: unknown) {
+	set(id: string, value: unknown) {
 		this.data.set(id, value);
 	}
 }

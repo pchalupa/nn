@@ -2,7 +2,7 @@ export class Reference<T = unknown> {
 	constructor(public getOriginalData: () => T) {}
 
 	static createReferenceFor<T>(dataAccessor: () => T) {
-		const reference = new Reference(() => dataAccessor);
+		const reference = new Reference(dataAccessor);
 
 		const proxy = new Proxy(reference, {
 			get(target, prop, receiver) {

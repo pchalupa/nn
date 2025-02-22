@@ -19,6 +19,6 @@ export class Snapshot<Type = unknown> {
 
 	push(value: Type) {
 		this.data.push(value);
-		this.delegate?.onPush?.(value);
+		this.delegate?.didPush?.(value);
 	}
 }

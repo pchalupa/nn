@@ -1,7 +1,7 @@
 export class Snapshot<Type = unknown> {
 	constructor(
 		private data: Type,
-		private onPush: () => void,
+		private onPush: (value: Type) => void,
 	) {}
 
 	get length() {
@@ -16,7 +16,7 @@ export class Snapshot<Type = unknown> {
 		return this.data.map(fn);
 	}
 
-	push(value: object) {
+	push(value: Type) {
 		this.data.push(value);
 		this.onPush(value);
 	}

@@ -1,5 +1,5 @@
 export class Reference<T = unknown> {
-	constructor(public getOriginalData: () => T) {}
+	constructor(public resolve: () => T) {}
 
 	static createReferenceFor<T>(dataAccessor: () => T) {
 		const reference = new Reference(dataAccessor);
@@ -9,7 +9,7 @@ export class Reference<T = unknown> {
 				if (prop === "getOriginalData") return Reflect.get(target, prop, receiver);
 
 				// TODO: Consider adding a cache to avoid calling the accessor multiple times
-				const data = target.getOriginalData();
+				const data = target.resolve();
 
 				return Reflect.get(data, prop, receiver);
 			},

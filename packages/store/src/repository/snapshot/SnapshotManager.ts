@@ -3,7 +3,7 @@ import { Snapshot } from "./Snapshot";
 export class SnapshotManager {
 	private snapshots = new Map<unknown, Snapshot>();
 
-	getSnapshotById<Type>(id: unknown): Snapshot<Type> | undefined {
+	getSnapshot<Type>(id: unknown): Snapshot<Type> | undefined {
 		return this.snapshots.get(id);
 	}
 

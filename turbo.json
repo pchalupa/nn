@@ -2,6 +2,10 @@
 	"$schema": "https://turbo.build/schema.json",
 	"ui": "tui",
 	"tasks": {
+		"dev": {
+			"persistent": true,
+			"dependsOn": ["^dev"]
+		},
 		"ts:check": {
 			"persistent": false,
 			"dependsOn": ["^ts:check"]
@@ -11,8 +15,7 @@
 			"dependsOn": ["^test"]
 		},
 		"test:watch": {
-			"persistent": true,
-			"dependsOn": ["^test:watch"]
+			"persistent": true
 		}
 	}
 }

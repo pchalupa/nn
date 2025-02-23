@@ -6,6 +6,7 @@
 	"author": "",
 	"license": "MIT",
 	"scripts": {
+		"dev": "turbo run dev",
 		"ts:check": "turbo run ts:check",
 		"code:check": "biome check .",
 		"spellcheck": "cspell --no-progress **/*.{ts,tsx,json,md,tex}",

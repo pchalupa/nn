@@ -43,7 +43,7 @@ export class Store<State extends object> {
 
 				const reference = Reference.createReferenceFor(() => this.repository.get(id));
 
-				data.parent.push(reference);
+				data.findRoot().push(reference);
 
 				this.notifySubscribers();
 			};

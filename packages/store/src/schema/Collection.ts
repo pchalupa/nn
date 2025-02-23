@@ -1,5 +1,5 @@
 export class Collection<Type> {
-	parent: Collection<Type> = this;
+	private parent: Collection<Type> | undefined;
 
 	constructor(private data: Type[] = []) {}
 
@@ -11,19 +11,33 @@ export class Collection<Type> {
 		return this.data.length;
 	}
 
+	findRoot() {
+		let parent = this;
+
+		while (parent) {
+			if (parent.parent === undefined) {
+				break;
+			}
+
+			parent = parent.parent;
+		}
+
+		return parent;
+	}
+
 	push(value: Type) {
 		this.data.push(value);
 	}
 
-	map(callbackfn: (value: Type, index: number, array: Type[]) => unknown, thisArg?: unknown): Collection<Type> {
-		const data = this.data.map(callbackfn, thisArg);
+	map<T>(callback: (value: Type, index: number) => T): T[] {
+		const data = this.data.map(callback);
 
 		return data;
 	}
 
-	filter(predicate: unknown, thisArg?: unknown): Collection<Type> {
-		const data = this.data.filter(predicate, thisArg);
-		// Consider adding childrens map and store exising childrens
+	filter(predicate: (data: Type) => boolean): Collection<Type> {
+		const data = this.data.filter(predicate);
+		// Consider adding children map and store existing children
 		const collection = new Collection(data);
 
 		collection.parent = this;

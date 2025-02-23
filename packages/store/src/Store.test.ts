@@ -18,7 +18,10 @@ describe("Store", () => {
 			    "snapshots": Map {},
 			  },
 			  "state": {
-			    "testCollection": Collection [],
+			    "testCollection": Collection {
+			      "data": [],
+			      "parent": [Circular],
+			    },
 			  },
 			  "subscribers": Subscribers {
 			    "subscribers": Map {},
@@ -58,7 +61,10 @@ describe("Store", () => {
 
 		expect(snapshot).toMatchInlineSnapshot(`
 			Snapshot {
-			  "data": Collection [],
+			  "data": Collection {
+			    "data": [],
+			    "parent": [Circular],
+			  },
 			  "delegate": SnapshotDelegate {
 			    "didPush": [Function],
 			  },
@@ -78,12 +84,21 @@ describe("Store", () => {
 
 		expect(snapshot).toMatchInlineSnapshot(`
 			Snapshot {
-			  "data": Collection [
-			    Collection [],
-			    {
-			      "id": "1",
+			  "data": Collection {
+			    "data": [
+			      {
+			        "id": "1",
+			      },
+			    ],
+			    "parent": Collection {
+			      "data": [
+			        {
+			          "resolve": undefined,
+			        },
+			      ],
+			      "parent": [Circular],
 			    },
-			  ],
+			  },
 			  "delegate": SnapshotDelegate {
 			    "didPush": [Function],
 			  },

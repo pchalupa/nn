@@ -13,8 +13,8 @@ export class Snapshot<Type = unknown> {
 		return JSON.stringify(this.data.data);
 	}
 
-	map<T>(fn: (data: Type) => T) {
-		return this.data.map(fn);
+	map<T>(callback: (data: Type, index: number) => T) {
+		return this.data.map(callback);
 	}
 
 	push(value: Type) {

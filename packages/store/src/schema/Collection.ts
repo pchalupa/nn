@@ -3,6 +3,7 @@ export class Collection<Type> {
 
 	constructor(private data: Type[] = []) {}
 
+	// TODO: this might not be needed
 	static createCollectionOf<T>(): Collection<T> {
 		return new Collection<T>();
 	}

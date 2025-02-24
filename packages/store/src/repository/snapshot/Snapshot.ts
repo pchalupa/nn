@@ -10,13 +10,16 @@ export class Snapshot<Type = unknown> {
 	}
 
 	get id() {
+		// This is not the optimal and fastest way of doing ids
 		return JSON.stringify(this.data.data);
 	}
 
+	// This should not be responsibility of the snapshot
 	map<T>(callback: (data: Type, index: number) => T) {
 		return this.data.map(callback);
 	}
 
+	// This should not be responsibility of the snapshot
 	push(value: Type) {
 		this.data.push(value);
 		this.delegate?.didPush?.(value);

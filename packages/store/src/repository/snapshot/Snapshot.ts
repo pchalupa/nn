@@ -10,7 +10,7 @@ export class Snapshot<Type = unknown> {
 	}
 
 	get id() {
-		return JSON.stringify(this.data);
+		return JSON.stringify(this.data.data);
 	}
 
 	map<T>(callback: (data: Type, index: number) => T) {

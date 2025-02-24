@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { bench, describe, expect, it } from "vitest";
 import { Store } from "./Store";
 
 describe("Store", () => {
@@ -20,7 +20,7 @@ describe("Store", () => {
 			  "state": {
 			    "testCollection": Collection {
 			      "data": [],
-			      "parent": [Circular],
+			      "parent": undefined,
 			    },
 			  },
 			  "subscribers": Subscribers {
@@ -63,7 +63,7 @@ describe("Store", () => {
 			Snapshot {
 			  "data": Collection {
 			    "data": [],
-			    "parent": [Circular],
+			    "parent": undefined,
 			  },
 			  "delegate": SnapshotDelegate {
 			    "didPush": [Function],
@@ -96,7 +96,7 @@ describe("Store", () => {
 			          "resolve": undefined,
 			        },
 			      ],
-			      "parent": [Circular],
+			      "parent": undefined,
 			    },
 			  },
 			  "delegate": SnapshotDelegate {

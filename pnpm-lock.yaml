@@ -19,8 +19,8 @@ catalogs:
       specifier: 19.0.0
       version: 19.0.0
     typescript:
-      specifier: 5.6.3
-      version: 5.6.3
+      specifier: 5.7.3
+      version: 5.7.3
     vitest:
       specifier: 3.0.5
       version: 3.0.5
@@ -92,7 +92,7 @@ importers:
         version: 4.0.6
       typescript:
         specifier: 'catalog:'
-        version: 5.6.3
+        version: 5.7.3
       vite:
         specifier: ^6.1.0
         version: 6.1.0(@types/node@22.9.0)(jiti@2.4.2)(lightningcss@1.29.1)(tsx@4.19.2)(yaml@2.5.1)
@@ -107,7 +107,7 @@ importers:
         version: link:../typescript-config
       typescript:
         specifier: 'catalog:'
-        version: 5.6.3
+        version: 5.7.3
 
   packages/react:
     dependencies:
@@ -126,7 +126,7 @@ importers:
         version: 19.0.8
       typescript:
         specifier: 'catalog:'
-        version: 5.6.3
+        version: 5.7.3
       vitest:
         specifier: 'catalog:'
         version: 3.0.5(@types/node@22.9.0)(jiti@2.4.2)(jsdom@25.0.1)(lightningcss@1.29.1)(tsx@4.19.2)(yaml@2.5.1)
@@ -138,7 +138,7 @@ importers:
         version: link:../typescript-config
       typescript:
         specifier: 'catalog:'
-        version: 5.6.3
+        version: 5.7.3
       vitest:
         specifier: 'catalog:'
         version: 3.0.5(@types/node@22.9.0)(jiti@2.4.2)(jsdom@25.0.1)(lightningcss@1.29.1)(tsx@4.19.2)(yaml@2.5.1)
@@ -150,7 +150,7 @@ importers:
         version: link:../typescript-config
       typescript:
         specifier: 'catalog:'
-        version: 5.6.3
+        version: 5.7.3
       vitest:
         specifier: 'catalog:'
         version: 3.0.5(@types/node@22.9.0)(jiti@2.4.2)(jsdom@25.0.1)(lightningcss@1.29.1)(tsx@4.19.2)(yaml@2.5.1)
@@ -2258,8 +2258,8 @@ packages:
     resolution: {integrity: sha512-DUHWQAcC8BTiUZDRzAYGvpSpGLiaOQPfYXlCieQbwUvmml/LRGIe3raKdrOPOoiX0DYlzxs2nH6BoWJoZrj8hA==}
     hasBin: true
 
-  typescript@5.6.3:
-    resolution: {integrity: sha512-hjcS1mhfuyi4WW8IWtjP7brDrG2cuDZukyrYrSauoXGNgx0S7zceP07adYkJycEr56BOUTNPzbInooiN3fn1qw==}
+  typescript@5.7.3:
+    resolution: {integrity: sha512-84MVSjMEHP+FQRPy3pX9sTVV/INIex71s9TL2Gm5FG/WG1SqXeKyZ0k7/blY/4FdOzI12CBy1vGc4og/eus0fw==}
     engines: {node: '>=14.17'}
     hasBin: true
 
@@ -4454,7 +4454,7 @@ snapshots:
       turbo-windows-64: 2.3.3
       turbo-windows-arm64: 2.3.3
 
-  typescript@5.6.3: {}
+  typescript@5.7.3: {}
 
   undici-types@6.19.8:
     optional: true

@@ -18,6 +18,7 @@ describe("Reference", () => {
 			id: "test",
 		}));
 
+		expect(reference).toBeInstanceOf(Reference);
 		expect(reference).toHaveProperty("resolve");
 		expect(reference).toMatchInlineSnapshot(`
 			{

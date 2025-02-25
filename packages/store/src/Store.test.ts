@@ -1,18 +1,54 @@
-import { bench, describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { Store } from "./Store";
+import { Snapshot } from "./snapshot/Snapshot";
 
 describe("Store", () => {
 	it("should create a store", () => {
+		const store = new Store({});
+
+		expect(store).toHaveProperty("repositoryManager");
+		expect(store).toHaveProperty("snapshotManager");
+		expect(store).toHaveProperty("state");
+		expect(store).toHaveProperty("subscribers");
+		expect(store).toMatchInlineSnapshot(`
+			Store {
+			  "repositoryManager": undefined,
+			  "snapshotManager": SnapshotManager {
+			    "snapshots": Map {},
+			  },
+			  "state": {},
+			  "subscribers": Subscribers {
+			    "subscribers": Map {},
+			  },
+			}
+		`);
+	});
+
+	it("should create a store with a factory method", () => {
 		const store = Store.createWithOptions({
-			schema: ({ collection }) => ({
-				testCollection: collection(),
+			schema: ({ collection }, { ephemeral }) => ({
+				testCollection: collection({ repository: ephemeral }),
 			}),
 		});
 
+		expect(store).toBeInstanceOf(Store);
+		expect(store).toHaveProperty("repositoryManager");
+		expect(store).toHaveProperty("snapshotManager");
+		expect(store).toHaveProperty("state");
+		expect(store).toHaveProperty("subscribers");
 		expect(store).toMatchInlineSnapshot(`
 			Store {
-			  "repository": InMemoryRepository {
-			    "data": Map {},
+			  "repositoryManager": RepositoryManager {
+			    "repositories": Map {
+			      "ephemeral" => InMemoryRepository {
+			        "data": Map {},
+			        "events": Map {
+			          "didSet" => Set {
+			            [Function],
+			          },
+			        },
+			      },
+			    },
 			  },
 			  "snapshotManager": SnapshotManager {
 			    "snapshots": Map {},
@@ -21,29 +57,16 @@ describe("Store", () => {
 			    "testCollection": Collection {
 			      "data": [],
 			      "parent": undefined,
+			      "repository": InMemoryRepository {
+			        "data": Map {},
+			        "events": Map {
+			          "didSet" => Set {
+			            [Function],
+			          },
+			        },
+			      },
 			    },
 			  },
-			  "subscribers": Subscribers {
-			    "subscribers": Map {},
-			  },
-			}
-		`);
-	});
-
-	it("should create a store with empty schema", () => {
-		const store = Store.createWithOptions({
-			schema: () => ({}),
-		});
-
-		expect(store).toMatchInlineSnapshot(`
-			Store {
-			  "repository": InMemoryRepository {
-			    "data": Map {},
-			  },
-			  "snapshotManager": SnapshotManager {
-			    "snapshots": Map {},
-			  },
-			  "state": {},
 			  "subscribers": Subscribers {
 			    "subscribers": Map {},
 			  },
@@ -59,11 +82,21 @@ describe("Store", () => {
 		});
 		const snapshot = store.getSnapshotOf((schema) => schema.testCollection);
 
+		expect(snapshot).toBeInstanceOf(Snapshot);
+		expect(snapshot).toHaveProperty("data");
 		expect(snapshot).toMatchInlineSnapshot(`
 			Snapshot {
 			  "data": Collection {
 			    "data": [],
 			    "parent": undefined,
+			    "repository": InMemoryRepository {
+			      "data": Map {},
+			      "events": Map {
+			        "didSet" => Set {
+			          [Function],
+			        },
+			      },
+			    },
 			  },
 			  "delegate": SnapshotDelegate {
 			    "didPush": [Function],
@@ -85,11 +118,7 @@ describe("Store", () => {
 		expect(snapshot).toMatchInlineSnapshot(`
 			Snapshot {
 			  "data": Collection {
-			    "data": [
-			      {
-			        "id": "1",
-			      },
-			    ],
+			    "data": [],
 			    "parent": Collection {
 			      "data": [
 			        {
@@ -97,12 +126,57 @@ describe("Store", () => {
 			        },
 			      ],
 			      "parent": undefined,
+			      "repository": InMemoryRepository {
+			        "data": Map {
+			          "1" => {
+			            "id": "1",
+			          },
+			        },
+			        "events": Map {
+			          "didSet" => Set {
+			            [Function],
+			          },
+			        },
+			      },
 			    },
+			    "repository": undefined,
 			  },
 			  "delegate": SnapshotDelegate {
 			    "didPush": [Function],
 			  },
 			}
 		`);
+	});
+
+	it("should notify subscribers when a snapshot is updated", () => {
+		const store = Store.createWithOptions({
+			schema: ({ collection }) => ({
+				testCollection: collection<{ id: string }>(),
+			}),
+		});
+		const snapshot = store.getSnapshotOf((schema) => schema.testCollection);
+		const listener = vi.fn();
+
+		store.addSubscriber("test", listener);
+		snapshot.push({ id: "1" });
+
+		expect(listener).toHaveBeenCalled();
+	});
+
+	it("should remove a subscriber", () => {
+		const store = Store.createWithOptions({
+			schema: ({ collection }) => ({
+				testCollection: collection<{ id: string }>(),
+			}),
+		});
+		const snapshot = store.getSnapshotOf((schema) => schema.testCollection);
+		const listener = vi.fn();
+
+		store.addSubscriber("test", listener);
+		store.removeSubscriber("test");
+
+		snapshot.push({ id: "1" });
+
+		expect(listener).not.toHaveBeenCalled();
 	});
 });

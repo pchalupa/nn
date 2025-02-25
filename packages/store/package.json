@@ -21,7 +21,8 @@
 		"test:watch": "vitest watch"
 	},
 	"dependencies": {
-		"@nn/repository": "workspace:"
+		"@nn/repository": "workspace:",
+		"@nn/in-memory-repository": "workspace:"
 	},
 	"devDependencies": {
 		"@nn/typescript-config": "workspace:",

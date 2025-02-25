@@ -183,6 +183,9 @@ importers:
 
   packages/store:
     dependencies:
+      '@nn/in-memory-repository':
+        specifier: 'workspace:'
+        version: link:../in-memory-repository
       '@nn/repository':
         specifier: 'workspace:'
         version: link:../repository

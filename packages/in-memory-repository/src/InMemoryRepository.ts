@@ -1,7 +1,7 @@
 import { Repository } from "@nn/repository";
 
 export class InMemoryRepository extends Repository {
-	data = new Map<string, unknown>();
+	private data = new Map<string, unknown>();
 
 	get(id: string) {
 		return this.data.get(id);

@@ -12,7 +12,7 @@
 	"license": "MIT",
 	"exports": {
 		".": {
-			"import": "./src/index.ts"
+			"import": "./src/InMemoryRepository.ts"
 		}
 	},
 	"scripts": {

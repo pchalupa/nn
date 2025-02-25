@@ -16,16 +16,13 @@
 		}
 	},
 	"scripts": {
-		"ts:check": "tsc --noEmit",
-		"test": "vitest run",
-		"test:watch": "vitest watch"
+		"ts:check": "tsc --noEmit"
 	},
 	"dependencies": {
 		"@nn/event-emitter": "workspace:"
 	},
 	"devDependencies": {
 		"@nn/typescript-config": "workspace:",
-		"typescript": "catalog:",
-		"vitest": "catalog:"
+		"typescript": "catalog:"
 	}
 }

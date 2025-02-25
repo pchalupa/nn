@@ -6,7 +6,7 @@ export class Snapshot<Type = unknown> {
 	constructor(private data: Type) {}
 
 	get length() {
-		return this.data.length;
+		return this.data.data.length;
 	}
 
 	get id() {
@@ -21,7 +21,6 @@ export class Snapshot<Type = unknown> {
 
 	// This should not be responsibility of the snapshot
 	push(value: Type) {
-		this.data.push(value);
 		this.delegate?.didPush?.(value);
 	}
 }

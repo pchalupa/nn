@@ -1,6 +1,4 @@
-import { Reference } from "./Reference";
 import { Subscribers } from "./Subscribers";
-import { InMemoryRepository } from "./repository/InMemoryRepository";
 import type { Snapshot } from "./repository/snapshot/Snapshot";
 import { SnapshotManager } from "./repository/snapshot/SnapshotManager";
 import { Collection } from "./schema/Collection";
@@ -13,7 +11,6 @@ type Entities = { document: typeof createDocumentOf; collection: typeof Collecti
 export class Store<State extends object> {
 	private snapshotManager = new SnapshotManager();
 	private subscribers: Subscribers = new Subscribers();
-	private repository = new InMemoryRepository();
 
 	constructor(private state: State) {}
 
@@ -33,18 +30,16 @@ export class Store<State extends object> {
 	getSnapshotOf<Type>(selector: (state: State) => Type): Snapshot<Type> {
 		const snapshotId = selector;
 		let snapshot = this.snapshotManager.getSnapshot<Type>(snapshotId);
-		const data = selector(this.state);
 
 		if (!snapshot) {
+			const data = selector(this.state);
+
 			const onPush = (value: Type) => {
-				const id = value.id;
+				const collection = data.findRoot();
 
-				this.repository.set(id, value);
-
-				const reference = Reference.createReferenceFor(() => this.repository.get(id));
-
-				data.findRoot().push(reference);
-
+				collection.push(value);
+				// data.push(value);
+				this.snapshotManager.invalidateSnapshot(snapshotId);
 				this.notifySubscribers();
 			};
 

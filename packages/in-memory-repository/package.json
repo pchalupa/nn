@@ -1,10 +1,10 @@
 {
-	"name": "@nn/store",
+	"name": "@nn/in-memory-repository",
 	"version": "0.0.0",
-	"description": "State management library",
+	"description": "In memory data repository",
 	"keywords": [],
 	"repository": "https://github.com/pchalupa/nn",
-	"homepage": "https://github.com/pchalupa/nn/packages/store#readme",
+	"homepage": "https://github.com/pchalupa/nn/packages/in-memory-repository#readme",
 	"bugs": {
 		"url": "https://github.com/pchalupa/nn/issues"
 	},

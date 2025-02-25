@@ -13,8 +13,8 @@
 		"start": "vite"
 	},
 	"dependencies": {
-		"@nn/entities": "workspace:*",
 		"@nn/react": "workspace:*",
+		"@nn/in-memory-repository": "workspace:*",
 		"@tanstack/react-router": "~1.105.0",
 		"react": "catalog:",
 		"react-dom": "catalog:",

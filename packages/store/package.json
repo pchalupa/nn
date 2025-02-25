@@ -25,6 +25,7 @@
 	},
 	"devDependencies": {
 		"@nn/typescript-config": "workspace:",
+		"@vitest/coverage-v8": "catalog:",
 		"typescript": "catalog:",
 		"vitest": "catalog:"
 	}

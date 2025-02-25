@@ -12,7 +12,7 @@
 	"license": "MIT",
 	"exports": {
 		".": {
-			"import": "./src/index.ts"
+			"import": "./src/Repository.ts"
 		}
 	},
 	"scripts": {
@@ -22,6 +22,7 @@
 	},
 	"devDependencies": {
 		"@nn/typescript-config": "workspace:",
+		"@vitest/coverage-v8": "catalog:",
 		"typescript": "catalog:",
 		"vitest": "catalog:"
 	}

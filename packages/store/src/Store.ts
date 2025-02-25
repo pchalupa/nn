@@ -1,18 +1,21 @@
+import { InMemoryRepository } from "@nn/in-memory-repository";
 import type { Repository } from "@nn/repository";
 import { Subscribers } from "./Subscribers";
 import { Collection } from "./schema/Collection";
-import { createDocumentOf } from "./schema/Document";
 import type { Snapshot } from "./snapshot/Snapshot";
 import { SnapshotManager } from "./snapshot/SnapshotManager";
 
-type RepositoryOption<Provider extends Repository> = {
+type RepositoryOption<Provider extends Repository = unknown> = {
 	alias: string;
 	provider: Provider;
 	options: ConstructorParameters<Provider>;
 };
-type Options<SchemaType, Repositories> = { schema: Schema<SchemaType>; repositories: Repositories };
+type Options<SchemaType, Repositories extends RepositoryOption[]> = {
+	schema: Schema<SchemaType>;
+	repositories?: Repositories;
+};
 type Schema<Type> = (entity: Entities, repositories: Record<string, Repository>) => Type;
-type Entities = { document: typeof createDocumentOf; collection: typeof Collection.createCollectionOf };
+type Entities = { collection: typeof Collection.createCollectionOf };
 
 export class Store<State extends object> {
 	private snapshotManager = new SnapshotManager();
@@ -20,7 +23,7 @@ export class Store<State extends object> {
 
 	constructor(
 		private state: State,
-		private repositoryManager: RepositoryManager,
+		private repositoryManager?: RepositoryManager,
 	) {}
 
 	addSubscriber(key: string, listener: () => void) {
@@ -65,23 +68,30 @@ export class Store<State extends object> {
 	static createWithOptions<Schema extends object, Repositories extends RepositoryOption[] = []>(
 		options: Options<Schema, Repositories>,
 	) {
+		const repositories = options.repositories ?? [];
 		const repositoryManager = new RepositoryManager();
-		const repositories = options.repositories.reduce<Record<string, Repository>>(
-			(res, { alias, provider, options }) => {
-				const repository = new provider(options);
 
-				repositoryManager.registerRepository(alias, repository);
+		repositories.push({ alias: "ephemeral", provider: InMemoryRepository, options: [] });
 
-				res[alias] = repositoryManager.getRepository(alias)!;
+		const repos = repositories.reduce<Record<string, Repository>>((res, { alias, provider, options }) => {
+			const repository = new provider(options);
 
-				return res;
-			},
-			{},
-		);
+			repositoryManager.registerRepository(alias, repository);
+
+			res[alias] = repositoryManager.getRepository(alias)!;
+
+			return res;
+		}, {});
 
 		const state = options.schema(
-			{ document: createDocumentOf, collection: Collection.createCollectionOf },
-			repositories,
+			{
+				collection: <T>(options: { data?: T; repository: Repository }) => {
+					const repository = options?.repository ?? repos.ephemeral;
+
+					return new Collection<T>(options?.data, repository);
+				},
+			},
+			repos,
 		);
 
 		return new Store(state, repositoryManager);

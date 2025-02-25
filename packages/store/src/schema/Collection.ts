@@ -7,7 +7,7 @@ export class Collection<Type> {
 
 	constructor(
 		private data: Reference[] = [],
-		private repository: Repository,
+		private repository?: Repository,
 	) {
 		if (this.repository) {
 			this.repository.on("didSet", (id: string) => {
@@ -21,6 +21,10 @@ export class Collection<Type> {
 	// TODO: this might not be needed
 	static createCollectionOf<T>(options?: { data?: T[]; repository?: Repository }): Collection<T> {
 		return new Collection<T>(options?.data, options?.repository);
+	}
+
+	get length() {
+		return this.data.length;
 	}
 
 	// I would like to get rid of this method

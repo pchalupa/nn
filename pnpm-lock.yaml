@@ -47,9 +47,6 @@ importers:
 
   example:
     dependencies:
-      '@nn/in-memory-repository':
-        specifier: workspace:*
-        version: link:../packages/in-memory-repository
       '@nn/react':
         specifier: workspace:*
         version: link:../packages/react

@@ -12,11 +12,6 @@ jobs:
         with:
           node-version: 22
           cache: 'pnpm'
-      - uses: actions/cache@v4
-        with:
-          path: .turbo
-          key: ${{ runner.os }}-turbo-${{ github.sha }}
-          restore-keys: ${{ runner.os }}-turbo-
       - run: pnpm install
       - run: biome ci .
       - run: pnpm ts:check

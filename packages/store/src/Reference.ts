@@ -1,13 +1,11 @@
-export class Reference<T = unknown> {
-	constructor(public resolve: () => T) {}
+export class Reference<Type = unknown> {
+	constructor(public resolve: () => Type) {}
 
-	static createReferenceFor<T>(dataAccessor: () => T) {
-		const reference = new Reference(dataAccessor);
+	static createReferenceFor<Type extends object>(dataAccessor: () => Type) {
+		const reference = new Reference<Type>(dataAccessor);
 
 		const proxy = new Proxy(reference, {
 			get(target, prop, receiver) {
-				if (prop === "getOriginalData") return Reflect.get(target, prop, receiver);
-
 				// TODO: Consider adding a cache to avoid calling the accessor multiple times
 				const data = target.resolve();
 
@@ -15,6 +13,7 @@ export class Reference<T = unknown> {
 			},
 		});
 
-		return proxy;
+		// TODO: Avoid type casting
+		return proxy as Reference<Type> & Type;
 	}
 }

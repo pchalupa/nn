@@ -1,5 +1,5 @@
+import { InMemoryRepository } from "@nn/in-memory-repository";
 import { createStore, use } from "@nn/react";
-import { InMemoryRepository } from "../../packages/store/src/repository/InMemoryRepository";
 
 type Ticket = {
 	id: string;
@@ -20,13 +20,12 @@ type Project = {
 	name: string;
 };
 
-const repository = new InMemoryRepository();
-
 const store = createStore({
-	schema: ({ document, collection }) => ({
-		user: document<User>(),
+	repositories: [{ alias: "ephemeral", provider: InMemoryRepository, options: {} }],
+	schema: ({ document, collection }, { ephemeral }) => ({
+		users: collection<User>({ repository: ephemeral }),
 		project: document<Project>(),
-		tickets: collection<Ticket>({ repository }),
+		tickets: collection<Ticket>({ repository: ephemeral }),
 	}),
 });
 

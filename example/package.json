@@ -4,7 +4,7 @@
 	"private": true,
 	"type": "module",
 	"scripts": {
-		"dev": "vite --port=3001",
+		"dev": "vite --port=3000",
 		"test": "vitest run",
 		"test:watch": "vitest watch",
 		"ts:check": "tsc --noEmit",
@@ -13,7 +13,7 @@
 		"start": "vite"
 	},
 	"dependencies": {
-		"@nn/entities": "workspace:*",
+		"@nn/react": "workspace:*",
 		"@tanstack/react-router": "~1.105.0",
 		"react": "catalog:",
 		"react-dom": "catalog:",

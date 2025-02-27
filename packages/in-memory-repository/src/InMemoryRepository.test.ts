@@ -6,6 +6,8 @@ describe("InMemoryRepository", () => {
 		const repository = new InMemoryRepository();
 
 		expect(repository).toHaveProperty("data");
+		expect(repository).toHaveProperty("get");
+		expect(repository).toHaveProperty("set");
 		expect(repository).toMatchInlineSnapshot(`
 			InMemoryRepository {
 			  "data": Map {},

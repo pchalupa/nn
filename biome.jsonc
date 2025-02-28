@@ -1,5 +1,8 @@
 {
 	"$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
+	"files": {
+		"ignore": ["node_modules", "dist", "coverage", "example/src/routeTree.gen.ts"]
+	},
 	"vcs": {
 		"enabled": true,
 		"clientKind": "git",
@@ -24,19 +27,5 @@
 				"useSortedClasses": "error"
 			}
 		}
-	},
-	"overrides": [
-		{
-			"include": ["example/src/routeTree.gen.ts"],
-			"organizeImports": {
-				"enabled": false
-			},
-			"formatter": {
-				"enabled": false
-			},
-			"linter": {
-				"enabled": false
-			}
-		}
-	]
+	}
 }

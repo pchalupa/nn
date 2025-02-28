@@ -1,6 +1,6 @@
-import { describe, expect, it, vi } from "vitest";
-import { CollectiononononononoCollectiontiontiontiontiontiontiontiontiontiontiontiontiontiontiontiontiontiontiontiontiontiontiontiontiontiontiontiontiontiontiontiontiontiontiontiontiontiontiontiontiontiontiontiontiontiontiontiontiontiontiontiontiontiontiontiontiontiontiontiontiontiontiontiontiontiontion";
-import { SnapshotnSnSnSnSnSnSnapshot
+import { describe, expect, it } from "vitest";
+import { Collection } from "./Collection";
+import { Snapshot } from "./Snapshot";
 
 describe("Snapshot", () => {
 	it("should create a snapshot", () => {

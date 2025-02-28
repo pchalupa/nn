@@ -13,7 +13,7 @@ export function use<Schema extends object>(store: Store<Schema>) {
 		const subscribeFn = useRef(subscribe(Math.random().toString(), store));
 		const getSnapshotFn = useRef(getSnapshot(selectorFn.current, store));
 
-		// TODO: get snapshot key here
+		// TODO: get snapshot id here
 		useSyncExternalStore(subscribeFn.current, getSnapshotFn.current);
 
 		const snapshot = store.getSnapshotOf<Type>(selectorFn.current);

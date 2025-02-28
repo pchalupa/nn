@@ -7,6 +7,7 @@ export class SnapshotManager {
 	createSnapshotOf<Type>(id: string, data: Type): Snapshot<Type> {
 		const snapshot = Snapshot.createSnapshot(data);
 
+		snapshot.on("invalidated", () => this.invalidateSnapshot(id));
 		this.snapshots.set(id, snapshot as Snapshot<unknown>);
 
 		return snapshot;

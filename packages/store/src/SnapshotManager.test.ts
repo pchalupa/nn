@@ -27,9 +27,11 @@ describe("SnapshotManager", () => {
 			  "snapshots": Map {
 			    "test" => {
 			      "data": {},
-			      "invalidatedAt": undefined,
-			      "onInvalidate": undefined,
-			      "onPush": undefined,
+			      "events": Map {
+			        "invalidated" => Set {
+			          [Function],
+			        },
+			      },
 			    },
 			  },
 			}

@@ -8,7 +8,10 @@ describe("Collection", () => {
 		expect(collection).toMatchInlineSnapshot(`
 			Collection {
 			  "data": [],
+			  "events": Map {},
 			  "parent": undefined,
+			  "repository": undefined,
+			  Symbol(Symbol.toStringTag): "Collection",
 			}
 		`);
 	});
@@ -20,12 +23,11 @@ describe("Collection", () => {
 
 		expect(collection).toMatchInlineSnapshot(`
 			Collection {
-			  "data": [
-			    {
-			      "id": "1",
-			    },
-			  ],
+			  "data": [],
+			  "events": Map {},
 			  "parent": undefined,
+			  "repository": undefined,
+			  Symbol(Symbol.toStringTag): "Collection",
 			}
 		`);
 	});
@@ -59,22 +61,17 @@ describe("Collection", () => {
 		expect(filtered.findRoot()).toBe(collection);
 		expect(filtered).toMatchInlineSnapshot(`
 			Collection {
-			  "data": [
-			    {
-			      "id": "1",
-			    },
-			  ],
+			  "data": [],
+			  "events": Map {},
 			  "parent": Collection {
-			    "data": [
-			      {
-			        "id": "1",
-			      },
-			      {
-			        "id": "2",
-			      },
-			    ],
+			    "data": [],
+			    "events": Map {},
 			    "parent": undefined,
+			    "repository": undefined,
+			    Symbol(Symbol.toStringTag): "Collection",
 			  },
+			  "repository": undefined,
+			  Symbol(Symbol.toStringTag): "Collection",
 			}
 		`);
 	});

@@ -14,7 +14,7 @@ describe("Store", () => {
 			Store {
 			  "repositoryManager": undefined,
 			  "snapshotManager": SnapshotManager {
-			    "snapshots": Map {},
+			    "snapshots": WeakMap {},
 			  },
 			  "state": {},
 			  "subscribers": Subscribers {
@@ -51,11 +51,12 @@ describe("Store", () => {
 			    },
 			  },
 			  "snapshotManager": SnapshotManager {
-			    "snapshots": Map {},
+			    "snapshots": WeakMap {},
 			  },
 			  "state": {
 			    "testCollection": Collection {
 			      "data": [],
+			      "events": Map {},
 			      "parent": undefined,
 			      "repository": InMemoryRepository {
 			        "data": Map {},
@@ -65,6 +66,7 @@ describe("Store", () => {
 			          },
 			        },
 			      },
+			      Symbol(Symbol.toStringTag): "Collection",
 			    },
 			  },
 			  "subscribers": Subscribers {
@@ -116,15 +118,32 @@ describe("Store", () => {
 		snapshot.push({ id: "1" });
 
 		expect(snapshot).toMatchInlineSnapshot(`
-			Snapshot {
-			  "data": Collection {
+			Collection {
+			  "events": Map {
+			    "update" => Set {
+			      [Function],
+			    },
+			    "invalidated" => Set {
+			      [Function],
+			    },
+			  },
+			  "state": Collection {
 			    "data": [],
+			    "events": Map {
+			      "update" => Set {
+			        [Function],
+			      },
+			      "invalidated" => Set {
+			        [Function],
+			      },
+			    },
 			    "parent": Collection {
 			      "data": [
 			        {
 			          "resolve": undefined,
 			        },
 			      ],
+			      "events": Map {},
 			      "parent": undefined,
 			      "repository": InMemoryRepository {
 			        "data": Map {
@@ -138,11 +157,10 @@ describe("Store", () => {
 			          },
 			        },
 			      },
+			      Symbol(Symbol.toStringTag): "Collection",
 			    },
 			    "repository": undefined,
-			  },
-			  "delegate": SnapshotDelegate {
-			    "didPush": [Function],
+			    Symbol(Symbol.toStringTag): "Collection",
 			  },
 			}
 		`);

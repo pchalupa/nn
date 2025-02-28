@@ -1,9 +1,9 @@
 import { InMemoryRepository } from "@nn/in-memory-repository";
 import type { Repository } from "@nn/repository";
+import { Collection } from "./Collection";
+import type { Snapshot } from "./Snapshot";
+import { SnapshotManager } from "./SnapshotManager";
 import { Subscribers } from "./Subscribers";
-import { Collection } from "./schema/Collection";
-import type { Snapshot } from "./snapshot/Snapshot";
-import { SnapshotManager } from "./snapshot/SnapshotManager";
 
 type RepositoryOption<Provider extends Repository = unknown> = {
 	alias: string;
@@ -40,25 +40,18 @@ export class Store<State extends object> {
 	}
 
 	getSnapshotOf<Type>(selector: (state: State) => Type): Snapshot<Type> {
-		const snapshotId = selector;
-		let snapshot = this.snapshotManager.getSnapshot<Type>(snapshotId);
+		const state = () => selector(this.state);
+		let snapshot: Snapshot<Type> | unknown = this.snapshotManager.getSnapshot(state);
 
 		if (!snapshot) {
-			const data = selector(this.state);
+			const state = selector(this.state);
 
-			const onPush = (value: Type) => {
-				const collection = data.findRoot();
-
-				collection.push(value);
-				// data.push(value);
-				this.snapshotManager.invalidateSnapshot(snapshotId);
+			state.on("update", () => {
+				this.snapshotManager.invalidateSnapshot(state);
 				this.notifySubscribers();
-			};
+			});
 
-			snapshot = this.snapshotManager.createSnapshot<Type>(snapshotId, data);
-
-			// this should be implemented in some class that extends the snapshot delegate
-			snapshot.delegate.didPush = onPush;
+			snapshot = this.snapshotManager.createSnapshot(state, state);
 		}
 
 		return snapshot;
@@ -68,8 +61,8 @@ export class Store<State extends object> {
 	static createWithOptions<Schema extends object, Repositories extends RepositoryOption[] = []>(
 		options: Options<Schema, Repositories>,
 	) {
-		const repositories = options.repositories ?? [];
 		const repositoryManager = new RepositoryManager();
+		const repositories = options.repositories ?? [];
 
 		repositories.push({ alias: "ephemeral", provider: InMemoryRepository, options: [] });
 
@@ -87,8 +80,9 @@ export class Store<State extends object> {
 			{
 				collection: <T>(options: { data?: T; repository: Repository }) => {
 					const repository = options?.repository ?? repos.ephemeral;
+					const collection = new Collection<T>(options?.data, repository);
 
-					return new Collection<T>(options?.data, repository);
+					return collection;
 				},
 			},
 			repos,

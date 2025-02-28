@@ -1,5 +1,5 @@
 import { EventEmitter } from "@nn/event-emitter";
-import type { Collection } from "./schema/Collection";
+import type { Collection } from "./Collection";
 
 export class Snapshot<Type extends Collection<unknown>> extends EventEmitter<{ invalidated: [] }> {
 	private constructor(private state: Type) {

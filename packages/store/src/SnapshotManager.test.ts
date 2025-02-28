@@ -6,19 +6,19 @@ describe("SnapshotManager", () => {
 		const snapshotManager = new SnapshotManager();
 
 		expect(snapshotManager).toHaveProperty("snapshots");
-		expect(snapshotManager).toHaveProperty("createSnapshotOf");
+		expect(snapshotManager).toHaveProperty("createSnapshot");
 		expect(snapshotManager).toHaveProperty("getSnapshot");
 		expect(snapshotManager).toHaveProperty("invalidateSnapshot");
 		expect(snapshotManager).toMatchInlineSnapshot(`
 			SnapshotManager {
-			  "snapshots": Map {},
+			  "snapshots": WeakMap {},
 			}
 		`);
 	});
 
 	it("should create a snapshot", () => {
 		const snapshotManager = new SnapshotManager();
-		const snapshot = snapshotManager.createSnapshotOf("test", {});
+		const snapshot = snapshotManager.createSnapshot({}, {});
 
 		expect(snapshotManager.getSnapshot("test")).toBe(snapshot);
 		expect(snapshot).toHaveProperty("data", {});
@@ -40,7 +40,7 @@ describe("SnapshotManager", () => {
 
 	it("should get a snapshot", () => {
 		const snapshotManager = new SnapshotManager();
-		const snapshot = snapshotManager.createSnapshotOf("test", {});
+		const snapshot = snapshotManager.createSnapshot("test", {});
 
 		expect(snapshotManager.getSnapshot("test")).toBe(snapshot);
 	});
@@ -48,7 +48,7 @@ describe("SnapshotManager", () => {
 	it("should invalidate a snapshot", () => {
 		const snapshotManager = new SnapshotManager();
 
-		snapshotManager.createSnapshotOf("test", {});
+		snapshotManager.createSnapshot("test", {});
 		snapshotManager.invalidateSnapshot("test");
 
 		expect(snapshotManager.getSnapshot("test")).toBeUndefined();

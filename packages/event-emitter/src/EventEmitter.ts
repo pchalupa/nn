@@ -1,4 +1,4 @@
-// TODO: Consider turning this into a decorator
+// TODO: Consider turning this into a decorator @Emits
 export class EventEmitter<Event extends Record<string, unknown[]>, Name extends keyof Event = keyof Event> {
 	private events = new Map<Name, Set<(...args: Event[Name]) => void>>();
 

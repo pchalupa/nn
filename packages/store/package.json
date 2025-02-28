@@ -22,6 +22,7 @@
 	},
 	"dependencies": {
 		"@nn/repository": "workspace:",
+		"@nn/event-emitter": "workspace:",
 		"@nn/in-memory-repository": "workspace:"
 	},
 	"devDependencies": {

@@ -186,6 +186,9 @@ importers:
 
   packages/store:
     dependencies:
+      '@nn/event-emitter':
+        specifier: 'workspace:'
+        version: link:../event-emitter
       '@nn/in-memory-repository':
         specifier: 'workspace:'
         version: link:../in-memory-repository

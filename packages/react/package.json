@@ -24,8 +24,8 @@
 		"@nn/store": "workspace:*"
 	},
 	"devDependencies": {
-		"@types/react": "catalog:",
 		"@nn/typescript-config": "workspace:",
+		"@types/react": "catalog:",
 		"@vitest/coverage-v8": "catalog:",
 		"typescript": "catalog:",
 		"vitest": "catalog:"

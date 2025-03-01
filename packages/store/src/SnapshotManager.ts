@@ -6,12 +6,10 @@ type Id = Function;
 export class SnapshotManager {
 	private snapshots = new WeakMap<Id, Snapshot<unknown>>();
 
-	createSnapshot<Type>(id: Id, state: Type): Snapshot<Type> {
+	createSnapshot<State>(id: Id, state: State): Snapshot<State> {
 		const snapshot = Snapshot.createSnapshot(state);
 
-		snapshot.on("invalidated", () => this.invalidateSnapshot(id));
-
-		this.snapshots.set(id, snapshot as Snapshot<unknown>);
+		this.snapshots.set(id, snapshot);
 
 		return snapshot;
 	}

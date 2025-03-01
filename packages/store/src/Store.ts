@@ -40,18 +40,19 @@ export class Store<State extends object> {
 	}
 
 	getSnapshotOf<Type>(selector: (state: State) => Type): Snapshot<Type> {
-		const state = () => selector(this.state);
-		let snapshot: Snapshot<Type> | unknown = this.snapshotManager.getSnapshot(state);
+		const snapshotId = selector;
+		let snapshot: Snapshot<Type> | unknown = this.snapshotManager.getSnapshot(snapshotId);
 
 		if (!snapshot) {
-			const state = selector(this.state);
-
-			state.on("update", () => {
-				this.snapshotManager.invalidateSnapshot(state);
+			const data = selector(this.state);
+			const onUpdate = () => {
+				this.snapshotManager.invalidateSnapshot(snapshotId);
 				this.notifySubscribers();
-			});
+			};
 
-			snapshot = this.snapshotManager.createSnapshot(state, state);
+			data.once("update", onUpdate);
+
+			snapshot = this.snapshotManager.createSnapshot(snapshotId, data);
 		}
 
 		return snapshot;

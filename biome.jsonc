@@ -25,6 +25,9 @@
 			"recommended": true,
 			"nursery": {
 				"useSortedClasses": "error"
+			},
+			"complexity": {
+				"noForEach": "off"
 			}
 		}
 	}

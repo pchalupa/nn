@@ -19,6 +19,17 @@ describe("EventEmitter", () => {
 		expect(listener).toHaveBeenCalledWith("hello");
 	});
 
+	it("should emit an event once", () => {
+		const eventEmitter = new EventEmitter<{ test: [string] }>();
+		const listener = vi.fn();
+
+		eventEmitter.once("test", listener);
+		eventEmitter.emit("test", "hello");
+		eventEmitter.emit("test", "hello");
+
+		expect(listener).toHaveBeenCalledTimes(1);
+	});
+
 	it("should remove a listener", () => {
 		const eventEmitter = new EventEmitter<{ test: [string] }>();
 		const listener = vi.fn();

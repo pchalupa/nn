@@ -1,12 +1,9 @@
 type Listener<Arguments extends unknown[]> = (...args: Arguments) => void;
 
-// TODO: Consider turning this into a decorator @Emits
 export class EventEmitter<Emits extends Record<string, unknown[]>, Event extends keyof Emits = keyof Emits> {
-	// Consider WeakSet for listeners
 	private events = new Map<Event, Set<Listener<Emits[Event]>>>();
 
 	emit(event: Event, ...args: Emits[Event]): void {
-		// biome-ignore lint/complexity/noForEach: for each over map
 		this.events.get(event)?.forEach((listener) => listener(...args));
 	}
 
@@ -19,12 +16,13 @@ export class EventEmitter<Emits extends Record<string, unknown[]>, Event extends
 	}
 
 	once(event: Event, listener: Listener<Emits[Event]>): void {
-		const onceListener = (...args: Emits[Event]) => {
+		const once: typeof listener = (...args) => {
 			listener(...args);
-			this.off(event, onceListener);
+
+			this.off(event, once);
 		};
 
-		this.on(event, onceListener);
+		this.on(event, once);
 	}
 
 	off(event: Event, listener: Listener<Emits[Event]>): void {

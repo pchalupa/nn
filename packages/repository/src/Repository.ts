@@ -1,7 +1,7 @@
 import { EventEmitter } from "@nn/event-emitter";
 
-export abstract class Repository extends EventEmitter<{ didSet: [id: string, value: unknown] }> {
-	abstract get(id: unknown): unknown | undefined;
+export abstract class Repository<Value> extends EventEmitter<{ didSet: [id: string, value: Value] }> {
+	abstract get(id: string): Value | undefined;
 
-	abstract set(id: unknown, value: unknown): void;
+	abstract set(id: string, value: Value): void;
 }

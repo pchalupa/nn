@@ -1,7 +1,7 @@
-export class Reference<Type = unknown> {
-	constructor(public resolve: () => Type) {}
+export class Reference<Value extends object> {
+	constructor(public resolve: () => Value | undefined) {}
 
-	static createReferenceFor<Type extends object>(dataAccessor: () => Type) {
+	static createReferenceFor<Type extends object>(dataAccessor: () => Type | undefined): Reference<Type> & Type {
 		const reference = new Reference<Type>(dataAccessor);
 
 		const proxy = new Proxy(reference, {
@@ -9,7 +9,7 @@ export class Reference<Type = unknown> {
 				// TODO: Consider adding a cache to avoid calling the accessor multiple times
 				const data = target.resolve();
 
-				return Reflect.get(data, prop, receiver);
+				if (data) return Reflect.get(data, prop, receiver);
 			},
 		});
 

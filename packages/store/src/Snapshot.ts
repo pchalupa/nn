@@ -16,7 +16,7 @@ export class Snapshot<Type extends Collection<unknown>> extends EventEmitter<{ i
 		const proxy = new Proxy(snapshot, {
 			get(target, prop, receiver) {
 				// Snapshot properties
-				if (prop === "id" || prop === "state") return Reflect.get(target, prop, receiver);
+				if (prop === "id" || prop === "state" || prop === "on") return Reflect.get(target, prop, receiver);
 
 				return Reflect.get(target.state, prop, receiver);
 			},

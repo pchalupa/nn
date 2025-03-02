@@ -15,7 +15,7 @@ type Options<SchemaType, Repositories extends RepositoryOption[]> = {
 	repositories?: Repositories;
 };
 type Schema<Type> = (entity: Entities, repositories: Record<string, Repository>) => Type;
-type Entities = { collection: typeof Collection.createCollectionOf };
+type Entities = { collection: () => Collection<unknown> };
 
 export class Store<State extends object> {
 	private snapshotManager = new SnapshotManager();
@@ -46,11 +46,15 @@ export class Store<State extends object> {
 		if (!snapshot) {
 			const data = selector(this.state);
 			const onUpdate = () => {
+				console.log("UPDATE");
+
 				this.snapshotManager.invalidateSnapshot(snapshotId);
 				this.notifySubscribers();
 			};
 
-			data.once("update", onUpdate);
+			data.on("update", onUpdate);
+
+			console.log("CREATING SNAPSHOT", data);
 
 			snapshot = this.snapshotManager.createSnapshot(snapshotId, data);
 		}

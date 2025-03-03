@@ -1,43 +1,30 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Column } from "../components/Column";
+import { useStore } from "../store";
 
-// Mock data
-const TODO = [
-	{
-		id: "a",
-		title: "Design App",
-		status: "todo",
-		description: "Design the high fidelity of the application according to the wireframe",
-	},
-];
+const Stats = () => {
+	const data = useStore((store) => store.tickets);
 
-const IN_PROGRESS = [
-	{
-		id: "a",
-		title: "Interview & Prototyping",
-		status: "in-progress",
-		description: "Do user interviews for several hours with several users who meet the criteria",
-	},
-];
-const DONE = [
-	{
-		id: "a",
-		title: "Flow identification",
-		status: "done",
-		description: "Identify the app flow mentioned bellow",
-	},
-];
+	return (
+		<div className="flex flex-col gap-y-2">
+			<h3 className="text-sm uppercase">Stats</h3>
+			<hr className="border-sky-600" />
+			<div className="flex flex-col gap-y-2">{data.length}</div>
+		</div>
+	);
+};
 
 const Index = () => {
 	return (
 		<div className="flex flex-row">
 			<div className="min-h-screen bg-sky-100">
-				<h1 className="p-4 text-2xl font-bold">Kanban Board</h1>
+				<h1 className="p-4 font-bold text-2xl">Kanban Board</h1>
+				<Stats />
 			</div>
-			<div className="flex h-full flex-row gap-x-2 p-4">
-				<Column title="To Do" data={TODO} />
-				<Column title="In Progress" data={IN_PROGRESS} />
-				<Column title="Done" data={DONE} />
+			<div className="flex h-full flex-1 flex-row gap-x-2 p-4">
+				<Column title="To Do" status="todo" />
+				<Column title="In Progress" status="in-progress" />
+				<Column title="Done" status="done" />
 			</div>
 		</div>
 	);

@@ -35,7 +35,6 @@ export class Store<State extends object> {
 	}
 
 	notifySubscribers() {
-		// biome-ignore lint/complexity/noForEach: Map
 		this.subscribers.forEach((listener) => listener());
 	}
 
@@ -46,17 +45,12 @@ export class Store<State extends object> {
 		if (!snapshot) {
 			const data = selector(this.state);
 			const onUpdate = () => {
-				console.log("UPDATE");
-
 				this.snapshotManager.invalidateSnapshot(snapshotId);
 				this.notifySubscribers();
 			};
 
-			data.on("update", onUpdate);
-
-			console.log("CREATING SNAPSHOT", data);
-
 			snapshot = this.snapshotManager.createSnapshot(snapshotId, data);
+			snapshot.once("update", onUpdate);
 		}
 
 		return snapshot;

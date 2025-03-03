@@ -9,6 +9,6 @@ export class InMemoryRepository<Value> extends Repository<Value> {
 
 	set(id: string, value: Value) {
 		this.data.set(id, value);
-		this.emit("didSet", id, value);
+		this.events.emit("didSet", id, value);
 	}
 }

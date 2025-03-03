@@ -17,10 +17,11 @@ describe("SnapshotManager", () => {
 	});
 
 	it("should create a snapshot", () => {
+		const id = {};
 		const snapshotManager = new SnapshotManager();
-		const snapshot = snapshotManager.createSnapshot({}, {});
+		const snapshot = snapshotManager.createSnapshot(id, {});
 
-		expect(snapshotManager.getSnapshot("test")).toBe(snapshot);
+		expect(snapshotManager.getSnapshot(id)).toBe(snapshot);
 		expect(snapshot).toHaveProperty("data", {});
 		expect(snapshotManager).toMatchInlineSnapshot(`
 			SnapshotManager {
@@ -39,18 +40,20 @@ describe("SnapshotManager", () => {
 	});
 
 	it("should get a snapshot", () => {
+		const id = {};
 		const snapshotManager = new SnapshotManager();
-		const snapshot = snapshotManager.createSnapshot("test", {});
+		const snapshot = snapshotManager.createSnapshot(id, {});
 
-		expect(snapshotManager.getSnapshot("test")).toBe(snapshot);
+		expect(snapshotManager.getSnapshot(id)).toBe(snapshot);
 	});
 
 	it("should invalidate a snapshot", () => {
+		const id = {};
 		const snapshotManager = new SnapshotManager();
 
-		snapshotManager.createSnapshot("test", {});
-		snapshotManager.invalidateSnapshot("test");
+		snapshotManager.createSnapshot(id, {});
+		snapshotManager.invalidateSnapshot(id);
 
-		expect(snapshotManager.getSnapshot("test")).toBeUndefined();
+		expect(snapshotManager.getSnapshot(id)).toBeUndefined();
 	});
 });

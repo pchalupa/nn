@@ -2,22 +2,20 @@ import { EventEmitter } from "@nn/event-emitter";
 import type { Repository } from "@nn/repository";
 import { Reference } from "./Reference";
 
-export class Collection<Value extends { id: string }> extends EventEmitter<{ update: [] }> {
+export class Collection<Value extends { id: string }> {
+	public events = new EventEmitter<{ update: [] }>();
+
 	constructor(
 		private data: Reference<Value>[] = [],
 		private repository?: Repository<Value>,
-	) {
-		super();
-
-		this.repository?.on("didSet", (id: string) => {
-			const reference = Reference.createReferenceFor(() => this.repository?.get(id));
-
-			this.data.push(reference);
-		});
-	}
+	) {}
 
 	get length(): number {
 		return this.data.length;
+	}
+
+	once(event: "update", listener: () => void): void {
+		this.events.once(event, listener);
 	}
 
 	toString(): string {
@@ -25,8 +23,11 @@ export class Collection<Value extends { id: string }> extends EventEmitter<{ upd
 	}
 
 	push(value: Value): void {
-		this.repository?.set(value.id, value);
-		this.emit("update");
+		const id = value.id;
+		const reference = Reference.createReferenceFor(() => this.repository?.get(id));
+
+		this.repository?.set(id, value);
+		this.data.push(reference);
 	}
 
 	map<Type>(callback: (value: Reference<Value>, index: number) => Type): Type[] {
@@ -37,10 +38,22 @@ export class Collection<Value extends { id: string }> extends EventEmitter<{ upd
 
 	filter(predicate: (data: Reference<Value>) => boolean): Collection<Value> {
 		const data = this.data.filter(predicate);
-		const collection = new Collection<Value>(data);
+		const slice = new Slice<Value>(data, this);
 
-		collection.repository = this.repository;
+		return slice;
+	}
+}
 
-		return collection;
+export class Slice<Value extends { id: string }> extends Collection<Value> {
+	constructor(
+		data: Reference<Value>[],
+		private collection: Collection<Value>,
+	) {
+		super(data);
+	}
+
+	push(value: Value): void {
+		this.collection.push(value);
+		this.events.emit("update");
 	}
 }

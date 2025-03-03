@@ -10,7 +10,7 @@ export class Snapshot<Type extends Collection<unknown>> extends EventEmitter<{ i
 		return this.state.toString();
 	}
 
-	static createSnapshot<Type extends Collection<unknown>>(state: Type) {
+	static createSnapshot<Type>(state: Type) {
 		const snapshot = new Snapshot<Type>(state);
 
 		const proxy = new Proxy(snapshot, {

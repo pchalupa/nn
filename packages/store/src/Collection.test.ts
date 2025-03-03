@@ -1,5 +1,6 @@
+import { InMemoryRepository } from "@nn/in-memory-repository";
 import { describe, expect, it } from "vitest";
-import { Collection } from "./Collection";
+import { Collection, Slice } from "./Collection";
 
 describe("Collection", () => {
 	it("should create a collection", () => {
@@ -8,10 +9,10 @@ describe("Collection", () => {
 		expect(collection).toMatchInlineSnapshot(`
 			Collection {
 			  "data": [],
-			  "events": Map {},
-			  "parent": undefined,
+			  "events": EventEmitter {
+			    "events": Map {},
+			  },
 			  "repository": undefined,
-			  Symbol(Symbol.toStringTag): "Collection",
 			}
 		`);
 	});
@@ -23,11 +24,15 @@ describe("Collection", () => {
 
 		expect(collection).toMatchInlineSnapshot(`
 			Collection {
-			  "data": [],
-			  "events": Map {},
-			  "parent": undefined,
+			  "data": [
+			    {
+			      "resolve": undefined,
+			    },
+			  ],
+			  "events": EventEmitter {
+			    "events": Map {},
+			  },
 			  "repository": undefined,
-			  Symbol(Symbol.toStringTag): "Collection",
 			}
 		`);
 	});
@@ -41,7 +46,8 @@ describe("Collection", () => {
 	});
 
 	it("should map the collection", () => {
-		const collection = new Collection<{ id: string }>();
+		const repository = new InMemoryRepository<{ id: string }>();
+		const collection = new Collection<{ id: string }>([], repository);
 
 		collection.push({ id: "1" });
 
@@ -58,20 +64,28 @@ describe("Collection", () => {
 
 		const filtered = collection.filter((data) => data.id === "1");
 
-		expect(filtered.findRoot()).toBe(collection);
+		expect(filtered).toBeInstanceOf(Slice);
 		expect(filtered).toMatchInlineSnapshot(`
-			Collection {
-			  "data": [],
-			  "events": Map {},
-			  "parent": Collection {
-			    "data": [],
-			    "events": Map {},
-			    "parent": undefined,
+			Slice {
+			  "collection": Collection {
+			    "data": [
+			      {
+			        "resolve": undefined,
+			      },
+			      {
+			        "resolve": undefined,
+			      },
+			    ],
+			    "events": EventEmitter {
+			      "events": Map {},
+			    },
 			    "repository": undefined,
-			    Symbol(Symbol.toStringTag): "Collection",
+			  },
+			  "data": [],
+			  "events": EventEmitter {
+			    "events": Map {},
 			  },
 			  "repository": undefined,
-			  Symbol(Symbol.toStringTag): "Collection",
 			}
 		`);
 	});

@@ -9,12 +9,21 @@ catalogs:
     '@types/react':
       specifier: ^19.0.8
       version: 19.0.8
+    '@types/react-dom':
+      specifier: ^19.0.3
+      version: 19.0.3
     '@vitest/coverage-v8':
       specifier: 3.0.7
       version: 3.0.7
+    react:
+      specifier: 19.0.0
+      version: 19.0.0
+    react-dom:
+      specifier: 19.0.0
+      version: 19.0.0
     typescript:
-      specifier: 5.7.3
-      version: 5.7.3
+      specifier: 5.8.2
+      version: 5.8.2
     vitest:
       specifier: 3.0.7
       version: 3.0.7
@@ -86,22 +95,13 @@ importers:
         version: 4.0.6
       typescript:
         specifier: 'catalog:'
-        version: 5.7.3
+        version: 5.8.2
       vite:
         specifier: ^6.1.0
         version: 6.2.0(@types/node@22.9.0)(jiti@2.4.2)(lightningcss@1.29.1)(tsx@4.19.2)(yaml@2.7.0)
       vitest:
         specifier: 'catalog:'
         version: 3.0.7(@types/node@22.9.0)(jiti@2.4.2)(jsdom@25.0.1)(lightningcss@1.29.1)(tsx@4.19.2)(yaml@2.7.0)
-
-  packages/entities:
-    dependencies:
-      '@nn/typescript-config':
-        specifier: 'workspace:'
-        version: link:../typescript-config
-      typescript:
-        specifier: 'catalog:'
-        version: 5.7.3
 
   packages/event-emitter:
     devDependencies:
@@ -113,7 +113,7 @@ importers:
         version: 3.0.7(vitest@3.0.7(@types/node@22.9.0)(jiti@2.4.2)(jsdom@25.0.1)(lightningcss@1.29.1)(tsx@4.19.2)(yaml@2.7.0))
       typescript:
         specifier: 'catalog:'
-        version: 5.7.3
+        version: 5.8.2
       vitest:
         specifier: 'catalog:'
         version: 3.0.7(@types/node@22.9.0)(jiti@2.4.2)(jsdom@25.0.1)(lightningcss@1.29.1)(tsx@4.19.2)(yaml@2.7.0)
@@ -132,7 +132,7 @@ importers:
         version: 3.0.7(vitest@3.0.7(@types/node@22.9.0)(jiti@2.4.2)(jsdom@25.0.1)(lightningcss@1.29.1)(tsx@4.19.2)(yaml@2.7.0))
       typescript:
         specifier: 'catalog:'
-        version: 5.7.3
+        version: 5.8.2
       vitest:
         specifier: 'catalog:'
         version: 3.0.7(@types/node@22.9.0)(jiti@2.4.2)(jsdom@25.0.1)(lightningcss@1.29.1)(tsx@4.19.2)(yaml@2.7.0)
@@ -157,7 +157,7 @@ importers:
         version: 3.0.7(vitest@3.0.7(@types/node@22.9.0)(jiti@2.4.2)(jsdom@25.0.1)(lightningcss@1.29.1)(tsx@4.19.2)(yaml@2.7.0))
       typescript:
         specifier: 'catalog:'
-        version: 5.7.3
+        version: 5.8.2
       vitest:
         specifier: 'catalog:'
         version: 3.0.7(@types/node@22.9.0)(jiti@2.4.2)(jsdom@25.0.1)(lightningcss@1.29.1)(tsx@4.19.2)(yaml@2.7.0)
@@ -173,7 +173,7 @@ importers:
         version: link:../typescript-config
       typescript:
         specifier: 'catalog:'
-        version: 5.7.3
+        version: 5.8.2
 
   packages/store:
     dependencies:
@@ -195,7 +195,7 @@ importers:
         version: 3.0.7(vitest@3.0.7(@types/node@22.9.0)(jiti@2.4.2)(jsdom@25.0.1)(lightningcss@1.29.1)(tsx@4.19.2)(yaml@2.7.0))
       typescript:
         specifier: 'catalog:'
-        version: 5.7.3
+        version: 5.8.2
       vitest:
         specifier: 'catalog:'
         version: 3.0.7(@types/node@22.9.0)(jiti@2.4.2)(jsdom@25.0.1)(lightningcss@1.29.1)(tsx@4.19.2)(yaml@2.7.0)
@@ -207,7 +207,7 @@ importers:
         version: link:../typescript-config
       typescript:
         specifier: 'catalog:'
-        version: 5.7.3
+        version: 5.8.2
       vitest:
         specifier: 'catalog:'
         version: 3.0.7(@types/node@22.9.0)(jiti@2.4.2)(jsdom@25.0.1)(lightningcss@1.29.1)(tsx@4.19.2)(yaml@2.7.0)
@@ -2481,8 +2481,8 @@ packages:
     engines: {node: '>=18.0.0'}
     hasBin: true
 
-  typescript@5.7.3:
-    resolution: {integrity: sha512-84MVSjMEHP+FQRPy3pX9sTVV/INIex71s9TL2Gm5FG/WG1SqXeKyZ0k7/blY/4FdOzI12CBy1vGc4og/eus0fw==}
+  typescript@5.8.2:
+    resolution: {integrity: sha512-aJn6wq13/afZp/jT9QZmwEjDqqvSGp1VT5GVg+f/t6/oVyrgXM6BY1h9BRh/O5p3PlUPAe+WuiEZOmb/49RqoQ==}
     engines: {node: '>=14.17'}
     hasBin: true
 
@@ -4897,7 +4897,7 @@ snapshots:
     optionalDependencies:
       fsevents: 2.3.3
 
-  typescript@5.7.3: {}
+  typescript@5.8.2: {}
 
   undici-types@6.19.8:
     optional: true

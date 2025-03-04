@@ -19,24 +19,12 @@ type Entities = { collection: () => Collection<unknown> };
 
 export class Store<State extends object> {
 	private snapshotManager = new SnapshotManager();
-	private events = new EventEmitter<{ update: [] }>();
+	public events = new EventEmitter<{ update: [] }>();
 
 	constructor(
 		private state: State,
 		private repositoryManager?: RepositoryManager,
 	) {}
-
-	addSubscriber(key: "update", listener: () => void) {
-		this.events.on(key, listener);
-	}
-
-	removeSubscriber(key: "update", listener: () => void) {
-		this.events.off(key, listener);
-	}
-
-	notifySubscribers() {
-		this.events.emit("update");
-	}
 
 	getSnapshotOf<Type>(selector: (state: State) => Type): Snapshot<Type> {
 		const snapshotId = selector;
@@ -46,7 +34,7 @@ export class Store<State extends object> {
 			const data = selector(this.state);
 			const onUpdate = () => {
 				this.snapshotManager.invalidateSnapshot(snapshotId);
-				this.notifySubscribers();
+				this.events.emit("update");
 			};
 
 			snapshot = this.snapshotManager.createSnapshot(snapshotId, data);

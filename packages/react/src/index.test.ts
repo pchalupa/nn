@@ -7,8 +7,7 @@ describe("useStore", () => {
 			schema: () => ({}),
 		});
 
-		expect(store).toHaveProperty("getSnapshotOf");
-		expect(store).toHaveProperty("addSubscriber");
+		expect(store).toHaveProperty("events");
 		expect(store).toMatchInlineSnapshot(`
 			Store {
 			  "events": EventEmitter {

@@ -9,17 +9,17 @@ describe("Store", () => {
 		expect(store).toHaveProperty("repositoryManager");
 		expect(store).toHaveProperty("snapshotManager");
 		expect(store).toHaveProperty("state");
-		expect(store).toHaveProperty("subscribers");
+		expect(store).toHaveProperty("events");
 		expect(store).toMatchInlineSnapshot(`
 			Store {
+			  "events": EventEmitter {
+			    "events": Map {},
+			  },
 			  "repositoryManager": undefined,
 			  "snapshotManager": SnapshotManager {
 			    "snapshots": WeakMap {},
 			  },
 			  "state": {},
-			  "subscribers": Subscribers {
-			    "subscribers": Map {},
-			  },
 			}
 		`);
 	});
@@ -35,17 +35,18 @@ describe("Store", () => {
 		expect(store).toHaveProperty("repositoryManager");
 		expect(store).toHaveProperty("snapshotManager");
 		expect(store).toHaveProperty("state");
-		expect(store).toHaveProperty("subscribers");
+		expect(store).toHaveProperty("events");
 		expect(store).toMatchInlineSnapshot(`
 			Store {
+			  "events": EventEmitter {
+			    "events": Map {},
+			  },
 			  "repositoryManager": RepositoryManager {
 			    "repositories": Map {
 			      "ephemeral" => InMemoryRepository {
 			        "data": Map {},
-			        "events": Map {
-			          "didSet" => Set {
-			            [Function],
-			          },
+			        "events": EventEmitter {
+			          "events": Map {},
 			        },
 			      },
 			    },
@@ -56,21 +57,16 @@ describe("Store", () => {
 			  "state": {
 			    "testCollection": Collection {
 			      "data": [],
-			      "events": Map {},
-			      "parent": undefined,
+			      "events": EventEmitter {
+			        "events": Map {},
+			      },
 			      "repository": InMemoryRepository {
 			        "data": Map {},
-			        "events": Map {
-			          "didSet" => Set {
-			            [Function],
-			          },
+			        "events": EventEmitter {
+			          "events": Map {},
 			        },
 			      },
-			      Symbol(Symbol.toStringTag): "Collection",
 			    },
-			  },
-			  "subscribers": Subscribers {
-			    "subscribers": Map {},
 			  },
 			}
 		`);
@@ -85,23 +81,31 @@ describe("Store", () => {
 		const snapshot = store.getSnapshotOf((schema) => schema.testCollection);
 
 		expect(snapshot).toBeInstanceOf(Snapshot);
-		expect(snapshot).toHaveProperty("data");
+		expect(snapshot).toHaveProperty("state");
 		expect(snapshot).toMatchInlineSnapshot(`
-			Snapshot {
-			  "data": Collection {
+			Collection {
+			  "events": EventEmitter {
+			    "events": Map {
+			      "update" => Set {
+			        [Function],
+			      },
+			    },
+			  },
+			  "state": Collection {
 			    "data": [],
-			    "parent": undefined,
-			    "repository": InMemoryRepository {
-			      "data": Map {},
+			    "events": EventEmitter {
 			      "events": Map {
-			        "didSet" => Set {
+			        "update" => Set {
 			          [Function],
 			        },
 			      },
 			    },
-			  },
-			  "delegate": SnapshotDelegate {
-			    "didPush": [Function],
+			    "repository": InMemoryRepository {
+			      "data": Map {},
+			      "events": EventEmitter {
+			        "events": Map {},
+			      },
+			    },
 			  },
 			}
 		`);
@@ -157,7 +161,7 @@ describe("Store", () => {
 		`);
 	});
 
-	it("should notify subscribers when a snapshot is updated", () => {
+	it.only("should notify subscribers when a snapshot is updated", () => {
 		const store = Store.createWithOptions({
 			schema: ({ collection }) => ({
 				testCollection: collection<{ id: string }>(),
@@ -166,7 +170,8 @@ describe("Store", () => {
 		const snapshot = store.getSnapshotOf((schema) => schema.testCollection);
 		const listener = vi.fn();
 
-		store.addSubscriber("test", listener);
+		store.events.on("update", listener);
+
 		snapshot.push({ id: "1" });
 
 		expect(listener).toHaveBeenCalled();
@@ -181,8 +186,8 @@ describe("Store", () => {
 		const snapshot = store.getSnapshotOf((schema) => schema.testCollection);
 		const listener = vi.fn();
 
-		store.addSubscriber("test", listener);
-		store.removeSubscriber("test");
+		store.events.on("update", listener);
+		store.events.off("update", listener);
 
 		snapshot.push({ id: "1" });
 

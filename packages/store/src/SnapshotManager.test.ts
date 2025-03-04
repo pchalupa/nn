@@ -22,19 +22,10 @@ describe("SnapshotManager", () => {
 		const snapshot = snapshotManager.createSnapshot(id, {});
 
 		expect(snapshotManager.getSnapshot(id)).toBe(snapshot);
-		expect(snapshot).toHaveProperty("data", {});
+		expect(snapshot).toHaveProperty("state", {});
 		expect(snapshotManager).toMatchInlineSnapshot(`
 			SnapshotManager {
-			  "snapshots": Map {
-			    "test" => {
-			      "data": {},
-			      "events": Map {
-			        "invalidated" => Set {
-			          [Function],
-			        },
-			      },
-			    },
-			  },
+			  "snapshots": WeakMap {},
 			}
 		`);
 	});

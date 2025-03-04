@@ -28,7 +28,7 @@ describe("InMemoryRepository", () => {
 		const repository = new InMemoryRepository();
 		const listener = vi.fn();
 
-		repository.on("didSet", listener);
+		repository.events.on("didSet", listener);
 		repository.set("test", "value");
 
 		expect(listener).toHaveBeenCalledWith("test", "value");

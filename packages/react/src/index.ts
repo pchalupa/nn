@@ -11,7 +11,7 @@ export const createStore = Store.createWithOptions;
 export function use<Schema extends object>(store: Store<Schema>) {
 	return function useStore<Type>(selector: Selector<Schema, Type>) {
 		const selectorFn = useRef(selector);
-		const subscribeFn = useRef(subscribe("update", store));
+		const subscribeFn = useRef(subscribe(store));
 		const getSnapshotFn = useRef(getSnapshot(selectorFn.current, store));
 
 		// TODO: get snapshot id here

@@ -6,6 +6,7 @@
 		"esModuleInterop": true,
 		"target": "ES2022",
 		"module": "ES2022",
-		"moduleResolution": "Bundler"
+		"moduleResolution": "Bundler",
+		"skipDefaultLibCheck": true
 	}
 }

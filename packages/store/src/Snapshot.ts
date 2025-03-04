@@ -1,17 +1,16 @@
 import { EventEmitter } from "@nn/event-emitter";
-import type { Collection } from "./Collection";
 
-export class Snapshot<Type extends Collection<unknown>> extends EventEmitter<{ invalidated: [] }> {
-	private constructor(private state: Type) {
-		super();
-	}
+export class Snapshot<State extends { toString(): string }> {
+	events = new EventEmitter<{ invalidated: [] }>();
+
+	private constructor(private state: State) {}
 
 	get id() {
 		return this.state.toString();
 	}
 
-	static createSnapshot<Type>(state: Type) {
-		const snapshot = new Snapshot<Type>(state);
+	static createSnapshot<State extends { toString(): string }>(state: State) {
+		const snapshot = new Snapshot<State>(state);
 
 		const proxy = new Proxy(snapshot, {
 			get(target, prop, receiver) {

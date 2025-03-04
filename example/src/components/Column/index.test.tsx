@@ -28,4 +28,14 @@ describe("Column", () => {
 
 		expect(screen.getByText("todo")).toBeTruthy();
 	});
+
+	it("should add 10 tickets", async () => {
+		setup();
+
+		for (let i = 1; i < 10; i++) {
+			await act(() => user.click(screen.getByRole("button")));
+		}
+
+		expect(screen.getAllByText("todo")).toHaveLength(10);
+	});
 });

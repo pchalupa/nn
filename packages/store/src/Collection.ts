@@ -14,10 +14,6 @@ export class Collection<Value extends { id: string }> {
 		return this.data.length;
 	}
 
-	once(event: "update", listener: () => void): void {
-		this.events.once(event, listener);
-	}
-
 	toString(): string {
 		return this.data.toString();
 	}

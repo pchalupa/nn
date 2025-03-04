@@ -7,6 +7,7 @@ export type Selector<Schema, Slice = unknown> = (store: Schema) => Slice;
 
 export const createStore = Store.createWithOptions;
 
+// TODO: look at the react use hook
 export function use<Schema extends object>(store: Store<Schema>) {
 	return function useStore<Type>(selector: Selector<Schema, Type>) {
 		const selectorFn = useRef(selector);
@@ -14,6 +15,7 @@ export function use<Schema extends object>(store: Store<Schema>) {
 		const getSnapshotFn = useRef(getSnapshot(selectorFn.current, store));
 
 		// TODO: get snapshot id here
+		// TODO: Add server get snapshot
 		useSyncExternalStore(subscribeFn.current, getSnapshotFn.current);
 
 		const snapshot = store.getSnapshotOf<Type>(selectorFn.current);

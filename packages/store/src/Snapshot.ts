@@ -1,11 +1,13 @@
 import { EventEmitter } from "@nn/event-emitter";
 
 export class Snapshot<State> {
-	// Temporary solution
-	readonly id = Math.random().toString(36).slice(2);
 	events = new EventEmitter<{ invalidated: [] }>();
 
 	private constructor(private state: State) {}
+
+	get id() {
+		return this.state?.toString();
+	}
 
 	static createSnapshot<State>(state: State) {
 		const snapshot = new Snapshot<State>(state);

@@ -58,7 +58,7 @@ export class Store<State extends object> {
 
 			repositoryManager.registerRepository(alias, repository);
 
-			res[alias] = repositoryManager.getRepository(alias)!;
+			res[alias] = repositoryManager.getRepository(alias);
 
 			return res;
 		}, {});

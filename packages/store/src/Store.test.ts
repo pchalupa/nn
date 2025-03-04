@@ -6,7 +6,6 @@ describe("Store", () => {
 	it("should create a store", () => {
 		const store = new Store({});
 
-		expect(store).toHaveProperty("repositoryManager");
 		expect(store).toHaveProperty("snapshotManager");
 		expect(store).toHaveProperty("state");
 		expect(store).toHaveProperty("events");
@@ -15,7 +14,6 @@ describe("Store", () => {
 			  "events": EventEmitter {
 			    "events": Map {},
 			  },
-			  "repositoryManager": undefined,
 			  "snapshotManager": SnapshotManager {
 			    "snapshots": WeakMap {},
 			  },
@@ -26,13 +24,12 @@ describe("Store", () => {
 
 	it("should create a store with a factory method", () => {
 		const store = Store.createWithOptions({
-			schema: ({ collection }, { ephemeral }) => ({
-				testCollection: collection({ repository: ephemeral }),
+			schema: ({ collection }) => ({
+				testCollection: collection(),
 			}),
 		});
 
 		expect(store).toBeInstanceOf(Store);
-		expect(store).toHaveProperty("repositoryManager");
 		expect(store).toHaveProperty("snapshotManager");
 		expect(store).toHaveProperty("state");
 		expect(store).toHaveProperty("events");
@@ -40,16 +37,6 @@ describe("Store", () => {
 			Store {
 			  "events": EventEmitter {
 			    "events": Map {},
-			  },
-			  "repositoryManager": RepositoryManager {
-			    "repositories": Map {
-			      "ephemeral" => InMemoryRepository {
-			        "data": Map {},
-			        "events": EventEmitter {
-			          "events": Map {},
-			        },
-			      },
-			    },
 			  },
 			  "snapshotManager": SnapshotManager {
 			    "snapshots": WeakMap {},

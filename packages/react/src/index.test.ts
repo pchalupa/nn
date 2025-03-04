@@ -13,16 +13,6 @@ describe("useStore", () => {
 			  "events": EventEmitter {
 			    "events": Map {},
 			  },
-			  "repositoryManager": RepositoryManager {
-			    "repositories": Map {
-			      "ephemeral" => InMemoryRepository {
-			        "data": Map {},
-			        "events": EventEmitter {
-			          "events": Map {},
-			        },
-			      },
-			    },
-			  },
 			  "snapshotManager": SnapshotManager {
 			    "snapshots": WeakMap {},
 			  },

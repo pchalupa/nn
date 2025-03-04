@@ -76,16 +76,16 @@ describe("Store", () => {
 			      "update" => Set {
 			        [Function],
 			      },
+			      "invalidated" => Set {
+			        [Function],
+			        [Function],
+			      },
 			    },
 			  },
 			  "state": Collection {
 			    "data": [],
 			    "events": EventEmitter {
-			      "events": Map {
-			        "update" => Set {
-			          [Function],
-			        },
-			      },
+			      "events": Map {},
 			    },
 			    "repository": InMemoryRepository {
 			      "data": Map {},
@@ -113,6 +113,7 @@ describe("Store", () => {
 			  "events": EventEmitter {
 			    "events": Map {
 			      "update" => Set {},
+			      "invalidated" => Set {},
 			    },
 			  },
 			  "state": Slice {
@@ -138,9 +139,7 @@ describe("Store", () => {
 			    },
 			    "data": [],
 			    "events": EventEmitter {
-			      "events": Map {
-			        "update" => Set {},
-			      },
+			      "events": Map {},
 			    },
 			    "repository": undefined,
 			  },
@@ -154,7 +153,7 @@ describe("Store", () => {
 				testCollection: collection<{ id: string }>(),
 			}),
 		});
-		const snapshot = store.getSnapshotOf((schema) => schema.testCollection.filter((item) => item.id === "1"));
+		const snapshot = store.getSnapshotOf((schema) => schema.testCollection);
 		const listener = vi.fn();
 
 		store.events.on("update", listener);

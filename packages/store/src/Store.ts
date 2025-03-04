@@ -15,19 +15,16 @@ export class Store<State extends object> {
 
 	constructor(private state: State) {}
 
-	getSnapshotOf<Type>(selector: (state: State) => Type): Snapshot<Type> {
+	getSnapshotOf<Type>(selector: (state: State) => Type) {
 		const snapshotId = selector;
 		let snapshot = this.snapshotManager.getSnapshot<Type>(snapshotId);
 
 		if (!snapshot) {
-			const data = selector(this.state);
-			const onUpdate = () => {
-				this.snapshotManager.invalidateSnapshot(snapshotId);
-				this.events.emit("update");
-			};
+			const state = selector(this.state);
+			const handleInvalidated = () => this.events.emit("update");
 
-			snapshot = this.snapshotManager.createSnapshot(snapshotId, data);
-			snapshot.events.once("update", onUpdate);
+			snapshot = this.snapshotManager.createSnapshot(snapshotId, state);
+			snapshot.events.once("invalidated", handleInvalidated);
 		}
 
 		return snapshot;

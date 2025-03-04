@@ -6,7 +6,7 @@ export class Collection<Value extends { id: string }> {
 	public events = new EventEmitter<{ update: [] }>();
 
 	constructor(
-		private data: Reference<Value>[] = [],
+		private data: Value[] = [],
 		private repository?: Repository<Value>,
 	) {}
 
@@ -24,17 +24,16 @@ export class Collection<Value extends { id: string }> {
 
 		this.repository?.set(id, value);
 		this.data.push(reference);
-		// TODO: Emit update event
-		// this.events.emit("update");
+		this.events.emit("update");
 	}
 
-	map<Type>(callback: (value: Reference<Value>, index: number) => Type): Type[] {
+	map<Type>(callback: (value: Value, index: number) => Type): Type[] {
 		const data = this.data.map(callback);
 
 		return data;
 	}
 
-	filter(predicate: (data: Reference<Value>) => boolean): Collection<Value> {
+	filter(predicate: (data: Value) => boolean): Collection<Value> {
 		const data = this.data.filter(predicate);
 		const slice = new Slice<Value>(data, this);
 
@@ -44,7 +43,7 @@ export class Collection<Value extends { id: string }> {
 
 export class Slice<Value extends { id: string }> extends Collection<Value> {
 	constructor(
-		data: Reference<Value>[],
+		data: Value[],
 		private collection: Collection<Value>,
 	) {
 		super(data);

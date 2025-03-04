@@ -1,7 +1,8 @@
 import { EventEmitter } from "@nn/event-emitter";
 
 export class Snapshot<State> {
-	events = new EventEmitter<{ invalidated: [] }>();
+	// TODO: Remove update type
+	events = new EventEmitter<{ invalidated: []; update: [] }>();
 
 	private constructor(private state: State) {}
 
@@ -9,13 +10,18 @@ export class Snapshot<State> {
 		return this.state?.toString();
 	}
 
-	static createSnapshot<State>(state: State) {
+	static createSnapshot<State>(state: State): Snapshot<State> {
 		const snapshot = new Snapshot<State>(state);
+		const handleUpdate = () => snapshot.events.emit("invalidated");
+
+		snapshot.events.once("update", handleUpdate);
 
 		const proxy = new Proxy(snapshot, {
 			get(target, prop, receiver) {
 				// Snapshot properties
-				if (prop === "id" || prop === "state" || prop === "on") return Reflect.get(target, prop, receiver);
+				if (prop === "id" || prop === "state" || prop === "events") {
+					return Reflect.get(target, prop, receiver);
+				}
 
 				if (target.state instanceof Object) return Reflect.get(target.state, prop, receiver);
 			},

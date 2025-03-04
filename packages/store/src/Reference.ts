@@ -1,8 +1,8 @@
-export class Reference<Value extends object> {
+export class Reference<Value> {
 	constructor(public resolve: () => Value | undefined) {}
 
-	static createReferenceFor<Type extends object>(dataAccessor: () => Type | undefined): Reference<Type> & Type {
-		const reference = new Reference<Type>(dataAccessor);
+	static createReferenceFor<Value>(dataAccessor: () => Value | undefined): Reference<Value> & Value {
+		const reference = new Reference<Value>(dataAccessor);
 
 		const proxy = new Proxy(reference, {
 			get(target, prop, receiver) {
@@ -14,6 +14,6 @@ export class Reference<Value extends object> {
 		});
 
 		// TODO: Avoid type casting
-		return proxy as Reference<Type> & Type;
+		return proxy as Reference<Value> & Value;
 	}
 }

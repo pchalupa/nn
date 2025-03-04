@@ -7,7 +7,7 @@
 	"license": "MIT",
 	"scripts": {
 		"dev": "pnpm -r run dev",
-		"ts:check": "pnpm -r ts:check",
+		"ts:check": "pnpm -r --parallel ts:check",
 		"code:check": "biome check .",
 		"spellcheck": "cspell --no-progress **/*.{ts,tsx,json,md,tex}",
 		"test": "vitest",

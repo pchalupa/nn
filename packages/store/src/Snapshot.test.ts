@@ -12,7 +12,11 @@ describe("Snapshot", () => {
 		expect(snapshot).toMatchInlineSnapshot(`
 			Collection {
 			  "events": EventEmitter {
-			    "events": Map {},
+			    "events": Map {
+			      "update" => Set {
+			        [Function],
+			      },
+			    },
 			  },
 			  "state": Collection {
 			    "data": [],

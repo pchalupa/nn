@@ -161,13 +161,13 @@ describe("Store", () => {
 		`);
 	});
 
-	it.only("should notify subscribers when a snapshot is updated", () => {
+	it("should notify subscribers when a snapshot is updated", () => {
 		const store = Store.createWithOptions({
 			schema: ({ collection }) => ({
 				testCollection: collection<{ id: string }>(),
 			}),
 		});
-		const snapshot = store.getSnapshotOf((schema) => schema.testCollection);
+		const snapshot = store.getSnapshotOf((schema) => schema.testCollection.filter((item) => item.id === "1"));
 		const listener = vi.fn();
 
 		store.events.on("update", listener);

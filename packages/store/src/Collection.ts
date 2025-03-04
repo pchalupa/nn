@@ -24,6 +24,8 @@ export class Collection<Value extends { id: string }> {
 
 		this.repository?.set(id, value);
 		this.data.push(reference);
+		// TODO: Emit update event
+		// this.events.emit("update");
 	}
 
 	map<Type>(callback: (value: Reference<Value>, index: number) => Type): Type[] {

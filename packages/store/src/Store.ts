@@ -1,9 +1,9 @@
+import { EventEmitter } from "@nn/event-emitter";
 import { InMemoryRepository } from "@nn/in-memory-repository";
 import type { Repository } from "@nn/repository";
 import { Collection } from "./Collection";
 import type { Snapshot } from "./Snapshot";
 import { SnapshotManager } from "./SnapshotManager";
-import { Subscribers } from "./Subscribers";
 
 type RepositoryOption<Provider extends Repository = unknown> = {
 	alias: string;
@@ -19,28 +19,28 @@ type Entities = { collection: () => Collection<unknown> };
 
 export class Store<State extends object> {
 	private snapshotManager = new SnapshotManager();
-	private subscribers: Subscribers = new Subscribers();
+	private events = new EventEmitter<{ update: [] }>();
 
 	constructor(
 		private state: State,
 		private repositoryManager?: RepositoryManager,
 	) {}
 
-	addSubscriber(key: string, listener: () => void) {
-		this.subscribers.set(key, listener);
+	addSubscriber(key: "update", listener: () => void) {
+		this.events.on(key, listener);
 	}
 
-	removeSubscriber(key: string) {
-		this.subscribers.delete(key);
+	removeSubscriber(key: "update", listener: () => void) {
+		this.events.off(key, listener);
 	}
 
 	notifySubscribers() {
-		this.subscribers.forEach((listener) => listener());
+		this.events.emit("update");
 	}
 
 	getSnapshotOf<Type>(selector: (state: State) => Type): Snapshot<Type> {
 		const snapshotId = selector;
-		let snapshot: Snapshot<Type> | unknown = this.snapshotManager.getSnapshot(snapshotId);
+		let snapshot = this.snapshotManager.getSnapshot<Type>(snapshotId);
 
 		if (!snapshot) {
 			const data = selector(this.state);
@@ -50,7 +50,7 @@ export class Store<State extends object> {
 			};
 
 			snapshot = this.snapshotManager.createSnapshot(snapshotId, data);
-			snapshot.once("update", onUpdate);
+			snapshot.events.once("update", onUpdate);
 		}
 
 		return snapshot;
@@ -78,7 +78,7 @@ export class Store<State extends object> {
 		const state = options.schema(
 			{
 				collection: <T>(options: { data?: T; repository: Repository }) => {
-					const repository = options?.repository ?? repos.ephemeral;
+					const repository = options?.repository ?? repositoryManager.getRepository("ephemeral");
 					const collection = new Collection<T>(options?.data, repository);
 
 					return collection;

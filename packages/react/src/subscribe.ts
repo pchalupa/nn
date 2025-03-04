@@ -4,6 +4,6 @@ export function subscribe<Schema extends object>(key: string, store: Store<Schem
 	return (listener: () => void) => {
 		store.addSubscriber(key, listener);
 
-		return () => store.removeSubscriber(key);
+		return () => store.removeSubscriber(key, listener);
 	};
 }

@@ -11,11 +11,16 @@ describe("useStore", () => {
 		expect(store).toHaveProperty("addSubscriber");
 		expect(store).toMatchInlineSnapshot(`
 			Store {
+			  "events": EventEmitter {
+			    "events": Map {},
+			  },
 			  "repositoryManager": RepositoryManager {
 			    "repositories": Map {
 			      "ephemeral" => InMemoryRepository {
 			        "data": Map {},
-			        "events": Map {},
+			        "events": EventEmitter {
+			          "events": Map {},
+			        },
 			      },
 			    },
 			  },
@@ -23,9 +28,6 @@ describe("useStore", () => {
 			    "snapshots": WeakMap {},
 			  },
 			  "state": {},
-			  "subscribers": Subscribers {
-			    "subscribers": Map {},
-			  },
 			}
 		`);
 	});

@@ -11,13 +11,15 @@ describe("Snapshot", () => {
 		expect(snapshot).toHaveProperty("state");
 		expect(snapshot).toMatchInlineSnapshot(`
 			Collection {
-			  "events": Map {},
+			  "events": EventEmitter {
+			    "events": Map {},
+			  },
 			  "state": Collection {
 			    "data": [],
-			    "events": Map {},
-			    "parent": undefined,
+			    "events": EventEmitter {
+			      "events": Map {},
+			    },
 			    "repository": undefined,
-			    Symbol(Symbol.toStringTag): "Collection",
 			  },
 			}
 		`);

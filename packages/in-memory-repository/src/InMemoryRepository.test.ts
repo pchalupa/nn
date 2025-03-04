@@ -11,7 +11,9 @@ describe("InMemoryRepository", () => {
 		expect(repository).toMatchInlineSnapshot(`
 			InMemoryRepository {
 			  "data": Map {},
-			  "events": Map {},
+			  "events": EventEmitter {
+			    "events": Map {},
+			  },
 			}
 		`);
 	});

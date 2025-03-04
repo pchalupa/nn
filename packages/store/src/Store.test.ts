@@ -118,49 +118,40 @@ describe("Store", () => {
 		snapshot.push({ id: "1" });
 
 		expect(snapshot).toMatchInlineSnapshot(`
-			Collection {
-			  "events": Map {
-			    "update" => Set {
-			      [Function],
-			    },
-			    "invalidated" => Set {
-			      [Function],
+			Slice {
+			  "events": EventEmitter {
+			    "events": Map {
+			      "update" => Set {},
 			    },
 			  },
-			  "state": Collection {
-			    "data": [],
-			    "events": Map {
-			      "update" => Set {
-			        [Function],
-			      },
-			      "invalidated" => Set {
-			        [Function],
-			      },
-			    },
-			    "parent": Collection {
+			  "state": Slice {
+			    "collection": Collection {
 			      "data": [
 			        {
 			          "resolve": undefined,
 			        },
 			      ],
-			      "events": Map {},
-			      "parent": undefined,
+			      "events": EventEmitter {
+			        "events": Map {},
+			      },
 			      "repository": InMemoryRepository {
 			        "data": Map {
 			          "1" => {
 			            "id": "1",
 			          },
 			        },
-			        "events": Map {
-			          "didSet" => Set {
-			            [Function],
-			          },
+			        "events": EventEmitter {
+			          "events": Map {},
 			        },
 			      },
-			      Symbol(Symbol.toStringTag): "Collection",
+			    },
+			    "data": [],
+			    "events": EventEmitter {
+			      "events": Map {
+			        "update" => Set {},
+			      },
 			    },
 			    "repository": undefined,
-			    Symbol(Symbol.toStringTag): "Collection",
 			  },
 			}
 		`);

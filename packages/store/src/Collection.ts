@@ -14,10 +14,6 @@ export class Collection<Value extends { id: string }> {
 		return this.data.length;
 	}
 
-	toString(): string {
-		return this.data.toString();
-	}
-
 	push(value: Value): void {
 		const id = value.id;
 		const reference = Reference.createReferenceFor(() => this.repository?.get(id));

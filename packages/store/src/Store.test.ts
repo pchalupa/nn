@@ -120,7 +120,7 @@ describe("Store", () => {
 			    "collection": Collection {
 			      "data": [
 			        {
-			          "resolve": undefined,
+			          "resolve": [Function],
 			        },
 			      ],
 			      "events": EventEmitter {

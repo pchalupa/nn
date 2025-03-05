@@ -2,17 +2,6 @@ import { describe, expect, it, vi } from "vitest";
 import { Reference } from "./Reference";
 
 describe("Reference", () => {
-	it("should create a reference", () => {
-		const reference = new Reference(() => "test");
-
-		expect(reference).toHaveProperty("resolve");
-		expect(reference).toMatchInlineSnapshot(`
-			Reference {
-			  "resolve": [Function],
-			}
-		`);
-	});
-
 	it("should create a reference using factory method", () => {
 		const reference = Reference.createReferenceFor(() => ({
 			id: "test",
@@ -22,16 +11,18 @@ describe("Reference", () => {
 		expect(reference).toHaveProperty("resolve");
 		expect(reference).toMatchInlineSnapshot(`
 			{
-			  "resolve": undefined,
+			  "resolve": [Function],
 			}
 		`);
 	});
 
 	it("should resolve a reference", () => {
-		const dataAccessor = vi.fn(() => "test");
-		const reference = new Reference(dataAccessor);
+		const dataAccessor = vi.fn(() => ({
+			id: "test",
+		}));
+		const reference = Reference.createReferenceFor(dataAccessor);
 
-		expect(reference.resolve()).toBe("test");
+		expect(reference.resolve()).toStrictEqual({ id: "test" });
 		expect(dataAccessor).toHaveBeenCalled();
 	});
 

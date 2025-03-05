@@ -11,13 +11,13 @@ interface ColumnProps {
 export const Column = ({ title, status }: ColumnProps) => {
 	const data = useStore((store) => store.tickets.filter((ticket) => ticket.status === status));
 
-	const handleOnCLick = () => {
-		data.push({ id: Math.random().toString(), title: status, status, description: "test" });
+	const handleAddClick = () => {
+		data.push({ id: crypto.randomUUID(), title: status, status, description: "test" });
 	};
 
 	return (
 		<section className="flex w-full flex-col gap-y-2 rounded bg-sky-100 px-2 py-4">
-			<Header title={title} onAddClick={handleOnCLick} />
+			<Header title={title} onAddClick={handleAddClick} />
 			<hr className="border-sky-600" />
 			<div className="flex flex-col gap-y-2">
 				{data.map((data) => (

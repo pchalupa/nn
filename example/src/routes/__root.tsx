@@ -6,9 +6,11 @@ const Stats = () => {
 
 	return (
 		<div className="flex flex-col gap-y-2">
-			<h3 className="text-sm uppercase">Stats</h3>
-			<hr className="border-sky-600" />
-			<div className="flex flex-col gap-y-2">{data.length}</div>
+			<h3 className="text-l">Stats</h3>
+			<p className="flex flex-row gap-x-2">
+				<span>Total Tickets:</span>
+				<span>{data.length}</span>
+			</p>
 		</div>
 	);
 };
@@ -19,8 +21,11 @@ const RootComponent = () => (
 			<Link to="/">
 				<h1 className="p-4 font-bold text-2xl">Kanban Board</h1>
 			</Link>
+			<hr className="border-sky-600" />
+			<div className="px-4 py-2">
+				<Link to="/backlog">Backlog</Link>
+			</div>
 			<Stats />
-			<Link to="/backlog">Backlog</Link>
 		</div>
 		<Outlet />
 	</div>

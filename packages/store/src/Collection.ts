@@ -19,11 +19,16 @@ export class Collection<Value extends { id: string }> {
 	}
 
 	push(value: Value): void {
-		const id = value.id;
-		const reference = Reference.createReferenceFor(() => this.repository?.get(id));
+		if (this.repository) {
+			const id = value.id;
+			const reference = Reference.createReferenceFor(() => this.repository?.get(id));
 
-		this.repository?.set(id, value);
-		this.data.push(reference);
+			this.repository?.set(id, value);
+			this.data.push(reference);
+		} else {
+			this.data.push(value);
+		}
+
 		this.events.emit("update");
 	}
 

@@ -26,7 +26,7 @@ describe("Collection", () => {
 			Collection {
 			  "data": [
 			    {
-			      "resolve": [Function],
+			      "id": "1",
 			    },
 			  ],
 			  "events": EventEmitter {
@@ -70,10 +70,10 @@ describe("Collection", () => {
 			  "collection": Collection {
 			    "data": [
 			      {
-			        "resolve": [Function],
+			        "id": "1",
 			      },
 			      {
-			        "resolve": [Function],
+			        "id": "2",
 			      },
 			    ],
 			    "events": EventEmitter {
@@ -81,7 +81,11 @@ describe("Collection", () => {
 			    },
 			    "repository": undefined,
 			  },
-			  "data": [],
+			  "data": [
+			    {
+			      "id": "1",
+			    },
+			  ],
 			  "events": EventEmitter {
 			    "events": Map {},
 			  },

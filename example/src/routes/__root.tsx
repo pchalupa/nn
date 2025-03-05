@@ -6,7 +6,7 @@ const Stats = () => {
 
 	return (
 		<div className="flex flex-col gap-y-2">
-			<h3 className="text-l">Stats</h3>
+			<h3 className="text-lg">Stats</h3>
 			<p className="flex flex-row gap-x-2">
 				<span>Total Tickets:</span>
 				<span>{data.length}</span>

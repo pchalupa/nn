@@ -33,7 +33,7 @@ export class Collection<Value extends { id: string }> {
 		return data;
 	}
 
-	filter(predicate: (data: Value) => boolean): Collection<Value> {
+	filter(predicate: (data: Value) => boolean): Slice<Value> {
 		const data = this.data.filter(predicate);
 		const slice = new Slice<Value>(data, this);
 

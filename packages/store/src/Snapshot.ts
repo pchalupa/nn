@@ -23,7 +23,9 @@ export class Snapshot<State> {
 					return Reflect.get(target, prop, receiver);
 				}
 
-				if (target.state instanceof Object) return Reflect.get(target.state, prop, receiver);
+				if (target.state instanceof Object && prop in target.state) return Reflect.get(target.state, prop, receiver);
+
+				return undefined;
 			},
 		});
 

@@ -4,8 +4,9 @@
 	"compilerOptions": {
 		"strict": true,
 		"esModuleInterop": true,
-		"target": "ESNext",
-		"module": "ESNext",
-		"moduleResolution": "Bundler"
+		"target": "ES2022",
+		"module": "ES2022",
+		"moduleResolution": "Bundler",
+		"skipDefaultLibCheck": true
 	}
 }

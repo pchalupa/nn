@@ -1,28 +1,25 @@
 {
-	"name": "@nn/entities",
+	"name": "@nn/repository",
 	"version": "0.0.0",
-	"description": "Data entities",
+	"description": "Data repository",
 	"keywords": [],
 	"repository": "https://github.com/pchalupa/nn",
-	"homepage": "https://github.com/pchalupa/nn/packages/entities#readme",
+	"homepage": "https://github.com/pchalupa/nn/packages/repository#readme",
 	"bugs": {
 		"url": "https://github.com/pchalupa/nn/issues"
 	},
 	"author": "pchalupa <chalupa.petr93@gmail.com> (https://github.com/pchalupa)",
 	"license": "MIT",
 	"exports": {
-		"./*": {
-			"import": "./src/*",
-			"require": "./src/*"
+		".": {
+			"import": "./src/Repository.ts"
 		}
 	},
 	"scripts": {
 		"ts:check": "tsc --noEmit"
 	},
-	"dependencies": {
-		"@nn/typescript-config": "workspace:"
-	},
-	"peerDependencies": {
+	"devDependencies": {
+		"@nn/typescript-config": "workspace:",
 		"typescript": "catalog:"
 	}
 }

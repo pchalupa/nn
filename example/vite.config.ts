@@ -6,6 +6,9 @@ import { defineConfig } from "vite";
 
 export default defineConfig({
 	plugins: [TanStackRouterVite(), react(), tailwindcss()],
+	esbuild: {
+		target: "es2022",
+	},
 	test: {
 		globals: true,
 		environment: "jsdom",

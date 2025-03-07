@@ -11,9 +11,16 @@
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
+import { Route as BacklogImport } from './routes/backlog'
 import { Route as IndexImport } from './routes/index'
 
 // Create/Update Routes
+
+const BacklogRoute = BacklogImport.update({
+  id: '/backlog',
+  path: '/backlog',
+  getParentRoute: () => rootRoute,
+} as any)
 
 const IndexRoute = IndexImport.update({
   id: '/',
@@ -32,6 +39,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexImport
       parentRoute: typeof rootRoute
     }
+    '/backlog': {
+      id: '/backlog'
+      path: '/backlog'
+      fullPath: '/backlog'
+      preLoaderRoute: typeof BacklogImport
+      parentRoute: typeof rootRoute
+    }
   }
 }
 
@@ -39,32 +53,37 @@ declare module '@tanstack/react-router' {
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/backlog': typeof BacklogRoute
 }
 
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/backlog': typeof BacklogRoute
 }
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexRoute
+  '/backlog': typeof BacklogRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths: '/' | '/backlog'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to: '/' | '/backlog'
+  id: '__root__' | '/' | '/backlog'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  BacklogRoute: typeof BacklogRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  BacklogRoute: BacklogRoute,
 }
 
 export const routeTree = rootRoute
@@ -77,11 +96,15 @@ export const routeTree = rootRoute
     "__root__": {
       "filePath": "__root.tsx",
       "children": [
-        "/"
+        "/",
+        "/backlog"
       ]
     },
     "/": {
       "filePath": "index.tsx"
+    },
+    "/backlog": {
+      "filePath": "backlog.tsx"
     }
   }
 }

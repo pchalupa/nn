@@ -3,7 +3,7 @@
 	"version": "0.2",
 	"language": "en",
 	"dictionaries": ["softwareTerms"],
-	"words": [],
+	"words": ["vitest"],
 	"ignorePaths": [],
 	"useGitignore": true
 }

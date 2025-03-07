@@ -1,0 +1,36 @@
+{
+	"name": "@nn/react",
+	"version": "0.0.0",
+	"description": "React state management library",
+	"keywords": [],
+	"repository": "https://github.com/pchalupa/nn",
+	"homepage": "https://github.com/pchalupa/nn/packages/time#readme",
+	"bugs": {
+		"url": "https://github.com/pchalupa/nn/issues"
+	},
+	"author": "pchalupa <chalupa.petr93@gmail.com> (https://github.com/pchalupa)",
+	"license": "MIT",
+	"exports": {
+		".": {
+			"import": "./src/index.ts"
+		}
+	},
+	"scripts": {
+		"ts:check": "tsc --noEmit",
+		"test": "vitest run",
+		"test:watch": "vitest watch"
+	},
+	"dependencies": {
+		"@nn/store": "workspace:*"
+	},
+	"devDependencies": {
+		"@nn/typescript-config": "workspace:",
+		"@types/react": "catalog:",
+		"@vitest/coverage-v8": "catalog:",
+		"typescript": "catalog:",
+		"vitest": "catalog:"
+	},
+	"peerDependencies": {
+		"react": "catalog:"
+	}
+}

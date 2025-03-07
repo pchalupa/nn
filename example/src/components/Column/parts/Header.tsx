@@ -5,9 +5,9 @@ interface HeaderProps {
 	onAddClick?: () => void;
 }
 
-export const Header = ({ title, onAddClick: handleOnCLick }: HeaderProps) => (
+export const Header = ({ title, onAddClick: handleOnClick }: HeaderProps) => (
 	<div className="flex flex-row items-center justify-between">
 		<h3 className="text-sm uppercase">{title}</h3>
-		<Button text="+" onClick={handleOnCLick} />
+		<Button text="+" onClick={handleOnClick} />
 	</div>
 );

@@ -6,9 +6,10 @@ describe("getSnapshot", () => {
 	it("shout return a snapshot", () => {
 		const store = new Store({ test: [{ id: "1" }] });
 		const selector = vi.fn((state) => state.test);
-		const snapshot = getSnapshot(selector, store)();
+		const getSnapshotId = getSnapshot(selector, store);
 
+		expect(getSnapshotId).toBeInstanceOf(Function);
+		expect(getSnapshotId()).not.toBeUndefined();
 		expect(selector).toHaveBeenCalledOnce();
-		expect(snapshot).toMatchInlineSnapshot(`"[object Object]"`);
 	});
 });

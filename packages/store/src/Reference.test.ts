@@ -35,4 +35,12 @@ describe("Reference", () => {
 		expect(reference.id).toBe("test");
 		expect(dataAccessor).toHaveBeenCalled();
 	});
+
+	it("should handle undefined data", () => {
+		const dataAccessor = vi.fn(() => undefined);
+		const reference = Reference.createReferenceFor<{ id: string }>(dataAccessor);
+
+		expect(reference.id).toBeUndefined();
+		expect(dataAccessor).toHaveBeenCalled();
+	});
 });

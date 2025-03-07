@@ -3,7 +3,7 @@ import { describe, expect, it, vi } from "vitest";
 import { getSnapshot } from "./getSnapshot";
 
 describe("getSnapshot", () => {
-	it("shout return a snapshot", () => {
+	it("should return a snapshot", () => {
 		const store = new Store({ test: [{ id: "1" }] });
 		const selector = vi.fn((state) => state.test);
 		const getSnapshotId = getSnapshot(selector, store);

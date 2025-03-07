@@ -1,23 +1,20 @@
 import { Snapshot } from "./Snapshot";
 
-type StateSnapshot<State> = Snapshot<State> & State;
-
 export class SnapshotManager {
 	private snapshots = new WeakMap<object, Snapshot<unknown>>();
 
-	createSnapshot<State>(id: object, state: State) {
+	createSnapshot(id: object, state: unknown): Snapshot<unknown> {
 		const snapshot = Snapshot.createSnapshot(state);
 		const handleInvalidated = () => this.invalidateSnapshot(id);
 
 		snapshot.events.once("invalidated", handleInvalidated);
 		this.snapshots.set(id, snapshot);
 
-		return snapshot as StateSnapshot<State>;
+		return snapshot;
 	}
 
-	getSnapshot<State>(id: object) {
-		// TODO: Fix the type casting
-		return this.snapshots.get(id) as StateSnapshot<State> | undefined;
+	getSnapshot(id: object): Snapshot<unknown> | undefined {
+		return this.snapshots.get(id);
 	}
 
 	invalidateSnapshot(id: object): void {

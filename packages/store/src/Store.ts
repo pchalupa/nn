@@ -17,7 +17,7 @@ export class Store<State extends object> {
 
 	getSnapshotOf<Type>(selector: (state: State) => Type) {
 		const snapshotId = selector;
-		let snapshot = this.snapshotManager.getSnapshot<Type>(snapshotId);
+		let snapshot = this.snapshotManager.getSnapshot(snapshotId);
 
 		if (!snapshot) {
 			const state = selector(this.state);
@@ -27,7 +27,8 @@ export class Store<State extends object> {
 			snapshot.events.once("invalidated", handleInvalidated);
 		}
 
-		return snapshot;
+		// TODO: Remove type casting
+		return snapshot as Snapshot<Type> & Type;
 	}
 
 	static createWithOptions<Schema extends object>(options: Options<Schema>) {

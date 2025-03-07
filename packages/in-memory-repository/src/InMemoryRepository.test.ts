@@ -11,9 +11,6 @@ describe("InMemoryRepository", () => {
 		expect(repository).toMatchInlineSnapshot(`
 			InMemoryRepository {
 			  "data": Map {},
-			  "events": EventEmitter {
-			    "events": Map {},
-			  },
 			}
 		`);
 	});
@@ -24,15 +21,5 @@ describe("InMemoryRepository", () => {
 		repository.set("test", "value");
 
 		expect(repository.get("test")).toBe("value");
-	});
-
-	it("should emit an event when setting a value", () => {
-		const repository = new InMemoryRepository();
-		const listener = vi.fn();
-
-		repository.events.on("didSet", listener);
-		repository.set("test", "value");
-
-		expect(listener).toHaveBeenCalledWith("test", "value");
 	});
 });

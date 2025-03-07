@@ -163,10 +163,6 @@ importers:
         version: 3.0.7(@types/node@22.9.0)(jiti@2.4.2)(jsdom@25.0.1)(lightningcss@1.29.1)(tsx@4.19.2)(yaml@2.7.0)
 
   packages/repository:
-    dependencies:
-      '@nn/event-emitter':
-        specifier: 'workspace:'
-        version: link:../event-emitter
     devDependencies:
       '@nn/typescript-config':
         specifier: 'workspace:'

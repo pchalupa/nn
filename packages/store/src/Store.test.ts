@@ -49,9 +49,6 @@ describe("Store", () => {
 			      },
 			      "repository": InMemoryRepository {
 			        "data": Map {},
-			        "events": EventEmitter {
-			          "events": Map {},
-			        },
 			      },
 			    },
 			  },
@@ -89,9 +86,6 @@ describe("Store", () => {
 			    },
 			    "repository": InMemoryRepository {
 			      "data": Map {},
-			      "events": EventEmitter {
-			        "events": Map {},
-			      },
 			    },
 			  },
 			}
@@ -131,9 +125,6 @@ describe("Store", () => {
 			          "1" => {
 			            "id": "1",
 			          },
-			        },
-			        "events": EventEmitter {
-			          "events": Map {},
 			        },
 			      },
 			    },

@@ -1,5 +1,5 @@
 import { InMemoryRepository } from "@nn/in-memory-repository";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { Collection, Slice } from "./Collection";
 
 describe("Collection", () => {
@@ -92,5 +92,31 @@ describe("Collection", () => {
 			  "repository": undefined,
 			}
 		`);
+	});
+
+	it("should handle filtering an empty collection", () => {
+		const collection = new Collection<{ id: string }>();
+		const filtered = collection.filter(() => true);
+
+		expect(filtered.length).toBe(0);
+	});
+
+	it("should emit events when the collection changes", () => {
+		const collection = new Collection<{ id: string }>();
+		const mockCallback = vi.fn();
+
+		collection.events.on("update", mockCallback);
+		collection.push({ id: "1" });
+
+		expect(mockCallback).toHaveBeenCalled();
+	});
+
+	it("should work with the repository to retrieve items", () => {
+		const repository = new InMemoryRepository<{ id: string }>();
+		const collection = new Collection<{ id: string }>([], repository);
+
+		collection.push({ id: "test" });
+
+		expect(collection.map((item) => item.id)).toContainEqual("test");
 	});
 });

@@ -37,8 +37,7 @@ export class Store<State extends object> {
 		const state = options.schema({
 			collection: <Value extends { id: string }>() => {
 				// TODO: Remove type casting
-				const repository = ephemeral as Repository<Value>;
-				const collection = new Collection<Value>([], repository);
+				const collection = new Collection<Value>([], ephemeral as Repository<Value>);
 
 				return collection;
 			},

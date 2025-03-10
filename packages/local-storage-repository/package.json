@@ -1,0 +1,32 @@
+{
+	"name": "@nn/local-storage-repository",
+	"version": "0.0.0",
+	"description": "Local Storage repository",
+	"keywords": [],
+	"repository": "https://github.com/pchalupa/nn",
+	"homepage": "https://github.com/pchalupa/nn/packages/local-storage-repository#readme",
+	"bugs": {
+		"url": "https://github.com/pchalupa/nn/issues"
+	},
+	"author": "pchalupa <chalupa.petr93@gmail.com> (https://github.com/pchalupa)",
+	"license": "MIT",
+	"exports": {
+		".": {
+			"import": "./src/LocalStorageRepository.ts"
+		}
+	},
+	"scripts": {
+		"ts:check": "tsc --noEmit",
+		"test": "vitest run",
+		"test:watch": "vitest watch"
+	},
+	"dependencies": {
+		"@nn/repository": "workspace:"
+	},
+	"devDependencies": {
+		"@nn/typescript-config": "workspace:",
+		"@vitest/coverage-v8": "catalog:",
+		"typescript": "catalog:",
+		"vitest": "catalog:"
+	}
+}

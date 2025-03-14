@@ -13,6 +13,9 @@
 	"exports": {
 		".": {
 			"import": "./src/Repository.ts"
+		},
+		"./RepositoryRegistry": {
+			"import": "./src/RepositoryRegistry.ts"
 		}
 	},
 	"scripts": {

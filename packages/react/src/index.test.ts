@@ -13,7 +13,7 @@ describe("useStore", () => {
 			  "events": EventEmitter {
 			    "events": Map {},
 			  },
-			  "snapshotRegistry": SnapshotRegistry {
+			  "snapshotManager": SnapshotManager {
 			    "snapshots": WeakMap {},
 			  },
 			  "state": {},

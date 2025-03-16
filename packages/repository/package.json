@@ -14,8 +14,8 @@
 		".": {
 			"import": "./src/Repository.ts"
 		},
-		"./RepositoryRegistry": {
-			"import": "./src/RepositoryRegistry.ts"
+		"./manager": {
+			"import": "./src/RepositoryManager.ts"
 		}
 	},
 	"scripts": {

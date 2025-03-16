@@ -6,7 +6,7 @@ describe("Store", () => {
 	it("should create a store", () => {
 		const store = new Store({});
 
-		expect(store).toHaveProperty("snapshotRegistry");
+		expect(store).toHaveProperty("snapshotManager");
 		expect(store).toHaveProperty("state");
 		expect(store).toHaveProperty("events");
 		expect(store).toMatchInlineSnapshot(`
@@ -14,7 +14,7 @@ describe("Store", () => {
 			  "events": EventEmitter {
 			    "events": Map {},
 			  },
-			  "snapshotRegistry": SnapshotRegistry {
+			  "snapshotManager": SnapshotManager {
 			    "snapshots": WeakMap {},
 			  },
 			  "state": {},

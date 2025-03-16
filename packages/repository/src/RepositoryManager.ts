@@ -1,6 +1,6 @@
 import type { Repository } from "./Repository";
 
-export class RepositoryRegistry {
+export class RepositoryManager {
 	private repositories = new WeakMap<Repository<unknown>>();
 
 	private register(repository: Repository<unknown>) {

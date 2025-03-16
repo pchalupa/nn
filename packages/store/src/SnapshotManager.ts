@@ -1,6 +1,6 @@
 import { Snapshot } from "./Snapshot";
 
-export class SnapshotRegistry {
+export class SnapshotManager {
 	private snapshots = new WeakMap<object, Snapshot<unknown>>();
 
 	createSnapshot(id: object, state: unknown): Snapshot<unknown> {

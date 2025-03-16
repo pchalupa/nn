@@ -13,6 +13,9 @@
 	"exports": {
 		".": {
 			"import": "./src/Repository.ts"
+		},
+		"./manager": {
+			"import": "./src/RepositoryManager.ts"
 		}
 	},
 	"scripts": {

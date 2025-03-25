@@ -50,6 +50,9 @@ importers:
 
   example:
     dependencies:
+      '@nn/indexdb-repository':
+        specifier: workspace:*
+        version: link:../packages/index-db-repository
       '@nn/local-storage-repository':
         specifier: workspace:*
         version: link:../packages/local-storage-repository
@@ -140,6 +143,25 @@ importers:
         specifier: 'catalog:'
         version: 3.0.7(@types/node@22.9.0)(jiti@2.4.2)(jsdom@25.0.1)(lightningcss@1.29.1)(tsx@4.19.2)(yaml@2.7.0)
 
+  packages/index-db-repository:
+    dependencies:
+      '@nn/repository':
+        specifier: 'workspace:'
+        version: link:../repository
+    devDependencies:
+      '@nn/typescript-config':
+        specifier: 'workspace:'
+        version: link:../typescript-config
+      '@vitest/coverage-v8':
+        specifier: 'catalog:'
+        version: 3.0.7(vitest@3.0.7(@types/node@22.9.0)(jiti@2.4.2)(jsdom@25.0.1)(lightningcss@1.29.1)(tsx@4.19.2)(yaml@2.7.0))
+      typescript:
+        specifier: 'catalog:'
+        version: 5.8.2
+      vitest:
+        specifier: 'catalog:'
+        version: 3.0.7(@types/node@22.9.0)(jiti@2.4.2)(jsdom@25.0.1)(lightningcss@1.29.1)(tsx@4.19.2)(yaml@2.7.0)
+
   packages/local-storage-repository:
     dependencies:
       '@nn/repository':
@@ -201,9 +223,6 @@ importers:
       '@nn/in-memory-repository':
         specifier: 'workspace:'
         version: link:../in-memory-repository
-      '@nn/local-storage-repository':
-        specifier: 'workspace:'
-        version: link:../local-storage-repository
       '@nn/repository':
         specifier: 'workspace:'
         version: link:../repository

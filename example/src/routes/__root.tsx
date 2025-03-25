@@ -1,4 +1,6 @@
 import { Link, Outlet, createRootRoute } from "@tanstack/react-router";
+import { Suspense } from "react";
+import { Skeleton } from "../components/Skeleton";
 import { useStore } from "../store";
 
 const Stats = () => {
@@ -25,7 +27,9 @@ const RootComponent = () => (
 			<div className="px-4 py-2">
 				<Link to="/backlog">Backlog</Link>
 			</div>
-			<Stats />
+			<Suspense fallback={<Skeleton width="w-full" height="h-14" />}>
+				<Stats />
+			</Suspense>
 		</div>
 		<Outlet />
 	</div>

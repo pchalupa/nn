@@ -1,17 +1,18 @@
 import { EventEmitter } from "@nn/event-emitter";
-import { InMemoryRepository } from "@nn/in-memory-repository";
-import type { Repository } from "@nn/repository";
+import type { RepositoryFactory } from "@nn/repository";
 import { Collection } from "./Collection";
+import { RepositoryManager } from "./RepositoryManager";
 import type { Snapshot } from "./Snapshot";
 import { SnapshotManager } from "./SnapshotManager";
 
-type Options<Schema> = {
-	schema: (entity: { collection: <Value extends { id: string }>() => Collection<Value> }) => Schema;
+type Options = {
+	repository: RepositoryFactory;
 };
 
 export class Store<State extends object> {
-	public events = new EventEmitter<{ update: [] }>();
 	private snapshotManager = new SnapshotManager();
+	private repositoryManager = new RepositoryManager();
+	public events = new EventEmitter<{ update: [] }>();
 
 	constructor(private state: State) {}
 
@@ -31,18 +32,38 @@ export class Store<State extends object> {
 		return snapshot as Snapshot<Type> & Type;
 	}
 
-	static createWithOptions<Schema extends object>(options: Options<Schema>) {
-		const ephemeral = new InMemoryRepository();
+	static async createWithOptions<Schema extends object>(
+		schema: (entities: {
+			collection: <Type extends { id: string }>(options: Options) => Collection<Type>;
+		}) => Schema,
+	): Promise<Store<Schema>> {
+		const store = new Store<Schema>({});
 
-		const state = options.schema({
-			collection: <Value extends { id: string }>() => {
-				// TODO: Remove type casting
-				const collection = new Collection<Value>([], ephemeral as Repository<Value>);
+		const entities = {
+			collection: <Type extends { id: string }>(options: Options) => {
+				return async function collectionFactory(typeName: string) {
+					const repository = await store.repositoryManager.get(options.repository);
+					const data = (await repository?.getAll(typeName)) ?? [];
 
-				return collection;
+					const collection = new Collection<Type>(data);
+
+					collection.events.on("update", async (value) => {
+						await repository?.set(value.id, value, typeName);
+					});
+
+					return collection;
+				};
 			},
-		});
+		};
 
-		return new Store(state);
+		const state = schema(entities);
+
+		for await (const id of Object.keys(state)) {
+			state[id] = await state[id](id);
+		}
+
+		store.state = state;
+
+		return store;
 	}
 }

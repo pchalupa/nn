@@ -1,10 +1,10 @@
 {
 	"name": "@nn/indexdb-repository",
 	"version": "0.0.0",
-	"description": "Local Storage repository",
+	"description": "IndexDB repository",
 	"keywords": [],
 	"repository": "https://github.com/pchalupa/nn",
-	"homepage": "https://github.com/pchalupa/nn/packages/local-storage-repository#readme",
+	"homepage": "https://github.com/pchalupa/nn/packages/index-db-repository#readme",
 	"bugs": {
 		"url": "https://github.com/pchalupa/nn/issues"
 	},

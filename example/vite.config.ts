@@ -11,7 +11,7 @@ const reactCompilerConfig = {
 export default defineConfig({
 	plugins: [
 		TanStackRouterVite(),
-		react({ babel: { plugins: ["babel-plugin-react-compiler", reactCompilerConfig] } }),
+		react({ babel: { plugins: [["babel-plugin-react-compiler", reactCompilerConfig]] } }),
 		tailwindcss(),
 	],
 	esbuild: {

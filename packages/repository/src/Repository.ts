@@ -1,6 +1,8 @@
-export interface Repository {
-	set<Value>(id: string, value: Value): Promise<void>;
-	getAll<Value>(typeName: string): Promise<Value[]>;
+export interface RepositoryFactory {
+	createRepository(): Promise<Repository>;
+}
 
-	createRepository: () => Promise<void>;
+export interface Repository {
+	set<Value>(id: string, value: Value, typeName: string): Promise<void>;
+	getAll<Value>(typeName: string): Promise<Value[]>;
 }

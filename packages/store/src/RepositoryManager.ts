@@ -1,21 +1,21 @@
-import type { Repository } from "@nn/repository";
+import type { Repository, RepositoryFactory } from "@nn/repository";
 
 export class RepositoryManager {
-	private repositories = new WeakMap<Repository>();
+	private repositories = new WeakMap<RepositoryFactory>();
 
-	private async register(repository: Repository) {
-		const repo = await repository.createRepository();
+	private async register(repositoryFactory: RepositoryFactory): Promise<void> {
+		const repository = await repositoryFactory.createRepository();
 
-		this.repositories.set(repository, repo);
+		this.repositories.set(repositoryFactory, repository);
 	}
 
-	private includes(repository: Repository): boolean {
-		return this.repositories.has(repository);
+	private includes(repositoryFactory: RepositoryFactory): boolean {
+		return this.repositories.has(repositoryFactory);
 	}
 
-	async get(repository: Repository) {
-		if (!this.includes(repository)) await this.register(repository);
+	async get(repositoryFactory: RepositoryFactory): Promise<Repository> {
+		if (!this.includes(repositoryFactory)) await this.register(repositoryFactory);
 
-		return this.repositories.get(repository);
+		return this.repositories.get(repositoryFactory);
 	}
 }

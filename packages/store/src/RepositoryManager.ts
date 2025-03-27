@@ -13,7 +13,8 @@ export class RepositoryManager {
 		return this.repositories.has(repositoryFactory);
 	}
 
-	async get(repositoryFactory: RepositoryFactory): Promise<Repository> {
+	async get(repositoryFactory?: RepositoryFactory): Promise<Repository | undefined> {
+		if (!repositoryFactory) return undefined;
 		if (!this.includes(repositoryFactory)) await this.register(repositoryFactory);
 
 		return this.repositories.get(repositoryFactory);

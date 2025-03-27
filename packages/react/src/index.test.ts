@@ -3,9 +3,7 @@ import { createStore } from "./index";
 
 describe("useStore", () => {
 	it("should create a store", () => {
-		const store = createStore({
-			schema: () => ({}),
-		});
+		const store = createStore(() => ({}));
 
 		expect(store).toHaveProperty("events");
 		expect(store).toMatchInlineSnapshot(`

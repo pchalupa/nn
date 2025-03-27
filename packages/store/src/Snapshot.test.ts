@@ -23,7 +23,6 @@ describe("Snapshot", () => {
 			    "events": EventEmitter {
 			      "events": Map {},
 			    },
-			    "repository": undefined,
 			  },
 			}
 		`);

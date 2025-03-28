@@ -25,11 +25,11 @@ export async function createStore<
 	State extends Record<string, unknown> = { [Key in keyof Schema]: ReturnType<Schema[Key]> },
 >(options: {
 	schema: Schema;
-	repository: RepositoryFactory;
+	repository?: RepositoryFactory;
 }): Promise<Store<State>> {
 	const { schema, repository: repositoryFactory } = options;
 	const typeNames = Object.keys(schema);
-	const repository = await repositoryFactory.createRepository(typeNames);
+	const repository = await repositoryFactory?.createRepository(typeNames);
 	const state: Record<string, Entity> = {};
 
 	for await (const [typeName, entityFactory] of Object.entries(schema)) {

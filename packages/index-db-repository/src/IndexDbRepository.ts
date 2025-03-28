@@ -33,7 +33,7 @@ export class IndexDbRepository implements Repository {
 		const existingDatabases = await indexedDB.databases();
 		const existingDatabase = existingDatabases.find((db) => db.name === IndexDbRepository.defaultName);
 		const version = upgradeVersion ?? existingDatabase?.version ?? 1;
-		const openRequest = indexedDB.open(IndexDbRepository.defaultName, upgradeVersion);
+		const openRequest = indexedDB.open(IndexDbRepository.defaultName, version);
 
 		const repository = await new Promise<IDBDatabase>((resolve, reject) => {
 			openRequest.onsuccess = () => resolve(openRequest.result);

@@ -1,5 +1,5 @@
 export interface RepositoryFactory {
-	createRepository(): Promise<Repository>;
+	createRepository(keys: string[]): Promise<Repository>;
 }
 
 export interface Repository {

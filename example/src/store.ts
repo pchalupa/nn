@@ -1,5 +1,5 @@
 import { IndexDbRepository } from "@nn/indexdb-repository";
-import { createStore, use } from "@nn/react";
+import { collection, createStore, use } from "@nn/react";
 
 type Ticket = {
 	id: string;
@@ -20,10 +20,13 @@ type Project = {
 	name: string;
 };
 
-const store = createStore(({ collection }) => ({
-	users: collection<User>({ repository: IndexDbRepository }),
-	projects: collection<Project>({ repository: IndexDbRepository }),
-	tickets: collection<Ticket>({ repository: IndexDbRepository }),
-}));
+const store = createStore({
+	repository: IndexDbRepository,
+	schema: {
+		users: collection<User>(),
+		projects: collection<Project>(),
+		tickets: collection<Ticket>(),
+	},
+});
 
 export const useStore = use(store);

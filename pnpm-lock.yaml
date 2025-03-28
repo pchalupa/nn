@@ -96,6 +96,9 @@ importers:
       babel-plugin-react-compiler:
         specifier: 19.0.0-beta-aeaed83-20250323
         version: 19.0.0-beta-aeaed83-20250323
+      fake-indexeddb:
+        specifier: ^6.0.0
+        version: 6.0.0
       tailwindcss:
         specifier: ~4.0.6
         version: 4.0.6
@@ -136,6 +139,9 @@ importers:
       '@vitest/coverage-v8':
         specifier: 'catalog:'
         version: 3.0.7(vitest@3.0.7(@types/node@22.9.0)(jiti@2.4.2)(jsdom@25.0.1)(lightningcss@1.29.1)(tsx@4.19.2)(yaml@2.7.0))
+      fake-indexeddb:
+        specifier: ^6.0.0
+        version: 6.0.0
       typescript:
         specifier: 'catalog:'
         version: 5.8.2
@@ -145,6 +151,9 @@ importers:
 
   packages/react:
     dependencies:
+      '@nn/repository':
+        specifier: workspace:*
+        version: link:../repository
       '@nn/store':
         specifier: workspace:*
         version: link:../store
@@ -1718,6 +1727,10 @@ packages:
   external-editor@3.1.0:
     resolution: {integrity: sha512-hMQ4CX1p1izmuLYyZqLMO/qGNw10wSv9QDCPfzXfyFrOaCSSoRfqE1Kf1s5an66J5JZC62NewG+mK49jOCtQew==}
     engines: {node: '>=4'}
+
+  fake-indexeddb@6.0.0:
+    resolution: {integrity: sha512-YEboHE5VfopUclOck7LncgIqskAqnv4q0EWbYCaxKKjAvO93c+TJIaBuGy8CBFdbg9nKdpN3AuPRwVBJ4k7NrQ==}
+    engines: {node: '>=18'}
 
   fast-equals@5.2.2:
     resolution: {integrity: sha512-V7/RktU11J3I36Nwq2JnZEM7tNm17eBJz+u25qdxBZeCKiX6BkVSZQjwWIr+IobgnZy+ag73tTZgZi7tr0LrBw==}
@@ -4185,6 +4198,8 @@ snapshots:
       chardet: 0.7.0
       iconv-lite: 0.4.24
       tmp: 0.0.33
+
+  fake-indexeddb@6.0.0: {}
 
   fast-equals@5.2.2: {}
 

@@ -1,5 +1,8 @@
-export abstract class Repository<Value> {
-	abstract get(id: string): Value | undefined;
+export interface RepositoryFactory {
+	createRepository(keys: string[]): Promise<Repository>;
+}
 
-	abstract set(id: string, value: Value): void;
+export interface Repository {
+	set<Value>(id: string, value: Value, typeName: string): Promise<void>;
+	getAll<Value>(typeName: string): Promise<Value[]>;
 }

@@ -2,9 +2,9 @@ import { describe, expect, it } from "vitest";
 import { createStore } from "./index";
 
 describe("useStore", () => {
-	it("should create a store", () => {
-		const store = createStore({
-			schema: () => ({}),
+	it("should create a store", async () => {
+		const store = await createStore({
+			schema: {},
 		});
 
 		expect(store).toHaveProperty("events");
@@ -13,6 +13,7 @@ describe("useStore", () => {
 			  "events": EventEmitter {
 			    "events": Map {},
 			  },
+			  "repository": undefined,
 			  "snapshotManager": SnapshotManager {
 			    "snapshots": WeakMap {},
 			  },

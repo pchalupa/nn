@@ -1,14 +1,9 @@
 import { EventEmitter } from "@nn/event-emitter";
-import type { Repository } from "@nn/repository";
-import { Reference } from "./Reference";
 
 export class Collection<Value extends { id: string }> {
-	public events = new EventEmitter<{ update: [] }>();
+	public events = new EventEmitter<{ update: [Value] }>();
 
-	constructor(
-		private data: Value[] = [],
-		private repository?: Repository<Value>,
-	) {}
+	constructor(private data: Value[] = []) {}
 
 	get length(): number {
 		return this.data.length;
@@ -19,17 +14,8 @@ export class Collection<Value extends { id: string }> {
 	}
 
 	push(value: Value): void {
-		if (this.repository) {
-			const id = value.id;
-			const reference = Reference.createReferenceFor(() => this.repository?.get(id));
-
-			this.repository?.set(id, value);
-			this.data.push(reference);
-		} else {
-			this.data.push(value);
-		}
-
-		this.events.emit("update");
+		this.data.push(value);
+		this.events.emit("update", value);
 	}
 
 	map<Type>(callback: (value: Value, index: number) => Type): Type[] {
@@ -46,6 +32,7 @@ export class Collection<Value extends { id: string }> {
 	}
 }
 
+// TODO: Remove this class and use Collection directly
 export class Slice<Value extends { id: string }> extends Collection<Value> {
 	constructor(
 		data: Value[],
@@ -56,6 +43,6 @@ export class Slice<Value extends { id: string }> extends Collection<Value> {
 
 	push(value: Value): void {
 		this.collection.push(value);
-		this.events.emit("update");
+		this.events.emit("update", value);
 	}
 }

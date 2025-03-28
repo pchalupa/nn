@@ -1,4 +1,3 @@
-import { InMemoryRepository } from "@nn/in-memory-repository";
 import { describe, expect, it, vi } from "vitest";
 import { Collection, Slice } from "./Collection";
 
@@ -12,7 +11,6 @@ describe("Collection", () => {
 			  "events": EventEmitter {
 			    "events": Map {},
 			  },
-			  "repository": undefined,
 			}
 		`);
 	});
@@ -32,7 +30,6 @@ describe("Collection", () => {
 			  "events": EventEmitter {
 			    "events": Map {},
 			  },
-			  "repository": undefined,
 			}
 		`);
 	});
@@ -46,8 +43,7 @@ describe("Collection", () => {
 	});
 
 	it("should map the collection", () => {
-		const repository = new InMemoryRepository<{ id: string }>();
-		const collection = new Collection<{ id: string }>([], repository);
+		const collection = new Collection<{ id: string }>([]);
 
 		collection.push({ id: "1" });
 
@@ -79,7 +75,6 @@ describe("Collection", () => {
 			    "events": EventEmitter {
 			      "events": Map {},
 			    },
-			    "repository": undefined,
 			  },
 			  "data": [
 			    {
@@ -89,7 +84,6 @@ describe("Collection", () => {
 			  "events": EventEmitter {
 			    "events": Map {},
 			  },
-			  "repository": undefined,
 			}
 		`);
 	});
@@ -112,8 +106,7 @@ describe("Collection", () => {
 	});
 
 	it("should work with the repository to retrieve items", () => {
-		const repository = new InMemoryRepository<{ id: string }>();
-		const collection = new Collection<{ id: string }>([], repository);
+		const collection = new Collection<{ id: string }>([]);
 
 		collection.push({ id: "test" });
 

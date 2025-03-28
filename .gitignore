@@ -17,6 +17,7 @@ node_modules
 
 # Misc
 .DS_Store
+experiments
 
 # Tests
 coverage

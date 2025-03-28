@@ -13,6 +13,9 @@
 	"exports": {
 		".": {
 			"import": "./src/Store.ts"
+		},
+		"./entities": {
+			"import": "./src/entities/index.ts"
 		}
 	},
 	"scripts": {
@@ -22,8 +25,7 @@
 	},
 	"dependencies": {
 		"@nn/repository": "workspace:",
-		"@nn/event-emitter": "workspace:",
-		"@nn/in-memory-repository": "workspace:"
+		"@nn/event-emitter": "workspace:"
 	},
 	"devDependencies": {
 		"@nn/typescript-config": "workspace:",

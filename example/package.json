@@ -13,6 +13,7 @@
 		"start": "vite"
 	},
 	"dependencies": {
+		"@nn/indexdb-repository": "workspace:*",
 		"@nn/react": "workspace:*",
 		"@tanstack/react-router": "~1.105.0",
 		"react": "catalog:",
@@ -28,9 +29,11 @@
 		"@types/react": "catalog:",
 		"@types/react-dom": "catalog:",
 		"@vitejs/plugin-react": "^4.3.4",
+		"babel-plugin-react-compiler": "19.0.0-beta-aeaed83-20250323",
+		"fake-indexeddb": "^6.0.0",
 		"tailwindcss": "~4.0.6",
+		"typescript": "catalog:",
 		"vite": "^6.1.0",
-		"vitest": "catalog:",
-		"typescript": "catalog:"
+		"vitest": "catalog:"
 	}
 }

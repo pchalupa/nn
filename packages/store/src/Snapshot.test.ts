@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { Collection } from "./Collection";
 import { Snapshot } from "./Snapshot";
+import { Collection } from "./entities/Collection";
 
 describe("Snapshot", () => {
 	it("should create a snapshot", () => {
@@ -23,7 +23,6 @@ describe("Snapshot", () => {
 			    "events": EventEmitter {
 			      "events": Map {},
 			    },
-			    "repository": undefined,
 			  },
 			}
 		`);

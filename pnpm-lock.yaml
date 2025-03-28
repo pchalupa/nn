@@ -151,9 +151,6 @@ importers:
 
   packages/react:
     dependencies:
-      '@nn/repository':
-        specifier: workspace:*
-        version: link:../repository
       '@nn/store':
         specifier: workspace:*
         version: link:../store

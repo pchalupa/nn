@@ -1,5 +1,6 @@
 import { EventEmitter } from "@nn/event-emitter";
 import type { Repository } from "@nn/repository";
+import type { Snapshot } from "./Snapshot";
 import { SnapshotManager } from "./SnapshotManager";
 
 export class Store<State extends object> {
@@ -24,6 +25,6 @@ export class Store<State extends object> {
 		}
 
 		// TODO: Remove type casting
-		return snapshot as Type;
+		return snapshot as Snapshot<Type> & Type;
 	}
 }

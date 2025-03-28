@@ -37,15 +37,15 @@ export class IndexDbRepository implements Repository {
 
 		const repository = await new Promise<IDBDatabase>((resolve, reject) => {
 			openRequest.onsuccess = () => resolve(openRequest.result);
-			openRequest.onupgradeneeded = (event) => {
-				console.log("onupgradeneeded");
-				const transaction: IDBTransaction = event.currentTarget.transaction;
+			openRequest.onupgradeneeded = () => {
+				const transaction = openRequest.transaction;
 
-				typeNames.forEach((typeName) => {
-					transaction.db.createObjectStore(typeName);
-				});
+				typeNames.forEach((typeName) => transaction?.db.createObjectStore(typeName));
 
-				transaction.oncomplete = () => resolve(openRequest.result);
+				if (transaction) {
+					transaction.oncomplete = () => resolve(openRequest.result);
+					transaction.onerror = () => reject(openRequest.error);
+				}
 			};
 
 			openRequest.onerror = () => reject(openRequest.error);

@@ -1,6 +1,6 @@
 import type { RepositoryFactory } from "@nn/repository";
 import { Store } from "@nn/store";
-import { Collection } from "@nn/store/collection";
+import { Collection } from "@nn/store/entities";
 import { useDebugValue, use as usePromise, useRef, useSyncExternalStore } from "react";
 import { getSnapshot } from "./getSnapshot";
 import { subscribe } from "./subscribe";

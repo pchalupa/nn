@@ -13,6 +13,9 @@
 	"exports": {
 		".": {
 			"import": "./src/Store.ts"
+		},
+		"./entities": {
+			"import": "./src/entities/index.ts"
 		}
 	},
 	"scripts": {

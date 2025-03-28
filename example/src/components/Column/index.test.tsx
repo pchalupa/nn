@@ -1,4 +1,4 @@
-import { act, render, screen, waitForElementToBeRemoved } from "@testing-library/react";
+import { act, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { Suspense } from "react";
 import { describe, expect, it } from "vitest";

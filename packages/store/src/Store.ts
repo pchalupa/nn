@@ -9,7 +9,7 @@ export class Store<State extends object> {
 
 	constructor(
 		private state: State,
-		private repository: Repository,
+		private repository?: Repository,
 	) {}
 
 	getSnapshotOf<Type>(selector: (state: State) => Type) {

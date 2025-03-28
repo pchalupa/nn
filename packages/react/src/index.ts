@@ -7,32 +7,35 @@ import { subscribe } from "./subscribe";
 
 export type Selector<Schema, Slice = unknown> = (store: Schema) => Slice;
 
-type Foo = ConstructorParameters<typeof Store>;
-
-export function collection<Type extends { id: string }>(): Collection<Type> {
+export function collection<Type extends { id: string }>(): (data: Type[]) => Collection<Type> {
 	return (data: Type[]) => new Collection<Type>(data);
 }
 
-export async function createStore<Schema extends object>(options: {
+// biome-ignore lint/suspicious/noExplicitAny: testing
+type Entity = Collection<any>;
+// biome-ignore lint/suspicious/noExplicitAny: testing
+type EntityFactory = (data: any[]) => Entity;
+
+export async function createStore<
+	Schema extends Record<string, EntityFactory>,
+	State extends Record<string, unknown> = { [Key in keyof Schema]: ReturnType<Schema[Key]> },
+>(options: {
 	schema: Schema;
 	repository: RepositoryFactory;
-}): Promise<Store<Schema>> {
+}): Promise<Store<State>> {
 	const { schema, repository: repositoryFactory } = options;
 	const typeNames = Object.keys(schema);
 	const repository = await repositoryFactory.createRepository(typeNames);
+	const state: Record<string, Entity> = {};
 
-	for await (const id of typeNames) {
-		const data = await repository.getAll(id);
-		const entity = schema[id](data);
+	for await (const [typeName, entityFactory] of Object.entries(schema)) {
+		const data = await repository.getAll<Schema[typeof typeName]>(typeName);
 
-		entity.events.on("update", (value) => {
-			repository.set(value.id, value, id);
-		});
-
-		schema[id] = entity;
+		state[typeName] = entityFactory(data);
+		state[typeName].events.on("update", (value: { id: string }) => repository.set(value.id, value, typeName));
 	}
 
-	const store = new Store<Schema>(schema, repository);
+	const store = new Store(state as State, repository);
 
 	return store;
 }

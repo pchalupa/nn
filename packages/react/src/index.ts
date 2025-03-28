@@ -1,4 +1,3 @@
-import type { RepositoryFactory } from "@nn/repository";
 import { Store } from "@nn/store";
 import { Collection } from "@nn/store/entities";
 import { useDebugValue, use as usePromise, useRef, useSyncExternalStore } from "react";
@@ -16,6 +15,11 @@ type Entity = Collection<any>;
 // biome-ignore lint/suspicious/noExplicitAny: testing
 type EntityFactory = (data: any[]) => Entity;
 
+type Repository = ConstructorParameters<typeof Store>[1];
+type RepositoryFactory = {
+	createRepository: (typeNames: string[]) => Promise<Repository>;
+};
+
 export async function createStore<
 	Schema extends Record<string, EntityFactory>,
 	State extends Record<string, unknown> = { [Key in keyof Schema]: ReturnType<Schema[Key]> },
@@ -29,10 +33,10 @@ export async function createStore<
 	const state: Record<string, Entity> = {};
 
 	for await (const [typeName, entityFactory] of Object.entries(schema)) {
-		const data = await repository.getAll<Schema[typeof typeName]>(typeName);
+		const data = await repository?.getAll<Schema[typeof typeName]>(typeName);
 
-		state[typeName] = entityFactory(data);
-		state[typeName].events.on("update", (value: { id: string }) => repository.set(value.id, value, typeName));
+		state[typeName] = entityFactory(data ?? []);
+		state[typeName].events.on("update", (value: { id: string }) => repository?.set(value.id, value, typeName));
 	}
 
 	const store = new Store(state as State, repository);

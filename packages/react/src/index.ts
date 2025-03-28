@@ -36,7 +36,6 @@ export async function createStore<
 		const data = await repository?.getAll<Schema[typeof typeName]>(typeName);
 
 		state[typeName] = entityFactory(data ?? []);
-		state[typeName].events.on("update", (value: { id: string }) => repository?.set(value.id, value, typeName));
 	}
 
 	const store = new Store(state as State, repository);

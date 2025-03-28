@@ -10,7 +10,14 @@ export class Store<State extends object> {
 	constructor(
 		private state: State,
 		private repository?: Repository,
-	) {}
+	) {
+		// Attach event listeners to each entity in the state
+		if (this.repository) {
+			for (const [typeName, entity] of Object.entries(this.state)) {
+				entity.events.on("update", (value: { id: string }) => this.repository?.set(value.id, value, typeName));
+			}
+		}
+	}
 
 	getSnapshotOf<Type>(selector: (state: State) => Type) {
 		const snapshotId = selector;

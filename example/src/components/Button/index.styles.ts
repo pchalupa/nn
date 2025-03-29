@@ -6,7 +6,7 @@ export const classNames = tv({
 	base: "flex px-2 py-1 font-semibold shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2",
 	variants: {
 		color: {
-			primary: "bg-indigo-600 text-white hover:bg-indigo-500 focus-visible:outline-indigo-600 active:bg-indigo-400",
+			primary: "bg-zinc-600 text-white hover:bg-zinc-500 focus-visible:outline-zinc-600 active:bg-zinc-400",
 			secondary:
 				"bg-white text-gray-900 ring-1 ring-gray-300 ring-inset hover:bg-gray-100 focus-visible:outline-gray-900 active:bg-gray-200",
 		},

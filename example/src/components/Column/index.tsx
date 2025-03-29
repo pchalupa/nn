@@ -1,4 +1,5 @@
 import { useStore } from "../../store";
+import { Divider } from "../Divider";
 import { Ticket } from "../Ticket";
 import { Header } from "./parts/Header";
 
@@ -16,9 +17,9 @@ export const Column = ({ title, status }: ColumnProps) => {
 	};
 
 	return (
-		<section className="flex w-full flex-col gap-y-2 rounded bg-sky-100 px-2 py-4">
+		<section className="flex w-full min-w-50 flex-col gap-y-2 rounded bg-zinc-800 px-2 py-4">
 			<Header title={title} onAddClick={handleAddClick} />
-			<hr className="border-sky-600" />
+			<Divider />
 			<div className="flex flex-col gap-y-2">
 				{data.map((data) => (
 					<Ticket key={data.id} title={data?.title} description={data?.description} />

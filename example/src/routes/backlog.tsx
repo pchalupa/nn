@@ -7,7 +7,7 @@ const Backlog = () => {
 
 	return (
 		<div className="flex-1 p-2">
-			<div className="flex min-h-screen flex-1 flex-col gap-y-2 bg-sky-100 p-4">
+			<div className="flex min-h-screen flex-1 flex-col gap-y-2 p-4">
 				{data.map((ticket) => (
 					<Ticket key={ticket.id} title={ticket.title} description={ticket.description} />
 				))}

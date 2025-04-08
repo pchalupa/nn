@@ -1,5 +1,5 @@
 packages:
-  - 'example'
+  - 'apps/*'
   - 'packages/*'
 catalog:
   "@types/react": "^19.0.8"

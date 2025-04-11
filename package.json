@@ -6,7 +6,7 @@
 	"author": "",
 	"license": "MIT",
 	"scripts": {
-		"dev": "pnpm -r run dev",
+		"dev": "pnpm -r --parallel run dev",
 		"ts:check": "pnpm -r --parallel ts:check",
 		"code:check": "biome check .",
 		"spellcheck": "cspell --no-progress **/*.{ts,tsx,json,md,tex}",

@@ -3,13 +3,14 @@
 	"version": "0.0.0",
 	"private": true,
 	"scripts": {
-		"dev": "tsup src/index.ts --watch --onSuccess \"node dist/index.js\""
+		"dev": "tsx watch --clear-screen=false --env-file=.env.development src/index.ts "
 	},
 	"dependencies": {
-		"express": "^4.21.2",
-		"mongodb": "^6.15.0"
+		"express": "^4.21.2"
 	},
 	"devDependencies": {
-		"tsup": "^8.4.0"
+		"@types/express": "^5.0.1",
+		"tsx": "^4.19.3",
+		"typescript": "catalog:"
 	}
 }

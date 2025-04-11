@@ -3,7 +3,7 @@
 	"version": "0.0.0",
 	"private": true,
 	"scripts": {
-		"dev": "tsx watch --clear-screen=false --env-file=.env.development src/index.ts "
+		"dev": "tsx watch --clear-screen=false --env-file=.env.development src/index.ts"
 	},
 	"dependencies": {
 		"express": "^4.21.2"

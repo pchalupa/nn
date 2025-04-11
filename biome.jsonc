@@ -1,7 +1,7 @@
 {
 	"$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
 	"files": {
-		"ignore": ["node_modules", "dist", "coverage", "example/src/routeTree.gen.ts"]
+		"ignore": ["node_modules", "dist", "coverage", "apps/example-react/src/routeTree.gen.ts"]
 	},
 	"vcs": {
 		"enabled": true,

@@ -8,17 +8,25 @@ app.use(cors());
 app.use(express.json());
 
 app.get("/pull", async (_req, res) => {
-	const data = await db.get();
+	try {
+		const data = await db.get();
 
-	res.json(data);
+		res.json(data);
+	} catch (error) {
+		res.status(500).json({ error: "Failed to fetch data" });
+	}
 });
 
 app.post("/push", async (req, res) => {
-	const data = req.body;
+	try {
+		const data = req.body;
 
-	await db.update(data);
+		await db.update(data);
 
-	res.json(data);
+		res.json(data);
+	} catch (error) {
+		res.status(500).json({ error: "Failed to update data" });
+	}
 });
 
 app.listen(process.env.PORT);

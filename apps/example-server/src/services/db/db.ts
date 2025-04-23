@@ -8,7 +8,7 @@ export async function update(data: Record<string, unknown>): Promise<void> {
 		const db = await readDb();
 
 		await writeDb(Object.assign(db, data));
-	} catch (error) {
+	} catch (_error) {
 		throw new Error("Failed to update data");
 	}
 }
@@ -18,7 +18,7 @@ export async function get(): Promise<Record<string, unknown>> {
 		const db = await readDb();
 
 		return db;
-	} catch (error) {
+	} catch (_error) {
 		throw new Error("Failed to get data");
 	}
 }
@@ -28,7 +28,7 @@ async function readDb(): Promise<Record<string, unknown>> {
 		const db = await readFile(database, "utf-8");
 
 		return JSON.parse(db);
-	} catch (error) {
+	} catch (_error) {
 		throw new Error("Failed to read database");
 	}
 }
@@ -36,7 +36,7 @@ async function readDb(): Promise<Record<string, unknown>> {
 async function writeDb(data: Record<string, unknown>): Promise<void> {
 	try {
 		await writeFile(database, JSON.stringify(data, null, 2), "utf-8");
-	} catch (error) {
+	} catch (_error) {
 		throw new Error("Failed to write database");
 	}
 }

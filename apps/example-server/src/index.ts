@@ -21,9 +21,12 @@ app.post("/push", async (req, res) => {
 	try {
 		const data = req.body;
 
-		await db.update(data);
+		if (!data || typeof data !== "object") res.status(400).json({ error: "No data provided" });
+		else {
+			await db.update(data);
 
-		res.json(data);
+			res.json(data);
+		}
 	} catch (error) {
 		res.status(500).json({ error: "Failed to update data" });
 	}

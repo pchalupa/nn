@@ -6,6 +6,7 @@
 		"dev": "tsx watch --clear-screen=false --env-file=.env.development src/index.ts"
 	},
 	"dependencies": {
+		"@nn/hash-tree": "workspace:*",
 		"cors": "^2.8.5",
 		"express": "^4.21.2"
 	},

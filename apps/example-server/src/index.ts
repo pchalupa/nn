@@ -1,3 +1,4 @@
+import { MerkleTree } from "@nn/hash-tree";
 import cors from "cors";
 import express from "express";
 import * as db from "./services/db/db";
@@ -10,6 +11,13 @@ app.use(express.json());
 app.get("/pull", async (_req, res) => {
 	try {
 		const data = await db.get();
+
+		const values: string[] = data.tickets.map((ticket: Object) => {
+			return JSON.stringify(ticket);
+		});
+
+		const tree = await MerkleTree.from(values);
+		console.log(tree.root?.hash);
 
 		res.json(data);
 	} catch (error) {

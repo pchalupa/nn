@@ -1,10 +1,10 @@
 {
-	"name": "@nn/time",
+	"name": "@nn/hash-tree",
 	"version": "0.0.0",
-	"description": "Hybrid logical clock",
+	"description": "Hash tree",
 	"keywords": [],
 	"repository": "https://github.com/pchalupa/nn",
-	"homepage": "https://github.com/pchalupa/nn/packages/time#readme",
+	"homepage": "https://github.com/pchalupa/nn/packages/hash-tree#readme",
 	"bugs": {
 		"url": "https://github.com/pchalupa/nn/issues"
 	},
@@ -12,7 +12,8 @@
 	"license": "MIT",
 	"exports": {
 		".": {
-			"import": "./src/Time.ts"
+			"import": "./src/index.ts",
+			"default": "./src/index.ts"
 		}
 	},
 	"scripts": {
@@ -22,6 +23,7 @@
 	},
 	"devDependencies": {
 		"@nn/typescript-config": "workspace:",
+		"@vitest/coverage-v8": "catalog:",
 		"typescript": "catalog:",
 		"vitest": "catalog:"
 	}

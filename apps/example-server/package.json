@@ -8,7 +8,9 @@
 	"dependencies": {
 		"@nn/hash-tree": "workspace:*",
 		"cors": "^2.8.5",
-		"express": "^4.21.2"
+		"express": "^4.21.2",
+		"pino": "^9.6.0",
+		"pino-pretty": "^13.0.0"
 	},
 	"devDependencies": {
 		"@types/cors": "^2.8.17",

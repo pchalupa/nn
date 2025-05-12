@@ -11,9 +11,8 @@
 	"author": "pchalupa <chalupa.petr93@gmail.com> (https://github.com/pchalupa)",
 	"license": "MIT",
 	"exports": {
-		"./*": {
-			"import": "./src/*",
-			"require": "./src/*"
+		".": {
+			"import": "./src/Time.ts"
 		}
 	},
 	"scripts": {

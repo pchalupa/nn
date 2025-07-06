@@ -23,7 +23,7 @@ export class IndexDbRepository implements Repository {
 		await this.processRequest(transaction.objectStore(typeName).put(value, id));
 	}
 
-	async getAll<Value>(typeName: string, version?: number): Promise<Value[]> {
+	async getAll<Value>(typeName: string, _version?: number): Promise<Value[]> {
 		const transaction = this.repository.transaction(typeName, Mode.ReadOnly);
 
 		return this.processRequest(transaction.objectStore(typeName).getAll());
@@ -57,7 +57,7 @@ export class IndexDbRepository implements Repository {
 			typeNames.forEach((typeName) => {
 				if (!repository.objectStoreNames.contains(typeName)) throw new Error();
 			});
-		} catch (error) {
+		} catch (_error) {
 			return await IndexDbRepository.createRepository(typeNames, version + 1);
 		}
 

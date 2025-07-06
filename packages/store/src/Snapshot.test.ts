@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { Snapshot } from "./Snapshot";
 import { Collection } from "./entities/Collection";
+import { Snapshot } from "./Snapshot";
 
 describe("Snapshot", () => {
 	it("should create a snapshot", () => {

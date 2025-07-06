@@ -12,7 +12,7 @@ app.get("/pull", async (_req, res) => {
 		const data = await db.get();
 
 		res.json(data);
-	} catch (error) {
+	} catch (_error) {
 		res.status(500).json({ error: "Failed to fetch data" });
 	}
 });
@@ -27,7 +27,7 @@ app.post("/push", async (req, res) => {
 
 			res.json(data);
 		}
-	} catch (error) {
+	} catch (_error) {
 		res.status(500).json({ error: "Failed to update data" });
 	}
 });

@@ -1,7 +1,14 @@
 {
 	"$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
 	"files": {
-		"ignore": ["node_modules", "dist", "dev-dist", "coverage", "apps/example-react/src/routeTree.gen.ts"]
+		"includes": [
+			"**",
+			"!**/node_modules",
+			"!**/dist",
+			"!**/dev-dist",
+			"!**/coverage",
+			"!**/apps/example-react/src/routeTree.gen.ts"
+		]
 	},
 	"vcs": {
 		"enabled": true,
@@ -9,9 +16,7 @@
 		"defaultBranch": "main",
 		"useIgnoreFile": true
 	},
-	"organizeImports": {
-		"enabled": true
-	},
+	"assist": { "actions": { "source": { "organizeImports": "on" } } },
 	"formatter": {
 		"enabled": true,
 		"indentStyle": "tab",
@@ -30,7 +35,17 @@
 				"noForEach": "off"
 			},
 			"style": {
-				"useNodejsImportProtocol": "off"
+				"useNodejsImportProtocol": "off",
+				"noParameterAssign": "error",
+				"useAsConstAssertion": "error",
+				"useDefaultParameterLast": "error",
+				"useEnumInitializers": "error",
+				"useSelfClosingElements": "error",
+				"useSingleVarDeclarator": "error",
+				"noUnusedTemplateLiteral": "error",
+				"useNumberNamespace": "error",
+				"noInferrableTypes": "error",
+				"noUselessElse": "error"
 			}
 		}
 	}

@@ -1,4 +1,5 @@
 import { EventEmitter } from "@nn/event-emitter";
+import { MerkleTree } from "@nn/hash-tree";
 import type { Repository } from "@nn/repository";
 import type { Snapshot } from "./Snapshot";
 import { SnapshotManager } from "./SnapshotManager";
@@ -17,6 +18,16 @@ export class Store<State extends object> {
 				entity.events.on("update", (value: { id: string }) => this.repository?.set(value.id, value, typeName));
 			}
 		}
+
+		// const values: string[] = this.state.tickets.map((ticket: Object) => {
+		// 	return JSON.stringify(ticket);
+		// });
+
+		// const tree = MerkleTree.createMerkleTree(values).then((tree) => {
+		// 	console.log(tree.root.hash);
+		// });
+
+		// console.log(tree.root?.hash);
 	}
 
 	getSnapshotOf<Type>(selector: (state: State) => Type) {

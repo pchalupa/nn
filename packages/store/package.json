@@ -25,7 +25,9 @@
 	},
 	"dependencies": {
 		"@nn/repository": "workspace:",
-		"@nn/event-emitter": "workspace:"
+		"@nn/event-emitter": "workspace:",
+		"@nn/hash-tree": "workspace:",
+		"@nn/time": "workspace:"
 	},
 	"devDependencies": {
 		"@nn/typescript-config": "workspace:",

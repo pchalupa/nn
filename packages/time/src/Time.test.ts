@@ -1,5 +1,5 @@
 import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
-import { Time } from "./index";
+import { Time } from "./Time";
 
 describe("Time", () => {
 	beforeAll(() => {

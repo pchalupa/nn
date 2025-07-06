@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
+import { Collection } from "./entities";
 import { Snapshot } from "./Snapshot";
 import { Store } from "./Store";
-import { Collection } from "./entities";
 
 describe("Store", () => {
 	it("should create a store", () => {

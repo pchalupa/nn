@@ -15,14 +15,14 @@
 	"dependencies": {
 		"@nn/indexdb-repository": "workspace:*",
 		"@nn/react": "workspace:*",
-		"@tanstack/react-router": "~1.105.0",
+		"@tanstack/react-router": "~1.125.3",
 		"react": "catalog:",
 		"react-dom": "catalog:",
 		"tailwind-variants": "~0.3.1"
 	},
 	"devDependencies": {
 		"@tailwindcss/vite": "~4.0.6",
-		"@tanstack/router-plugin": "~1.105.0",
+		"@tanstack/router-plugin": "~1.125.3",
 		"@testing-library/jest-dom": "^6.6.3",
 		"@testing-library/react": "^16.2.0",
 		"@testing-library/user-event": "^14.6.1",

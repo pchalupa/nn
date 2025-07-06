@@ -1,4 +1,4 @@
-import { Link, Outlet, createRootRoute } from "@tanstack/react-router";
+import { createRootRoute, Link, Outlet } from "@tanstack/react-router";
 import { Divider } from "../components/Divider";
 import { Skeleton } from "../components/Skeleton";
 import { useStore } from "../store";

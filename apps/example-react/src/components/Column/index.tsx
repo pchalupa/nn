@@ -13,7 +13,7 @@ export const Column = ({ title, status }: ColumnProps) => {
 	const data = useStore((store) => store.tickets.filter((ticket) => ticket.status === status));
 
 	const handleAddClick = () => {
-		data.push({ id: crypto.randomUUID(), title: status, status, description: "test" });
+		data.push({ id: crypto.randomUUID(), title, status, description: "test" });
 	};
 
 	return (

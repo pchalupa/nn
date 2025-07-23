@@ -1,5 +1,5 @@
 export interface RemoteFactory {
-	createRepository(url: string): Promise<Remote>;
+	createRepository(url: string): Remote;
 }
 
 export interface Remote {

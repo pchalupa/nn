@@ -50,6 +50,9 @@ importers:
 
   apps/example-react:
     dependencies:
+      '@nn/http-remote':
+        specifier: 'workspace:'
+        version: link:../../packages/http-remote
       '@nn/indexdb-repository':
         specifier: workspace:*
         version: link:../../packages/index-db-repository
@@ -268,9 +271,6 @@ importers:
       '@nn/hash-tree':
         specifier: 'workspace:'
         version: link:../hash-tree
-      '@nn/remote':
-        specifier: 'workspace:'
-        version: link:../remote
       '@nn/repository':
         specifier: 'workspace:'
         version: link:../repository
@@ -278,6 +278,9 @@ importers:
         specifier: 'workspace:'
         version: link:../time
     devDependencies:
+      '@nn/remote':
+        specifier: 'workspace:'
+        version: link:../remote
       '@nn/typescript-config':
         specifier: 'workspace:'
         version: link:../typescript-config

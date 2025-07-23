@@ -1,3 +1,4 @@
+import { HttpRemote } from "@nn/http-remote";
 import { IndexDbRepository } from "@nn/indexdb-repository";
 import { collection, createStore, use } from "@nn/react";
 
@@ -22,6 +23,7 @@ type Project = {
 
 const store = createStore({
 	repository: IndexDbRepository,
+	remote: HttpRemote,
 	schema: {
 		users: collection<User>(),
 		projects: collection<Project>(),

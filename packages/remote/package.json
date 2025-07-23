@@ -1,0 +1,25 @@
+{
+	"name": "@nn/remote",
+	"version": "0.0.0",
+	"description": "Remote",
+	"keywords": [],
+	"repository": "https://github.com/pchalupa/nn",
+	"homepage": "https://github.com/pchalupa/nn/packages/repository#readme",
+	"bugs": {
+		"url": "https://github.com/pchalupa/nn/issues"
+	},
+	"author": "pchalupa <chalupa.petr93@gmail.com> (https://github.com/pchalupa)",
+	"license": "MIT",
+	"exports": {
+		".": {
+			"import": "./src/Remote.ts"
+		}
+	},
+	"scripts": {
+		"ts:check": "tsc --noEmit"
+	},
+	"devDependencies": {
+		"@nn/typescript-config": "workspace:",
+		"typescript": "catalog:"
+	}
+}

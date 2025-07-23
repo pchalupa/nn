@@ -1,6 +1,7 @@
 import { EventEmitter } from "@nn/event-emitter";
+import type { Remote } from "@nn/remote";
 
-export class Remote {
+export class HttpRemote implements Remote {
 	public events = new EventEmitter<{ update: [] }>();
 	private url: URL;
 
@@ -41,10 +42,15 @@ export class Remote {
 		const url = new URL("/subscribe", this.url);
 		const eventSource = new EventSource(url);
 
-		eventSource.addEventListener("message", () => {
+		const handleMessage = (event: MessageEvent) => {
 			this.events.emit("update");
-		});
+		};
 
-		return () => eventSource.close();
+		eventSource.addEventListener("message", handleMessage);
+
+		return () => {
+			eventSource.removeEventListener("message", handleMessage);
+			eventSource.close();
+		};
 	}
 }

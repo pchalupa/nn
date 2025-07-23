@@ -31,6 +31,7 @@
 	},
 	"devDependencies": {
 		"@nn/typescript-config": "workspace:",
+		"@nn/remote": "workspace:",
 		"@vitest/coverage-v8": "catalog:",
 		"typescript": "catalog:",
 		"vitest": "catalog:"

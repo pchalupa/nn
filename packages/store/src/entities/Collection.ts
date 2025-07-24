@@ -9,6 +9,14 @@ export class Collection<Value extends { id: string }> {
 		return this.data.length;
 	}
 
+	get head(): Value | undefined {
+		return this.data.at(0);
+	}
+
+	get tail(): Value | undefined {
+		return this.data.at(-1);
+	}
+
 	toString(): string {
 		return this.data.toString();
 	}

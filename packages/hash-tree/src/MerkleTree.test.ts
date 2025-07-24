@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { MerkleTree } from "./index";
+import { MerkleTree } from "./MerkleTree";
 
 describe("MerkleTree", () => {
 	it("should create a Merkle tree", async () => {

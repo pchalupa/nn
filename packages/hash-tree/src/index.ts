@@ -19,15 +19,11 @@ export class MerkleTree {
 			nodes.splice(0, 2, new MerkleNode(val, left, right));
 		}
 
-		// console.log(JSON.stringify(nodes[0], null, 2));
-
 		return new MerkleTree(nodes[0]);
 	}
 }
 
 class MerkleNode {
-	// public hash: string;
-
 	constructor(
 		public hash: string,
 		private left?: MerkleNode,

@@ -21,7 +21,7 @@ type Project = {
 	name: string;
 };
 
-const remote = new HttpRemote("http://localhost:3001");
+const remote = new HttpRemote(import.meta.env.VITE_REMOTE_URL);
 const store = createStore({
 	repository: IndexDbRepository,
 	remote,

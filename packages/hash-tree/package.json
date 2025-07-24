@@ -12,8 +12,8 @@
 	"license": "MIT",
 	"exports": {
 		".": {
-			"import": "./src/index.ts",
-			"default": "./src/index.ts"
+			"import": "./src/MerkleTree.ts",
+			"default": "./src/MerkleTree.ts"
 		}
 	},
 	"scripts": {

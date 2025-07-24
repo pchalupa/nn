@@ -26,7 +26,9 @@ export class MerkleTree {
 class MerkleNode {
 	constructor(
 		public hash: string,
+		// biome-ignore lint/correctness/noUnusedPrivateClassMembers: keep it for reference
 		private left?: MerkleNode,
+		// biome-ignore lint/correctness/noUnusedPrivateClassMembers: keep it for reference
 		private right?: MerkleNode,
 	) {}
 

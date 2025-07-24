@@ -1,7 +1,3 @@
-export interface RemoteFactory {
-	createRepository(url: string): Remote;
-}
-
 export interface Remote {
 	pull: () => Promise<unknown>;
 	push: (data: unknown) => Promise<void>;

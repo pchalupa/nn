@@ -1,3 +1,4 @@
+import type { Remote } from "@nn/remote";
 import { Store } from "@nn/store";
 import { Collection } from "@nn/store/entities";
 import { useDebugValue, use as usePromise, useRef, useSyncExternalStore } from "react";
@@ -23,8 +24,8 @@ type RepositoryFactory = {
 export async function createStore<
 	Schema extends Record<string, EntityFactory>,
 	State extends Record<string, unknown> = { [Key in keyof Schema]: ReturnType<Schema[Key]> },
->(options: { schema: Schema; repository?: RepositoryFactory }): Promise<Store<State>> {
-	const { schema, repository: repositoryFactory } = options;
+>(options: { schema: Schema; repository?: RepositoryFactory; remote?: Remote }): Promise<Store<State>> {
+	const { schema, repository: repositoryFactory, remote } = options;
 	const typeNames = Object.keys(schema);
 	const repository = await repositoryFactory?.createRepository(typeNames);
 	const state: Record<string, Entity> = {};
@@ -35,7 +36,7 @@ export async function createStore<
 		state[typeName] = entityFactory(data ?? []);
 	}
 
-	const store = new Store(state as State, repository);
+	const store = new Store(state as State, repository, remote);
 
 	return store;
 }

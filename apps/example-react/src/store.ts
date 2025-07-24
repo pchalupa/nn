@@ -21,9 +21,10 @@ type Project = {
 	name: string;
 };
 
+const remote = new HttpRemote("http://localhost:3001");
 const store = createStore({
 	repository: IndexDbRepository,
-	remote: HttpRemote,
+	remote,
 	schema: {
 		users: collection<User>(),
 		projects: collection<Project>(),

@@ -12,7 +12,7 @@
 	"license": "MIT",
 	"exports": {
 		".": {
-			"import": "./src/Remote.ts"
+			"import": "./src/HttpRemote.ts"
 		}
 	},
 	"scripts": {

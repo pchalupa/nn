@@ -42,7 +42,7 @@ export class HttpRemote implements Remote {
 		const url = new URL("/subscribe", this.url);
 		const eventSource = new EventSource(url);
 
-		const handleMessage = (event: MessageEvent) => {
+		const handleMessage = () => {
 			this.events.emit("update");
 		};
 

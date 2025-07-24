@@ -1,5 +1,5 @@
 import TailwindCSS from "@tailwindcss/vite";
-import { TanStackRouterVite } from "@tanstack/router-plugin/vite";
+import { tanstackRouter } from "@tanstack/router-plugin/vite";
 import React from "@vitejs/plugin-react";
 /// <reference types="vitest" />
 import { defineConfig } from "vite";
@@ -12,7 +12,7 @@ const reactCompilerConfig = {
 export default defineConfig({
 	plugins: [
 		VitePWA({ registerType: "autoUpdate", devOptions: { enabled: true } }),
-		TanStackRouterVite(),
+		tanstackRouter(),
 		React({ babel: { plugins: [["babel-plugin-react-compiler", reactCompilerConfig]] } }),
 		TailwindCSS(),
 	],

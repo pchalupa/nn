@@ -1,10 +1,10 @@
 {
-	"name": "@nn/time",
+	"name": "@nn/remote",
 	"version": "0.0.0",
-	"description": "Hybrid logical clock",
+	"description": "Remote",
 	"keywords": [],
 	"repository": "https://github.com/pchalupa/nn",
-	"homepage": "https://github.com/pchalupa/nn/packages/time#readme",
+	"homepage": "https://github.com/pchalupa/nn/packages/repository#readme",
 	"bugs": {
 		"url": "https://github.com/pchalupa/nn/issues"
 	},
@@ -12,17 +12,14 @@
 	"license": "MIT",
 	"exports": {
 		".": {
-			"import": "./src/Time.ts"
+			"import": "./src/Remote.ts"
 		}
 	},
 	"scripts": {
-		"ts:check": "tsc --noEmit",
-		"test": "vitest run",
-		"test:watch": "vitest watch"
+		"ts:check": "tsc --noEmit"
 	},
 	"devDependencies": {
 		"@nn/typescript-config": "workspace:",
-		"typescript": "catalog:",
-		"vitest": "catalog:"
+		"typescript": "catalog:"
 	}
 }

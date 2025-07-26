@@ -21,10 +21,11 @@
 		"test:watch": "vitest watch"
 	},
 	"dependencies": {
-		"@nn/store": "workspace:*"
+		"@nn/store": "workspace:"
 	},
 	"devDependencies": {
 		"@nn/typescript-config": "workspace:",
+		"@nn/remote": "workspace:",
 		"@types/react": "catalog:",
 		"@vitest/coverage-v8": "catalog:",
 		"typescript": "catalog:",

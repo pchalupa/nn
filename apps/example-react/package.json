@@ -4,7 +4,7 @@
 	"private": true,
 	"type": "module",
 	"scripts": {
-		"dev": "vite --port=3000",
+		"dev": "vite --port=3000 --host",
 		"test": "vitest run",
 		"test:watch": "vitest watch",
 		"ts:check": "tsc --noEmit",
@@ -13,8 +13,9 @@
 		"start": "vite"
 	},
 	"dependencies": {
-		"@nn/indexdb-repository": "workspace:*",
 		"@nn/react": "workspace:*",
+		"@nn/indexdb-repository": "workspace:*",
+		"@nn/http-remote": "workspace:",
 		"@tanstack/react-router": "~1.125.3",
 		"react": "catalog:",
 		"react-dom": "catalog:",

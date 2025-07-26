@@ -25,10 +25,12 @@
 	},
 	"dependencies": {
 		"@nn/repository": "workspace:",
-		"@nn/event-emitter": "workspace:"
+		"@nn/event-emitter": "workspace:",
+		"@nn/time": "workspace:"
 	},
 	"devDependencies": {
 		"@nn/typescript-config": "workspace:",
+		"@nn/remote": "workspace:",
 		"@vitest/coverage-v8": "catalog:",
 		"typescript": "catalog:",
 		"vitest": "catalog:"

@@ -1,3 +1,4 @@
+import { HttpRemote } from "@nn/http-remote";
 import { IndexDbRepository } from "@nn/indexdb-repository";
 import { collection, createStore, use } from "@nn/react";
 
@@ -20,8 +21,10 @@ type Project = {
 	name: string;
 };
 
+const remote = new HttpRemote(import.meta.env.VITE_REMOTE_URL);
 const store = createStore({
 	repository: IndexDbRepository,
+	remote,
 	schema: {
 		users: collection<User>(),
 		projects: collection<Project>(),

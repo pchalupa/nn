@@ -12,6 +12,7 @@ describe("Store", () => {
 		expect(store).toHaveProperty("events");
 		expect(store).toMatchInlineSnapshot(`
 			Store {
+			  "_remote": undefined,
 			  "events": EventEmitter {
 			    "events": Map {},
 			  },
@@ -35,6 +36,7 @@ describe("Store", () => {
 		expect(store).toHaveProperty("events");
 		expect(store).toMatchInlineSnapshot(`
 			Store {
+			  "_remote": undefined,
 			  "events": EventEmitter {
 			    "events": Map {},
 			  },

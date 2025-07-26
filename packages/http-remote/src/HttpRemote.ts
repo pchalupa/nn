@@ -18,7 +18,7 @@ export class HttpRemote implements Remote {
 		const response = await fetch(url, {
 			method: method,
 			headers: headers,
-			body: JSON.stringify(body),
+			body: ["GET"].includes(method) ? undefined : JSON.stringify(body),
 		});
 
 		if (!response.ok) {

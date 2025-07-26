@@ -38,7 +38,7 @@ export class HttpRemote implements Remote {
 		await this.request<Record<string, unknown>>("POST", "/push", data);
 	}
 
-	subscribe(): () => void {
+	subscribe() {
 		const url = new URL("/subscribe", this.url);
 		const eventSource = new EventSource(url);
 

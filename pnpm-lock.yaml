@@ -59,6 +59,9 @@ importers:
       '@nn/react':
         specifier: workspace:*
         version: link:../../packages/react
+      '@nn/schema':
+        specifier: 'workspace:'
+        version: link:../../packages/schema
       '@tanstack/react-router':
         specifier: ~1.125.3
         version: 1.125.3(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
@@ -245,6 +248,19 @@ importers:
         specifier: 'catalog:'
         version: 5.8.2
 
+  packages/schema:
+    dependencies:
+      '@nn/event-emitter':
+        specifier: 'workspace:'
+        version: link:../event-emitter
+    devDependencies:
+      '@nn/typescript-config':
+        specifier: 'workspace:'
+        version: link:../typescript-config
+      typescript:
+        specifier: 'catalog:'
+        version: 5.8.2
+
   packages/store:
     dependencies:
       '@nn/event-emitter':
@@ -253,6 +269,9 @@ importers:
       '@nn/repository':
         specifier: 'workspace:'
         version: link:../repository
+      '@nn/schema':
+        specifier: 'workspace:'
+        version: link:../schema
       '@nn/time':
         specifier: 'workspace:'
         version: link:../time

@@ -1,6 +1,7 @@
 import { HttpRemote } from "@nn/http-remote";
 import { IndexDbRepository } from "@nn/indexdb-repository";
-import { collection, createStore, use } from "@nn/react";
+import { createStore, use } from "@nn/react";
+import { collection } from "@nn/schema";
 
 type Ticket = {
 	id: string;

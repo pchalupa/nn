@@ -1,5 +1,5 @@
+import { Collection } from "@nn/schema/Collection";
 import { describe, expect, it } from "vitest";
-import { Collection } from "./entities/Collection";
 import { Snapshot } from "./Snapshot";
 
 describe("Snapshot", () => {

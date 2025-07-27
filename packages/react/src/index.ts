@@ -1,20 +1,13 @@
 import type { Remote } from "@nn/remote";
 import { Store } from "@nn/store";
-import { Collection } from "@nn/store/entities";
 import { useDebugValue, use as usePromise, useRef, useSyncExternalStore } from "react";
 import { getSnapshot } from "./getSnapshot";
 import { subscribe } from "./subscribe";
 
 export type Selector<Schema, Slice = unknown> = (store: Schema) => Slice;
 
-export function collection<Type extends { id: string }>(): (data: Type[]) => Collection<Type> {
-	return (data: Type[]) => new Collection<Type>(data);
-}
-
 // biome-ignore lint/suspicious/noExplicitAny: testing
-type Entity = Collection<any>;
-// biome-ignore lint/suspicious/noExplicitAny: testing
-type EntityFactory = (data: any[]) => Entity;
+type EntityFactory = (data: any) => unknown;
 
 type Repository = ConstructorParameters<typeof Store>[1];
 type RepositoryFactory = {
@@ -28,12 +21,12 @@ export async function createStore<
 	const { schema, repository: repositoryFactory, remote } = options;
 	const typeNames = Object.keys(schema);
 	const repository = await repositoryFactory?.createRepository(typeNames);
-	const state: Record<string, Entity> = {};
+	const state: Record<string, unknown> = {};
 
 	for await (const [typeName, entityFactory] of Object.entries(schema)) {
 		const data = await repository?.getAll<Schema[typeof typeName]>(typeName);
 
-		state[typeName] = entityFactory(data ?? []);
+		state[typeName] = entityFactory(data);
 	}
 
 	const store = new Store(state as State, repository, remote);

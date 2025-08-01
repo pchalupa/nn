@@ -11,17 +11,17 @@ export class LWWRegister<Value> implements Mergeable {
 		this.timestamp = Time.now();
 	}
 
-	get value() {
+	get value(): Value {
 		return this.val;
 	}
 
-	merge(register: LWWRegister<Value>): LWWRegister<Value> {
-		if (this.timestamp.isAfter(register.timestamp)) {
-			register.val = this.val;
-			register.timestamp = this.timestamp;
-		} else if (register.timestamp.isAfter(this.timestamp)) {
-			this.val = register.val;
-			this.timestamp = register.timestamp;
+	merge(remote: LWWRegister<Value>): LWWRegister<Value> {
+		if (this.timestamp.isAfter(remote.timestamp)) {
+			remote.val = this.val;
+			remote.timestamp = this.timestamp;
+		} else if (remote.timestamp.isAfter(this.timestamp)) {
+			this.val = remote.val;
+			this.timestamp = remote.timestamp;
 		}
 
 		return this;

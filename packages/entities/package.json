@@ -13,6 +13,9 @@
 	"exports": {
 		"./LWWRegister": {
 			"import": "./src/LWWRegister.ts"
+		},
+		"./LWWMap": {
+			"import": "./src/LWWMap.ts"
 		}
 	},
 	"scripts": {

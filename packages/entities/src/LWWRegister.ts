@@ -4,23 +4,27 @@ import type { Mergeable } from "./Mergeable";
 export class LWWRegister<Value> implements Mergeable {
 	private timestamp = Time.now();
 
-	constructor(private val: Value) {}
+	constructor(private value: Value) {}
 
-	set value(value: Value) {
-		this.val = value;
+	get [Symbol.toStringTag]() {
+		return "LWWMap";
+	}
+
+	set current(value: Value) {
+		this.value = value;
 		this.timestamp = Time.now();
 	}
 
-	get value(): Value {
-		return this.val;
+	get current(): Value {
+		return this.value;
 	}
 
 	merge(remote: LWWRegister<Value>): LWWRegister<Value> {
 		if (this.timestamp.isAfter(remote.timestamp)) {
-			remote.val = this.val;
+			remote.value = this.value;
 			remote.timestamp = this.timestamp;
 		} else if (remote.timestamp.isAfter(this.timestamp)) {
-			this.val = remote.val;
+			this.value = remote.value;
 			this.timestamp = remote.timestamp;
 		}
 

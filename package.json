@@ -23,7 +23,8 @@
 		"@changesets/cli": "^2.29.5",
 		"@vitest/coverage-v8": "catalog:",
 		"cspell": "^8.19.4",
-		"vitest": "catalog:"
+		"vitest": "catalog:",
+		"typescript": "catalog:"
 	},
 	"packageManager": "pnpm@10.12.4",
 	"engines": {

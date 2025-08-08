@@ -7,6 +7,7 @@ describe("LWWMap", () => {
 
 		expect(map.name).toBe("John");
 		expect(map).toBeInstanceOf(LWWMap);
+		expect(map.toString()).toBe("[object LWWMap]");
 	});
 
 	it("should update property value and reflect changes", () => {

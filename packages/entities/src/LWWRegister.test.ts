@@ -17,6 +17,8 @@ describe("LWWRegister", () => {
 		const register = new LWWRegister("initial");
 
 		expect(register.current).toBe("initial");
+		expect(register).toBeInstanceOf(LWWRegister);
+		expect(register.toString()).toBe("[object LWWRegister]");
 	});
 
 	it("should work with different types", () => {

@@ -7,7 +7,7 @@ export class LWWRegister<Value> implements Mergeable {
 	constructor(private value: Value) {}
 
 	get [Symbol.toStringTag]() {
-		return "LWWMap";
+		return "LWWRegister";
 	}
 
 	set current(value: Value) {

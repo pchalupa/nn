@@ -266,9 +266,6 @@ importers:
 
   packages/schema:
     dependencies:
-      '@nn/entities':
-        specifier: 'workspace:'
-        version: link:../entities
       '@nn/event-emitter':
         specifier: 'workspace:'
         version: link:../event-emitter

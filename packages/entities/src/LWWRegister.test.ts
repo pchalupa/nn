@@ -16,7 +16,9 @@ describe("LWWRegister", () => {
 	it("should create a register with initial value", () => {
 		const register = new LWWRegister("initial");
 
-		expect(register.value).toBe("initial");
+		expect(register.current).toBe("initial");
+		expect(register).toBeInstanceOf(LWWRegister);
+		expect(register.toString()).toBe("[object LWWRegister]");
 	});
 
 	it("should work with different types", () => {
@@ -24,17 +26,17 @@ describe("LWWRegister", () => {
 		const numberRegister = new LWWRegister(42);
 		const objectRegister = new LWWRegister({ key: "value" });
 
-		expect(stringRegister.value).toBe("string");
-		expect(numberRegister.value).toBe(42);
-		expect(objectRegister.value).toEqual({ key: "value" });
+		expect(stringRegister.current).toBe("string");
+		expect(numberRegister.current).toBe(42);
+		expect(objectRegister.current).toEqual({ key: "value" });
 	});
 
 	it("should update value", () => {
 		const register = new LWWRegister("initial");
 
-		register.value = "updated";
+		register.current = "updated";
 
-		expect(register.value).toBe("updated");
+		expect(register.current).toBe("updated");
 	});
 
 	describe("merge", () => {
@@ -44,8 +46,8 @@ describe("LWWRegister", () => {
 
 			registerA.merge(registerB);
 
-			expect(registerA.value).toBe("bar");
-			expect(registerB.value).toBe("bar");
+			expect(registerA.current).toBe("bar");
+			expect(registerB.current).toBe("bar");
 		});
 
 		it("should update remote register when local timestamp is later", () => {
@@ -53,12 +55,12 @@ describe("LWWRegister", () => {
 			const registerB = new LWWRegister("bar");
 
 			currentTime = 2000000;
-			registerA.value = "updated_foo";
+			registerA.current = "updated_foo";
 
 			registerA.merge(registerB);
 
-			expect(registerA.value).toBe("updated_foo");
-			expect(registerB.value).toBe("updated_foo");
+			expect(registerA.current).toBe("updated_foo");
+			expect(registerB.current).toBe("updated_foo");
 		});
 
 		it("should update local register when remote timestamp is later", () => {
@@ -69,8 +71,8 @@ describe("LWWRegister", () => {
 
 			registerB.merge(registerA);
 
-			expect(registerA.value).toBe("bar");
-			expect(registerB.value).toBe("bar");
+			expect(registerA.current).toBe("bar");
+			expect(registerB.current).toBe("bar");
 		});
 
 		it("should work with multiple sequential merges", () => {
@@ -84,7 +86,7 @@ describe("LWWRegister", () => {
 
 			registerA.merge(registerB).merge(registerC);
 
-			expect(registerA.value).toBe("c");
+			expect(registerA.current).toBe("c");
 		});
 
 		it("should preserve object references correctly", () => {
@@ -99,7 +101,7 @@ describe("LWWRegister", () => {
 
 			registerA.merge(registerB);
 
-			expect(registerA.value).toBe(objB);
+			expect(registerA.current).toBe(objB);
 		});
 
 		it("should maintain consistency after bidirectional merge", () => {
@@ -112,7 +114,7 @@ describe("LWWRegister", () => {
 			registerA.merge(registerB);
 			registerB.merge(registerA);
 
-			expect(registerA.value).toBe(registerB.value);
+			expect(registerA.current).toBe(registerB.current);
 		});
 
 		it("should handle concurrent updates correctly", async () => {
@@ -123,7 +125,7 @@ describe("LWWRegister", () => {
 
 			registerA.merge(registerB);
 
-			expect(registerA.value).toBe("bar");
+			expect(registerA.current).toBe("bar");
 		});
 	});
 });

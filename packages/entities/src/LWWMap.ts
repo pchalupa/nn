@@ -25,7 +25,7 @@ export class LWWMap<Data extends Record<string, unknown>> implements Mergeable {
 
 	merge(remote: LWWMap<Data>): LWWMap<Data> {
 		for (const property in this.data) {
-			this.data[property] = this.data[property].merge(remote.data[property]);
+			this.data[property].merge(remote.data[property]);
 		}
 
 		return this;

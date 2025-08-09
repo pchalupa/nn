@@ -32,4 +32,14 @@ describe("LWWMap", () => {
 		expect(result.name).toBe("bar");
 		expect(result.age).toBe(30);
 	});
+
+	it("exclude remote‐only keys when merging", () => {
+		const a = new LWWMap({ foo: "a" });
+		const b = new LWWMap({ foo: "b", bar: 1 });
+
+		const result = a.merge(b);
+
+		expect(result.foo).toBe("b");
+		expect(result.bar).toBe(undefined);
+	});
 });

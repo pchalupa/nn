@@ -2,7 +2,7 @@ import { LWWRegister } from "./LWWRegister";
 import type { Mergeable } from "./Mergeable";
 
 export class LWWMap<Data extends Record<string, unknown>> implements Mergeable {
-	private data: { [Property in keyof Data]: LWWRegister<Data[Property]> } = Object();
+	private data: { [Property in keyof Data]: LWWRegister<Data[Property]> } = Object.create(null);
 
 	[index: string]: unknown;
 

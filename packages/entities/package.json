@@ -22,7 +22,8 @@
 		"ts:check": "tsc --noEmit"
 	},
 	"dependencies": {
-		"@nn/time": "workspace:"
+		"@nn/time": "workspace:",
+		"@nn/event-emitter": "workspace:"
 	},
 	"devDependencies": {
 		"@nn/typescript-config": "workspace:",

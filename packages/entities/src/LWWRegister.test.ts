@@ -128,4 +128,56 @@ describe("LWWRegister", () => {
 			expect(registerA.current).toBe("bar");
 		});
 	});
+
+	describe("subscribe", () => {
+		it("should call callback when value is updated", () => {
+			const register = new LWWRegister("initial");
+			const callback = vi.fn();
+
+			register.subscribe(callback);
+			register.current = "updated";
+
+			expect(callback).toHaveBeenCalledTimes(1);
+		});
+
+		it("should call callback when merged with newer remote", () => {
+			const registerA = new LWWRegister("foo");
+			const callback = vi.fn();
+
+			registerA.subscribe(callback);
+
+			const registerB = new LWWRegister("bar");
+
+			registerA.merge(registerB);
+
+			expect(callback).toHaveBeenCalledTimes(1);
+		});
+
+		it("should return unsubscribe function", () => {
+			const register = new LWWRegister("initial");
+			const callback = vi.fn();
+
+			const unsubscribe = register.subscribe(callback);
+
+			unsubscribe();
+
+			register.current = "updated";
+
+			expect(callback).not.toHaveBeenCalled();
+		});
+
+		it("should handle multiple subscribers", () => {
+			const register = new LWWRegister("initial");
+			const callback1 = vi.fn();
+			const callback2 = vi.fn();
+
+			register.subscribe(callback1);
+			register.subscribe(callback2);
+
+			register.current = "updated";
+
+			expect(callback1).toHaveBeenCalledTimes(1);
+			expect(callback2).toHaveBeenCalledTimes(1);
+		});
+	});
 });

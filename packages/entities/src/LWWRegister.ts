@@ -1,10 +1,13 @@
 import { Time } from "@nn/time";
+import { Entity } from "./Entity";
 import type { Mergeable } from "./Mergeable";
 
-export class LWWRegister<Value> implements Mergeable {
+export class LWWRegister<Value> extends Entity implements Mergeable {
 	private timestamp = Time.now();
 
-	constructor(private value: Value) {}
+	constructor(private value: Value) {
+		super();
+	}
 
 	get [Symbol.toStringTag]() {
 		return "LWWRegister";
@@ -13,6 +16,7 @@ export class LWWRegister<Value> implements Mergeable {
 	set current(value: Value) {
 		this.value = value;
 		this.timestamp = Time.now();
+		this.emit();
 	}
 
 	get current(): Value {
@@ -26,6 +30,8 @@ export class LWWRegister<Value> implements Mergeable {
 		} else if (remote.timestamp.isAfter(this.timestamp)) {
 			this.value = remote.value;
 			this.timestamp = remote.timestamp;
+
+			this.emit();
 		}
 
 		return this;

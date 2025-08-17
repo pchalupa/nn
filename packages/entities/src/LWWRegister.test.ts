@@ -146,7 +146,6 @@ describe("LWWRegister", () => {
 
 			registerA.subscribe(callback);
 
-			currentTime = 2000000;
 			const registerB = new LWWRegister("bar");
 
 			registerA.merge(registerB);

@@ -1,13 +1,16 @@
 import { createRootRoute, Link, Outlet } from "@tanstack/react-router";
+import { StrictMode } from "react";
 import { Divider } from "../components/Divider";
 import { Skeleton } from "../components/Skeleton";
 import { useStore } from "../store";
 
 const RootComponent = () => (
-	<div className="flex flex-row bg-zinc-900">
-		<SideBar />
-		<Outlet />
-	</div>
+	<StrictMode>
+		<div className="flex flex-row bg-zinc-900">
+			<SideBar />
+			<Outlet />
+		</div>
+	</StrictMode>
 );
 
 const SideBar = () => (

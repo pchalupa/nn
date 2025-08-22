@@ -154,6 +154,9 @@ importers:
 
   packages/entities:
     dependencies:
+      '@nn/event-emitter':
+        specifier: 'workspace:'
+        version: link:../event-emitter
       '@nn/time':
         specifier: 'workspace:'
         version: link:../time

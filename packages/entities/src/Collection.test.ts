@@ -8,6 +8,9 @@ describe("Collection", () => {
 		expect(collection).toMatchInlineSnapshot(`
 			Collection {
 			  "data": [],
+			  "eventEmitter": EventEmitter {
+			    "events": Map {},
+			  },
 			  "events": EventEmitter {
 			    "events": Map {},
 			  },
@@ -27,6 +30,9 @@ describe("Collection", () => {
 			      "id": "1",
 			    },
 			  ],
+			  "eventEmitter": EventEmitter {
+			    "events": Map {},
+			  },
 			  "events": EventEmitter {
 			    "events": Map {},
 			  },
@@ -72,6 +78,9 @@ describe("Collection", () => {
 			        "id": "2",
 			      },
 			    ],
+			    "eventEmitter": EventEmitter {
+			      "events": Map {},
+			    },
 			    "events": EventEmitter {
 			      "events": Map {},
 			    },
@@ -81,6 +90,9 @@ describe("Collection", () => {
 			      "id": "1",
 			    },
 			  ],
+			  "eventEmitter": EventEmitter {
+			    "events": Map {},
+			  },
 			  "events": EventEmitter {
 			    "events": Map {},
 			  },

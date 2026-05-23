@@ -1,9 +1,12 @@
 import { EventEmitter } from "@nn/event-emitter";
+import { Entity } from "./Entity";
 
-export class Collection<Value extends { id: string }> {
+export class Collection<Value extends { id: string }> extends Entity {
 	public events = new EventEmitter<{ update: [Value] }>();
 
-	constructor(private data: Value[] = []) {}
+	constructor(private data: Value[] = []) {
+		super();
+	}
 
 	get length(): number {
 		return this.data.length;
@@ -24,6 +27,7 @@ export class Collection<Value extends { id: string }> {
 	push(value: Value): void {
 		this.data.push(value);
 		this.events.emit("update", value);
+		this.emit();
 	}
 
 	map<Type>(callback: (value: Value, index: number) => Type): Type[] {

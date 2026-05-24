@@ -1,4 +1,5 @@
 import type { Remote } from "@nn/remote";
+import type { ObjectShape, Shape } from "@nn/schema";
 import { Store } from "@nn/store";
 import { useDebugValue, use as usePromise, useRef, useSyncExternalStore } from "react";
 import { getSnapshot } from "./getSnapshot";
@@ -6,32 +7,14 @@ import { subscribe } from "./subscribe";
 
 export type Selector<Schema, Slice = unknown> = (store: Schema) => Slice;
 
-// biome-ignore lint/suspicious/noExplicitAny: testing
-type EntityFactory = (data: any) => unknown;
+type RepositoryFactory = NonNullable<Parameters<typeof Store.fromSchema>[0]["repository"]>;
 
-type Repository = ConstructorParameters<typeof Store>[1];
-type RepositoryFactory = {
-	createRepository: (typeNames: string[]) => Promise<Repository>;
-};
-
-export async function createStore<
-	Schema extends Record<string, EntityFactory>,
-	State extends Record<string, unknown> = { [Key in keyof Schema]: ReturnType<Schema[Key]> },
->(options: { schema: Schema; repository?: RepositoryFactory; remote?: Remote }): Promise<Store<State>> {
-	const { schema, repository: repositoryFactory, remote } = options;
-	const typeNames = Object.keys(schema);
-	const repository = await repositoryFactory?.createRepository(typeNames);
-	const state: Record<string, unknown> = {};
-
-	for await (const [typeName, entityFactory] of Object.entries(schema)) {
-		const data = await repository?.getAll<Schema[typeof typeName]>(typeName);
-
-		state[typeName] = entityFactory(data);
-	}
-
-	const store = new Store(state as State, repository, remote);
-
-	return store;
+export function createStore<S extends ObjectShape<Record<string, Shape>>>(options: {
+	schema: S;
+	repository?: RepositoryFactory;
+	remote?: Remote;
+}) {
+	return Store.fromSchema(options);
 }
 
 export function use<Schema extends object>(promisedStore: Promise<Store<Schema>>) {

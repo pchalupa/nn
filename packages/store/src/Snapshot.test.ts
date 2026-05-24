@@ -1,4 +1,4 @@
-import { Collection } from "@nn/schema/Collection";
+import { Collection } from "@nn/entities/Collection";
 import { describe, expect, it } from "vitest";
 import { Snapshot } from "./Snapshot";
 
@@ -12,14 +12,13 @@ describe("Snapshot", () => {
 		expect(snapshot).toMatchInlineSnapshot(`
 			Collection {
 			  "events": EventEmitter {
-			    "events": Map {
-			      "update" => Set {
-			        [Function],
-			      },
-			    },
+			    "events": Map {},
 			  },
 			  "state": Collection {
 			    "data": [],
+			    "eventEmitter": EventEmitter {
+			      "events": Map {},
+			    },
 			    "events": EventEmitter {
 			      "events": Map {},
 			    },

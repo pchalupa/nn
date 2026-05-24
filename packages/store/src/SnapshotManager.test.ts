@@ -11,7 +11,7 @@ describe("SnapshotManager", () => {
 		expect(snapshotManager).toHaveProperty("invalidateSnapshot");
 		expect(snapshotManager).toMatchInlineSnapshot(`
 			SnapshotManager {
-			  "snapshots": WeakMap {},
+			  "snapshots": Map {},
 			}
 		`);
 	});
@@ -25,7 +25,12 @@ describe("SnapshotManager", () => {
 		expect(snapshot).toHaveProperty("state", {});
 		expect(snapshotManager).toMatchInlineSnapshot(`
 			SnapshotManager {
-			  "snapshots": WeakMap {},
+			  "snapshots": Map {
+			    {} => {
+			      "events": undefined,
+			      "state": {},
+			    },
+			  },
 			}
 		`);
 	});

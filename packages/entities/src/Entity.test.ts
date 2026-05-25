@@ -18,6 +18,10 @@ describe("Entity", () => {
 			this._value = value;
 			this.emit();
 		}
+
+		merge(): this {
+			return this;
+		}
 	}
 
 	it("should create an entity instance", () => {

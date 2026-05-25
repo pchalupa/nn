@@ -1,8 +1,7 @@
 import { Time } from "@nn/time";
 import { Entity } from "./Entity";
-import type { Mergeable } from "./Mergeable";
 
-export class LWWRegister<Value> extends Entity implements Mergeable {
+export class LWWRegister<Value> extends Entity {
 	private timestamp = Time.now();
 
 	constructor(private value: Value) {

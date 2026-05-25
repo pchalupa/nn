@@ -42,6 +42,14 @@ export class Collection<Value extends { id: string }> extends Entity {
 
 		return slice;
 	}
+
+	// TODO: Implement a real CRDT merge strategy.
+	merge(remote: Collection<Value>): Collection<Value> {
+		this.data = remote.data;
+		this.emit();
+
+		return this;
+	}
 }
 
 // TODO: Remove this class and use Collection directly

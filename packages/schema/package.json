@@ -13,16 +13,10 @@
 	"exports": {
 		".": {
 			"import": "./src/index.ts"
-		},
-		"./Collection": {
-			"import": "./src/Collection.ts"
 		}
 	},
 	"scripts": {
 		"ts:check": "tsc --noEmit"
-	},
-	"dependencies": {
-		"@nn/event-emitter": "workspace:"
 	},
 	"devDependencies": {
 		"@nn/typescript-config": "workspace:",

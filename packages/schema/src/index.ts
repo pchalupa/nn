@@ -1,5 +1,26 @@
-import { Collection } from "./Collection";
+import { ArrayShape, ObjectShape, Shape } from "./Shape";
 
-export function collection<Type extends { id: string }>(): (data: Type[]) => Collection<Type> {
-	return (data: Type[]) => new Collection<Type>(data);
+export { ArrayShape, ObjectShape, Shape } from "./Shape";
+export type { Infer } from "./Shape";
+
+export type AnyShape = Shape | ArrayShape<Shape> | ObjectShape<Record<string, Shape>>;
+
+export function string(): Shape<string> {
+	return new Shape<string>();
+}
+
+export function number(): Shape<number> {
+	return new Shape<number>();
+}
+
+export function boolean(): Shape<boolean> {
+	return new Shape<boolean>();
+}
+
+export function object<Properties extends Record<string, Shape>>(properties: Properties): ObjectShape<Properties> {
+	return new ObjectShape(properties);
+}
+
+export function array<Item extends Shape>(items: Item): ArrayShape<Item> {
+	return new ArrayShape(items);
 }

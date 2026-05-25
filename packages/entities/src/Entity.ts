@@ -1,9 +1,12 @@
 import { EventEmitter } from "@nn/event-emitter";
 import type { Callback, Observable, Unsubscribe } from "@nn/event-emitter/Observable";
 
-export abstract class Entity implements Observable {
+export abstract class Entity<Value = unknown> implements Observable {
 	private eventEmitter = new EventEmitter<{ update: [] }>();
+	abstract get current(): Value;
+	abstract set current(value: Value);
 
+	abstract merge(remote: Entity): Entity;
 	protected emit() {
 		this.eventEmitter.emit("update");
 	}
@@ -13,6 +16,4 @@ export abstract class Entity implements Observable {
 
 		return () => this.eventEmitter.off("update", callback);
 	}
-
-	abstract merge(remote: Entity): Entity;
 }

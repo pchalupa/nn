@@ -1,11 +1,20 @@
 import { EventEmitter } from "@nn/event-emitter";
 import { Entity } from "./Entity";
 
-export class Collection<Value extends { id: string }> extends Entity {
+export class Collection<Value extends { id: string }> extends Entity<Value[]> {
 	public events = new EventEmitter<{ update: [Value] }>();
 
 	constructor(private data: Value[] = []) {
 		super();
+	}
+
+	get current(): Value[] {
+		return this.data;
+	}
+
+	set current(value: Value[]) {
+		this.data = value;
+		this.emit();
 	}
 
 	get length(): number {

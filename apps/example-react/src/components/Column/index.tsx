@@ -10,10 +10,16 @@ interface ColumnProps {
 }
 
 export const Column = ({ title, status }: ColumnProps) => {
-	const data = useStore((store) => store.tickets.filter((ticket) => ticket.status === status));
+	const tickets = useStore((store) => store.tickets.filter((ticket) => ticket.status === status));
 
 	const handleAddClick = () => {
-		data.push({ id: crypto.randomUUID(), title: status, status, description: "test" });
+		tickets.push({
+			id: crypto.randomUUID(),
+			title: status,
+			status,
+			description: "test",
+			assignee: { name: "test", email: "test" },
+		});
 	};
 
 	return (
@@ -21,7 +27,7 @@ export const Column = ({ title, status }: ColumnProps) => {
 			<Header title={title} onAddClick={handleAddClick} />
 			<Divider />
 			<div className="flex flex-col gap-y-2">
-				{data.map((data) => (
+				{tickets.map((data) => (
 					<Ticket key={data.id} title={data?.title} description={data?.description} />
 				))}
 			</div>

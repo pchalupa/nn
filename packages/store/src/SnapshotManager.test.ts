@@ -27,7 +27,13 @@ describe("SnapshotManager", () => {
 			SnapshotManager {
 			  "snapshots": Map {
 			    {} => {
-			      "events": undefined,
+			      "events": EventEmitter {
+			        "events": Map {
+			          "invalidated" => Set {
+			            [Function],
+			          },
+			        },
+			      },
 			      "state": {},
 			    },
 			  },

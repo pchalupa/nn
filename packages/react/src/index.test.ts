@@ -1,10 +1,11 @@
+import { object } from "@nn/schema";
 import { describe, expect, it } from "vitest";
 import { createStore } from "./index";
 
 describe("useStore", () => {
 	it("should create a store", async () => {
 		const store = await createStore({
-			schema: {},
+			schema: object({}),
 		});
 
 		expect(store).toHaveProperty("events");
@@ -16,7 +17,7 @@ describe("useStore", () => {
 			  },
 			  "repository": undefined,
 			  "snapshotManager": SnapshotManager {
-			    "snapshots": WeakMap {},
+			    "snapshots": Map {},
 			  },
 			  "state": {},
 			}

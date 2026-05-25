@@ -1,4 +1,4 @@
-import { Collection } from "@nn/schema/Collection";
+import { Collection } from "@nn/entities/Collection";
 import { describe, expect, it, vi } from "vitest";
 import { Snapshot } from "./Snapshot";
 import { Store } from "./Store";
@@ -18,7 +18,7 @@ describe("Store", () => {
 			  },
 			  "repository": undefined,
 			  "snapshotManager": SnapshotManager {
-			    "snapshots": WeakMap {},
+			    "snapshots": Map {},
 			  },
 			  "state": {},
 			}
@@ -42,11 +42,14 @@ describe("Store", () => {
 			  },
 			  "repository": undefined,
 			  "snapshotManager": SnapshotManager {
-			    "snapshots": WeakMap {},
+			    "snapshots": Map {},
 			  },
 			  "state": {
 			    "testCollection": Collection {
 			      "data": [],
+			      "eventEmitter": EventEmitter {
+			        "events": Map {},
+			      },
 			      "events": EventEmitter {
 			        "events": Map {},
 			      },
@@ -68,9 +71,6 @@ describe("Store", () => {
 			Collection {
 			  "events": EventEmitter {
 			    "events": Map {
-			      "update" => Set {
-			        [Function],
-			      },
 			      "invalidated" => Set {
 			        [Function],
 			        [Function],
@@ -79,6 +79,13 @@ describe("Store", () => {
 			  },
 			  "state": Collection {
 			    "data": [],
+			    "eventEmitter": EventEmitter {
+			      "events": Map {
+			        "update" => Set {
+			          [Function],
+			        },
+			      },
+			    },
 			    "events": EventEmitter {
 			      "events": Map {},
 			    },
@@ -88,39 +95,15 @@ describe("Store", () => {
 	});
 
 	it("should select a data and return snapshot", async () => {
-		const store = new Store({
-			testCollection: new Collection<{ id: string }>(),
-		});
-		const snapshot = store.getSnapshotOf((schema) => schema.testCollection.filter((item) => item.id === "1"));
+		const collection = new Collection<{ id: string }>();
+		const store = new Store({ testCollection: collection });
 
-		snapshot.push({ id: "1" });
+		collection.push({ id: "1" });
+		collection.push({ id: "2" });
 
-		expect(snapshot).toMatchInlineSnapshot(`
-			Slice {
-			  "events": EventEmitter {
-			    "events": Map {
-			      "update" => Set {},
-			      "invalidated" => Set {},
-			    },
-			  },
-			  "state": Slice {
-			    "collection": Collection {
-			      "data": [
-			        {
-			          "id": "1",
-			        },
-			      ],
-			      "events": EventEmitter {
-			        "events": Map {},
-			      },
-			    },
-			    "data": [],
-			    "events": EventEmitter {
-			      "events": Map {},
-			    },
-			  },
-			}
-		`);
+		const filtered = store.getSnapshotOf((schema) => schema.testCollection.filter((item) => item.id === "1"));
+
+		expect([...filtered]).toStrictEqual([{ id: "1" }]);
 	});
 
 	it("should notify subscribers when a snapshot is updated", async () => {

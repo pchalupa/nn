@@ -1,23 +1,22 @@
 import { Entity } from "./Entity";
-import { LWWRegister } from "./LWWRegister";
-import type { Mergeable } from "./Mergeable";
 
-export class LWWMap<Data extends Record<string, unknown>> extends Entity implements Mergeable {
-	private data: { [Property in keyof Data]: LWWRegister<Data[Property]> } = Object.create(null);
+export class LWWMap<Value extends Record<string, Entity>> extends Entity<Value> {
+	private value: Value = Object.create(null);
 
 	[index: string]: unknown;
 
-	constructor(data: Data) {
+	constructor(value: Value) {
 		super();
 
-		for (const property in data) {
-			this.data[property] = new LWWRegister(data[property]);
-			this.data[property].subscribe(() => this.emit());
+		for (const property in value) {
+			this.value[property] = value[property];
+
+			this.value[property].subscribe(() => this.emit());
 
 			Object.defineProperty(this, property, {
-				get: () => this.data[property]?.current,
-				set: (value) => {
-					this.data[property].current = value;
+				get: () => this.value[property].current,
+				set: (next) => {
+					this.value[property].current = next;
 				},
 			});
 		}
@@ -27,9 +26,25 @@ export class LWWMap<Data extends Record<string, unknown>> extends Entity impleme
 		return "LWWMap";
 	}
 
-	merge(remote: LWWMap<Data>): LWWMap<Data> {
-		for (const property in this.data) {
-			this.data[property].merge(remote.data[property]);
+	get current(): Value {
+		const result = Object.create(null);
+
+		for (const property in this.value) {
+			result[property] = this.value[property].current;
+		}
+
+		return result;
+	}
+
+	set current(value: Value) {
+		for (const property in value) {
+			this.value[property].current = value[property];
+		}
+	}
+
+	merge(remote: LWWMap<Value>): LWWMap<Value> {
+		for (const property in this.value) {
+			this.value[property].merge(remote.value[property]);
 		}
 
 		return this;

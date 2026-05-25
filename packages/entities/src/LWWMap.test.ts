@@ -1,9 +1,10 @@
 import { describe, expect, it, vi } from "vitest";
 import { LWWMap } from "./LWWMap";
+import { LWWRegister } from "./LWWRegister";
 
 describe("LWWMap", () => {
 	it("should create a map with initial value", () => {
-		const map = new LWWMap({ name: "John", age: 30 });
+		const map = new LWWMap({ name: new LWWRegister("John"), age: new LWWRegister(30) });
 
 		expect(map.name).toBe("John");
 		expect(map).toBeInstanceOf(LWWMap);
@@ -11,7 +12,7 @@ describe("LWWMap", () => {
 	});
 
 	it("should update property value and reflect changes", () => {
-		const map = new LWWMap({ name: "Alice", age: 25 });
+		const map = new LWWMap({ name: new LWWRegister("Alice"), age: new LWWRegister(25) });
 
 		expect(map.name).toBe("Alice");
 		expect(map.age).toBe(25);
@@ -24,8 +25,8 @@ describe("LWWMap", () => {
 	});
 
 	it("should merge maps with multiple properties", () => {
-		const mapA = new LWWMap({ name: "foo", age: 20 });
-		const mapB = new LWWMap({ name: "bar", age: 30 });
+		const mapA = new LWWMap({ name: new LWWRegister("foo"), age: new LWWRegister(20) });
+		const mapB = new LWWMap({ name: new LWWRegister("bar"), age: new LWWRegister(30) });
 
 		const result = mapA.merge(mapB);
 
@@ -34,8 +35,8 @@ describe("LWWMap", () => {
 	});
 
 	it("exclude remote‐only keys when merging", () => {
-		const a = new LWWMap({ foo: "a" });
-		const b = new LWWMap({ foo: "b", bar: 1 });
+		const a = new LWWMap({ foo: new LWWRegister("a") });
+		const b = new LWWMap({ foo: new LWWRegister("b"), bar: new LWWRegister(1) });
 
 		const result = a.merge(b);
 
@@ -44,7 +45,7 @@ describe("LWWMap", () => {
 	});
 
 	it("should emit update event when property changes", () => {
-		const map = new LWWMap({ name: "Alice", age: 25 });
+		const map = new LWWMap({ name: new LWWRegister("Alice"), age: new LWWRegister(25) });
 		const callback = vi.fn();
 
 		map.subscribe(callback);
@@ -61,7 +62,7 @@ describe("LWWMap", () => {
 	});
 
 	it("should return unsubscribe function", () => {
-		const map = new LWWMap({ name: "Alice", age: 25 });
+		const map = new LWWMap({ name: new LWWRegister("Alice"), age: new LWWRegister(25) });
 		const callback = vi.fn();
 
 		const unsubscribe = map.subscribe(callback);
@@ -74,7 +75,7 @@ describe("LWWMap", () => {
 	});
 
 	it("should support multiple subscribers", () => {
-		const map = new LWWMap({ name: "Alice", age: 25 });
+		const map = new LWWMap({ name: new LWWRegister("Alice"), age: new LWWRegister(25) });
 		const callback1 = vi.fn();
 		const callback2 = vi.fn();
 

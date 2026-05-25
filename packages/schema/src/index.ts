@@ -1,7 +1,7 @@
 import { ArrayShape, ObjectShape, Shape } from "./Shape";
 
-export { ArrayShape, ObjectShape, Shape } from "./Shape";
 export type { Infer } from "./Shape";
+export { ArrayShape, ObjectShape, Shape } from "./Shape";
 
 export type AnyShape = Shape | ArrayShape<Shape> | ObjectShape<Record<string, Shape>>;
 

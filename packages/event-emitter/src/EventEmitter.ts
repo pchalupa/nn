@@ -4,7 +4,13 @@ export class EventEmitter<Emits extends Record<string, unknown[]>, Event extends
 	private events = new Map<Event, Set<Listener<Emits[Event]>>>();
 
 	emit(event: Event, ...args: Emits[Event]): void {
-		this.events.get(event)?.forEach((listener) => listener(...args));
+		const listeners = this.events.get(event);
+
+		if (listeners) {
+			for (const listener of [...listeners]) {
+				listener(...args);
+			}
+		}
 	}
 
 	on(event: Event, listener: Listener<Emits[Event]>): void {

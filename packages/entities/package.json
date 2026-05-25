@@ -11,6 +11,12 @@
 	"author": "pchalupa <chalupa.petr93@gmail.com> (https://github.com/pchalupa)",
 	"license": "MIT",
 	"exports": {
+		"./Entity": {
+			"import": "./src/Entity.ts"
+		},
+		"./Collection": {
+			"import": "./src/Collection.ts"
+		},
 		"./LWWRegister": {
 			"import": "./src/LWWRegister.ts"
 		},

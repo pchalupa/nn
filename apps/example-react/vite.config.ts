@@ -1,3 +1,4 @@
+import { fileURLToPath } from "node:url";
 import TailwindCSS from "@tailwindcss/vite";
 import { tanstackRouter } from "@tanstack/router-plugin/vite";
 import React from "@vitejs/plugin-react";
@@ -9,10 +10,13 @@ const reactCompilerConfig = {
 	target: "19",
 };
 
+const routesDirectory = fileURLToPath(new URL("./src/routes", import.meta.url));
+const generatedRouteTree = fileURLToPath(new URL("./src/routeTree.gen.ts", import.meta.url));
+
 export default defineConfig(({ mode }) => ({
 	plugins: [
 		VitePWA({ registerType: "autoUpdate", devOptions: { enabled: true } }),
-		tanstackRouter(),
+		tanstackRouter({ routesDirectory, generatedRouteTree }),
 		React({ babel: { plugins: [["babel-plugin-react-compiler", reactCompilerConfig]] } }),
 		TailwindCSS(),
 	],

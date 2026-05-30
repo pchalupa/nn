@@ -23,8 +23,10 @@ type Project = {
 };
 
 const remote = new HttpRemote(import.meta.env.VITE_REMOTE_URL);
+const repository = new IndexDbRepository();
+
 const store = createStore({
-	repository: IndexDbRepository,
+	repository,
 	remote,
 	schema: {
 		users: collection<User>(),

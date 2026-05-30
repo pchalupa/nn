@@ -20,13 +20,14 @@ const ticket = object({
 	.describe("Holds information about a ticket.");
 
 const remote = new HttpRemote(import.meta.env.VITE_REMOTE_URL);
+const repository = new IndexDbRepository()
 const schema = object({
 	users: array(user).describe("List of users"),
 	tickets: array(ticket).describe("List of tickets"),
 });
 
 const store = createStore({
-	repository: IndexDbRepository,
+	repository,
 	remote,
 	schema,
 });

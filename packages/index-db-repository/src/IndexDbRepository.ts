@@ -6,9 +6,10 @@ enum Mode {
 }
 
 export class IndexDbRepository implements Repository {
-	private static readonly defaultName = "nn-default";
+	private indexDbDatabase?: IDBDatabase;
+	private version = 1;
 
-	constructor(private repository: IDBDatabase) {}
+	constructor(private readonly name = "nn-default") {}
 
 	private processRequest<Value>(request: IDBRequest<Value>): Promise<Value> {
 		return new Promise<Value>((resolve, reject) => {
@@ -18,29 +19,41 @@ export class IndexDbRepository implements Repository {
 	}
 
 	async set<Value>(id: string, value: Value, typeName: string): Promise<void> {
-		const transaction = this.repository.transaction(typeName, Mode.ReadWrite);
+		if (this.indexDbDatabase) {
+			const transaction = this.indexDbDatabase.transaction(typeName, Mode.ReadWrite);
 
-		await this.processRequest(transaction.objectStore(typeName).put(value, id));
+			await this.processRequest(transaction.objectStore(typeName).put(value, id));
+		}
 	}
 
 	async getAll<Value>(typeName: string, _version?: number): Promise<Value[]> {
-		const transaction = this.repository.transaction(typeName, Mode.ReadOnly);
+		if (this.indexDbDatabase) {
+			const transaction = this.indexDbDatabase.transaction(typeName, Mode.ReadOnly);
 
-		return this.processRequest(transaction.objectStore(typeName).getAll());
+			return this.processRequest(transaction.objectStore(typeName).getAll());
+		}
+
+		return [];
 	}
 
-	static async createRepository(typeNames: string[], upgradeVersion?: number): Promise<IndexDbRepository> {
-		const existingDatabases = await indexedDB.databases();
-		const existingDatabase = existingDatabases.find((db) => db.name === IndexDbRepository.defaultName);
-		const version = upgradeVersion ?? existingDatabase?.version ?? 1;
-		const openRequest = indexedDB.open(IndexDbRepository.defaultName, version);
+	async init(schema: Record<string, unknown>): Promise<void> {
+		const typeNames = Object.keys(schema);
 
-		const repository = await new Promise<IDBDatabase>((resolve, reject) => {
+		const existingDatabases = await indexedDB.databases();
+		const existingDatabase = existingDatabases.find((db) => db.name === this.name);
+		const version = Math.max(existingDatabase?.version ?? 0, this.version);
+		const openRequest = indexedDB.open(this.name, version);
+
+		this.indexDbDatabase = await new Promise<IDBDatabase>((resolve, reject) => {
 			openRequest.onsuccess = () => resolve(openRequest.result);
 			openRequest.onupgradeneeded = () => {
 				const transaction = openRequest.transaction;
 
-				typeNames.forEach((typeName) => transaction?.db.createObjectStore(typeName));
+				typeNames.forEach((typeName) => {
+					if (!transaction?.db.objectStoreNames.contains(typeName)) {
+						transaction?.db.createObjectStore(typeName);
+					}
+				});
 
 				if (transaction) {
 					transaction.oncomplete = () => resolve(openRequest.result);
@@ -51,16 +64,15 @@ export class IndexDbRepository implements Repository {
 			openRequest.onerror = () => reject(openRequest.error);
 		});
 
-		repository.onversionchange = () => repository.close();
+		this.indexDbDatabase.onversionchange = () => this.indexDbDatabase?.close();
 
-		try {
-			typeNames.forEach((typeName) => {
-				if (!repository.objectStoreNames.contains(typeName)) throw new Error();
-			});
-		} catch (_error) {
-			return await IndexDbRepository.createRepository(typeNames, version + 1);
+		const missingStore = typeNames.some((typeName) => !this.indexDbDatabase?.objectStoreNames.contains(typeName));
+
+		if (missingStore) {
+			this.indexDbDatabase.close();
+			this.version++;
+
+			return await this.init(schema);
 		}
-
-		return new IndexDbRepository(repository);
 	}
 }

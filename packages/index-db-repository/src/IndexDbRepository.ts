@@ -1,4 +1,5 @@
 import type { Repository } from "@nn/repository";
+import { RepositoryNotInitializedError } from "@nn/repository/errors/RepositoryNotInitializedError";
 
 enum Mode {
 	ReadOnly = "readonly",
@@ -11,18 +12,13 @@ export class IndexDbRepository implements Repository {
 
 	constructor(private readonly name = "nn-default") {}
 
-	private processRequest<Value>(request: IDBRequest<Value>): Promise<Value> {
-		return new Promise<Value>((resolve, reject) => {
-			request.onsuccess = () => resolve(request.result);
-			request.onerror = () => reject(request.error);
-		});
-	}
-
 	async set<Value>(id: string, value: Value, typeName: string): Promise<void> {
 		if (this.indexDbDatabase) {
 			const transaction = this.indexDbDatabase.transaction(typeName, Mode.ReadWrite);
 
 			await this.processRequest(transaction.objectStore(typeName).put(value, id));
+		} else {
+			throw new RepositoryNotInitializedError();
 		}
 	}
 
@@ -31,9 +27,17 @@ export class IndexDbRepository implements Repository {
 			const transaction = this.indexDbDatabase.transaction(typeName, Mode.ReadOnly);
 
 			return this.processRequest(transaction.objectStore(typeName).getAll());
+			// biome-ignore lint/style/noUselessElse: improves readability
+		} else {
+			throw new RepositoryNotInitializedError();
 		}
+	}
 
-		return [];
+	private processRequest<Value>(request: IDBRequest<Value>): Promise<Value> {
+		return new Promise<Value>((resolve, reject) => {
+			request.onsuccess = () => resolve(request.result);
+			request.onerror = () => reject(request.error);
+		});
 	}
 
 	async init(schema: Record<string, unknown>): Promise<void> {

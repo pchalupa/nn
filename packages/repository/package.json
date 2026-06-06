@@ -11,9 +11,8 @@
 	"author": "pchalupa <chalupa.petr93@gmail.com> (https://github.com/pchalupa)",
 	"license": "MIT",
 	"exports": {
-		".": {
-			"import": "./src/Repository.ts"
-		}
+		".": "./src/Repository.ts",
+		"./errors/*": "./src/errors/*.ts"
 	},
 	"scripts": {
 		"ts:check": "tsc --noEmit"

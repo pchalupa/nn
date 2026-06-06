@@ -8,9 +8,9 @@
 	"scripts": {
 		"dev": "pnpm -r --parallel run dev",
 		"ts:check": "pnpm -r --parallel ts:check",
-		"lint": "biome lint .",
-		"format": "biome format .",
-		"spellcheck": "cspell --no-progress **/*.{ts,tsx,json,md,tex}",
+		"lint:check": "biome lint .",
+		"format:check": "biome format .",
+		"spell:check": "cspell --no-progress **/*.{ts,tsx,json,md,tex}",
 		"clutter:check": "knip",
 		"test": "vitest",
 		"test:watch": "vitest watch",
@@ -24,7 +24,7 @@
 		"@changesets/cli": "^2.29.5",
 		"@vitest/coverage-v8": "catalog:",
 		"cspell": "^8.19.4",
-		"knip": "^6.16.0",
+		"knip": "^6.15.0",
 		"typescript": "catalog:",
 		"vitest": "catalog:"
 	},

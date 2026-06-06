@@ -14,5 +14,6 @@ jobs:
           cache: 'pnpm'
       - run: pnpm install
       - run: biome ci .
+      - run: clutter:check
       - run: pnpm ts:check
       - run: pnpm test

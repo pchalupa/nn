@@ -1,7 +1,3 @@
-export interface RepositoryFactory {
-	createRepository(keys: string[]): Promise<Repository>;
-}
-
 export interface Repository {
 	init(schema: Record<string, unknown>): Promise<void>;
 

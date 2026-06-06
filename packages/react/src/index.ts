@@ -1,6 +1,6 @@
 import type { Remote } from "@nn/remote";
-import type { ObjectShape, Shape } from "@nn/schema";
 import type { Repository } from "@nn/repository";
+import type { ObjectShape, Shape } from "@nn/schema";
 import { Store } from "@nn/store";
 import { useDebugValue, use as usePromise, useRef, useSyncExternalStore } from "react";
 import { getSnapshot } from "./getSnapshot";
@@ -13,12 +13,6 @@ export async function createStore<S extends ObjectShape<Record<string, Shape>>>(
 	repository?: Repository;
 	remote?: Remote;
 }) {
-	const { schema, repository } = options;
-
-
-	await options?.repository?.init(schema);
-
-
 	return Store.fromSchema(options);
 }
 

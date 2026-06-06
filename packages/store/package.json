@@ -23,6 +23,7 @@
 	"dependencies": {
 		"@nn/repository": "workspace:",
 		"@nn/event-emitter": "workspace:",
+		"@nn/entities": "workspace:",
 		"@nn/schema": "workspace:"
 	},
 	"devDependencies": {

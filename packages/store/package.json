@@ -13,9 +13,6 @@
 	"exports": {
 		".": {
 			"import": "./src/Store.ts"
-		},
-		"./entities": {
-			"import": "./src/entities/index.ts"
 		}
 	},
 	"scripts": {
@@ -26,13 +23,11 @@
 	"dependencies": {
 		"@nn/repository": "workspace:",
 		"@nn/event-emitter": "workspace:",
-		"@nn/time": "workspace:",
 		"@nn/schema": "workspace:"
 	},
 	"devDependencies": {
 		"@nn/typescript-config": "workspace:",
 		"@nn/remote": "workspace:",
-		"@vitest/coverage-v8": "catalog:",
 		"typescript": "catalog:",
 		"vitest": "catalog:"
 	}

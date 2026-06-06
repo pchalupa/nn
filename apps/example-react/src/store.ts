@@ -26,7 +26,7 @@ const schema = object({
 const remote = new HttpRemote(import.meta.env.VITE_REMOTE_URL);
 
 const store = createStore({
-	repository: IndexDbRepository,
+	repository,
 	remote,
 	schema,
 });

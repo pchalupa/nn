@@ -25,6 +25,7 @@
 	},
 	"devDependencies": {
 		"@nn/typescript-config": "workspace:",
+		"@nn/repository": "workspace:",
 		"@nn/remote": "workspace:",
 		"@nn/schema": "workspace:",
 		"@types/react": "catalog:",

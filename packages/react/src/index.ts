@@ -1,5 +1,6 @@
 import type { Remote } from "@nn/remote";
 import type { ObjectShape, Shape } from "@nn/schema";
+import type { Repository } from "@nn/repository";
 import { Store } from "@nn/store";
 import { useDebugValue, use as usePromise, useRef, useSyncExternalStore } from "react";
 import { getSnapshot } from "./getSnapshot";
@@ -7,13 +8,17 @@ import { subscribe } from "./subscribe";
 
 export type Selector<Schema, Slice = unknown> = (store: Schema) => Slice;
 
-type RepositoryFactory = NonNullable<Parameters<typeof Store.fromSchema>[0]["repository"]>;
-
-export function createStore<S extends ObjectShape<Record<string, Shape>>>(options: {
+export async function createStore<S extends ObjectShape<Record<string, Shape>>>(options: {
 	schema: S;
-	repository?: RepositoryFactory;
+	repository?: Repository;
 	remote?: Remote;
 }) {
+	const { schema, repository } = options;
+
+
+	await options?.repository?.init(schema);
+
+
 	return Store.fromSchema(options);
 }
 

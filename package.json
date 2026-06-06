@@ -26,13 +26,8 @@
 		"vitest": "catalog:",
 		"typescript": "catalog:"
 	},
-	"packageManager": "pnpm@10.12.4",
+	"packageManager": "pnpm@11.5.2",
 	"engines": {
 		"node": ">=22"
-	},
-	"pnpm": {
-		"onlyBuiltDependencies": [
-			"esbuild"
-		]
 	}
 }

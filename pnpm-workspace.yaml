@@ -2,6 +2,9 @@ packages:
   - apps/*
   - packages/*
 
+onlyBuiltDependencies:
+  - esbuild
+
 catalog:
   '@types/react': ^19.1.8
   '@types/react-dom': ^19.1.5

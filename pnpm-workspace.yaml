@@ -2,11 +2,16 @@ packages:
   - apps/*
   - packages/*
 
+minimumReleaseAge: 4320
+
 catalog:
   '@types/react': ^19.1.8
   '@types/react-dom': ^19.1.5
-  '@vitest/coverage-v8': ^3.2.4
-  vitest: ^4.1.0
+  '@vitest/coverage-v8': ^4.1.8
+  vitest: ^4.1.8
   typescript: 5.9.2
   react: 19.1.0
   react-dom: 19.1.0
+
+allowBuilds:
+  esbuild: true

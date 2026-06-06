@@ -8,9 +8,9 @@
 	"scripts": {
 		"dev": "pnpm -r --parallel run dev",
 		"ts:check": "pnpm -r --parallel ts:check",
-		"lint": "biome lint .",
-		"format": "biome format .",
-		"spellcheck": "cspell --no-progress **/*.{ts,tsx,json,md,tex}",
+		"lint:check": "biome lint .",
+		"format:check": "biome format .",
+		"spell:check": "cspell --no-progress **/*.{ts,tsx,json,md,tex}",
 		"clutter:check": "knip",
 		"test": "vitest",
 		"test:watch": "vitest watch",
@@ -21,20 +21,15 @@
 	},
 	"devDependencies": {
 		"@biomejs/biome": "2.0.6",
-		"@changesets/cli": "^2.29.5",
+		"@changesets/cli": "^2.31.0",
 		"@vitest/coverage-v8": "catalog:",
 		"cspell": "^8.19.4",
-		"knip": "^6.14.2",
+		"knip": "^6.15.0",
 		"typescript": "catalog:",
 		"vitest": "catalog:"
 	},
-	"packageManager": "pnpm@10.12.4",
+	"packageManager": "pnpm@11.5.2",
 	"engines": {
 		"node": ">=22"
-	},
-	"pnpm": {
-		"onlyBuiltDependencies": [
-			"esbuild"
-		]
 	}
 }

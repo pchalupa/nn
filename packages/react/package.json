@@ -29,7 +29,6 @@
 		"@nn/remote": "workspace:",
 		"@nn/schema": "workspace:",
 		"@types/react": "catalog:",
-		"@vitest/coverage-v8": "catalog:",
 		"typescript": "catalog:",
 		"vitest": "catalog:"
 	},

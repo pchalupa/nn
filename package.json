@@ -21,7 +21,7 @@
 	},
 	"devDependencies": {
 		"@biomejs/biome": "2.0.6",
-		"@changesets/cli": "^2.29.5",
+		"@changesets/cli": "^2.31.0",
 		"@vitest/coverage-v8": "catalog:",
 		"cspell": "^8.19.4",
 		"knip": "^6.15.0",

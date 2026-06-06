@@ -233,6 +233,9 @@ importers:
       '@nn/remote':
         specifier: 'workspace:'
         version: link:../remote
+      '@nn/repository':
+        specifier: 'workspace:'
+        version: link:../repository
       '@nn/typescript-config':
         specifier: 'workspace:'
         version: link:../typescript-config

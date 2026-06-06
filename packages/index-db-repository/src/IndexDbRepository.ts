@@ -47,9 +47,6 @@ export class IndexDbRepository implements Repository {
 		const existingDatabase = existingDatabases.find((db) => db.name === this.name);
 		const version = Math.max(existingDatabase?.version ?? 0, this.version);
 		const openRequest = indexedDB.open(this.name, version);
-
-		const needsUpgrade = typeNames.some((typeName) => !this.indexDbDatabase?.objectStoreNames.contains(typeName));
-
 		const indexDbDatabase = await new Promise<IDBDatabase>((resolve, reject) => {
 			openRequest.onsuccess = () => resolve(openRequest.result);
 			openRequest.onupgradeneeded = () => {
@@ -69,6 +66,7 @@ export class IndexDbRepository implements Repository {
 
 			openRequest.onerror = () => reject(openRequest.error);
 		});
+		const needsUpgrade = typeNames.some((typeName) => !this.indexDbDatabase?.objectStoreNames.contains(typeName));
 
 		indexDbDatabase.onversionchange = () => indexDbDatabase.close();
 

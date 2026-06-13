@@ -1,6 +1,7 @@
 import { EventEmitter } from "@nn/event-emitter";
+import type { Observable } from "@nn/event-emitter/Observable";
 
-export class Snapshot<State> {
+export class Snapshot<State extends Observable> {
 	events = new EventEmitter<{ invalidated: [] }>();
 
 	private constructor(private state: State) {}
@@ -9,8 +10,13 @@ export class Snapshot<State> {
 		return this.state?.toString();
 	}
 
-	static createSnapshot<State>(state: State): Snapshot<State> {
+	static createSnapshot<State extends Observable>(state: State): Snapshot<State> {
 		const snapshot = new Snapshot<State>(state);
+
+		// On state update, snapshot has to be invalidated
+		state.subscribe(() => {
+			snapshot.events.emit("invalidated");
+		});
 
 		const proxy = new Proxy(snapshot, {
 			get(target, prop, receiver) {

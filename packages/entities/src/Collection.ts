@@ -73,5 +73,6 @@ export class Slice<Value extends { id: string }> extends Collection<Value> {
 	push(value: Value): void {
 		this.collection.push(value);
 		this.events.emit("update", value);
+		this.emit();
 	}
 }

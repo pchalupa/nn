@@ -103,7 +103,8 @@ describe("Store", () => {
 
 		const filtered = store.getSnapshotOf((schema) => schema.testCollection.filter((item) => item.id === "1"));
 
-		expect([...filtered]).toStrictEqual([{ id: "1" }]);
+		expect(filtered.length).toBe(1);
+		expect(filtered.current).toStrictEqual([{ id: "1" }]);
 	});
 
 	it("should notify subscribers when a snapshot is updated", async () => {

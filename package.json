@@ -20,11 +20,11 @@
 		"changeset:publish": "changeset publish"
 	},
 	"devDependencies": {
-		"@biomejs/biome": "2.0.6",
-		"@changesets/cli": "^2.31.0",
+		"@biomejs/biome": "2.5.14",
+		"@changesets/cli": "^3.0.3",
 		"@vitest/coverage-v8": "catalog:",
-		"cspell": "^8.19.4",
-		"knip": "^6.15.0",
+		"cspell": "^10.3.3",
+		"knip": "^6.37.0",
 		"typescript": "catalog:",
 		"vitest": "catalog:"
 	},

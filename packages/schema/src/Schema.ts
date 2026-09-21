@@ -1,12 +1,11 @@
 export type Infer<S> = S extends Schema<infer T> ? T : never;
 
-export type SchemaType = "string" | "number" | "boolean" | "object" | "array";
 
 declare const InferredType: unique symbol;
 
 export abstract class Schema<Type = unknown> {
 	declare readonly [InferredType]: Type;
-	abstract readonly type: SchemaType;
+	abstract readonly type: "string" | "number" | "boolean" | "object" | "array";
 	declare title?: string;
 	declare description?: string;
 

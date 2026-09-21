@@ -58,7 +58,8 @@ export class Store<State extends object> {
 	}
 
 	getSnapshotOf<SelectedState extends Observable>(selector: (state: State) => SelectedState): SelectedState {
-		return this.snapshotOf(selector).state;
+		// TDB: Remove type casting
+		return this.snapshotOf(selector).state as SelectedState;
 	}
 
 	getSnapshotIdOf<SelectedState extends Observable>(selector: (state: State) => SelectedState): string | undefined {
@@ -67,9 +68,9 @@ export class Store<State extends object> {
 
 	private snapshotOf<SelectedState extends Observable>(
 		selector: (state: State) => SelectedState,
-	): Snapshot<SelectedState> {
+	): Snapshot {
 		const snapshotId = selector;
-		let snapshot = this.snapshotManager.getSnapshot<SelectedState>(snapshotId);
+		let snapshot = this.snapshotManager.getSnapshot(snapshotId);
 
 		if (!snapshot) {
 			const state = selector(this.state);

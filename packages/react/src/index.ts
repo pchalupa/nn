@@ -1,15 +1,16 @@
 import type { Remote } from "@nn/remote";
 import type { Repository } from "@nn/repository";
-import type { ObjectShape, Shape } from "@nn/schema";
+import type { Observable } from "@nn/event-emitter/Observable";
+import type { ObjectSchema, Schema } from "@nn/schema";
 import { Store } from "@nn/store";
 import { useDebugValue, use as usePromise, useRef, useSyncExternalStore } from "react";
 import { getSnapshot } from "./getSnapshot";
 import { subscribe } from "./subscribe";
 
-export type Selector<Schema, Slice = unknown> = (store: Schema) => Slice;
+export type Selector<Schema, Snapshot extends Observable = Observable> = (store: Schema) => Snapshot;
 
-export async function createStore<S extends ObjectShape<Record<string, Shape>>>(options: {
-	schema: S;
+export async function createStore<StoreSChema extends ObjectSchema<Record<string, Schema>>>(options: {
+	schema: StoreSChema;
 	repository?: Repository;
 	remote?: Remote;
 }) {
@@ -17,7 +18,7 @@ export async function createStore<S extends ObjectShape<Record<string, Shape>>>(
 }
 
 export function use<Schema extends object>(promisedStore: Promise<Store<Schema>>) {
-	return function useStore<Type>(selector: Selector<Schema, Type>) {
+	return function useStore<Type extends Observable>(selector: Selector<Schema, Type>) {
 		const store = usePromise(promisedStore);
 		const selectorRef = useRef(selector);
 		const subscribeRef = useRef(subscribe(store));

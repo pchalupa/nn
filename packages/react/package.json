@@ -21,9 +21,11 @@
 		"test:watch": "vitest watch"
 	},
 	"dependencies": {
+		"@nn/event-emitter": "workspace:",
 		"@nn/store": "workspace:"
 	},
 	"devDependencies": {
+		"@nn/entities": "workspace:",
 		"@nn/typescript-config": "workspace:",
 		"@nn/repository": "workspace:",
 		"@nn/remote": "workspace:",

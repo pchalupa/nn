@@ -1,0 +1,10 @@
+{
+  "version": 1,
+  "skills": {
+    "adr-authoring": {
+      "source": "../skills",
+      "sourceType": "local",
+      "computedHash": "ec40533ef95ce092aad6d84281db07270685275a5d426d3429c5aefad7b1c4b3"
+    }
+  }
+}

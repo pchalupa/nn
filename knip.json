@@ -1,9 +1,3 @@
 {
-	"$schema": "https://unpkg.com/knip@6/schema.json",
-	"workspaces": {
-		"packages/typescript-config": {
-			"entry": [],
-			"project": []
-		}
-	}
+	"$schema": "https://unpkg.com/knip@6/schema.json"
 }

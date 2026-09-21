@@ -3,13 +3,13 @@
 	"version": "0.0.0",
 	"description": "Entities",
 	"keywords": [],
-	"repository": "https://github.com/pchalupa/nn",
 	"homepage": "https://github.com/pchalupa/nn/packages/repository#readme",
 	"bugs": {
 		"url": "https://github.com/pchalupa/nn/issues"
 	},
-	"author": "pchalupa <chalupa.petr93@gmail.com> (https://github.com/pchalupa)",
 	"license": "MIT",
+	"author": "pchalupa <chalupa.petr93@gmail.com> (https://github.com/pchalupa)",
+	"repository": "https://github.com/pchalupa/nn",
 	"exports": {
 		"./Entity": {
 			"import": "./src/Entity.ts"
@@ -28,8 +28,8 @@
 		"ts:check": "tsc --noEmit"
 	},
 	"dependencies": {
-		"@nn/time": "workspace:",
-		"@nn/event-emitter": "workspace:"
+		"@nn/event-emitter": "workspace:",
+		"@nn/time": "workspace:"
 	},
 	"devDependencies": {
 		"@nn/typescript-config": "workspace:",

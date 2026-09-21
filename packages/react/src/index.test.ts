@@ -1,5 +1,6 @@
 import { object } from "@nn/schema";
 import { describe, expect, it } from "vitest";
+
 import { createStore } from "./index";
 
 describe("useStore", () => {

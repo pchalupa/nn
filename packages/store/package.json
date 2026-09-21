@@ -3,13 +3,13 @@
 	"version": "0.0.0",
 	"description": "State management library",
 	"keywords": [],
-	"repository": "https://github.com/pchalupa/nn",
 	"homepage": "https://github.com/pchalupa/nn/packages/store#readme",
 	"bugs": {
 		"url": "https://github.com/pchalupa/nn/issues"
 	},
-	"author": "pchalupa <chalupa.petr93@gmail.com> (https://github.com/pchalupa)",
 	"license": "MIT",
+	"author": "pchalupa <chalupa.petr93@gmail.com> (https://github.com/pchalupa)",
+	"repository": "https://github.com/pchalupa/nn",
 	"exports": {
 		".": {
 			"import": "./src/Store.ts"
@@ -21,14 +21,14 @@
 		"test:watch": "vitest watch"
 	},
 	"dependencies": {
-		"@nn/repository": "workspace:",
 		"@nn/event-emitter": "workspace:",
 		"@nn/entities": "workspace:",
+		"@nn/repository": "workspace:",
 		"@nn/schema": "workspace:"
 	},
 	"devDependencies": {
-		"@nn/typescript-config": "workspace:",
 		"@nn/remote": "workspace:",
+		"@nn/typescript-config": "workspace:",
 		"typescript": "catalog:",
 		"vitest": "catalog:"
 	}

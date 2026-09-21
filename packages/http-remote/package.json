@@ -3,13 +3,13 @@
 	"version": "0.0.0",
 	"description": "Http remote",
 	"keywords": [],
-	"repository": "https://github.com/pchalupa/nn",
 	"homepage": "https://github.com/pchalupa/nn/packages/repository#readme",
 	"bugs": {
 		"url": "https://github.com/pchalupa/nn/issues"
 	},
-	"author": "pchalupa <chalupa.petr93@gmail.com> (https://github.com/pchalupa)",
 	"license": "MIT",
+	"author": "pchalupa <chalupa.petr93@gmail.com> (https://github.com/pchalupa)",
+	"repository": "https://github.com/pchalupa/nn",
 	"exports": {
 		".": {
 			"import": "./src/HttpRemote.ts"
@@ -19,8 +19,8 @@
 		"ts:check": "tsc --noEmit"
 	},
 	"dependencies": {
-		"@nn/remote": "workspace:",
-		"@nn/event-emitter": "workspace:"
+		"@nn/event-emitter": "workspace:",
+		"@nn/remote": "workspace:"
 	},
 	"devDependencies": {
 		"@nn/typescript-config": "workspace:",

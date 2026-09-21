@@ -4,6 +4,7 @@ import type { Observable } from "@nn/event-emitter/Observable";
 import type { ObjectSchema, Schema } from "@nn/schema";
 import { Store } from "@nn/store";
 import { useDebugValue, use as usePromise, useRef, useSyncExternalStore } from "react";
+
 import { getSnapshot } from "./getSnapshot";
 import { subscribe } from "./subscribe";
 

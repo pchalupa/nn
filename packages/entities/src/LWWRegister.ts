@@ -1,4 +1,5 @@
 import { Time } from "@nn/time";
+
 import { Entity } from "./Entity";
 
 export class LWWRegister<Value> extends Entity<Value> {

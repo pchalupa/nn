@@ -1,5 +1,6 @@
 import { Collection } from "@nn/entities/Collection";
 import { describe, expect, it } from "vitest";
+
 import { SnapshotManager } from "./SnapshotManager";
 
 describe("SnapshotManager", () => {

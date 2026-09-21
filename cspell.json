@@ -3,7 +3,24 @@
 	"version": "0.2",
 	"language": "en",
 	"dictionaries": ["softwareTerms"],
-	"words": ["Chalupa", "Petr", "vitest"],
+	"words": [
+		"aplikací",
+		"architektura",
+		"Chalupa",
+		"indexeddb",
+		"kontextu",
+		"Kökörčený",
+		"Michal",
+		"noninteractive",
+		"Petr",
+		"oxfmt",
+		"oxlint",
+		"pchalupa",
+		"ŠKOLA",
+		"VYSOKÁ",
+		"vitest",
+		"webových"
+	],
 	"ignorePaths": [],
 	"useGitignore": true
 }

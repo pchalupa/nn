@@ -1,6 +1,8 @@
-import cors from "cors";
 import EventEmitter from "events";
+
+import cors from "cors";
 import express from "express";
+
 import * as db from "./services/db/db";
 import logger from "./services/logger";
 

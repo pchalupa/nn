@@ -6,9 +6,9 @@
 
 Builds the store from a JSON Schema instead of a map of entity factories.
 
-`@nn/schema` now exports shape builders that mirror JSON Schema types: `string()`, `number()`, `boolean()`, `object()` and `array()`. Each one returns a `Shape` you can annotate with `.entitle()` and `.describe()`, and the `Infer<S>` type gives you the TypeScript type a shape describes.
+`@nn/schema` now exports schema builders that mirror JSON Schema types: `string()`, `number()`, `boolean()`, `object()` and `array()`. Each one returns a `Schema` you can annotate with `.entitle()` and `.describe()`, and the `Infer<S>` type gives you the TypeScript type a schema describes.
 
-`Store.fromSchema()` reads the top-level properties of an object shape and creates a `Collection` for each one. `createStore` in `@nn/react` takes the same schema and delegates to it. Every top-level property has to be an array shape; anything else throws a `TypeError`.
+`Store.fromSchema()` reads the top-level properties of an object schema and creates a `Collection` for each one. `createStore` in `@nn/react` takes the same schema and delegates to it. Every top-level property has to be an array schema; anything else throws a `TypeError`.
 
 ```ts
 // Before

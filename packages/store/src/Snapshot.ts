@@ -4,9 +4,9 @@ import type { Observable } from "@nn/event-emitter/Observable";
 export class Snapshot<State extends Observable> {
 	events = new EventEmitter<{ invalidated: [] }>();
 
-	private constructor(private state: State) {}
+	private constructor(public readonly state: State) {}
 
-	get id() {
+	get id(): string | undefined {
 		return this.state?.toString();
 	}
 
@@ -18,19 +18,6 @@ export class Snapshot<State extends Observable> {
 			snapshot.events.emit("invalidated");
 		});
 
-		const proxy = new Proxy(snapshot, {
-			get(target, prop, receiver) {
-				// Snapshot properties
-				if (prop === "id" || prop === "state" || prop === "events") {
-					return Reflect.get(target, prop, receiver);
-				}
-
-				if (target.state instanceof Object && prop in target.state) return Reflect.get(target.state, prop, receiver);
-
-				return undefined;
-			},
-		});
-
-		return proxy;
+		return snapshot;
 	}
 }

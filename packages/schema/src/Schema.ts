@@ -1,12 +1,12 @@
-export type Infer<S> = S extends Shape<infer T> ? T : never;
+export type Infer<S> = S extends Schema<infer T> ? T : never;
 
-export type ShapeType = "string" | "number" | "boolean" | "object" | "array";
+export type SchemaType = "string" | "number" | "boolean" | "object" | "array";
 
 declare const InferredType: unique symbol;
 
-export abstract class Shape<Type = unknown> {
+export abstract class Schema<Type = unknown> {
 	declare readonly [InferredType]: Type;
-	abstract readonly type: ShapeType;
+	abstract readonly type: SchemaType;
 	declare title?: string;
 	declare description?: string;
 
@@ -23,19 +23,19 @@ export abstract class Shape<Type = unknown> {
 	}
 }
 
-export class StringShape extends Shape<string> {
+export class StringSchema extends Schema<string> {
 	override readonly type = "string" as const;
 }
 
-export class NumberShape extends Shape<number> {
+export class NumberSchema extends Schema<number> {
 	override readonly type = "number" as const;
 }
 
-export class BooleanShape extends Shape<boolean> {
+export class BooleanSchema extends Schema<boolean> {
 	override readonly type = "boolean" as const;
 }
 
-export class ObjectShape<Properties extends Record<string, Shape>> extends Shape<{
+export class ObjectSchema<Properties extends Record<string, Schema>> extends Schema<{
 	[Key in keyof Properties]: Infer<Properties[Key]>;
 }> {
 	override readonly type = "object" as const;
@@ -45,7 +45,7 @@ export class ObjectShape<Properties extends Record<string, Shape>> extends Shape
 	}
 }
 
-export class ArrayShape<Item extends Shape> extends Shape<Array<Infer<Item>>> {
+export class ArraySchema<Item extends Schema> extends Schema<Array<Infer<Item>>> {
 	override readonly type = "array" as const;
 
 	constructor(public readonly items: Item) {

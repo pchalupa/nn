@@ -21,8 +21,8 @@ export const Column = ({ title, status }: ColumnProps) => {
 			<Header title={title} onAddClick={handleAddClick} />
 			<Divider />
 			<div className="flex flex-col gap-y-2">
-				{data.map((data) => (
-					<Ticket key={data.id} title={data?.title} description={data?.description} />
+				{data.map((ticket) => (
+					<Ticket key={ticket.id} title={ticket?.title} description={ticket?.description} />
 				))}
 			</div>
 		</section>

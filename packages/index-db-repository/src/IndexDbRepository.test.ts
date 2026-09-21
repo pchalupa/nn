@@ -1,5 +1,6 @@
 import { IDBFactory } from "fake-indexeddb";
 import { beforeEach, describe, expect, it } from "vitest";
+
 import { IndexDbRepository } from "./IndexDbRepository";
 
 describe("IndexDbRepository", () => {

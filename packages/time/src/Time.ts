@@ -1,6 +1,6 @@
 const TIMESTAMP_DELIMITER = "+" as const;
 
-// biome-ignore lint/complexity/noStaticOnlyClass: This class is used to store global time
+// oxlint-disable-next-line typescript/no-extraneous-class -- This class is used to store global time
 class GlobalTime {
 	/** Physical time in milliseconds */
 	protected static time = 0;

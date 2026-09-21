@@ -1,5 +1,6 @@
 import { Store } from "@nn/store";
 import { describe, expect, it, vi } from "vitest";
+
 import { getSnapshot } from "./getSnapshot";
 
 describe("getSnapshot", () => {

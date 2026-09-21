@@ -3,13 +3,13 @@
 	"version": "1.0.0",
 	"description": "",
 	"keywords": [],
-	"author": "",
 	"license": "MIT",
+	"author": "",
 	"scripts": {
 		"dev": "pnpm -r --parallel run dev",
 		"ts:check": "pnpm -r --parallel ts:check",
-		"lint:check": "biome lint .",
-		"format:check": "biome format .",
+		"lint:check": "oxlint",
+		"format:check": "oxfmt --check .",
 		"spell:check": "cspell --no-progress **/*.{ts,tsx,json,md,tex}",
 		"clutter:check": "knip",
 		"test": "vitest",
@@ -20,16 +20,17 @@
 		"changeset:publish": "changeset publish"
 	},
 	"devDependencies": {
-		"@biomejs/biome": "2.5.14",
 		"@changesets/cli": "^3.0.3",
 		"@vitest/coverage-v8": "catalog:",
 		"cspell": "^10.3.3",
 		"knip": "^6.37.0",
+		"oxfmt": "^0.68.0",
+		"oxlint": "^1.83.0",
 		"typescript": "catalog:",
 		"vitest": "catalog:"
 	},
-	"packageManager": "pnpm@11.5.2",
 	"engines": {
 		"node": ">=22"
-	}
+	},
+	"packageManager": "pnpm@11.5.2"
 }

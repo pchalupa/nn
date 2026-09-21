@@ -1,5 +1,6 @@
 import { Collection } from "@nn/schema/Collection";
 import { describe, expect, it, vi } from "vitest";
+
 import { Snapshot } from "./Snapshot";
 import { Store } from "./Store";
 

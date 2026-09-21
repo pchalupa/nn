@@ -27,7 +27,7 @@ export class IndexDbRepository implements Repository {
 			const transaction = this.indexDbDatabase.transaction(typeName, Mode.ReadOnly);
 
 			return this.processRequest(transaction.objectStore(typeName).getAll());
-			// biome-ignore lint/style/noUselessElse: improves readability
+			// oxlint-disable-next-line no-else-return -- improves readability
 		} else {
 			throw new RepositoryNotInitializedError();
 		}

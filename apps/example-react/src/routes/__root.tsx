@@ -1,4 +1,5 @@
 import { createRootRoute, Link, Outlet } from "@tanstack/react-router";
+
 import { Divider } from "../components/Divider";
 import { Skeleton } from "../components/Skeleton";
 import { useStore } from "../store";
@@ -11,9 +12,9 @@ const RootComponent = () => (
 );
 
 const SideBar = () => (
-	<div className="min-h-screen w-1/4 min-w-28 max-w-32 bg-zinc-800">
+	<div className="min-h-screen w-1/4 max-w-32 min-w-28 bg-zinc-800">
 		<Link to="/">
-			<h1 className="p-4 text-center font-bold text-xl text-zinc-200">DBug</h1>
+			<h1 className="p-4 text-center text-xl font-bold text-zinc-200">DBug</h1>
 		</Link>
 		<Skeleton width="w-3/4" height="h-6" className="mx-2">
 			<Stats />

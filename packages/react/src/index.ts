@@ -2,12 +2,13 @@ import type { Remote } from "@nn/remote";
 import type { Repository } from "@nn/repository";
 import { Store } from "@nn/store";
 import { useDebugValue, use as usePromise, useRef, useSyncExternalStore } from "react";
+
 import { getSnapshot } from "./getSnapshot";
 import { subscribe } from "./subscribe";
 
 export type Selector<Schema, Slice = unknown> = (store: Schema) => Slice;
 
-// biome-ignore lint/suspicious/noExplicitAny: testing
+// oxlint-disable-next-line typescript/no-explicit-any -- testing
 type EntityFactory = (data: any) => unknown;
 
 export async function createStore<

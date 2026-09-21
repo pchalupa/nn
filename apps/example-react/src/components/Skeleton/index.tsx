@@ -9,8 +9,7 @@ interface SkeletonProps extends PropsWithChildren {
 export const Skeleton = ({ width, height, children, className = "" }: SkeletonProps) => (
 	<Suspense
 		fallback={
-			<div
-				role="status"
+			<output
 				className={`${width} ${height} animate-pulse rounded-lg bg-zinc-700 transition-colors duration-200 ${className}`}
 			/>
 		}

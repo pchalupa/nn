@@ -1,6 +1,7 @@
 import { EventEmitter } from "@nn/event-emitter";
 import type { Remote } from "@nn/remote";
 import type { Repository } from "@nn/repository";
+
 import type { Snapshot } from "./Snapshot";
 import { SnapshotManager } from "./SnapshotManager";
 

@@ -5,9 +5,9 @@ packages:
 minimumReleaseAge: 4320
 
 catalog:
-  '@types/react': ^19.3.0
-  '@types/react-dom': ^19.3.0
-  '@vitest/coverage-v8': ^5.0.1
+  "@types/react": ^19.3.0
+  "@types/react-dom": ^19.3.0
+  "@vitest/coverage-v8": ^5.0.1
   vitest: ^5.0.1
   typescript: 7.0.2
   react: 19.3.0

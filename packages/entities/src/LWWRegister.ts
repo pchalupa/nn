@@ -1,4 +1,5 @@
 import { Time } from "@nn/time";
+
 import { Entity } from "./Entity";
 import type { Mergeable } from "./Mergeable";
 

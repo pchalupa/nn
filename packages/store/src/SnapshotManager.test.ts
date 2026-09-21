@@ -1,3 +1,4 @@
+import { Collection } from "@nn/entities/Collection";
 import { describe, expect, it } from "vitest";
 import { SnapshotManager } from "./SnapshotManager";
 
@@ -19,14 +20,14 @@ describe("SnapshotManager", () => {
 	it("should create a snapshot", () => {
 		const id = {};
 		const snapshotManager = new SnapshotManager();
-		const snapshot = snapshotManager.createSnapshot(id, {});
+		const snapshot = snapshotManager.createSnapshot(id, new Collection());
 
 		expect(snapshotManager.getSnapshot(id)).toBe(snapshot);
-		expect(snapshot).toHaveProperty("state", {});
+		expect(snapshot).toHaveProperty("state", new Collection());
 		expect(snapshotManager).toMatchInlineSnapshot(`
 			SnapshotManager {
 			  "snapshots": Map {
-			    {} => {
+			    {} => Snapshot {
 			      "events": EventEmitter {
 			        "events": Map {
 			          "invalidated" => Set {
@@ -34,7 +35,19 @@ describe("SnapshotManager", () => {
 			          },
 			        },
 			      },
-			      "state": {},
+			      "state": Collection {
+			        "data": [],
+			        "eventEmitter": EventEmitter {
+			          "events": Map {
+			            "update" => Set {
+			              [Function],
+			            },
+			          },
+			        },
+			        "events": EventEmitter {
+			          "events": Map {},
+			        },
+			      },
 			    },
 			  },
 			}
@@ -44,7 +57,7 @@ describe("SnapshotManager", () => {
 	it("should get a snapshot", () => {
 		const id = {};
 		const snapshotManager = new SnapshotManager();
-		const snapshot = snapshotManager.createSnapshot(id, {});
+		const snapshot = snapshotManager.createSnapshot(id, new Collection());
 
 		expect(snapshotManager.getSnapshot(id)).toBe(snapshot);
 	});
@@ -53,7 +66,7 @@ describe("SnapshotManager", () => {
 		const id = {};
 		const snapshotManager = new SnapshotManager();
 
-		snapshotManager.createSnapshot(id, {});
+		snapshotManager.createSnapshot(id, new Collection());
 		snapshotManager.invalidateSnapshot(id);
 
 		expect(snapshotManager.getSnapshot(id)).toBeUndefined();

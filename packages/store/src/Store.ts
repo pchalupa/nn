@@ -1,8 +1,16 @@
+import { Collection } from "@nn/entities/Collection";
 import { EventEmitter } from "@nn/event-emitter";
 import type { Remote } from "@nn/remote";
 import type { Repository } from "@nn/repository";
+import type { ArrayShape, Infer, ObjectShape, Shape } from "@nn/schema";
 import type { Snapshot } from "./Snapshot";
 import { SnapshotManager } from "./SnapshotManager";
+
+type StateFromSchema<Schema extends ObjectShape<Record<string, Shape>>> = {
+	[Key in keyof Schema["properties"]]: Schema["properties"][Key] extends ArrayShape<infer Item>
+		? Collection<Infer<Item> & { id: string }>
+		: never;
+};
 
 export class Store<State extends object> {
 	public events = new EventEmitter<{ update: [] }>();
@@ -23,6 +31,29 @@ export class Store<State extends object> {
 				});
 			}
 		}
+	}
+
+	static async fromSchema<Schema extends ObjectShape<Record<string, Shape>>>(options: {
+		schema: Schema;
+		repository?: Repository;
+		remote?: Remote;
+	}): Promise<Store<StateFromSchema<Schema>>> {
+		const { schema, repository, remote } = options;
+		const state: Record<string, Collection<{ id: string }>> = {};
+
+		await repository?.init(schema.properties);
+
+		for (const [typeName, shape] of Object.entries(schema.properties)) {
+			if (shape.type !== "array") {
+				throw new TypeError(`Unsupported top-level schema shape "${shape.type}" for "${typeName}".`);
+			}
+
+			const data = await repository?.getAll<{ id: string }>(typeName);
+
+			state[typeName] = new Collection(data);
+		}
+
+		return new Store(state as StateFromSchema<Schema>, repository, remote);
 	}
 
 	getSnapshotOf<Type>(selector: (state: State) => Type) {

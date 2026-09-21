@@ -1,4 +1,6 @@
 import { Collection } from "@nn/entities/Collection";
+import type { Repository } from "@nn/repository";
+import { array, object, string } from "@nn/schema";
 import { describe, expect, it, vi } from "vitest";
 import { Snapshot } from "./Snapshot";
 import { Store } from "./Store";
@@ -57,6 +59,37 @@ describe("Store", () => {
 			  },
 			}
 		`);
+	});
+
+	it("should create a store from a schema", async () => {
+		const store = await Store.fromSchema({
+			schema: object({
+				testCollection: array(object({ name: string() })),
+			}),
+		});
+		const collection = store.getSnapshotOf((state) => state.testCollection);
+
+		expect(store).toBeInstanceOf(Store);
+		expect(collection.current).toEqual([]);
+	});
+
+	it("should initialize and hydrate a store from a repository", async () => {
+		const data = [{ id: "1", name: "Test" }];
+		const repository: Repository = {
+			init: vi.fn().mockResolvedValue(undefined),
+			getAll: vi.fn().mockResolvedValue(data),
+			set: vi.fn().mockResolvedValue(undefined),
+		};
+		const schema = object({
+			testCollection: array(object({ name: string() })),
+		});
+
+		const store = await Store.fromSchema({ schema, repository });
+		const collection = store.getSnapshotOf((state) => state.testCollection);
+
+		expect(repository.init).toHaveBeenCalledWith(schema.properties);
+		expect(repository.getAll).toHaveBeenCalledWith("testCollection");
+		expect(collection.current).toEqual(data);
 	});
 
 	it("should return a snapshot", async () => {

@@ -1,9 +1,10 @@
+import type { Observable } from "@nn/event-emitter/Observable";
 import { Snapshot } from "./Snapshot";
 
 export class SnapshotManager {
-	private snapshots = new Map<object, Snapshot<unknown>>();
+	private snapshots = new Map<object, Snapshot>();
 
-	createSnapshot(id: object, state: unknown): Snapshot<unknown> {
+	createSnapshot(id: object, state: Observable): Snapshot {
 		const snapshot = Snapshot.createSnapshot(state);
 
 		snapshot.events.once("invalidated", () => this.invalidateSnapshot(id));
@@ -12,7 +13,7 @@ export class SnapshotManager {
 		return snapshot;
 	}
 
-	getSnapshot(id: object): Snapshot<unknown> | undefined {
+	getSnapshot(id: object): Snapshot | undefined {
 		return this.snapshots.get(id);
 	}
 

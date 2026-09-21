@@ -3,12 +3,12 @@ import { EventEmitter } from "@nn/event-emitter";
 import type { Observable } from "@nn/event-emitter/Observable";
 import type { Remote } from "@nn/remote";
 import type { Repository } from "@nn/repository";
-import type { ArrayShape, Infer, ObjectShape, Shape } from "@nn/schema";
+import type { ArraySchema, Infer, ObjectSchema, Schema } from "@nn/schema";
 import type { Snapshot } from "./Snapshot";
 import { SnapshotManager } from "./SnapshotManager";
 
-type StateFromSchema<Schema extends ObjectShape<Record<string, Shape>>> = {
-	[Key in keyof Schema["properties"]]: Schema["properties"][Key] extends ArrayShape<infer Item>
+type StateFromSchema<StoreSchema extends ObjectSchema<Record<string, Schema>>> = {
+	[Key in keyof StoreSchema["properties"]]: StoreSchema["properties"][Key] extends ArraySchema<infer Item>
 		? Collection<Infer<Item> & { id: string }>
 		: never;
 };
@@ -34,11 +34,11 @@ export class Store<State extends object> {
 		}
 	}
 
-	static async fromSchema<Schema extends ObjectShape<Record<string, Shape>>>(options: {
-		schema: Schema;
+	static async fromSchema<StoreSchema extends ObjectSchema<Record<string, Schema>>>(options: {
+		schema: StoreSchema;
 		repository?: Repository;
 		remote?: Remote;
-	}): Promise<Store<StateFromSchema<Schema>>> {
+	}): Promise<Store<StateFromSchema<StoreSchema>>> {
 		const { schema, repository, remote } = options;
 		const state: Record<string, Collection<{ id: string }>> = {};
 
@@ -54,7 +54,7 @@ export class Store<State extends object> {
 			state[typeName] = new Collection(data);
 		}
 
-		return new Store(state as StateFromSchema<Schema>, repository, remote);
+		return new Store(state as StateFromSchema<StoreSchema>, repository, remote);
 	}
 
 	getSnapshotOf<SelectedState extends Observable>(selector: (state: State) => SelectedState): SelectedState {

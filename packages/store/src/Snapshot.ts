@@ -1,17 +1,17 @@
 import { EventEmitter } from "@nn/event-emitter";
 import type { Observable } from "@nn/event-emitter/Observable";
 
-export class Snapshot<State extends Observable> {
+export class Snapshot {
 	events = new EventEmitter<{ invalidated: [] }>();
 
-	private constructor(public readonly state: State) {}
+	private constructor(public readonly state: Observable) {}
 
 	get id(): string | undefined {
 		return this.state?.toString();
 	}
 
-	static createSnapshot<State extends Observable>(state: State): Snapshot<State> {
-		const snapshot = new Snapshot<State>(state);
+	static createSnapshot(state: Observable): Snapshot {
+		const snapshot = new Snapshot(state);
 
 		// On state update, snapshot has to be invalidated
 		state.subscribe(() => {

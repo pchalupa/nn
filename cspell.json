@@ -3,7 +3,21 @@
 	"version": "0.2",
 	"language": "en",
 	"dictionaries": ["softwareTerms"],
-	"words": ["vitest"],
+	"words": [
+		"aplikací",
+		"architektura",
+		"Chalupa",
+		"indexeddb",
+		"kontextu",
+		"Kökörčený",
+		"Michal",
+		"Petr",
+		"pchalupa",
+		"ŠKOLA",
+		"VYSOKÁ",
+		"vitest",
+		"webových"
+	],
 	"ignorePaths": [],
 	"useGitignore": true
 }

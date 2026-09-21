@@ -1,7 +1,7 @@
+import Babel from "@rolldown/plugin-babel";
 import TailwindCSS from "@tailwindcss/vite";
 import { tanstackRouter } from "@tanstack/router-plugin/vite";
 import React, { reactCompilerPreset } from "@vitejs/plugin-react";
-import Babel from "@rolldown/plugin-babel";
 /// <reference types="vitest" />
 import { defineConfig, loadEnv } from "vite";
 import { VitePWA } from "vite-plugin-pwa";

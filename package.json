@@ -30,7 +30,7 @@
 		"vitest": "catalog:"
 	},
 	"engines": {
-		"node": ">=22"
+		"node": ">=24"
 	},
 	"packageManager": "pnpm@11.5.2"
 }

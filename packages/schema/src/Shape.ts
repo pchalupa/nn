@@ -1,15 +1,17 @@
 export type Infer<S> = S extends Shape<infer T> ? T : never;
 
+export type ShapeType = "string" | "number" | "boolean" | "object" | "array";
+
 declare const InferredType: unique symbol;
 
-export class Shape<Type = unknown> {
+export abstract class Shape<Type = unknown> {
 	declare readonly [InferredType]: Type;
-	readonly type: "primitive" | "array" | "object" = "primitive";
-	protected name?: string;
-	protected description?: string;
+	abstract readonly type: ShapeType;
+	declare title?: string;
+	declare description?: string;
 
-	identify(name: string): this {
-		this.name = name;
+	entitle(title: string): this {
+		this.title = title;
 
 		return this;
 	}
@@ -19,6 +21,18 @@ export class Shape<Type = unknown> {
 
 		return this;
 	}
+}
+
+export class StringShape extends Shape<string> {
+	override readonly type = "string" as const;
+}
+
+export class NumberShape extends Shape<number> {
+	override readonly type = "number" as const;
+}
+
+export class BooleanShape extends Shape<boolean> {
+	override readonly type = "boolean" as const;
 }
 
 export class ObjectShape<Properties extends Record<string, Shape>> extends Shape<{
@@ -31,7 +45,7 @@ export class ObjectShape<Properties extends Record<string, Shape>> extends Shape
 	}
 }
 
-export class ArrayShape<Item extends Shape> extends Shape<Array<Infer<Item> & { id: string }>> {
+export class ArrayShape<Item extends Shape> extends Shape<Array<Infer<Item>>> {
 	override readonly type = "array" as const;
 
 	constructor(public readonly items: Item) {

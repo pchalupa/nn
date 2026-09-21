@@ -1,20 +1,25 @@
-import { ArrayShape, ObjectShape, Shape } from "./Shape";
+import { ArrayShape, BooleanShape, NumberShape, ObjectShape, type Shape, StringShape } from "./Shape";
 
-export type { Infer } from "./Shape";
-export { ArrayShape, ObjectShape, Shape } from "./Shape";
+export type { Infer, ShapeType } from "./Shape";
+export { ArrayShape, BooleanShape, NumberShape, ObjectShape, Shape, StringShape } from "./Shape";
 
-export type AnyShape = Shape | ArrayShape<Shape> | ObjectShape<Record<string, Shape>>;
+export type AnyShape =
+	| StringShape
+	| NumberShape
+	| BooleanShape
+	| ArrayShape<Shape>
+	| ObjectShape<Record<string, Shape>>;
 
-export function string(): Shape<string> {
-	return new Shape<string>();
+export function string(): StringShape {
+	return new StringShape();
 }
 
-export function number(): Shape<number> {
-	return new Shape<number>();
+export function number(): NumberShape {
+	return new NumberShape();
 }
 
-export function boolean(): Shape<boolean> {
-	return new Shape<boolean>();
+export function boolean(): BooleanShape {
+	return new BooleanShape();
 }
 
 export function object<Properties extends Record<string, Shape>>(properties: Properties): ObjectShape<Properties> {

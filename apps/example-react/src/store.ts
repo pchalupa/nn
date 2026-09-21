@@ -7,7 +7,7 @@ const user = object({
 	name: string().describe("User name"),
 	email: string(),
 })
-	.identify("user")
+	.entitle("user")
 	.describe("Holds information about a user.");
 
 const ticket = object({
@@ -16,7 +16,7 @@ const ticket = object({
 	status: string(),
 	assignee: user,
 })
-	.identify("ticket")
+	.entitle("ticket")
 	.describe("Holds information about a ticket.");
 
 const schema = object({

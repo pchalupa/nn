@@ -1,7 +1,9 @@
 export type Infer<S> = S extends Shape<infer T> ? T : never;
 
-export class Shape<T = unknown> {
-	declare readonly _type: T;
+declare const InferredType: unique symbol;
+
+export class Shape<Type = unknown> {
+	declare readonly [InferredType]: Type;
 	readonly type: "primitive" | "array" | "object" = "primitive";
 	protected name?: string;
 	protected description?: string;

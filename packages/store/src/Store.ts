@@ -1,5 +1,6 @@
 import { Collection } from "@nn/entities/Collection";
 import { EventEmitter } from "@nn/event-emitter";
+import type { Observable } from "@nn/event-emitter/Observable";
 import type { Remote } from "@nn/remote";
 import type { Repository } from "@nn/repository";
 import type { ArrayShape, Infer, ObjectShape, Shape } from "@nn/schema";
@@ -56,9 +57,19 @@ export class Store<State extends object> {
 		return new Store(state as StateFromSchema<Schema>, repository, remote);
 	}
 
-	getSnapshotOf<Type>(selector: (state: State) => Type) {
+	getSnapshotOf<SelectedState extends Observable>(selector: (state: State) => SelectedState): SelectedState {
+		return this.snapshotOf(selector).state;
+	}
+
+	getSnapshotIdOf<SelectedState extends Observable>(selector: (state: State) => SelectedState): string | undefined {
+		return this.snapshotOf(selector).id;
+	}
+
+	private snapshotOf<SelectedState extends Observable>(
+		selector: (state: State) => SelectedState,
+	): Snapshot<SelectedState> {
 		const snapshotId = selector;
-		let snapshot = this.snapshotManager.getSnapshot(snapshotId);
+		let snapshot = this.snapshotManager.getSnapshot<SelectedState>(snapshotId);
 
 		if (!snapshot) {
 			const state = selector(this.state);
@@ -68,7 +79,6 @@ export class Store<State extends object> {
 			snapshot.events.once("invalidated", handleInvalidated);
 		}
 
-		// TODO: Remove type casting
-		return snapshot as Snapshot<Type> & Type;
+		return snapshot;
 	}
 }

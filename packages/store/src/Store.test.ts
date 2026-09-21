@@ -2,7 +2,6 @@ import { Collection } from "@nn/entities/Collection";
 import type { Repository } from "@nn/repository";
 import { array, object, string } from "@nn/schema";
 import { describe, expect, it, vi } from "vitest";
-import { Snapshot } from "./Snapshot";
 import { Store } from "./Store";
 
 describe("Store", () => {
@@ -96,32 +95,23 @@ describe("Store", () => {
 		const store = new Store({
 			testCollection: new Collection<{ id: string }>(),
 		});
-		const snapshot = store.getSnapshotOf((schema) => schema.testCollection);
+		const selector = (schema: { testCollection: Collection<{ id: string }> }) => schema.testCollection;
+		const snapshot = store.getSnapshotOf(selector);
 
-		expect(snapshot).toBeInstanceOf(Snapshot);
-		expect(snapshot).toHaveProperty("state");
+		expect(snapshot).toBeInstanceOf(Collection);
+		expect(store.getSnapshotIdOf(selector)).toBeDefined();
 		expect(snapshot).toMatchInlineSnapshot(`
 			Collection {
-			  "events": EventEmitter {
+			  "data": [],
+			  "eventEmitter": EventEmitter {
 			    "events": Map {
-			      "invalidated" => Set {
-			        [Function],
+			      "update" => Set {
 			        [Function],
 			      },
 			    },
 			  },
-			  "state": Collection {
-			    "data": [],
-			    "eventEmitter": EventEmitter {
-			      "events": Map {
-			        "update" => Set {
-			          [Function],
-			        },
-			      },
-			    },
-			    "events": EventEmitter {
-			      "events": Map {},
-			    },
+			  "events": EventEmitter {
+			    "events": Map {},
 			  },
 			}
 		`);

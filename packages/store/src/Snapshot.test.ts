@@ -10,14 +10,18 @@ describe("Snapshot", () => {
 		expect(snapshot).toHaveProperty("id");
 		expect(snapshot).toHaveProperty("state");
 		expect(snapshot).toMatchInlineSnapshot(`
-			Collection {
+			Snapshot {
 			  "events": EventEmitter {
 			    "events": Map {},
 			  },
 			  "state": Collection {
 			    "data": [],
 			    "eventEmitter": EventEmitter {
-			      "events": Map {},
+			      "events": Map {
+			        "update" => Set {
+			          [Function],
+			        },
+			      },
 			    },
 			    "events": EventEmitter {
 			      "events": Map {},

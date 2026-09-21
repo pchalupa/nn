@@ -10,11 +10,11 @@ All claims below come from the official sources at json-schema.org; each section
 
 JSON Schema is a declarative vocabulary — itself written in JSON — for describing and validating the shape of JSON documents. Two roles matter throughout:
 
-> the *instance* is the JSON document that is being validated or described, and the *schema* is the document that contains the description.
+> the _instance_ is the JSON document that is being validated or described, and the _schema_ is the document that contains the description.
 
 A validator takes a schema plus an instance and reports whether the instance conforms.
 
-**Drafts.** JSON Schema is versioned as dated drafts. **2020-12 is the current version**; the previous one is 2019-09, preceded by draft-07, draft-06 and draft-04. A schema declares which dialect it uses with `$schema`, whose value MUST be a string and a valid URI-reference resolving to an absolute URI. That URI names a *meta-schema*, which in turn declares the *vocabularies* in force.
+**Drafts.** JSON Schema is versioned as dated drafts. **2020-12 is the current version**; the previous one is 2019-09, preceded by draft-07, draft-06 and draft-04. A schema declares which dialect it uses with `$schema`, whose value MUST be a string and a valid URI-reference resolving to an absolute URI. That URI names a _meta-schema_, which in turn declares the _vocabularies_ in force.
 
 ```json
 { "$schema": "https://json-schema.org/draft/2020-12/schema" }
@@ -24,13 +24,13 @@ Vocabularies are "sets of keywords, their syntax, and their semantics". The Core
 
 The spec also sorts keywords into five behaviour classes, which is the mental model that makes the rest coherent:
 
-| Class | Examples | Effect |
-| --- | --- | --- |
-| Assertions | `type`, `minimum`, `required` | produce a boolean validation result |
-| Applicators | `properties`, `items`, `allOf`, `$ref` | apply subschemas and combine their results |
-| Annotations | `title`, `default`, `deprecated` | attach information for applications |
-| Identifiers | `$id`, `$anchor` | control URI resolution |
-| Reserved locations | `$defs`, `$comment` | hold data without direct effect |
+| Class              | Examples                               | Effect                                     |
+| ------------------ | -------------------------------------- | ------------------------------------------ |
+| Assertions         | `type`, `minimum`, `required`          | produce a boolean validation result        |
+| Applicators        | `properties`, `items`, `allOf`, `$ref` | apply subschemas and combine their results |
+| Annotations        | `title`, `default`, `deprecated`       | attach information for applications        |
+| Identifiers        | `$id`, `$anchor`                       | control URI resolution                     |
+| Reserved locations | `$defs`, `$comment`                    | hold data without direct effect            |
 
 **Boolean schemas.** `true` and `false` are valid schemas anywhere a schema object is allowed: `true` always passes (as if `{}`), `false` always fails (as if `{"not": {}}`).
 
@@ -44,10 +44,10 @@ The official walkthrough builds a schema for this instance:
 
 ```json
 {
-  "productId": 1,
-  "productName": "A green door",
-  "price": 12.50,
-  "tags": ["home", "green"]
+	"productId": 1,
+	"productName": "A green door",
+	"price": 12.5,
+	"tags": ["home", "green"]
 }
 ```
 
@@ -57,11 +57,11 @@ The official walkthrough builds a schema for this instance:
 
 ```json
 {
-  "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://example.com/product.schema.json",
-  "title": "Product",
-  "description": "A product from Acme's catalog",
-  "type": "object"
+	"$schema": "https://json-schema.org/draft/2020-12/schema",
+	"$id": "https://example.com/product.schema.json",
+	"title": "Product",
+	"description": "A product from Acme's catalog",
+	"type": "object"
 }
 ```
 
@@ -71,17 +71,17 @@ Each key under `properties` names a field of the instance and maps it to a subsc
 
 ```json
 {
-  "type": "object",
-  "properties": {
-    "productId": {
-      "description": "The unique identifier for a product",
-      "type": "integer"
-    },
-    "productName": {
-      "description": "Name of the product",
-      "type": "string"
-    }
-  }
+	"type": "object",
+	"properties": {
+		"productId": {
+			"description": "The unique identifier for a product",
+			"type": "integer"
+		},
+		"productName": {
+			"description": "Name of the product",
+			"type": "string"
+		}
+	}
 }
 ```
 
@@ -91,14 +91,14 @@ Each key under `properties` names a field of the instance and maps it to a subsc
 
 ```json
 {
-  "properties": {
-    "price": {
-      "description": "The price of the product",
-      "type": "number",
-      "exclusiveMinimum": 0
-    }
-  },
-  "required": ["productId", "productName", "price"]
+	"properties": {
+		"price": {
+			"description": "The price of the product",
+			"type": "number",
+			"exclusiveMinimum": 0
+		}
+	},
+	"required": ["productId", "productName", "price"]
 }
 ```
 
@@ -108,13 +108,13 @@ Each key under `properties` names a field of the instance and maps it to a subsc
 
 ```json
 {
-  "tags": {
-    "description": "Tags for the product",
-    "type": "array",
-    "items": { "type": "string" },
-    "minItems": 1,
-    "uniqueItems": true
-  }
+	"tags": {
+		"description": "Tags for the product",
+		"type": "array",
+		"items": { "type": "string" },
+		"minItems": 1,
+		"uniqueItems": true
+	}
 }
 ```
 
@@ -124,15 +124,15 @@ Nesting is just a subschema with its own `type`, `properties` and `required`.
 
 ```json
 {
-  "dimensions": {
-    "type": "object",
-    "properties": {
-      "length": { "type": "number" },
-      "width":  { "type": "number" },
-      "height": { "type": "number" }
-    },
-    "required": ["length", "width", "height"]
-  }
+	"dimensions": {
+		"type": "object",
+		"properties": {
+			"length": { "type": "number" },
+			"width": { "type": "number" },
+			"height": { "type": "number" }
+		},
+		"required": ["length", "width", "height"]
+	}
 }
 ```
 
@@ -140,10 +140,10 @@ Nesting is just a subschema with its own `type`, `properties` and `required`.
 
 ```json
 {
-  "warehouseLocation": {
-    "description": "Coordinates of the warehouse where the product is located.",
-    "$ref": "https://example.com/geographical-location.schema.json"
-  }
+	"warehouseLocation": {
+		"description": "Coordinates of the warehouse where the product is located.",
+		"$ref": "https://example.com/geographical-location.schema.json"
+	}
 }
 ```
 
@@ -151,47 +151,47 @@ Nesting is just a subschema with its own `type`, `properties` and `required`.
 
 ```json
 {
-  "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://example.com/product.schema.json",
-  "title": "Product",
-  "description": "A product from Acme's catalog",
-  "type": "object",
-  "properties": {
-    "productId": {
-      "description": "The unique identifier for a product",
-      "type": "integer"
-    },
-    "productName": {
-      "description": "Name of the product",
-      "type": "string"
-    },
-    "price": {
-      "description": "The price of the product",
-      "type": "number",
-      "exclusiveMinimum": 0
-    },
-    "tags": {
-      "description": "Tags for the product",
-      "type": "array",
-      "items": { "type": "string" },
-      "minItems": 1,
-      "uniqueItems": true
-    },
-    "dimensions": {
-      "type": "object",
-      "properties": {
-        "length": { "type": "number" },
-        "width":  { "type": "number" },
-        "height": { "type": "number" }
-      },
-      "required": ["length", "width", "height"]
-    },
-    "warehouseLocation": {
-      "description": "Coordinates of the warehouse where the product is located.",
-      "$ref": "https://example.com/geographical-location.schema.json"
-    }
-  },
-  "required": ["productId", "productName", "price"]
+	"$schema": "https://json-schema.org/draft/2020-12/schema",
+	"$id": "https://example.com/product.schema.json",
+	"title": "Product",
+	"description": "A product from Acme's catalog",
+	"type": "object",
+	"properties": {
+		"productId": {
+			"description": "The unique identifier for a product",
+			"type": "integer"
+		},
+		"productName": {
+			"description": "Name of the product",
+			"type": "string"
+		},
+		"price": {
+			"description": "The price of the product",
+			"type": "number",
+			"exclusiveMinimum": 0
+		},
+		"tags": {
+			"description": "Tags for the product",
+			"type": "array",
+			"items": { "type": "string" },
+			"minItems": 1,
+			"uniqueItems": true
+		},
+		"dimensions": {
+			"type": "object",
+			"properties": {
+				"length": { "type": "number" },
+				"width": { "type": "number" },
+				"height": { "type": "number" }
+			},
+			"required": ["length", "width", "height"]
+		},
+		"warehouseLocation": {
+			"description": "Coordinates of the warehouse where the product is located.",
+			"$ref": "https://example.com/geographical-location.schema.json"
+		}
+	},
+	"required": ["productId", "productName", "price"]
 }
 ```
 
@@ -218,29 +218,29 @@ Source: <https://json-schema.org/understanding-json-schema/reference/type>, <htt
 
 ### Object keywords
 
-| Keyword | Meaning |
-| --- | --- |
-| `properties` | map of property name → subschema |
-| `patternProperties` | map of regex → subschema, applied to matching property names |
-| `additionalProperties` | schema (or `false`) for properties matched by neither of the above |
-| `unevaluatedProperties` | like `additionalProperties`, but also counts properties evaluated by subschemas (`allOf`, `$ref`, `if`/`then`, …) |
-| `required` | array of property names that must be present |
-| `propertyNames` | schema applied to each property *name* (always a string) |
-| `minProperties` / `maxProperties` | bounds on the property count |
+| Keyword                           | Meaning                                                                                                           |
+| --------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
+| `properties`                      | map of property name → subschema                                                                                  |
+| `patternProperties`               | map of regex → subschema, applied to matching property names                                                      |
+| `additionalProperties`            | schema (or `false`) for properties matched by neither of the above                                                |
+| `unevaluatedProperties`           | like `additionalProperties`, but also counts properties evaluated by subschemas (`allOf`, `$ref`, `if`/`then`, …) |
+| `required`                        | array of property names that must be present                                                                      |
+| `propertyNames`                   | schema applied to each property _name_ (always a string)                                                          |
+| `minProperties` / `maxProperties` | bounds on the property count                                                                                      |
 
 ```json
 {
-  "type": "object",
-  "properties": { "id": { "type": "number" } },
-  "patternProperties": {
-    "^S_": { "type": "string" },
-    "^I_": { "type": "integer" }
-  },
-  "additionalProperties": false,
-  "required": ["id"],
-  "propertyNames": { "pattern": "^[A-Za-z_][A-Za-z0-9_]*$" },
-  "minProperties": 1,
-  "maxProperties": 10
+	"type": "object",
+	"properties": { "id": { "type": "number" } },
+	"patternProperties": {
+		"^S_": { "type": "string" },
+		"^I_": { "type": "integer" }
+	},
+	"additionalProperties": false,
+	"required": ["id"],
+	"propertyNames": { "pattern": "^[A-Za-z_][A-Za-z0-9_]*$" },
+	"minProperties": 1,
+	"maxProperties": 10
 }
 ```
 
@@ -248,9 +248,9 @@ Source: <https://json-schema.org/understanding-json-schema/reference/type>, <htt
 
 ```json
 {
-  "allOf": [{ "properties": { "street": { "type": "string" } } }],
-  "properties": { "city": { "type": "string" } },
-  "unevaluatedProperties": false
+	"allOf": [{ "properties": { "street": { "type": "string" } } }],
+	"properties": { "city": { "type": "string" } },
+	"unevaluatedProperties": false
 }
 ```
 
@@ -258,15 +258,15 @@ Source: <https://json-schema.org/understanding-json-schema/reference/object>
 
 ### Array keywords
 
-| Keyword | Meaning |
-| --- | --- |
-| `items` | schema applied to every element *not* covered by `prefixItems` (list validation) |
-| `prefixItems` | array of schemas validating positions 0, 1, 2 … (tuple validation) |
-| `unevaluatedItems` | items not covered by `items`, `prefixItems` or `contains` |
-| `contains` | at least one element must match this schema |
-| `minContains` / `maxContains` | how many elements must match `contains` (2019-09+) |
-| `minItems` / `maxItems` | length bounds |
-| `uniqueItems` | `true` requires all elements distinct |
+| Keyword                       | Meaning                                                                          |
+| ----------------------------- | -------------------------------------------------------------------------------- |
+| `items`                       | schema applied to every element _not_ covered by `prefixItems` (list validation) |
+| `prefixItems`                 | array of schemas validating positions 0, 1, 2 … (tuple validation)               |
+| `unevaluatedItems`            | items not covered by `items`, `prefixItems` or `contains`                        |
+| `contains`                    | at least one element must match this schema                                      |
+| `minContains` / `maxContains` | how many elements must match `contains` (2019-09+)                               |
+| `minItems` / `maxItems`       | length bounds                                                                    |
+| `uniqueItems`                 | `true` requires all elements distinct                                            |
 
 ```json
 { "type": "array", "items": { "type": "number" }, "minItems": 2, "uniqueItems": true }
@@ -274,9 +274,9 @@ Source: <https://json-schema.org/understanding-json-schema/reference/object>
 
 ```json
 {
-  "type": "array",
-  "prefixItems": [{ "type": "number" }, { "type": "string" }],
-  "items": false
+	"type": "array",
+	"prefixItems": [{ "type": "number" }, { "type": "string" }],
+	"items": false
 }
 ```
 
@@ -292,7 +292,7 @@ Source: <https://json-schema.org/understanding-json-schema/reference/array>
 { "type": "string", "format": "date-time" }
 ```
 
-`pattern` uses ECMA-262 regular expression syntax, and in 2020-12 implementations are expected (though not strictly required) to support Unicode. A pattern matches *anywhere* in the string unless anchored with `^` … `$`.
+`pattern` uses ECMA-262 regular expression syntax, and in 2020-12 implementations are expected (though not strictly required) to support Unicode. A pattern matches _anywhere_ in the string unless anchored with `^` … `$`.
 
 `format` is annotation-only by default — see §6.
 
@@ -320,18 +320,25 @@ Source: <https://json-schema.org/understanding-json-schema/reference/numeric>
 ```json
 { "allOf": [{ "type": "string" }, { "maxLength": 5 }] }
 ```
+
 ```json
-{ "anyOf": [
-  { "type": "string", "maxLength": 5 },
-  { "type": "number", "minimum": 0 }
-] }
+{
+	"anyOf": [
+		{ "type": "string", "maxLength": 5 },
+		{ "type": "number", "minimum": 0 }
+	]
+}
 ```
+
 ```json
-{ "oneOf": [
-  { "type": "number", "multipleOf": 5 },
-  { "type": "number", "multipleOf": 3 }
-] }
+{
+	"oneOf": [
+		{ "type": "number", "multipleOf": 5 },
+		{ "type": "number", "multipleOf": 3 }
+	]
+}
 ```
+
 ```json
 { "not": { "type": "string" } }
 ```
@@ -349,23 +356,23 @@ If the `if` subschema validates, `then` applies; otherwise `else` does.
 
 ```json
 {
-  "type": "object",
-  "properties": {
-    "street_address": { "type": "string" },
-    "country": {
-      "default": "United States of America",
-      "enum": ["United States of America", "Canada"]
-    }
-  },
-  "if": {
-    "properties": { "country": { "const": "United States of America" } }
-  },
-  "then": {
-    "properties": { "postal_code": { "pattern": "[0-9]{5}(-[0-9]{4})?" } }
-  },
-  "else": {
-    "properties": { "postal_code": { "pattern": "[A-Z][0-9][A-Z] [0-9][A-Z][0-9]" } }
-  }
+	"type": "object",
+	"properties": {
+		"street_address": { "type": "string" },
+		"country": {
+			"default": "United States of America",
+			"enum": ["United States of America", "Canada"]
+		}
+	},
+	"if": {
+		"properties": { "country": { "const": "United States of America" } }
+	},
+	"then": {
+		"properties": { "postal_code": { "pattern": "[0-9]{5}(-[0-9]{4})?" } }
+	},
+	"else": {
+		"properties": { "postal_code": { "pattern": "[A-Z][0-9][A-Z] [0-9][A-Z][0-9]" } }
+	}
 }
 ```
 
@@ -381,22 +388,22 @@ Source: <https://json-schema.org/understanding-json-schema/reference/conditional
 
 ```json
 {
-  "$id": "https://example.com/schemas/address",
-  "type": "object",
-  "properties": {
-    "street_address": { "type": "string" },
-    "city": { "type": "string" }
-  }
+	"$id": "https://example.com/schemas/address",
+	"type": "object",
+	"properties": {
+		"street_address": { "type": "string" },
+		"city": { "type": "string" }
+	}
 }
 ```
 
 ```json
 {
-  "$id": "https://example.com/schemas/customer",
-  "properties": {
-    "shipping_address": { "$ref": "/schemas/address" },
-    "billing_address":  { "$ref": "/schemas/address" }
-  }
+	"$id": "https://example.com/schemas/customer",
+	"properties": {
+		"shipping_address": { "$ref": "/schemas/address" },
+		"billing_address": { "$ref": "/schemas/address" }
+	}
 }
 ```
 
@@ -404,14 +411,14 @@ Source: <https://json-schema.org/understanding-json-schema/reference/conditional
 
 ```json
 {
-  "type": "object",
-  "properties": {
-    "first_name": { "$ref": "#/$defs/name" },
-    "last_name":  { "$ref": "#/$defs/name" }
-  },
-  "$defs": {
-    "name": { "type": "string" }
-  }
+	"type": "object",
+	"properties": {
+		"first_name": { "$ref": "#/$defs/name" },
+		"last_name": { "$ref": "#/$defs/name" }
+	},
+	"$defs": {
+		"name": { "type": "string" }
+	}
 }
 ```
 
@@ -419,7 +426,7 @@ Source: <https://json-schema.org/understanding-json-schema/reference/conditional
 
 Recursion is `{"$ref": "#"}` — a schema referring to its own root, which is how tree structures are described.
 
-**Bundling.** Several schema resources can be embedded in one document by giving subschemas their own `$id`, producing a *Compound Schema Document*; each embedded resource evaluates independently and may even declare a different `$schema`. The usual place to put them is `$defs`.
+**Bundling.** Several schema resources can be embedded in one document by giving subschemas their own `$id`, producing a _Compound Schema Document_; each embedded resource evaluates independently and may even declare a different `$schema`. The usual place to put them is `$defs`.
 
 **`$dynamicRef` / `$dynamicAnchor`.** These are the 2020-12 replacement for 2019-09's `$recursiveRef`/`$recursiveAnchor`. Unlike `$ref`, which resolves statically at the point of definition, a `$dynamicRef` resolves at evaluation time against the outermost `$dynamicAnchor` of the same name in the dynamic scope. The use case is cooperative extension of recursive schemas: a generic "tree" schema can defer part of its definition so that a schema extending it has its own constraints applied at every level of the recursion. In 2020-12 the fragments are no longer required to be empty and non-fragment-only URIs are allowed.
 
@@ -433,13 +440,13 @@ None of these affect validation; they exist to describe the schema for humans an
 
 ```json
 {
-  "title": "Match anything",
-  "description": "This is a schema that matches anything.",
-  "default": "Default value",
-  "examples": ["Anything", 4035],
-  "deprecated": true,
-  "readOnly": true,
-  "writeOnly": false
+	"title": "Match anything",
+	"description": "This is a schema that matches anything.",
+	"default": "Default value",
+	"examples": ["Anything", 4035],
+	"deprecated": true,
+	"readOnly": true,
+	"writeOnly": false
 }
 ```
 
@@ -455,14 +462,14 @@ Sources: <https://json-schema.org/understanding-json-schema/reference/annotation
 
 ## 6. Gotchas worth knowing before you write schemas
 
-**`additionalProperties` does not see into subschemas.** It only considers properties matched by `properties` and `patternProperties` *in the same schema object*. Combine schemas with `allOf` or `$ref` and then set `additionalProperties: false`, and everything the referenced branch declared will be rejected. `unevaluatedProperties` is the fix: it takes annotations from subschemas into account, so it knows which properties were already evaluated. Same relationship holds for `additionalItems`-style tail control versus `unevaluatedItems`. These keywords depend on annotation collection, which is why they live in their own vocabulary in 2020-12.
+**`additionalProperties` does not see into subschemas.** It only considers properties matched by `properties` and `patternProperties` _in the same schema object_. Combine schemas with `allOf` or `$ref` and then set `additionalProperties: false`, and everything the referenced branch declared will be rejected. `unevaluatedProperties` is the fix: it takes annotations from subschemas into account, so it knows which properties were already evaluated. Same relationship holds for `additionalItems`-style tail control versus `unevaluatedItems`. These keywords depend on annotation collection, which is why they live in their own vocabulary in 2020-12.
 Sources: <https://json-schema.org/understanding-json-schema/reference/object>, <https://json-schema.org/draft/2020-12/json-schema-core>, <https://json-schema.org/draft/2020-12/release-notes>
 
 **`format` does not validate by default.** The value of `format` MUST be collected as an annotation. The Format-Annotation vocabulary is the required default, and implementations that also assert formats must have that behaviour disabled by default. The separate Format-Assertion vocabulary, when declared with value `true`, requires full validation support for every format in the spec — and an implementation that cannot provide it "MUST refuse to process the schema". Practically: if you need `email` or `date-time` enforced, turn it on explicitly in your validator (§7).
 Defined formats: `date-time`, `date`, `time`, `duration`; `email`, `idn-email`; `hostname`, `idn-hostname`; `ipv4`, `ipv6`; `uuid`, `uri`, `uri-reference`, `iri`, `iri-reference`; `uri-template`; `json-pointer`, `relative-json-pointer`; `regex`.
 Source: <https://json-schema.org/draft/2020-12/json-schema-validation>
 
-**`items` changed meaning in 2020-12.** In draft-07/2019-09, `items` with an *array* value did tuple validation and `additionalItems` governed the tail. In 2020-12 both were replaced: `prefixItems` does tuple validation and `items` (always a single schema) governs everything after the prefix. An old schema with `"items": [ … ]` is not valid 2020-12 tuple validation.
+**`items` changed meaning in 2020-12.** In draft-07/2019-09, `items` with an _array_ value did tuple validation and `additionalItems` governed the tail. In 2020-12 both were replaced: `prefixItems` does tuple validation and `items` (always a single schema) governs everything after the prefix. An old schema with `"items": [ … ]` is not valid 2020-12 tuple validation.
 Sources: <https://json-schema.org/understanding-json-schema/reference/array>, <https://json-schema.org/draft/2020-12/release-notes>
 
 **`required` does not define a property.** It only asserts presence. Listing a name in `required` without a matching entry in `properties` means "this key must exist, with any value whatsoever". Conversely, a property described in `properties` is entirely optional unless it also appears in `required` — which is what makes `tags` optional in the product example.

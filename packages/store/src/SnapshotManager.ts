@@ -1,4 +1,5 @@
 import type { Observable } from "@nn/event-emitter/Observable";
+
 import { Snapshot } from "./Snapshot";
 
 export class SnapshotManager {

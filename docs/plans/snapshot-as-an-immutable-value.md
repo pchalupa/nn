@@ -64,8 +64,8 @@ The `// TODO: Remove type casting` on the return goes away with it. There is no 
 class SnapshotManager<State> {
 	private snapshots = new Map<Selector<State>, { value: unknown; stale: boolean }>();
 
-	get<Value>(selector, state): Immutable<Value>   // recomputes if stale or missing
-	invalidate(): void                              // marks every entry stale
+	get<Value>(selector, state): Immutable<Value>; // recomputes if stale or missing
+	invalidate(): void; // marks every entry stale
 }
 ```
 
@@ -101,8 +101,11 @@ It hands the live entity to `mutate`, then revalidates and emits once for the wh
 Reads and writes now differ in shape, which is the honest description of what they are:
 
 ```ts
-const tickets = useStore((state) => state.tickets.filter((t) => t.status === status));  // readonly
-update((state) => state.tickets, (tickets) => tickets.push(ticket));                    // live
+const tickets = useStore((state) => state.tickets.filter((t) => t.status === status)); // readonly
+update(
+	(state) => state.tickets,
+	(tickets) => tickets.push(ticket),
+); // live
 ```
 
 Prefer selecting a root entity in `update`. Mutating through a `Slice` still works, and still forwards to the parent while ignoring the predicate — pushing a `done` ticket through a `todo` slice succeeds and then vanishes on the next render. That is the `// TODO: Remove this class` on `Slice` asking to be paid; it is not paid here.
@@ -127,22 +130,22 @@ This breaks the current `export const useStore = use(store)`. It is a `0.0.0` pa
 
 ## Files
 
-| File                                            | Change                                                                 |
-| ----------------------------------------------- | ---------------------------------------------------------------------- |
-| `packages/store/src/Snapshot.ts`                | rewrite: `Immutable` type and `snapshot()` deep freeze; class, proxy, events and `id` deleted |
-| `packages/store/src/SnapshotManager.ts`         | rewrite: selector-keyed cache, stale marking, recompute with identity-preserving equality |
-| `packages/store/src/Store.ts`                   | `getSnapshotOf` returns `Immutable<Value>`; new `update()` and `destroy()`; owns root subscriptions |
-| `packages/store/src/Snapshot.test.ts`           | rewrite against the function                                            |
-| `packages/store/src/SnapshotManager.test.ts`    | rewrite: staleness, recompute, identity reuse                           |
-| `packages/store/src/Store.test.ts`              | `snapshot.push` tests become `store.update`; inline snapshots regenerate |
-| `packages/react/src/getSnapshot.ts`             | return the value instead of `id`                                        |
-| `packages/react/src/index.ts`                   | `Selector` constrained on `Entity`; `use` returns `{ useStore, useUpdate }`; server snapshot wired |
-| `packages/react/src/getSnapshot.test.ts`        | assert the frozen value and its identity across calls                   |
-| `packages/react/src/index.test.ts`              | inline snapshot regenerates; fill in the `it.todo("should use store")`  |
-| `apps/example-react/src/store.ts`               | export `useStore` and `useUpdate`                                       |
-| `apps/example-react/src/components/Column/index.tsx` | `handleAddClick` goes through `useUpdate`                          |
-| `packages/store/README.md`                      | document the snapshot contract, `update()`, and the replace-don't-mutate rule |
-| `.changeset/*.md`                               | minor for `@nn/store` and `@nn/react`, both breaking, with the migration |
+| File                                                 | Change                                                                                              |
+| ---------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
+| `packages/store/src/Snapshot.ts`                     | rewrite: `Immutable` type and `snapshot()` deep freeze; class, proxy, events and `id` deleted       |
+| `packages/store/src/SnapshotManager.ts`              | rewrite: selector-keyed cache, stale marking, recompute with identity-preserving equality           |
+| `packages/store/src/Store.ts`                        | `getSnapshotOf` returns `Immutable<Value>`; new `update()` and `destroy()`; owns root subscriptions |
+| `packages/store/src/Snapshot.test.ts`                | rewrite against the function                                                                        |
+| `packages/store/src/SnapshotManager.test.ts`         | rewrite: staleness, recompute, identity reuse                                                       |
+| `packages/store/src/Store.test.ts`                   | `snapshot.push` tests become `store.update`; inline snapshots regenerate                            |
+| `packages/react/src/getSnapshot.ts`                  | return the value instead of `id`                                                                    |
+| `packages/react/src/index.ts`                        | `Selector` constrained on `Entity`; `use` returns `{ useStore, useUpdate }`; server snapshot wired  |
+| `packages/react/src/getSnapshot.test.ts`             | assert the frozen value and its identity across calls                                               |
+| `packages/react/src/index.test.ts`                   | inline snapshot regenerates; fill in the `it.todo("should use store")`                              |
+| `apps/example-react/src/store.ts`                    | export `useStore` and `useUpdate`                                                                   |
+| `apps/example-react/src/components/Column/index.tsx` | `handleAddClick` goes through `useUpdate`                                                           |
+| `packages/store/README.md`                           | document the snapshot contract, `update()`, and the replace-don't-mutate rule                       |
+| `.changeset/*.md`                                    | minor for `@nn/store` and `@nn/react`, both breaking, with the migration                            |
 
 ## Verification
 

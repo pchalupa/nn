@@ -103,14 +103,14 @@ For the schema in `apps/example-react/src/store.ts`:
 
 ## Files
 
-| File                                       | Change                                                       |
-| ------------------------------------------ | ------------------------------------------------------------ |
-| `packages/schema/src/JSONSchema.ts`        | new: emitted-subset types, `DIALECT`, `SchemaContext`         |
-| `packages/schema/src/Schema.ts`             | `toNode` per class, `toJSONSchema` on the base                |
-| `packages/schema/src/index.ts`             | re-export the new type                                        |
-| `packages/schema/src/JSONSchema.test.ts`   | new: colocated vitest, matching the sibling packages          |
-| `packages/schema/README.md`                | document `toJSONSchema()` and show a real document            |
-| `.changeset/*.md`                          | minor bump for `@nn/schema`                                   |
+| File                                     | Change                                                |
+| ---------------------------------------- | ----------------------------------------------------- |
+| `packages/schema/src/JSONSchema.ts`      | new: emitted-subset types, `DIALECT`, `SchemaContext` |
+| `packages/schema/src/Schema.ts`          | `toNode` per class, `toJSONSchema` on the base        |
+| `packages/schema/src/index.ts`           | re-export the new type                                |
+| `packages/schema/src/JSONSchema.test.ts` | new: colocated vitest, matching the sibling packages  |
+| `packages/schema/README.md`              | document `toJSONSchema()` and show a real document    |
+| `.changeset/*.md`                        | minor bump for `@nn/schema`                           |
 
 ## Verification
 

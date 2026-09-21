@@ -1,4 +1,5 @@
 import { EventEmitter } from "@nn/event-emitter";
+
 import { Entity } from "./Entity";
 
 export class Collection<Value extends { id: string }> extends Entity<Value[]> {

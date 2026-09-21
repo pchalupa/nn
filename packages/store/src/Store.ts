@@ -4,6 +4,7 @@ import type { Observable } from "@nn/event-emitter/Observable";
 import type { Remote } from "@nn/remote";
 import type { Repository } from "@nn/repository";
 import type { ArraySchema, Infer, ObjectSchema, Schema } from "@nn/schema";
+
 import type { Snapshot } from "./Snapshot";
 import { SnapshotManager } from "./SnapshotManager";
 
@@ -66,9 +67,7 @@ export class Store<State extends object> {
 		return this.snapshotOf(selector).id;
 	}
 
-	private snapshotOf<SelectedState extends Observable>(
-		selector: (state: State) => SelectedState,
-	): Snapshot {
+	private snapshotOf<SelectedState extends Observable>(selector: (state: State) => SelectedState): Snapshot {
 		const snapshotId = selector;
 		let snapshot = this.snapshotManager.getSnapshot(snapshotId);
 

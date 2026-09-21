@@ -2,6 +2,7 @@ import { Collection } from "@nn/entities/Collection";
 import type { Repository } from "@nn/repository";
 import { array, object, string } from "@nn/schema";
 import { describe, expect, it, vi } from "vitest";
+
 import { Store } from "./Store";
 
 describe("Store", () => {

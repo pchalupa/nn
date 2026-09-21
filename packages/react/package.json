@@ -26,10 +26,10 @@
 	},
 	"devDependencies": {
 		"@nn/entities": "workspace:",
-		"@nn/typescript-config": "workspace:",
-		"@nn/repository": "workspace:",
 		"@nn/remote": "workspace:",
+		"@nn/repository": "workspace:",
 		"@nn/schema": "workspace:",
+		"@nn/typescript-config": "workspace:",
 		"@types/react": "catalog:",
 		"typescript": "catalog:",
 		"vitest": "catalog:"

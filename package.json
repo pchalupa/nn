@@ -9,6 +9,7 @@
 		"dev": "pnpm -r --parallel run dev",
 		"ts:check": "pnpm -r --parallel ts:check",
 		"lint:check": "oxlint",
+		"format": "oxfmt .",
 		"format:check": "oxfmt --check .",
 		"spell:check": "cspell --no-progress **/*.{ts,tsx,json,md,tex}",
 		"clutter:check": "knip",

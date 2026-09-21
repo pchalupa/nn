@@ -1,6 +1,5 @@
 export type Infer<S> = S extends Schema<infer T> ? T : never;
 
-
 declare const InferredType: unique symbol;
 
 export abstract class Schema<Type = unknown> {

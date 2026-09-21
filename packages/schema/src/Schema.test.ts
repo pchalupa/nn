@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+
 import { ArraySchema } from "./ArraySchema";
 import { BooleanSchema } from "./BooleanSchema";
 import { array, boolean, number, object, string } from "./index";

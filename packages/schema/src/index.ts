@@ -1,31 +1,30 @@
-import { ArrayShape, BooleanShape, NumberShape, ObjectShape, type Shape, StringShape } from "./Shape";
+import { ArraySchema } from "./ArraySchema";
+import { BooleanSchema } from "./BooleanSchema";
+import { NumberSchema } from "./NumberSchema";
+import { ObjectSchema } from "./ObjectSchema";
+import type { Schema } from "./Schema";
+import { StringSchema } from "./StringSchema";
 
-export type { Infer, ShapeType } from "./Shape";
-export { ArrayShape, BooleanShape, NumberShape, ObjectShape, Shape, StringShape } from "./Shape";
+export type { ArraySchema } from "./ArraySchema";
+export type { ObjectSchema } from "./ObjectSchema";
+export type { Infer, Schema } from "./Schema";
 
-export type AnyShape =
-	| StringShape
-	| NumberShape
-	| BooleanShape
-	| ArrayShape<Shape>
-	| ObjectShape<Record<string, Shape>>;
-
-export function string(): StringShape {
-	return new StringShape();
+export function string(): StringSchema {
+	return new StringSchema();
 }
 
-export function number(): NumberShape {
-	return new NumberShape();
+export function number(): NumberSchema {
+	return new NumberSchema();
 }
 
-export function boolean(): BooleanShape {
-	return new BooleanShape();
+export function boolean(): BooleanSchema {
+	return new BooleanSchema();
 }
 
-export function object<Properties extends Record<string, Shape>>(properties: Properties): ObjectShape<Properties> {
-	return new ObjectShape(properties);
+export function object<Properties extends Record<string, Schema>>(properties: Properties): ObjectSchema<Properties> {
+	return new ObjectSchema(properties);
 }
 
-export function array<Item extends Shape>(items: Item): ArrayShape<Item> {
-	return new ArrayShape(items);
+export function array<Item extends Schema>(items: Item): ArraySchema<Item> {
+	return new ArraySchema(items);
 }

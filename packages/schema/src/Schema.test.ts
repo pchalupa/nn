@@ -1,14 +1,18 @@
 import { describe, expect, it } from "vitest";
+import { ArraySchema } from "./ArraySchema";
+import { BooleanSchema } from "./BooleanSchema";
 import { array, boolean, number, object, string } from "./index";
-import { ArrayShape, BooleanShape, NumberShape, ObjectShape, StringShape } from "./Shape";
+import { NumberSchema } from "./NumberSchema";
+import { ObjectSchema } from "./ObjectSchema";
+import { StringSchema } from "./StringSchema";
 
-describe("Shape", () => {
-	it("should create a shape for each JSON Schema type", () => {
-		expect(string()).toBeInstanceOf(StringShape);
-		expect(number()).toBeInstanceOf(NumberShape);
-		expect(boolean()).toBeInstanceOf(BooleanShape);
-		expect(object({})).toBeInstanceOf(ObjectShape);
-		expect(array(string())).toBeInstanceOf(ArrayShape);
+describe("Schema", () => {
+	it("should create a schema for each JSON Schema type", () => {
+		expect(string()).toBeInstanceOf(StringSchema);
+		expect(number()).toBeInstanceOf(NumberSchema);
+		expect(boolean()).toBeInstanceOf(BooleanSchema);
+		expect(object({})).toBeInstanceOf(ObjectSchema);
+		expect(array(string())).toBeInstanceOf(ArraySchema);
 	});
 
 	it("should name the type after the JSON Schema type", () => {
@@ -25,23 +29,23 @@ describe("Shape", () => {
 	});
 
 	it("should set the title", () => {
-		const shape = string().entitle("email");
+		const schema = string().entitle("email");
 
-		expect(shape.title).toBe("email");
+		expect(schema.title).toBe("email");
 	});
 
 	it("should set the description", () => {
-		const shape = string().describe("An email address");
+		const schema = string().describe("An email address");
 
-		expect(shape.description).toBe("An email address");
+		expect(schema.description).toBe("An email address");
 	});
 
 	it("should chain annotations", () => {
-		const shape = string().entitle("email").describe("An email address");
+		const schema = string().entitle("email").describe("An email address");
 
-		expect(shape).toBeInstanceOf(StringShape);
-		expect(shape).toMatchInlineSnapshot(`
-			StringShape {
+		expect(schema).toBeInstanceOf(StringSchema);
+		expect(schema).toMatchInlineSnapshot(`
+			StringSchema {
 			  "description": "An email address",
 			  "title": "email",
 			  "type": "string",
@@ -50,21 +54,21 @@ describe("Shape", () => {
 	});
 
 	it("should omit annotations that were not set", () => {
-		const shape = string();
+		const schema = string();
 
-		expect(shape.title).toBeUndefined();
-		expect(shape.description).toBeUndefined();
+		expect(schema.title).toBeUndefined();
+		expect(schema.description).toBeUndefined();
 	});
 
 	it("should expose object properties", () => {
-		const shape = object({ name: string(), age: number() });
+		const schema = object({ name: string(), age: number() });
 
-		expect(shape.properties).toMatchInlineSnapshot(`
+		expect(schema.properties).toMatchInlineSnapshot(`
 			{
-			  "age": NumberShape {
+			  "age": NumberSchema {
 			    "type": "number",
 			  },
-			  "name": StringShape {
+			  "name": StringSchema {
 			    "type": "string",
 			  },
 			}
@@ -73,9 +77,9 @@ describe("Shape", () => {
 
 	it("should expose array items", () => {
 		const item = object({ name: string() });
-		const shape = array(item);
+		const schema = array(item);
 
-		expect(shape.items).toBe(item);
+		expect(schema.items).toBe(item);
 	});
 
 	it("should describe a nested schema", () => {
@@ -84,14 +88,14 @@ describe("Shape", () => {
 			.describe("Holds information about a user.");
 
 		expect(object({ users: array(user).describe("List of users") })).toMatchInlineSnapshot(`
-			ObjectShape {
+			ObjectSchema {
 			  "properties": {
-			    "users": ArrayShape {
+			    "users": ArraySchema {
 			      "description": "List of users",
-			      "items": ObjectShape {
+			      "items": ObjectSchema {
 			        "description": "Holds information about a user.",
 			        "properties": {
-			          "name": StringShape {
+			          "name": StringSchema {
 			            "description": "User name",
 			            "type": "string",
 			          },

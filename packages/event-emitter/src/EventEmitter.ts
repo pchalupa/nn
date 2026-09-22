@@ -22,9 +22,8 @@ export class EventEmitter<Emits extends Record<string, unknown[]>, Event extends
 
 	once(event: Event, listener: Listener<Emits[Event]>): void {
 		const once: typeof listener = (...args) => {
-			listener(...args);
-
 			this.off(event, once);
+			listener(...args);
 		};
 
 		this.on(event, once);

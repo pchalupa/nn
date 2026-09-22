@@ -3,14 +3,14 @@ import { describe, expect, it } from "vitest";
 
 import { Store } from "./Store";
 
-describe("Store.fromSchema", () => {
+describe("Store", () => {
 	it("creates an store from schema", async ({ bench }) => {
 		const schema = object({
 			users: array(object({ name: string() })),
 			posts: array(object({ title: string() })),
 		});
 
-		const result = await bench("current", async () => {
+		const result = await bench("fromSchema", async () => {
 			await Store.fromSchema({ schema });
 		}).run();
 

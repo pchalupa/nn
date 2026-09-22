@@ -44,7 +44,9 @@ export class LWWMap<Value extends Record<string, Entity>> extends Entity<Value> 
 
 	merge(remote: LWWMap<Value>): LWWMap<Value> {
 		for (const property in this.value) {
-			this.value[property].merge(remote.value[property]);
+			const remoteEntity = remote.value[property];
+
+			if (remoteEntity) this.value[property].merge(remoteEntity);
 		}
 
 		return this;

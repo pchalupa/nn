@@ -21,7 +21,7 @@ export class Store<State extends object> {
 	constructor(
 		private state: State,
 		private repository?: Repository,
-		private _remote?: Remote,
+		_remote?: Remote,
 	) {
 		// Attach event listeners to each entity in the state
 		if (this.repository) {

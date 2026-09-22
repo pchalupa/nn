@@ -28,7 +28,6 @@ describe("Snapshot", () => {
 			      "events": Map {},
 			    },
 			  },
-			  "unsubscribe": [Function],
 			}
 		`);
 	});

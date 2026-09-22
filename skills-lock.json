@@ -1,15 +1,16 @@
 {
-	"version": 1,
-	"skills": {
-		"adr-authoring": {
-			"source": "../skills",
-			"sourceType": "local",
-			"computedHash": "ec40533ef95ce092aad6d84281db07270685275a5d426d3429c5aefad7b1c4b3"
-		},
-		"changeset-authoring": {
-			"source": "../skills",
-			"sourceType": "local",
-			"computedHash": "557d12cf2d543bb1f3b86b868a821492f6f2f80533560824fc4bd32cb6632e12"
-		}
-	}
+  "version": 1,
+  "skills": {
+    "adr-authoring": {
+      "source": "pchalupa/skills",
+      "sourceType": "github",
+      "skillPath": "skills/docs/adr-authoring/SKILL.md",
+      "computedHash": "89067092cc15ddcc0f274aa5562405605a8b349b444fb5f996c6b4ffab4f4c87"
+    },
+    "changeset-authoring": {
+      "source": "../skills",
+      "sourceType": "local",
+      "computedHash": "557d12cf2d543bb1f3b86b868a821492f6f2f80533560824fc4bd32cb6632e12"
+    }
+  }
 }

@@ -1,4 +1,4 @@
-import { Collection } from "@nn/schema/Collection";
+import { Collection } from "@nn/entities/Collection";
 import { describe, expect, it } from "vitest";
 
 import { Snapshot } from "./Snapshot";
@@ -6,21 +6,24 @@ import { Snapshot } from "./Snapshot";
 describe("Snapshot", () => {
 	it("should create a snapshot", () => {
 		const collection = new Collection();
-		const snapshot = Snapshot.createSnapshot(collection);
+		const snapshot = new Snapshot(collection);
 
 		expect(snapshot).toHaveProperty("id");
 		expect(snapshot).toHaveProperty("state");
 		expect(snapshot).toMatchInlineSnapshot(`
-			Collection {
+			Snapshot {
 			  "events": EventEmitter {
-			    "events": Map {
-			      "update" => Set {
-			        [Function],
-			      },
-			    },
+			    "events": Map {},
 			  },
 			  "state": Collection {
 			    "data": [],
+			    "eventEmitter": EventEmitter {
+			      "events": Map {
+			        "update" => Set {
+			          [Function],
+			        },
+			      },
+			    },
 			    "events": EventEmitter {
 			      "events": Map {},
 			    },
@@ -31,7 +34,7 @@ describe("Snapshot", () => {
 
 	it("should return the snapshot id", () => {
 		const collection = new Collection();
-		const snapshot = Snapshot.createSnapshot(collection);
+		const snapshot = new Snapshot(collection);
 
 		expect(snapshot.id).toBe(snapshot.id);
 	});

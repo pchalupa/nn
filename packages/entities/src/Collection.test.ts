@@ -9,6 +9,9 @@ describe("Collection", () => {
 		expect(collection).toMatchInlineSnapshot(`
 			Collection {
 			  "data": [],
+			  "eventEmitter": EventEmitter {
+			    "events": Map {},
+			  },
 			  "events": EventEmitter {
 			    "events": Map {},
 			  },
@@ -28,6 +31,9 @@ describe("Collection", () => {
 			      "id": "1",
 			    },
 			  ],
+			  "eventEmitter": EventEmitter {
+			    "events": Map {},
+			  },
 			  "events": EventEmitter {
 			    "events": Map {},
 			  },
@@ -73,6 +79,9 @@ describe("Collection", () => {
 			        "id": "2",
 			      },
 			    ],
+			    "eventEmitter": EventEmitter {
+			      "events": Map {},
+			    },
 			    "events": EventEmitter {
 			      "events": Map {},
 			    },
@@ -82,11 +91,27 @@ describe("Collection", () => {
 			      "id": "1",
 			    },
 			  ],
+			  "eventEmitter": EventEmitter {
+			    "events": Map {},
+			  },
 			  "events": EventEmitter {
 			    "events": Map {},
 			  },
 			}
 		`);
+	});
+
+	it("should push through a slice to the collection", () => {
+		const collection = new Collection<{ id: string }>();
+
+		collection.push({ id: "1" });
+
+		const slice = collection.filter((data) => data.id === "1");
+
+		slice.push({ id: "2" });
+
+		expect(slice.map((item) => item.id)).toStrictEqual(["1", "2"]);
+		expect(collection.map((item) => item.id)).toStrictEqual(["1", "2"]);
 	});
 
 	it("should handle filtering an empty collection", () => {

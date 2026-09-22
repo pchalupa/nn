@@ -21,6 +21,7 @@
 		"test:watch": "vitest watch"
 	},
 	"dependencies": {
+		"@nn/entities": "workspace:",
 		"@nn/event-emitter": "workspace:",
 		"@nn/repository": "workspace:",
 		"@nn/schema": "workspace:"

@@ -7,4 +7,5 @@ export default defineConfig({
 			exclude: ["**/coverage", "**/dist", "**/*.config.*", "**/*.gen.*"],
 		},
 	},
+	cacheDir: "./node_modules/.cache/vitest",
 });

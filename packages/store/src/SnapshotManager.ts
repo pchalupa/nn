@@ -1,19 +1,20 @@
+import type { Observable } from "@nn/event-emitter/Observable";
+
 import { Snapshot } from "./Snapshot";
 
 export class SnapshotManager {
-	private snapshots = new WeakMap<object, Snapshot<unknown>>();
+	private snapshots = new WeakMap<object, Snapshot>();
 
-	createSnapshot(id: object, state: unknown): Snapshot<unknown> {
-		const snapshot = Snapshot.createSnapshot(state);
-		const handleInvalidated = () => this.invalidateSnapshot(id);
+	createSnapshot(id: object, state: Observable): Snapshot {
+		const snapshot = new Snapshot(state);
 
-		snapshot.events.once("invalidated", handleInvalidated);
+		snapshot.events.once("invalidated", () => this.invalidateSnapshot(id));
 		this.snapshots.set(id, snapshot);
 
 		return snapshot;
 	}
 
-	getSnapshot(id: object): Snapshot<unknown> | undefined {
+	getSnapshot(id: object): Snapshot | undefined {
 		return this.snapshots.get(id);
 	}
 

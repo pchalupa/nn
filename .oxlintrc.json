@@ -14,21 +14,25 @@
 		"no-else-return": "error",
 		"no-param-reassign": "error",
 		"one-var": ["error", "never"],
-		"react/self-closing-comp": "error",
+		"no-await-in-loop": "off",
+		"no-underscore-dangle": "off",
+
 		"typescript/no-inferrable-types": "error",
 		"typescript/no-unnecessary-template-expression": "error",
 		"typescript/prefer-as-const": "error",
 		"typescript/prefer-enum-initializers": "error",
 		"unicorn/prefer-number-properties": "error",
 
-		"no-await-in-loop": "off",
-		"no-underscore-dangle": "off",
+		"react/self-closing-comp": "error",
 		"react/react-in-jsx-scope": "off",
+
 		"unicorn/consistent-function-scoping": "off",
 		"unicorn/no-array-for-each": "off",
 		"unicorn/prefer-add-event-listener": "off",
 		"unicorn/prefer-node-protocol": "off",
+
 		"oxc/no-async-endpoint-handlers": "off",
+
 		"vitest/require-mock-type-parameters": "off",
 		"vitest/warn-todo": "off"
 	},

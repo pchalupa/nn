@@ -12,7 +12,7 @@
 		"format": "oxfmt .",
 		"format:check": "oxfmt --check .",
 		"spell:check": "cspell --no-progress **/*.{ts,tsx,json,md,tex}",
-		"clutter:check": "knip",
+		"clutter:check": "knip --cache --cache-location node_modules/.cache/knip",
 		"test": "vitest",
 		"test:watch": "vitest watch",
 		"test:coverage": "vitest test --coverage",

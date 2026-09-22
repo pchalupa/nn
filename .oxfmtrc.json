@@ -7,13 +7,7 @@
 	"insertFinalNewline": true,
 	"sortImports": true,
 	"sortPackageJson": true,
-	"ignorePatterns": [
-		"**/node_modules",
-		"**/dist",
-		"**/dev-dist",
-		"**/coverage",
-		"**/apps/example-react/src/routeTree.gen.ts"
-	],
+	"ignorePatterns": ["**/node_modules", "**/dist", "**/coverage", "**/apps/example-react/src/routeTree.gen.ts"],
 	"overrides": [
 		{
 			"files": ["apps/example-react/**"],

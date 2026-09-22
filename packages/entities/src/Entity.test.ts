@@ -3,7 +3,7 @@ import { describe, expect, it, vi } from "vitest";
 import { Entity } from "./Entity";
 
 describe("Entity", () => {
-	class TestEntity extends Entity {
+	class TestEntity extends Entity<string> {
 		private _value: string;
 
 		constructor(value: string) {
@@ -15,9 +15,22 @@ describe("Entity", () => {
 			return this._value;
 		}
 
+		get current(): string {
+			return this._value;
+		}
+
+		set current(value: string) {
+			this._value = value;
+			this.emit();
+		}
+
 		setValue(value: string): void {
 			this._value = value;
 			this.emit();
+		}
+
+		merge(): this {
+			return this;
 		}
 	}
 

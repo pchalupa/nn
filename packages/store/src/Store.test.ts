@@ -1,7 +1,8 @@
-import { Collection } from "@nn/schema/Collection";
+import { Collection } from "@nn/entities/Collection";
+import type { Repository } from "@nn/repository";
+import { array, object, string } from "@nn/schema";
 import { describe, expect, it, vi } from "vitest";
 
-import { Snapshot } from "./Snapshot";
 import { Store } from "./Store";
 
 describe("Store", () => {
@@ -13,7 +14,6 @@ describe("Store", () => {
 		expect(store).toHaveProperty("events");
 		expect(store).toMatchInlineSnapshot(`
 			Store {
-			  "_remote": undefined,
 			  "events": EventEmitter {
 			    "events": Map {},
 			  },
@@ -37,7 +37,6 @@ describe("Store", () => {
 		expect(store).toHaveProperty("events");
 		expect(store).toMatchInlineSnapshot(`
 			Store {
-			  "_remote": undefined,
 			  "events": EventEmitter {
 			    "events": Map {},
 			  },
@@ -48,6 +47,9 @@ describe("Store", () => {
 			  "state": {
 			    "testCollection": Collection {
 			      "data": [],
+			      "eventEmitter": EventEmitter {
+			        "events": Map {},
+			      },
 			      "events": EventEmitter {
 			        "events": Map {},
 			      },
@@ -55,73 +57,76 @@ describe("Store", () => {
 			  },
 			}
 		`);
+	});
+
+	it("should create a store from a schema", async () => {
+		const store = await Store.fromSchema({
+			schema: object({
+				testCollection: array(object({ name: string() })),
+			}),
+		});
+		const collection = store.getSnapshotOf((state) => state.testCollection);
+
+		expect(store).toBeInstanceOf(Store);
+		expect(collection.current).toEqual([]);
+	});
+
+	it("should initialize and hydrate a store from a repository", async () => {
+		const data = [{ id: "1", name: "Test" }];
+		const repository: Repository = {
+			init: vi.fn().mockResolvedValue(undefined),
+			getAll: vi.fn().mockResolvedValue(data),
+			set: vi.fn().mockResolvedValue(undefined),
+		};
+		const schema = object({
+			testCollection: array(object({ name: string() })),
+		});
+
+		const store = await Store.fromSchema({ schema, repository });
+		const collection = store.getSnapshotOf((state) => state.testCollection);
+
+		expect(repository.init).toHaveBeenCalledWith(schema.properties);
+		expect(repository.getAll).toHaveBeenCalledWith("testCollection");
+		expect(collection.current).toEqual(data);
 	});
 
 	it("should return a snapshot", async () => {
 		const store = new Store({
 			testCollection: new Collection<{ id: string }>(),
 		});
-		const snapshot = store.getSnapshotOf((schema) => schema.testCollection);
+		const selector = (schema: { testCollection: Collection<{ id: string }> }) => schema.testCollection;
+		const snapshot = store.getSnapshotOf(selector);
 
-		expect(snapshot).toBeInstanceOf(Snapshot);
-		expect(snapshot).toHaveProperty("state");
+		expect(snapshot).toBeInstanceOf(Collection);
+		expect(store.getSnapshotIdOf(selector)).toBeDefined();
 		expect(snapshot).toMatchInlineSnapshot(`
 			Collection {
-			  "events": EventEmitter {
+			  "data": [],
+			  "eventEmitter": EventEmitter {
 			    "events": Map {
 			      "update" => Set {
 			        [Function],
 			      },
-			      "invalidated" => Set {
-			        [Function],
-			        [Function],
-			      },
 			    },
 			  },
-			  "state": Collection {
-			    "data": [],
-			    "events": EventEmitter {
-			      "events": Map {},
-			    },
+			  "events": EventEmitter {
+			    "events": Map {},
 			  },
 			}
 		`);
 	});
 
 	it("should select a data and return snapshot", async () => {
-		const store = new Store({
-			testCollection: new Collection<{ id: string }>(),
-		});
-		const snapshot = store.getSnapshotOf((schema) => schema.testCollection.filter((item) => item.id === "1"));
+		const collection = new Collection<{ id: string }>();
+		const store = new Store({ testCollection: collection });
 
-		snapshot.push({ id: "1" });
+		collection.push({ id: "1" });
+		collection.push({ id: "2" });
 
-		expect(snapshot).toMatchInlineSnapshot(`
-			Slice {
-			  "events": EventEmitter {
-			    "events": Map {
-			      "update" => Set {},
-			      "invalidated" => Set {},
-			    },
-			  },
-			  "state": Slice {
-			    "collection": Collection {
-			      "data": [
-			        {
-			          "id": "1",
-			        },
-			      ],
-			      "events": EventEmitter {
-			        "events": Map {},
-			      },
-			    },
-			    "data": [],
-			    "events": EventEmitter {
-			      "events": Map {},
-			    },
-			  },
-			}
-		`);
+		const filtered = store.getSnapshotOf((schema) => schema.testCollection.filter((item) => item.id === "1"));
+
+		expect(filtered.length).toBe(1);
+		expect(filtered.current).toStrictEqual([{ id: "1" }]);
 	});
 
 	it("should notify subscribers when a snapshot is updated", async () => {

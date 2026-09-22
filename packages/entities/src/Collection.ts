@@ -1,9 +1,22 @@
 import { EventEmitter } from "@nn/event-emitter";
 
-export class Collection<Value extends { id: string }> {
+import { Entity } from "./Entity";
+
+export class Collection<Value extends { id: string }> extends Entity<Value[]> {
 	public events = new EventEmitter<{ update: [Value] }>();
 
-	constructor(private data: Value[] = []) {}
+	constructor(private data: Value[] = []) {
+		super();
+	}
+
+	get current(): Value[] {
+		return this.data;
+	}
+
+	set current(value: Value[]) {
+		this.data = value;
+		this.emit();
+	}
 
 	get length(): number {
 		return this.data.length;
@@ -24,6 +37,7 @@ export class Collection<Value extends { id: string }> {
 	push(value: Value): void {
 		this.data.push(value);
 		this.events.emit("update", value);
+		this.emit();
 	}
 
 	map<Type>(callback: (value: Value, index: number) => Type): Type[] {
@@ -38,6 +52,14 @@ export class Collection<Value extends { id: string }> {
 
 		return slice;
 	}
+
+	// TODO: Implement a real CRDT merge strategy.
+	merge(remote: Collection<Value>): Collection<Value> {
+		this.data = remote.data;
+		this.emit();
+
+		return this;
+	}
 }
 
 // TODO: Remove this class and use Collection directly
@@ -51,6 +73,6 @@ export class Slice<Value extends { id: string }> extends Collection<Value> {
 
 	push(value: Value): void {
 		this.collection.push(value);
-		this.events.emit("update", value);
+		super.push(value);
 	}
 }

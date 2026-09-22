@@ -1,3 +1,4 @@
+import { object } from "@nn/schema";
 import { describe, expect, it } from "vitest";
 
 import { createStore } from "./index";
@@ -5,13 +6,12 @@ import { createStore } from "./index";
 describe("useStore", () => {
 	it("should create a store", async () => {
 		const store = await createStore({
-			schema: {},
+			schema: object({}),
 		});
 
 		expect(store).toHaveProperty("events");
 		expect(store).toMatchInlineSnapshot(`
 			Store {
-			  "_remote": undefined,
 			  "events": EventEmitter {
 			    "events": Map {},
 			  },

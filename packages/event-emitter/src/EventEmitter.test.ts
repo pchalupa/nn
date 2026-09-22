@@ -31,6 +31,29 @@ describe("EventEmitter", () => {
 		expect(listener).toHaveBeenCalledTimes(1);
 	});
 
+	it("should remove a once listener before invoking it", () => {
+		const eventEmitter = new EventEmitter<{ test: [] }>();
+		const listener = vi.fn(() => eventEmitter.emit("test"));
+
+		eventEmitter.once("test", listener);
+		eventEmitter.emit("test");
+
+		expect(listener).toHaveBeenCalledOnce();
+	});
+
+	it("should remove a once listener when it throws", () => {
+		const eventEmitter = new EventEmitter<{ test: [] }>();
+		const listener = vi.fn(() => {
+			throw new Error("test error");
+		});
+
+		eventEmitter.once("test", listener);
+
+		expect(() => eventEmitter.emit("test")).toThrow("test error");
+		expect(() => eventEmitter.emit("test")).not.toThrow();
+		expect(listener).toHaveBeenCalledOnce();
+	});
+
 	it("should remove a listener", () => {
 		const eventEmitter = new EventEmitter<{ test: [string] }>();
 		const listener = vi.fn();

@@ -6,7 +6,7 @@ import { Snapshot } from "./Snapshot";
 describe("Snapshot", () => {
 	it("should create a snapshot", () => {
 		const collection = new Collection();
-		const snapshot = Snapshot.createSnapshot(collection);
+		const snapshot = new Snapshot(collection);
 
 		expect(snapshot).toHaveProperty("id");
 		expect(snapshot).toHaveProperty("state");
@@ -35,7 +35,7 @@ describe("Snapshot", () => {
 
 	it("should return the snapshot id", () => {
 		const collection = new Collection();
-		const snapshot = Snapshot.createSnapshot(collection);
+		const snapshot = new Snapshot(collection);
 
 		expect(snapshot.id).toBe(snapshot.id);
 	});

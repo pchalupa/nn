@@ -10,3 +10,6 @@ dev-dist/
 .vercel
 .netlify
 .wrangler
+
+# Playwright
+test-results/

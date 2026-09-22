@@ -24,6 +24,7 @@ export default defineConfig(({ mode }) => ({
 	test: {
 		globals: true,
 		environment: "jsdom",
+		exclude: ["**/node_modules/**", "e2e/**"],
 		setupFiles: ["vitest.setup.ts"],
 		env: loadEnv(mode, process.cwd(), ""),
 	},

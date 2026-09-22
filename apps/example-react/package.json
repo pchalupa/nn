@@ -7,6 +7,8 @@
 		"dev": "vite --port=3000 --host",
 		"test": "vitest run",
 		"test:watch": "vitest watch",
+		"test:e2e": "playwright test",
+		"test:e2e:ui": "playwright test --ui",
 		"ts:check": "tsc --noEmit",
 		"build": "vite build",
 		"serve": "vite preview",
@@ -24,6 +26,7 @@
 	},
 	"devDependencies": {
 		"@babel/core": "^8.0.5",
+		"@playwright/test": "^1.63.0",
 		"@rolldown/plugin-babel": "^0.2.4",
 		"@tailwindcss/vite": "~4.3.3",
 		"@tanstack/router-plugin": "~1.168.40",

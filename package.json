@@ -25,6 +25,7 @@
 		"@vitest/coverage-v8": "catalog:",
 		"cspell": "^10.3.3",
 		"knip": "^6.37.0",
+		"lefthook": "^2.1.14",
 		"oxfmt": "^0.68.0",
 		"oxlint": "^1.83.0",
 		"typescript": "catalog:",

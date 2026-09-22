@@ -13,9 +13,11 @@
 		"format:check": "oxfmt --check .",
 		"spell:check": "cspell --no-progress **/*.{ts,tsx,json,md,tex}",
 		"clutter:check": "knip --cache --cache-location node_modules/.cache/knip",
-		"test": "vitest",
+		"test": "vitest --run",
 		"test:watch": "vitest watch",
 		"test:coverage": "vitest test --coverage",
+		"bench": "vitest bench --run",
+		"bench:watch": "vitest bench",
 		"changeset:add": "changeset ",
 		"changeset:version": "changeset version",
 		"changeset:publish": "changeset publish"

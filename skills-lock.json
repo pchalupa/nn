@@ -5,7 +5,7 @@
       "source": "pchalupa/skills",
       "sourceType": "github",
       "skillPath": "skills/docs/adr-authoring/SKILL.md",
-      "computedHash": "89067092cc15ddcc0f274aa5562405605a8b349b444fb5f996c6b4ffab4f4c87"
+      "computedHash": "1a2435723cfd56b08550c6b254b7d3beea4e31aef18945c722d2b2f64356867a"
     },
     "changeset-authoring": {
       "source": "../skills",

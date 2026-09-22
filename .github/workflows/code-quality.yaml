@@ -17,3 +17,5 @@ jobs:
       - run: pnpm clutter:check
       - run: pnpm ts:check
       - run: pnpm test
+      - run: pnpm --filter example-react exec playwright install --with-deps chromium
+      - run: pnpm --filter example-react test:e2e

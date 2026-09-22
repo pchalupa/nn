@@ -18,7 +18,7 @@ describe("useStore", () => {
 			  },
 			  "repository": undefined,
 			  "snapshotManager": SnapshotManager {
-			    "snapshots": Map {},
+			    "snapshots": WeakMap {},
 			  },
 			  "state": {},
 			}

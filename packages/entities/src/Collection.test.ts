@@ -101,6 +101,19 @@ describe("Collection", () => {
 		`);
 	});
 
+	it("should push through a slice to the collection", () => {
+		const collection = new Collection<{ id: string }>();
+
+		collection.push({ id: "1" });
+
+		const slice = collection.filter((data) => data.id === "1");
+
+		slice.push({ id: "2" });
+
+		expect(slice.map((item) => item.id)).toStrictEqual(["1", "2"]);
+		expect(collection.map((item) => item.id)).toStrictEqual(["1", "2"]);
+	});
+
 	it("should handle filtering an empty collection", () => {
 		const collection = new Collection<{ id: string }>();
 		const filtered = collection.filter(() => true);

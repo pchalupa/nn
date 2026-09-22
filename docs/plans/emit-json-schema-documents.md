@@ -16,7 +16,9 @@ This module must not import `Schema.ts`. That is what keeps `Schema.ts` free to 
 
 - `JSONSchemaNode`, the types for the subset we emit: `$schema`, `$id`, `$ref`, `$defs`, `type`, `title`, `description`, `properties`, `required`, `items`.
 - `DIALECT = "https://json-schema.org/draft/2020-12/schema"`.
-- `class SchemaContext`, which owns the `$defs` registry, with `register(title, build)` returning `{ $ref: "#/$defs/<title>" }`.
+- `class SchemaContext`, which owns the `$defs` registry, with `register(title, build)` returning `{ $ref: "#/$defs/<escaped title>" }`.
+
+The registry is keyed on the title verbatim, but the `$ref` is a [JSON Pointer](https://datatracker.ietf.org/doc/rfc6901/), so `register` escapes the title before joining it onto `#/$defs/` — `~` becomes `~0` and `/` becomes `~1`, in that order. Without it a title such as `a/b` registers one definition but emits a pointer that resolves as two nested keys.
 
 `register` has to reserve the key before it calls `build`. That is what stops a self-referencing schema from recursing forever, and it makes the second use of a schema return the `$ref` without building it again.
 

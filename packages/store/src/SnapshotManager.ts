@@ -3,10 +3,10 @@ import type { Observable } from "@nn/event-emitter/Observable";
 import { Snapshot } from "./Snapshot";
 
 export class SnapshotManager {
-	private snapshots = new Map<object, Snapshot>();
+	private snapshots = new WeakMap<object, Snapshot>();
 
 	createSnapshot(id: object, state: Observable): Snapshot {
-		const snapshot = Snapshot.createSnapshot(state);
+		const snapshot = new Snapshot(state);
 
 		snapshot.events.once("invalidated", () => this.invalidateSnapshot(id));
 		this.snapshots.set(id, snapshot);

@@ -13,7 +13,7 @@ describe("SnapshotManager", () => {
 		expect(snapshotManager).toHaveProperty("invalidateSnapshot");
 		expect(snapshotManager).toMatchInlineSnapshot(`
 			SnapshotManager {
-			  "snapshots": Map {},
+			  "snapshots": WeakMap {},
 			}
 		`);
 	});
@@ -27,30 +27,7 @@ describe("SnapshotManager", () => {
 		expect(snapshot).toHaveProperty("state", new Collection());
 		expect(snapshotManager).toMatchInlineSnapshot(`
 			SnapshotManager {
-			  "snapshots": Map {
-			    {} => Snapshot {
-			      "events": EventEmitter {
-			        "events": Map {
-			          "invalidated" => Set {
-			            [Function],
-			          },
-			        },
-			      },
-			      "state": Collection {
-			        "data": [],
-			        "eventEmitter": EventEmitter {
-			          "events": Map {
-			            "update" => Set {
-			              [Function],
-			            },
-			          },
-			        },
-			        "events": EventEmitter {
-			          "events": Map {},
-			        },
-			      },
-			    },
-			  },
+			  "snapshots": WeakMap {},
 			}
 		`);
 	});

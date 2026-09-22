@@ -35,8 +35,14 @@ export function snapshot<Value>(value: Value): Immutable<Value>;
 `snapshot` copies an array into a new array and deep freezes it, reusing anything already frozen:
 
 ```ts
-if (Object.isFrozen(value)) return value as Immutable<Value>;
+export function snapshot<Value>(value: Value): Immutable<Value>;
+export function snapshot(value: unknown): unknown {
+	if (Object.isFrozen(value)) return value;
+	…
+}
 ```
+
+The overload is what keeps this cast-free, which `AGENTS.md` requires: callers see the precise `Immutable<Value>` signature, while the implementation signature is loose enough to return the frozen value without an assertion.
 
 That fast path is what keeps repeated snapshots cheap. It assumes nothing hands us a frozen object with unfrozen children, which holds as long as freezing only happens here.
 
@@ -71,7 +77,9 @@ class SnapshotManager<State> {
 
 `get` recomputes a stale entry by re-running the selector against live state and freezing the result — and then compares it with the value it already had. If they are equal, the **previous value is kept**, identity and all.
 
-Equality is shallow and element-wise: same length, then `===` per element. It is enough because the elements are frozen, so an element that changed is a different object by construction.
+Equality branches on shape, because `getSnapshotOf` takes an `Entity<Value>` for any `Value`, not only a `Collection`. For arrays it is shallow and element-wise: same length, then `===` per element. That is enough because the elements are frozen, so an element that changed is a different object by construction. Everything else compares by `===` alone.
+
+A length-and-index comparison applied to non-arrays would be silently wrong: two different object values both have an undefined `length` and no index keys, so the cache would report them equal and keep serving the stale value. The `===` fallback is correct instead, at a cost worth naming — a recomputed object snapshot is a freshly frozen object, so it never matches and an object-valued selector loses identity-stability across invalidations. Array-valued selectors, which is what the board uses, keep it.
 
 That comparison is not an optimisation here, it is what makes derived selectors correct and cheap at the same time. Re-running the selector against live state is what fixes the stale `Slice`: a push to the parent collection now reaches the filtered snapshot, because the filter runs again. Keeping the identity when the result is unchanged is what stops every column in the board re-rendering when one of them gains a ticket.
 

@@ -20,7 +20,7 @@ describe("Store", () => {
 			  },
 			  "repository": undefined,
 			  "snapshotManager": SnapshotManager {
-			    "snapshots": Map {},
+			    "snapshots": WeakMap {},
 			  },
 			  "state": {},
 			}
@@ -44,7 +44,7 @@ describe("Store", () => {
 			  },
 			  "repository": undefined,
 			  "snapshotManager": SnapshotManager {
-			    "snapshots": Map {},
+			    "snapshots": WeakMap {},
 			  },
 			  "state": {
 			    "testCollection": Collection {

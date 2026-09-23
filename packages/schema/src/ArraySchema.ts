@@ -6,4 +6,8 @@ export class ArraySchema<Item extends Schema> extends Schema<Array<Infer<Item>>>
 	constructor(public readonly items: Item) {
 		super();
 	}
+
+	static isArraySchema(schema: unknown): schema is ArraySchema<Schema> {
+		return schema instanceof ArraySchema;
+	}
 }

@@ -3,7 +3,7 @@ on: push
 jobs:
   code-quality:
     runs-on: ubuntu-latest
-    timeout-minutes: 2
+    timeout-minutes: 5
     steps:
       - uses: actions/checkout@v7
       - uses: pnpm/action-setup@v6
@@ -17,5 +17,16 @@ jobs:
       - run: pnpm clutter:check
       - run: pnpm ts:check
       - run: pnpm test
-      - run: pnpm --filter example-react exec playwright install --with-deps chromium
+  e2e:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    container: mcr.microsoft.com/playwright:v1.63.0-noble
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: "pnpm"
+      - run: pnpm install
       - run: pnpm --filter example-react test:e2e

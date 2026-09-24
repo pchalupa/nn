@@ -6,17 +6,7 @@ describe("Collection", () => {
 	it("should create a collection", () => {
 		const collection = new Collection();
 
-		expect(collection).toMatchInlineSnapshot(`
-			Collection {
-			  "data": [],
-			  "eventEmitter": EventEmitter {
-			    "events": Map {},
-			  },
-			  "events": EventEmitter {
-			    "events": Map {},
-			  },
-			}
-		`);
+		expect(collection).toMatchInlineSnapshot(`[]`);
 	});
 
 	it("should push to the collection", () => {
@@ -25,20 +15,24 @@ describe("Collection", () => {
 		collection.push({ id: "1" });
 
 		expect(collection).toMatchInlineSnapshot(`
-			Collection {
-			  "data": [
-			    {
-			      "id": "1",
-			    },
-			  ],
-			  "eventEmitter": EventEmitter {
-			    "events": Map {},
+			[
+			  {
+			    "id": "1",
 			  },
-			  "events": EventEmitter {
-			    "events": Map {},
-			  },
-			}
+			]
 		`);
+	});
+
+	it("should serialize collection", () => {
+		const collection = new Collection([{ id: "1" }, { id: "2" }]);
+
+		expect(JSON.stringify(collection)).toMatchInlineSnapshot(`"[{"id":"1"},{"id":"2"}]"`);
+	});
+
+	it("should serialize slice", () => {
+		const collection = new Collection([{ id: "1" }, { id: "2" }]);
+
+		expect(JSON.stringify(collection.filter((data) => data.id === "2"))).toMatchInlineSnapshot(`"[{"id":"2"}]"`);
 	});
 
 	it("should return the length of collection", () => {
@@ -69,35 +63,11 @@ describe("Collection", () => {
 
 		expect(filtered).toBeInstanceOf(Slice);
 		expect(filtered).toMatchInlineSnapshot(`
-			Slice {
-			  "collection": Collection {
-			    "data": [
-			      {
-			        "id": "1",
-			      },
-			      {
-			        "id": "2",
-			      },
-			    ],
-			    "eventEmitter": EventEmitter {
-			      "events": Map {},
-			    },
-			    "events": EventEmitter {
-			      "events": Map {},
-			    },
+			[
+			  {
+			    "id": "1",
 			  },
-			  "data": [
-			    {
-			      "id": "1",
-			    },
-			  ],
-			  "eventEmitter": EventEmitter {
-			    "events": Map {},
-			  },
-			  "events": EventEmitter {
-			    "events": Map {},
-			  },
-			}
+			]
 		`);
 	});
 

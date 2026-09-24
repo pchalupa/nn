@@ -86,4 +86,10 @@ describe("Entity", () => {
 
 		expect(callback).toHaveBeenCalledTimes(1);
 	});
+
+	it("should serialize entity", () => {
+		const entity = new TestEntity("initial");
+
+		expect(JSON.stringify(entity)).toMatchInlineSnapshot(`""initial""`);
+	});
 });

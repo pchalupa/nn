@@ -30,10 +30,6 @@ export class Collection<Value extends { id: string }> extends Entity<Value[]> {
 		return this.data.at(-1);
 	}
 
-	toString(): string {
-		return this.data.toString();
-	}
-
 	push(value: Value): void {
 		this.data.push(value);
 		this.events.emit("update", value);

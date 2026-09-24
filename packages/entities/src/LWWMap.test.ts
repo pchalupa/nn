@@ -9,7 +9,12 @@ describe("LWWMap", () => {
 
 		expect(map.name).toBe("John");
 		expect(map).toBeInstanceOf(LWWMap);
-		expect(map.toString()).toBe("[object LWWMap]");
+	});
+
+	it("should serialize map", () => {
+		const map = new LWWMap({ name: new LWWRegister("John"), address: new LWWMap({ city: new LWWRegister("Prague") }) });
+
+		expect(JSON.stringify(map)).toMatchInlineSnapshot(`"{"name":"John","address":{"city":"Prague"}}"`);
 	});
 
 	it("should update property value and reflect changes", () => {

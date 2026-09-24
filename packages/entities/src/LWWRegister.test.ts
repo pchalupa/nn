@@ -32,6 +32,11 @@ describe("LWWRegister", () => {
 		expect(objectRegister.current).toEqual({ key: "value" });
 	});
 
+	it("should serialize register", () => {
+		expect(JSON.stringify(new LWWRegister("string"))).toMatchInlineSnapshot(`""string""`);
+		expect(JSON.stringify(new LWWRegister(42))).toMatchInlineSnapshot(`"42"`);
+	});
+
 	it("should update value", () => {
 		const register = new LWWRegister("initial");
 

@@ -1,26 +1,10 @@
 {
 	"$schema": "https://raw.githubusercontent.com/streetsidesoftware/cspell/main/cspell.schema.json",
 	"version": "0.2",
-	"language": "en",
+	"import": ["@cspell/dict-cs-cz/cspell-ext.json"],
+	"language": "en,cs",
 	"dictionaries": ["softwareTerms"],
-	"words": [
-		"aplikací",
-		"architektura",
-		"Chalupa",
-		"indexeddb",
-		"kontextu",
-		"Kökörčený",
-		"Michal",
-		"noninteractive",
-		"Petr",
-		"oxfmt",
-		"oxlint",
-		"pchalupa",
-		"ŠKOLA",
-		"VYSOKÁ",
-		"vitest",
-		"webových"
-	],
-	"ignorePaths": [],
+	"words": ["indexeddb", "noninteractive", "CRDT", "pchalupa", "Kökörčený"],
+	"ignorePaths": ["docs/{notes,plans,research}"],
 	"useGitignore": true
 }

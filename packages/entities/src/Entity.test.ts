@@ -87,6 +87,18 @@ describe("Entity", () => {
 		expect(callback).toHaveBeenCalledTimes(1);
 	});
 
+	it("should write the value through set", () => {
+		const entity = new TestEntity("initial");
+		const callback = vi.fn();
+
+		entity.subscribe(callback);
+
+		entity.set((current) => `${current} updated`);
+
+		expect(entity.current).toBe("initial updated");
+		expect(callback).toHaveBeenCalledTimes(1);
+	});
+
 	it("should serialize entity", () => {
 		const entity = new TestEntity("initial");
 

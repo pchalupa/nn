@@ -12,6 +12,10 @@ export abstract class Entity<Value = unknown> implements Observable {
 		this.eventEmitter.emit("update");
 	}
 
+	set(updater: (current: Value) => Value): void {
+		this.current = updater(this.current);
+	}
+
 	subscribe(callback: Callback): Unsubscribe {
 		this.eventEmitter.on("update", callback);
 

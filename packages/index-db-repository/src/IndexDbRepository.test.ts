@@ -1,4 +1,3 @@
-import { IDBFactory } from "fake-indexeddb";
 import { beforeEach, describe, expect, it } from "vitest";
 
 import { IndexDbRepository } from "./IndexDbRepository";
@@ -44,6 +43,24 @@ describe("IndexDbRepository", () => {
 		await repository.set("id", "value", "test");
 
 		expect(await repository.getAll("test")).toEqual(["value"]);
+	});
+
+	it("should read back a single value by its id", async () => {
+		const repository = new IndexDbRepository();
+		await repository.init({ test: {} });
+
+		await repository.set("a", { name: "A" }, "test");
+		await repository.set("b", { name: "B" }, "test");
+
+		expect(await repository.get("a", "test")).toEqual({ name: "A" });
+		expect(await repository.get("b", "test")).toEqual({ name: "B" });
+	});
+
+	it("should return undefined for an id that is not stored", async () => {
+		const repository = new IndexDbRepository();
+		await repository.init({ test: {} });
+
+		expect(await repository.get("missing", "test")).toBeUndefined();
 	});
 
 	it("should return an empty array for a store with no values", async () => {

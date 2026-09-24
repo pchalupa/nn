@@ -15,19 +15,7 @@ describe("Snapshot", () => {
 			  "events": EventEmitter {
 			    "events": Map {},
 			  },
-			  "state": Collection {
-			    "data": [],
-			    "eventEmitter": EventEmitter {
-			      "events": Map {
-			        "update" => Set {
-			          [Function],
-			        },
-			      },
-			    },
-			    "events": EventEmitter {
-			      "events": Map {},
-			    },
-			  },
+			  "state": [],
 			}
 		`);
 	});

@@ -25,7 +25,7 @@ export default defineConfig(({ mode }) => ({
 		globals: true,
 		environment: "jsdom",
 		exclude: ["**/node_modules/**", "e2e/**"],
-		setupFiles: ["vitest.setup.ts"],
+		setupFiles: ["fake-indexeddb/auto"],
 		env: loadEnv(mode, process.cwd(), ""),
 	},
 }));

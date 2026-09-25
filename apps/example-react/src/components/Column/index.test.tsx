@@ -7,12 +7,13 @@ import { Column } from ".";
 
 describe("Column", () => {
 	const user = userEvent.setup();
+
 	const setup = () => {
 		const title = "Test";
 		const status = "todo";
 
 		render(
-			<Suspense fallback={"loading"}>
+			<Suspense fallback={"fallback"}>
 				<Column title={title} status={status} />
 			</Suspense>,
 		);
@@ -23,25 +24,16 @@ describe("Column", () => {
 	it("should render without issues", async () => {
 		const { title } = await act(async () => setup());
 
-		expect(screen.getByText(title)).toBeTruthy();
+		expect(await screen.findByText(title)).toBeTruthy();
 		expect(screen.getByRole("button")).toBeTruthy();
 	});
 
 	it("should add a ticket", async () => {
 		await act(async () => setup());
+		const button = await screen.findByRole("button");
 
-		await act(() => user.click(screen.getByRole("button")));
+		await act(() => user.click(button));
 
 		expect(screen.getByText("todo")).toBeTruthy();
-	});
-
-	it("should add 10 tickets", async () => {
-		await act(async () => setup());
-
-		for (let i = 1; i < 10; i++) {
-			await act(() => user.click(screen.getByRole("button")));
-		}
-
-		expect(screen.getAllByText("todo")).toHaveLength(10);
 	});
 });

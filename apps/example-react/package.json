@@ -20,8 +20,10 @@
 		"@nn/react": "workspace:*",
 		"@nn/schema": "workspace:",
 		"@tanstack/react-router": "~1.170.38",
+		"i18next": "^26.4.2",
 		"react": "catalog:",
 		"react-dom": "catalog:",
+		"react-i18next": "^17.0.14",
 		"tailwind-variants": "~3.3.1"
 	},
 	"devDependencies": {

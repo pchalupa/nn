@@ -1,4 +1,5 @@
 import { Collection } from "@nn/entities/Collection";
+import { LWWRegister } from "@nn/entities/LWWRegister";
 import { EventEmitter } from "@nn/event-emitter";
 import type { Observable } from "@nn/event-emitter/Observable";
 import type { Remote } from "@nn/remote";
@@ -8,14 +9,17 @@ import type { ArraySchema, Infer, ObjectSchema, Schema } from "@nn/schema";
 import type { Snapshot } from "./Snapshot";
 import { SnapshotManager } from "./SnapshotManager";
 
+// TODO: This needs attention
 type StateFromSchema<StoreSchema extends ObjectSchema<Record<string, Schema>>> = {
 	[Key in keyof StoreSchema["properties"]]: StoreSchema["properties"][Key] extends ArraySchema<infer Item>
 		? Collection<Infer<Item> & { id: string }>
-		: never;
+		: Infer<StoreSchema["properties"][Key]> extends string
+			? LWWRegister<Infer<StoreSchema["properties"][Key]> | undefined>
+			: never;
 };
 
 export class Store<State extends object> {
-	public events = new EventEmitter<{ update: [] }>();
+	public events = new EventEmitter<{ update: []; error: [Error] }>();
 	private snapshotManager = new SnapshotManager();
 
 	constructor(
@@ -26,11 +30,23 @@ export class Store<State extends object> {
 		// Attach event listeners to each entity in the state
 		if (this.repository) {
 			for (const [typeName, entity] of Object.entries(this.state)) {
-				entity.events.on("update", (value: { id?: string }) => {
-					if (value.id) {
-						this.repository?.set(value.id, value, typeName);
-					}
-				});
+				if (entity instanceof Collection) {
+					entity.events.on("update", (value: { id?: string }) => {
+						if (value.id) {
+							this.repository?.set(value.id, value, typeName).catch((error) => {
+								if (error instanceof Error) this.events.emit("error", error);
+							});
+						}
+					});
+					// TBD: This branch will be eventually default one once collection will be aligned with subscribe method
+				} else if (entity instanceof LWWRegister) {
+					const id = typeName;
+					entity.subscribe(() => {
+						this.repository?.set(id, entity.current, typeName).catch((error) => {
+							if (error instanceof Error) this.events.emit("error", error);
+						});
+					});
+				}
 			}
 		}
 	}
@@ -41,18 +57,22 @@ export class Store<State extends object> {
 		remote?: Remote;
 	}): Promise<Store<StateFromSchema<StoreSchema>>> {
 		const { schema, repository, remote } = options;
-		const state: Record<string, Collection<{ id: string }>> = {};
+		const state: Record<string, Collection<{ id: string }> | LWWRegister<string | undefined>> = {};
 
 		await repository?.init(schema.properties);
 
 		for (const [typeName, shape] of Object.entries(schema.properties)) {
-			if (shape.type !== "array") {
+			if (shape.type === "array") {
+				const data = await repository?.getAll<{ id: string }>(typeName);
+
+				state[typeName] = new Collection(data);
+			} else if (shape.type === "string") {
+				const value = await repository?.get<string>(typeName, typeName);
+
+				state[typeName] = new LWWRegister<string | undefined>(value);
+			} else {
 				throw new TypeError(`Unsupported top-level schema shape "${shape.type}" for "${typeName}".`);
 			}
-
-			const data = await repository?.getAll<{ id: string }>(typeName);
-
-			state[typeName] = new Collection(data);
 		}
 
 		return new Store(state as StateFromSchema<StoreSchema>, repository, remote);

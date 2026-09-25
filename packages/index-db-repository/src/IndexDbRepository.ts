@@ -13,24 +13,27 @@ export class IndexDbRepository implements Repository {
 	constructor(private readonly name = "nn-default") {}
 
 	async set<Value>(id: string, value: Value, typeName: string): Promise<void> {
-		if (this.indexDbDatabase) {
-			const transaction = this.indexDbDatabase.transaction(typeName, Mode.ReadWrite);
+		IndexDbRepository.assertIndexDB(this.indexDbDatabase);
 
-			await this.processRequest(transaction.objectStore(typeName).put(value, id));
-		} else {
-			throw new RepositoryNotInitializedError();
-		}
+		const transaction = this.indexDbDatabase.transaction(typeName, Mode.ReadWrite);
+
+		await this.processRequest(transaction.objectStore(typeName).put(value, id));
+	}
+
+	async get<Value>(id: string, typeName: string): Promise<Value | undefined> {
+		IndexDbRepository.assertIndexDB(this.indexDbDatabase);
+
+		const transaction = this.indexDbDatabase.transaction(typeName, Mode.ReadOnly);
+
+		return await this.processRequest<Value | undefined>(transaction.objectStore(typeName).get(id));
 	}
 
 	async getAll<Value>(typeName: string, _version?: number): Promise<Value[]> {
-		if (this.indexDbDatabase) {
-			const transaction = this.indexDbDatabase.transaction(typeName, Mode.ReadOnly);
+		IndexDbRepository.assertIndexDB(this.indexDbDatabase);
 
-			return this.processRequest(transaction.objectStore(typeName).getAll());
-			// oxlint-disable-next-line no-else-return -- improves readability
-		} else {
-			throw new RepositoryNotInitializedError();
-		}
+		const transaction = this.indexDbDatabase.transaction(typeName, Mode.ReadOnly);
+
+		return this.processRequest(transaction.objectStore(typeName).getAll());
 	}
 
 	private processRequest<Value>(request: IDBRequest<Value>): Promise<Value> {
@@ -38,6 +41,10 @@ export class IndexDbRepository implements Repository {
 			request.onsuccess = () => resolve(request.result);
 			request.onerror = () => reject(request.error);
 		});
+	}
+
+	private static assertIndexDB(database: unknown): asserts database is IDBDatabase {
+		if (!(database instanceof IDBDatabase)) throw new RepositoryNotInitializedError();
 	}
 
 	async init(schema: Record<string, unknown>): Promise<void> {

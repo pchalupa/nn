@@ -7,22 +7,37 @@ describe("LWWMap", () => {
 	it("should create a map with initial value", () => {
 		const map = new LWWMap({ name: new LWWRegister("John"), age: new LWWRegister(30) });
 
-		expect(map.name).toBe("John");
+		expect(map.current.name.current).toBe("John");
 		expect(map).toBeInstanceOf(LWWMap);
-		expect(map.toString()).toBe("[object LWWMap]");
+	});
+
+	it("should serialize map", () => {
+		const map = new LWWMap({ name: new LWWRegister("John"), address: new LWWMap({ city: new LWWRegister("Prague") }) });
+
+		expect(JSON.stringify(map)).toMatchInlineSnapshot(`"{"name":"John","address":{"city":"Prague"}}"`);
 	});
 
 	it("should update property value and reflect changes", () => {
 		const map = new LWWMap({ name: new LWWRegister("Alice"), age: new LWWRegister(25) });
 
-		expect(map.name).toBe("Alice");
-		expect(map.age).toBe(25);
+		expect(map.current.name.current).toBe("Alice");
+		expect(map.current.age.current).toBe(25);
 
-		map.name = "Bob";
-		map.age = 40;
+		map.current.name.current = "Bob";
+		map.current.age.current = 40;
 
-		expect(map.name).toBe("Bob");
-		expect(map.age).toBe(40);
+		expect(map.current.name.current).toBe("Bob");
+		expect(map.current.age.current).toBe(40);
+	});
+
+	it("should write values through set", () => {
+		const map = new LWWMap({ name: new LWWRegister("John"), age: new LWWRegister(30) });
+
+		map.set((current) => ({ ...current, name: new LWWRegister("Jane") }));
+		map.current.name.current = "Jane";
+
+		expect(map.current.name.current).toBe("Jane");
+		expect(map.current.age.current).toBe(30);
 	});
 
 	it("should merge maps with multiple properties", () => {
@@ -31,8 +46,8 @@ describe("LWWMap", () => {
 
 		const result = mapA.merge(mapB);
 
-		expect(result.name).toBe("bar");
-		expect(result.age).toBe(30);
+		expect(result.current.name.current).toBe("bar");
+		expect(result.current.age.current).toBe(30);
 	});
 
 	it("exclude remote‐only keys when merging", () => {
@@ -41,8 +56,8 @@ describe("LWWMap", () => {
 
 		const result = a.merge(b);
 
-		expect(result.foo).toBe("b");
-		expect(result.bar).toBe(undefined);
+		expect(result.current.foo.current).toBe("b");
+		expect("bar" in result.current).toBeFalsy();
 	});
 
 	it("should emit update event when property changes", () => {
@@ -51,15 +66,15 @@ describe("LWWMap", () => {
 
 		map.subscribe(callback);
 
-		expect(callback).toBeCalledTimes(0);
+		expect(callback).toHaveBeenCalledTimes(0);
 
-		map.name = "Bob";
+		map.current.name.current = "Bob";
 
-		expect(callback).toBeCalledTimes(1);
+		expect(callback).toHaveBeenCalledTimes(1);
 
-		map.age = 30;
+		map.current.age.current = 30;
 
-		expect(callback).toBeCalledTimes(2);
+		expect(callback).toHaveBeenCalledTimes(2);
 	});
 
 	it("should return unsubscribe function", () => {
@@ -70,7 +85,7 @@ describe("LWWMap", () => {
 
 		unsubscribe();
 
-		map.age = 30;
+		map.current.age.current = 30;
 
 		expect(callback).not.toHaveBeenCalled();
 	});
@@ -83,7 +98,7 @@ describe("LWWMap", () => {
 		map.subscribe(callback1);
 		map.subscribe(callback2);
 
-		map.age = 30;
+		map.current.age.current = 30;
 
 		expect(callback1).toHaveBeenCalledTimes(1);
 		expect(callback2).toHaveBeenCalledTimes(1);

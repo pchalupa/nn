@@ -9,7 +9,7 @@ export class Snapshot {
 	}
 
 	get id(): string | undefined {
-		return this.state?.toString();
+		return JSON.stringify(this.state);
 	}
 
 	invalidate(): void {

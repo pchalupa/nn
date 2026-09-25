@@ -1,6 +1,8 @@
 import { createRootRoute, Link, Outlet } from "@tanstack/react-router";
+import { useTranslation } from "react-i18next";
 
 import { Divider } from "../components/Divider";
+import { LanguageSelector } from "../components/LanguageSelector";
 import { Skeleton } from "../components/Skeleton";
 import { useStore } from "../store";
 
@@ -19,27 +21,35 @@ const SideBar = () => (
 		<Skeleton width="w-3/4" height="h-6" className="mx-2">
 			<Stats />
 		</Skeleton>
+		<Skeleton width="w-3/4" height="h-14" className="mx-2">
+			<LanguageSelector />
+		</Skeleton>
 		<Divider />
 		<Navigation />
 	</div>
 );
 
 const Stats = () => {
+	const { t } = useTranslation();
 	const data = useStore((store) => store.tickets);
 
-	return <p className="text-center text-zinc-600">Tickets: {data.length}</p>;
+	return <p className="text-center text-zinc-600">{t("tickets", { count: data.length })}</p>;
 };
 
-const Navigation = () => (
-	<div className="flex flex-col gap-y-2 px-4 py-2">
-		<Link to="/" className="text-zinc-400">
-			Board
-		</Link>
-		<Link to="/backlog" className="text-zinc-400">
-			Backlog
-		</Link>
-	</div>
-);
+const Navigation = () => {
+	const { t } = useTranslation();
+
+	return (
+		<div className="flex flex-col gap-y-2 px-4 py-2">
+			<Link to="/" className="text-zinc-400">
+				{t("board")}
+			</Link>
+			<Link to="/backlog" className="text-zinc-400">
+				{t("backlog")}
+			</Link>
+		</div>
+	);
+};
 
 export const Route = createRootRoute({
 	component: RootComponent,

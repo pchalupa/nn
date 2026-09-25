@@ -7,13 +7,22 @@ export abstract class Entity<Value = unknown> implements Observable {
 	abstract set current(value: Value);
 
 	abstract merge(remote: Entity): Entity;
+
 	protected emit() {
 		this.eventEmitter.emit("update");
+	}
+
+	set(updater: (current: Value) => Value): void {
+		this.current = updater(this.current);
 	}
 
 	subscribe(callback: Callback): Unsubscribe {
 		this.eventEmitter.on("update", callback);
 
 		return () => this.eventEmitter.off("update", callback);
+	}
+
+	toJSON() {
+		return this.current;
 	}
 }

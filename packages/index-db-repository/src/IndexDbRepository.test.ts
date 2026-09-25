@@ -89,4 +89,17 @@ describe("IndexDbRepository", () => {
 
 		expect(await repository.getAll("test")).toEqual(["second"]);
 	});
+
+	it("should delete the value stored under an id and keep the others", async () => {
+		const repository = new IndexDbRepository();
+		await repository.init({ test: {} });
+
+		await repository.set("a", { name: "A" }, "test");
+		await repository.set("b", { name: "B" }, "test");
+
+		await repository.delete("a", "test");
+
+		expect(await repository.get("a", "test")).toBeUndefined();
+		expect(await repository.getAll("test")).toEqual([{ name: "B" }]);
+	});
 });

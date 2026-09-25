@@ -28,6 +28,14 @@ export class IndexDbRepository implements Repository {
 		return await this.processRequest<Value | undefined>(transaction.objectStore(typeName).get(id));
 	}
 
+	async delete(id: string, typeName: string): Promise<void> {
+		IndexDbRepository.assertIndexDB(this.indexDbDatabase);
+
+		const transaction = this.indexDbDatabase.transaction(typeName, Mode.ReadWrite);
+
+		await this.processRequest(transaction.objectStore(typeName).delete(id));
+	}
+
 	async getAll<Value>(typeName: string, _version?: number): Promise<Value[]> {
 		IndexDbRepository.assertIndexDB(this.indexDbDatabase);
 

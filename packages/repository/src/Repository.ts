@@ -3,5 +3,6 @@ export interface Repository {
 
 	set<Value>(id: string, value: Value, typeName: string): Promise<void>;
 	get<Value>(id: string, typeName: string): Promise<Value | undefined>;
+	delete(id: string, typeName: string): Promise<void>;
 	getAll<Value>(typeName: string): Promise<Value[]>;
 }

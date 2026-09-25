@@ -71,6 +71,7 @@ describe("Store", () => {
 			get: vi.fn().mockResolvedValue(undefined),
 			getAll: vi.fn().mockResolvedValue(data),
 			set: vi.fn().mockResolvedValue(undefined),
+			delete: vi.fn().mockResolvedValue(undefined),
 		};
 		const schema = object({
 			testCollection: array(object({ name: string() })),
@@ -100,6 +101,7 @@ describe("Store", () => {
 			get: vi.fn().mockResolvedValue("cs"),
 			getAll: vi.fn().mockResolvedValue([]),
 			set: vi.fn().mockResolvedValue(undefined),
+			delete: vi.fn().mockResolvedValue(undefined),
 		};
 
 		const store = await Store.fromSchema({ schema: object({ language: string() }), repository });
@@ -120,6 +122,7 @@ describe("Store", () => {
 			get: vi.fn().mockResolvedValue(undefined),
 			getAll: vi.fn().mockResolvedValue([]),
 			set: vi.fn().mockRejectedValue(error),
+			delete: vi.fn().mockResolvedValue(undefined),
 		};
 		const listener = vi.fn();
 

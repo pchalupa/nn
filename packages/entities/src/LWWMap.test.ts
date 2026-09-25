@@ -33,7 +33,7 @@ describe("LWWMap", () => {
 	it("should write values through set", () => {
 		const map = new LWWMap({ name: new LWWRegister("John"), age: new LWWRegister(30) });
 
-		map.set((current) => ({ ...current, name: "Jane" }));
+		map.set((current) => ({ ...current, name: new LWWRegister("Jane") }));
 
 		expect(map.name).toBe("Jane");
 		expect(map.age).toBe(30);

@@ -20,11 +20,12 @@ describe("SnapshotManager", () => {
 
 	it("should create a snapshot", () => {
 		const id = {};
+		const collection = new Collection();
 		const snapshotManager = new SnapshotManager();
-		const snapshot = snapshotManager.createSnapshot(id, new Collection());
+		const snapshot = snapshotManager.createSnapshot(id, collection);
 
 		expect(snapshotManager.getSnapshot(id)).toBe(snapshot);
-		expect(snapshot).toHaveProperty("state", new Collection());
+		expect(snapshot).toHaveProperty("state", collection);
 		expect(snapshotManager).toMatchInlineSnapshot(`
 			SnapshotManager {
 			  "snapshots": WeakMap {},

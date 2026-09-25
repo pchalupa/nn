@@ -30,6 +30,15 @@ describe("LWWMap", () => {
 		expect(map.age).toBe(40);
 	});
 
+	it("should write values through set", () => {
+		const map = new LWWMap({ name: new LWWRegister("John"), age: new LWWRegister(30) });
+
+		map.set((current) => ({ ...current, name: "Jane" }));
+
+		expect(map.name).toBe("Jane");
+		expect(map.age).toBe(30);
+	});
+
 	it("should merge maps with multiple properties", () => {
 		const mapA = new LWWMap({ name: new LWWRegister("foo"), age: new LWWRegister(20) });
 		const mapB = new LWWMap({ name: new LWWRegister("bar"), age: new LWWRegister(30) });

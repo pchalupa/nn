@@ -113,6 +113,26 @@ describe("Store", () => {
 		expect(repository.set).toHaveBeenCalledWith("language", "en", "language");
 	});
 
+	it("should emit an error when persisting a register fails", async () => {
+		const error = new Error("Write failed");
+		const repository: Repository = {
+			init: vi.fn().mockResolvedValue(undefined),
+			get: vi.fn().mockResolvedValue(undefined),
+			getAll: vi.fn().mockResolvedValue([]),
+			set: vi.fn().mockRejectedValue(error),
+		};
+		const listener = vi.fn();
+
+		const store = await Store.fromSchema({ schema: object({ language: string() }), repository });
+		const language = store.getSnapshotOf((state) => state.language);
+
+		store.events.on("error", listener);
+
+		language.current = "en";
+
+		await vi.waitFor(() => expect(listener).toHaveBeenCalledWith(error));
+	});
+
 	it("should reject a top-level object", async () => {
 		await expect(Store.fromSchema({ schema: object({ settings: object({ theme: string() }) }) })).rejects.toThrow(
 			TypeError,

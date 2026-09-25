@@ -19,7 +19,7 @@ type StateFromSchema<StoreSchema extends ObjectSchema<Record<string, Schema>>> =
 };
 
 export class Store<State extends object> {
-	public events = new EventEmitter<{ update: [] }>();
+	public events = new EventEmitter<{ update: []; error: [Error] }>();
 	private snapshotManager = new SnapshotManager();
 
 	constructor(
@@ -33,14 +33,19 @@ export class Store<State extends object> {
 				if (entity instanceof Collection) {
 					entity.events.on("update", (value: { id?: string }) => {
 						if (value.id) {
-							this.repository?.set(value.id, value, typeName);
+							this.repository?.set(value.id, value, typeName).catch((error) => {
+								if (error instanceof Error) this.events.emit("error", error);
+							});
 						}
 					});
 					// TBD: This branch will be eventually default one once collection will be aligned with subscribe method
 				} else if (entity instanceof LWWRegister) {
 					const id = typeName;
-
-					entity.subscribe(() => this.repository?.set(id, entity.current, typeName));
+					entity.subscribe(() => {
+						this.repository?.set(id, entity.current, typeName).catch((error) => {
+							if (error instanceof Error) this.events.emit("error", error);
+						});
+					});
 				}
 			}
 		}

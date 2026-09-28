@@ -27,3 +27,6 @@ experiments
 
 # Tests
 coverage
+
+# Deployment
+.vercel

@@ -11,6 +11,18 @@
 			"source": "../skills",
 			"sourceType": "local",
 			"computedHash": "557d12cf2d543bb1f3b86b868a821492f6f2f80533560824fc4bd32cb6632e12"
+		},
+		"handoff": {
+			"source": "mattpocock/skills",
+			"sourceType": "github",
+			"skillPath": "skills/productivity/handoff/SKILL.md",
+			"computedHash": "20e5f4afdef502637510bc5c64d27645d3c85c88df9cb006824bbb0980166319"
+		},
+		"teach": {
+			"source": "mattpocock/skills",
+			"sourceType": "github",
+			"skillPath": "skills/productivity/teach/SKILL.md",
+			"computedHash": "b8a69574c7a019bed84e84313dc8bf02e1d1bf925ba43057d433217c63863206"
 		}
 	}
 }

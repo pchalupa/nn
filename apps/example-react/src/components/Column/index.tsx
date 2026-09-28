@@ -10,15 +10,17 @@ interface ColumnProps {
 }
 
 export const Column = ({ title, status }: ColumnProps) => {
-	const tickets = useStore((store) => store.tickets.filter((ticket) => ticket.status === status));
+	const [tickets, updateTickets] = useStore((store) => store.tickets.filter((ticket) => ticket.status === status));
 
 	const handleAddClick = () => {
-		tickets.push({
-			id: crypto.randomUUID(),
-			title: status,
-			status,
-			description: "test",
-			assignee: { name: "test", email: "test" },
+		updateTickets((draft) => {
+			draft.push({
+				id: crypto.randomUUID(),
+				title: status,
+				status,
+				description: "test",
+				assignee: { name: "test", email: "test" },
+			});
 		});
 	};
 

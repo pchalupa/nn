@@ -31,9 +31,9 @@ const SideBar = () => (
 
 const Stats = () => {
 	const { t } = useTranslation();
-	const data = useStore((store) => store.tickets);
+	const [tickets] = useStore((store) => store.tickets);
 
-	return <p className="text-center text-zinc-600">{t("tickets", { count: data.length })}</p>;
+	return <p className="text-center text-zinc-600">{t("tickets", { count: tickets.length })}</p>;
 };
 
 const Navigation = () => {

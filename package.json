@@ -29,8 +29,8 @@
 		"cspell": "^10.3.3",
 		"knip": "^6.37.0",
 		"lefthook": "^2.1.14",
-		"oxfmt": "^0.68.0",
-		"oxlint": "^1.83.0",
+		"oxfmt": "^0.70.0",
+		"oxlint": "^1.85.0",
 		"typescript": "catalog:",
 		"vitest": "catalog:"
 	},

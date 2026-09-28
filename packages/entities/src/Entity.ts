@@ -3,12 +3,23 @@ import type { Callback, Observable, Unsubscribe } from "@nn/event-emitter/Observ
 
 export abstract class Entity<Value = unknown> implements Observable {
 	private eventEmitter = new EventEmitter<{ update: [] }>();
+	private changes = 0;
+
 	abstract get current(): Value;
 	abstract set current(value: Value);
 
 	abstract merge(remote: Entity): Entity;
 
+	/**
+	 * Local only changes counter.
+	 * TBD: Consider an CRDT native "compare" method
+	 * */
+	get version(): number {
+		return this.changes;
+	}
+
 	protected emit() {
+		this.changes++;
 		this.eventEmitter.emit("update");
 	}
 

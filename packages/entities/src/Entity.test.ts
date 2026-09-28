@@ -104,4 +104,25 @@ describe("Entity", () => {
 
 		expect(JSON.stringify(entity)).toMatchInlineSnapshot(`""initial""`);
 	});
+
+	it("should count changes", () => {
+		const entity = new TestEntity("initial");
+
+		expect(entity.version).toBe(0);
+
+		entity.setValue("updated");
+		entity.setValue("updated again");
+
+		expect(entity.version).toBe(2);
+	});
+
+	it("should advance its version through every write path", () => {
+		const entity = new TestEntity("initial");
+		const before = entity.version;
+
+		entity.set((current) => `${current} updated`);
+		entity.current = "assigned";
+
+		expect(entity.version).toBe(before + 2);
+	});
 });

@@ -1,15 +1,13 @@
 import { Entity } from "./Entity";
 
-export class LWWMap<Value extends Record<string, Entity>> extends Entity<Value> {
-	private value: Value = Object.create(null);
-
-	constructor(value: Value) {
+export class LWWMap<Fields extends Record<string, Entity>> extends Entity<Fields> {
+	constructor(private fields: Fields) {
 		super();
 
-		for (const property in value) {
-			this.value[property] = value[property];
+		for (const key in fields) {
+			const field = fields[key];
 
-			this.value[property].subscribe(() => this.emit());
+			field.eventEmitter.once("update", () => this.emit());
 		}
 	}
 
@@ -17,21 +15,27 @@ export class LWWMap<Value extends Record<string, Entity>> extends Entity<Value> 
 		return "LWWMap";
 	}
 
-	set current(value: Value) {
-		for (const property in value) {
-			this.value[property] = value[property];
+	get current(): Fields {
+		return this.fields;
+	}
+
+	set current(fields: Fields) {
+		for (const key in fields) {
+			const field = fields[key];
+
+			field.eventEmitter.once("update", () => this.emit());
+			this.fields[key] = field;
 		}
+
+		this.emit();
 	}
 
-	get current(): Value {
-		return this.value;
-	}
+	merge(remote: LWWMap<Fields>): this {
+		for (const key in this.fields) {
+			const localField = this.fields[key];
+			const remoteField = remote.fields[key];
 
-	merge(remote: LWWMap<Value>): LWWMap<Value> {
-		for (const property in this.value) {
-			const remoteEntity = remote.value[property];
-
-			if (remoteEntity) this.value[property].merge(remoteEntity);
+			if (remoteField) localField.merge(remoteField);
 		}
 
 		return this;

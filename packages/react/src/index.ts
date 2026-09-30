@@ -1,14 +1,11 @@
-import type { Observable } from "@nn/event-emitter/Observable";
+import type { Entity } from "@nn/entities/Entity";
 import type { Remote } from "@nn/remote";
 import type { Repository } from "@nn/repository";
 import type { ObjectSchema, Schema } from "@nn/schema";
-import { Store } from "@nn/store";
-import { useDebugValue, use as usePromise, useRef, useSyncExternalStore } from "react";
+import { type Recipe, type SelectCache, type Selector, Store } from "@nn/store";
+import { useCallback, useDebugValue, use as usePromise, useRef, useSyncExternalStore } from "react";
 
-import { getSnapshot } from "./getSnapshot";
-import { subscribe } from "./subscribe";
-
-export type Selector<StoreSchema, Snapshot extends Observable = Observable> = (store: StoreSchema) => Snapshot;
+type Update<Selected> = (recipe: Recipe<Selected>) => void;
 
 export async function createStore<StoreSchema extends ObjectSchema<Record<string, Schema>>>(options: {
 	schema: StoreSchema;
@@ -18,19 +15,21 @@ export async function createStore<StoreSchema extends ObjectSchema<Record<string
 	return Store.fromSchema(options);
 }
 
-export function use<StoreSchema extends object>(promisedStore: Promise<Store<StoreSchema>>) {
-	return function useStore<Type extends Observable>(selector: Selector<StoreSchema, Type>) {
+export function use<State extends Record<string, Entity>>(promisedStore: Promise<Store<State>>) {
+	return function useStore<Selected>(selector: Selector<State, Selected>): readonly [Selected, Update<Selected>] {
 		const store = usePromise(promisedStore);
-		const selectorRef = useRef(selector);
-		const subscribeRef = useRef(subscribe(store));
-		const getSnapshotRef = useRef(getSnapshot(selectorRef.current, store));
-		const snapshot = store.getSnapshotOf<Type>(selectorRef.current);
+		const cache = useRef<SelectCache<Selected>>({});
 
-		// TODO: get snapshot id here
-		// TODO: Add server get snapshot
-		useSyncExternalStore(subscribeRef.current, getSnapshotRef.current);
-		useDebugValue(snapshot);
+		const subscribe = useCallback((listener: () => void) => store.subscribe(listener), [store]);
 
-		return snapshot;
+		const getSnapshot = useCallback(() => store.select(selector, cache.current), [store, selector]);
+
+		const update = useCallback<Update<Selected>>((recipe) => store.update(selector, recipe), [store, selector]);
+
+		const view = useSyncExternalStore(subscribe, getSnapshot, getSnapshot);
+
+		useDebugValue(view);
+
+		return [view, update];
 	};
 }

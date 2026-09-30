@@ -21,12 +21,12 @@ describe("Entity", () => {
 
 		set current(value: string) {
 			this._value = value;
-			this.emit();
+			this.emit("change");
 		}
 
 		setValue(value: string): void {
 			this._value = value;
-			this.emit();
+			this.emit("change");
 		}
 
 		merge(): this {
@@ -45,7 +45,7 @@ describe("Entity", () => {
 		const entity = new TestEntity("initial");
 		const callback = vi.fn();
 
-		entity.subscribe(callback);
+		entity.onChange(callback);
 
 		entity.setValue("updated");
 
@@ -59,9 +59,9 @@ describe("Entity", () => {
 		const callback2 = vi.fn();
 		const callback3 = vi.fn();
 
-		entity.subscribe(callback1);
-		entity.subscribe(callback2);
-		entity.subscribe(callback3);
+		entity.onChange(callback1);
+		entity.onChange(callback2);
+		entity.onChange(callback3);
 
 		entity.setValue("updated");
 
@@ -74,7 +74,7 @@ describe("Entity", () => {
 		const entity = new TestEntity("initial");
 		const callback = vi.fn();
 
-		const unsubscribe = entity.subscribe(callback);
+		const unsubscribe = entity.onChange(callback);
 
 		entity.setValue("first update");
 
@@ -91,7 +91,7 @@ describe("Entity", () => {
 		const entity = new TestEntity("initial");
 		const callback = vi.fn();
 
-		entity.subscribe(callback);
+		entity.onChange(callback);
 
 		entity.set((current) => `${current} updated`);
 

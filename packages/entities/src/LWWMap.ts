@@ -3,16 +3,17 @@ import { type Unsubscribe } from "@nn/event-emitter/Observable";
 import { Entity } from "./Entity";
 
 export class LWWMap<Fields extends Record<string, Entity>> extends Entity<Fields> {
-	private fieldSubscriptions = new Map<string, Unsubscribe>();
+	/** Holds a map of field unsubscribe functions. */
+	private subscriptions = new Map<string, Unsubscribe>();
 
 	constructor(private fields: Fields) {
 		super();
 
 		for (const key in fields) {
 			const field = fields[key];
-			const unsubscribe = field.subscribe(() => this.emit());
+			const unsubscribe = field.onChange(() => this.emit("change"));
 
-			this.fieldSubscriptions.set(key, unsubscribe);
+			this.subscriptions.set(key, unsubscribe);
 		}
 	}
 
@@ -28,15 +29,15 @@ export class LWWMap<Fields extends Record<string, Entity>> extends Entity<Fields
 		for (const key in fields) {
 			const field = fields[key];
 
-			this.fieldSubscriptions.get(key)?.();
+			this.subscriptions.get(key)?.();
 
-			const unsubscribe = field.subscribe(() => this.emit());
+			const unsubscribe = field.onChange(() => this.emit("change"));
 
 			this.fields[key] = field;
-			this.fieldSubscriptions.set(key, unsubscribe);
+			this.subscriptions.set(key, unsubscribe);
 		}
 
-		this.emit();
+		this.emit("change");
 	}
 
 	merge(remote: LWWMap<Fields>): this {

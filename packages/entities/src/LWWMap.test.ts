@@ -64,7 +64,7 @@ describe("LWWMap", () => {
 		const map = new LWWMap({ name: new LWWRegister("Alice"), age: new LWWRegister(25) });
 		const callback = vi.fn();
 
-		map.subscribe(callback);
+		map.onChange(callback);
 
 		expect(callback).toHaveBeenCalledTimes(0);
 
@@ -81,7 +81,7 @@ describe("LWWMap", () => {
 		const map = new LWWMap({ name: new LWWRegister("Alice"), age: new LWWRegister(25) });
 		const callback = vi.fn();
 
-		const unsubscribe = map.subscribe(callback);
+		const unsubscribe = map.onChange(callback);
 
 		unsubscribe();
 
@@ -95,8 +95,8 @@ describe("LWWMap", () => {
 		const callback1 = vi.fn();
 		const callback2 = vi.fn();
 
-		map.subscribe(callback1);
-		map.subscribe(callback2);
+		map.onChange(callback1);
+		map.onChange(callback2);
 
 		map.current.age.current = 30;
 

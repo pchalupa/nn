@@ -6,14 +6,17 @@ export class LWWMap<Fields extends Record<string, Entity>> extends Entity<Fields
 	/** Holds a map of field unsubscribe functions. */
 	private subscriptions = new Map<string, Unsubscribe>();
 
-	constructor(private fields: Fields) {
-		super();
+	constructor(
+		private fields: Fields,
+		key?: string,
+	) {
+		super(key);
 
-		for (const key in fields) {
-			const field = fields[key];
+		for (const name in fields) {
+			const field = fields[name];
 			const unsubscribe = field.subscribe(() => this.emit("change"));
 
-			this.subscriptions.set(key, unsubscribe);
+			this.subscriptions.set(name, unsubscribe);
 		}
 	}
 

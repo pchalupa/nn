@@ -11,6 +11,7 @@ const user = object({
 	.describe("Holds information about a user.");
 
 const ticket = object({
+	id: string(),
 	title: string().describe("Ticket description."),
 	description: string(),
 	status: string(),

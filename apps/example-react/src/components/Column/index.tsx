@@ -15,7 +15,7 @@ export const Column = ({ title, status }: ColumnProps) => {
 	const handleAddClick = () => {
 		updateTickets((draft) => {
 			draft.push({
-				id: crypto.randomUUID(),
+				id: Date.now().toString(),
 				title: status,
 				status,
 				description: "test",

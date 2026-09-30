@@ -19,11 +19,14 @@ const ticket = object({
 	.entitle("ticket")
 	.describe("Holds information about a ticket.");
 
+const tags = array(string());
+
 const schema = object({
 	users: array(user).describe("List of users"),
 	tickets: array(ticket).describe("List of tickets"),
 	// TDB: This can be type enum instead of string
 	language: string(),
+	tags,
 });
 const remote = new HttpRemote(import.meta.env.VITE_REMOTE_URL);
 const repository = new IndexDbRepository();

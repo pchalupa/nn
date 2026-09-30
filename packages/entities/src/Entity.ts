@@ -10,11 +10,8 @@ export abstract class Entity<Value = unknown> implements Observable {
 
 	abstract merge(remote: Entity): Entity;
 
-	/**
-	 * Local only changes counter.
-	 * TBD: Consider an CRDT native "compare" method
-	 * */
-	get version(): number {
+	// TBD: this leans more towards Store/State concern.
+	get revision(): number {
 		return this.changes;
 	}
 

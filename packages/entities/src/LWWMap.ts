@@ -11,7 +11,7 @@ export class LWWMap<Fields extends Record<string, Entity>> extends Entity<Fields
 
 		for (const key in fields) {
 			const field = fields[key];
-			const unsubscribe = field.onChange(() => this.emit("change"));
+			const unsubscribe = field.subscribe(() => this.emit("change"));
 
 			this.subscriptions.set(key, unsubscribe);
 		}
@@ -31,7 +31,7 @@ export class LWWMap<Fields extends Record<string, Entity>> extends Entity<Fields
 
 			this.subscriptions.get(key)?.();
 
-			const unsubscribe = field.onChange(() => this.emit("change"));
+			const unsubscribe = field.subscribe(() => this.emit("change"));
 
 			this.fields[key] = field;
 			this.subscriptions.set(key, unsubscribe);

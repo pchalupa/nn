@@ -135,12 +135,12 @@ describe("LWWRegister", () => {
 		});
 	});
 
-	describe("onChange", () => {
+	describe("subscribe", () => {
 		it("should call callback when value is updated", () => {
 			const register = new LWWRegister("initial");
 			const callback = vi.fn();
 
-			register.onChange(callback);
+			register.subscribe(callback);
 			register.current = "updated";
 
 			expect(callback).toHaveBeenCalledTimes(1);
@@ -150,7 +150,7 @@ describe("LWWRegister", () => {
 			const registerA = new LWWRegister("foo");
 			const callback = vi.fn();
 
-			registerA.onChange(callback);
+			registerA.subscribe(callback);
 
 			const registerB = new LWWRegister("bar");
 
@@ -163,7 +163,7 @@ describe("LWWRegister", () => {
 			const register = new LWWRegister("initial");
 			const callback = vi.fn();
 
-			const unsubscribe = register.onChange(callback);
+			const unsubscribe = register.subscribe(callback);
 
 			unsubscribe();
 
@@ -177,8 +177,8 @@ describe("LWWRegister", () => {
 			const callback1 = vi.fn();
 			const callback2 = vi.fn();
 
-			register.onChange(callback1);
-			register.onChange(callback2);
+			register.subscribe(callback1);
+			register.subscribe(callback2);
 
 			register.current = "updated";
 

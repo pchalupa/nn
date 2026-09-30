@@ -26,7 +26,7 @@ export abstract class Entity<Value = unknown> implements Observable {
 		this.current = updater(this.current);
 	}
 
-	onChange(callback: Callback): Unsubscribe {
+	subscribe(callback: Callback): Unsubscribe {
 		this.eventEmitter.on("change", callback);
 
 		return () => this.eventEmitter.off("change", callback);

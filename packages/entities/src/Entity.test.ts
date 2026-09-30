@@ -45,7 +45,7 @@ describe("Entity", () => {
 		const entity = new TestEntity("initial");
 		const callback = vi.fn();
 
-		entity.onChange(callback);
+		entity.subscribe(callback);
 
 		entity.setValue("updated");
 
@@ -59,9 +59,9 @@ describe("Entity", () => {
 		const callback2 = vi.fn();
 		const callback3 = vi.fn();
 
-		entity.onChange(callback1);
-		entity.onChange(callback2);
-		entity.onChange(callback3);
+		entity.subscribe(callback1);
+		entity.subscribe(callback2);
+		entity.subscribe(callback3);
 
 		entity.setValue("updated");
 
@@ -74,7 +74,7 @@ describe("Entity", () => {
 		const entity = new TestEntity("initial");
 		const callback = vi.fn();
 
-		const unsubscribe = entity.onChange(callback);
+		const unsubscribe = entity.subscribe(callback);
 
 		entity.setValue("first update");
 
@@ -91,7 +91,7 @@ describe("Entity", () => {
 		const entity = new TestEntity("initial");
 		const callback = vi.fn();
 
-		entity.onChange(callback);
+		entity.subscribe(callback);
 
 		entity.set((current) => `${current} updated`);
 

@@ -16,11 +16,13 @@
 		"one-var": ["error", "never"],
 		"no-await-in-loop": "off",
 
+		"typescript/no-explicit-any": "error",
 		"typescript/no-inferrable-types": "error",
 		"typescript/no-unnecessary-template-expression": "error",
 		"typescript/prefer-as-const": "error",
 		"typescript/prefer-enum-initializers": "error",
-		// "typescript/explicit-function-return-type": "error",
+		"typescript/consistent-type-imports": ["error", { "fixStyle": "inline-type-imports" }],
+		"typescript/no-import-type-side-effects": "error",
 
 		"react/react-in-jsx-scope": "off",
 

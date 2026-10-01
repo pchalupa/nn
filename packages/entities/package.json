@@ -15,14 +15,14 @@
 		"./Collection": "./src/Collection.ts",
 		"./Entity": "./src/Entity.ts",
 		"./LWWMap": "./src/LWWMap.ts",
-		"./LWWRegister": "./src/LWWRegister.ts",
-		"./Row": "./src/Row.ts"
+		"./LWWRegister": "./src/LWWRegister.ts"
 	},
 	"scripts": {
 		"ts:check": "tsc --noEmit"
 	},
 	"dependencies": {
 		"@nn/event-emitter": "workspace:",
+		"@nn/id": "workspace:",
 		"@nn/time": "workspace:"
 	},
 	"devDependencies": {

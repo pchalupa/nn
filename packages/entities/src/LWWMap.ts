@@ -1,4 +1,4 @@
-import { type Unsubscribe } from "@nn/event-emitter/Observable";
+import type { Unsubscribe } from "@nn/event-emitter/Observable";
 
 import { Entity } from "./Entity";
 
@@ -20,7 +20,7 @@ export class LWWMap<Fields extends Record<string, Entity>> extends Entity<Fields
 		}
 	}
 
-	get [Symbol.toStringTag]() {
+	get [Symbol.toStringTag](): string {
 		return "LWWMap";
 	}
 

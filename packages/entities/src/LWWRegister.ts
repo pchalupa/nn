@@ -12,7 +12,7 @@ export class LWWRegister<Value> extends Entity<Value> {
 		this.value = value;
 	}
 
-	get [Symbol.toStringTag]() {
+	get [Symbol.toStringTag](): string {
 		return "LWWRegister";
 	}
 

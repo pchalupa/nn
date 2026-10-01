@@ -2,7 +2,7 @@ import type { Entity } from "@nn/entities/Entity";
 import type { Remote } from "@nn/remote";
 import type { Repository } from "@nn/repository";
 import type { ObjectSchema, Schema } from "@nn/schema";
-import { type Recipe, type SelectCache, type Selector, Store } from "@nn/store";
+import { type Recipe, type SelectCache, type Selector, type StateFromSchema, Store } from "@nn/store";
 import { useCallback, useDebugValue, use as usePromise, useRef, useSyncExternalStore } from "react";
 
 type Update<Selected> = (recipe: Recipe<Selected>) => void;
@@ -11,7 +11,7 @@ export async function createStore<StoreSchema extends ObjectSchema<Record<string
 	schema: StoreSchema;
 	repository?: Repository;
 	remote?: Remote;
-}) {
+}): Promise<Store<StateFromSchema<StoreSchema>>> {
 	return Store.fromSchema(options);
 }
 

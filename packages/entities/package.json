@@ -12,7 +12,7 @@
 	"repository": "https://github.com/pchalupa/nn",
 	"type": "module",
 	"exports": {
-		"./Collection": "./src/Collection.ts",
+		"./RGA": "./src/RGA.ts",
 		"./Entity": "./src/Entity.ts",
 		"./LWWMap": "./src/LWWMap.ts",
 		"./LWWRegister": "./src/LWWRegister.ts"

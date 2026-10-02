@@ -29,7 +29,7 @@ describe("LWWRegister", () => {
 
 		expect(stringRegister.current).toBe("string");
 		expect(numberRegister.current).toBe(42);
-		expect(objectRegister.current).toEqual({ key: "value" });
+		expect(objectRegister.current).toStrictEqual({ key: "value" });
 	});
 
 	it("should serialize register", () => {

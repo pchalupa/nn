@@ -2,7 +2,7 @@ import { ArraySchema } from "./ArraySchema";
 import { BooleanSchema } from "./BooleanSchema";
 import { NumberSchema } from "./NumberSchema";
 import { ObjectSchema } from "./ObjectSchema";
-import type { Schema } from "./Schema";
+import type  { Schema } from "./Schema";
 import { StringSchema } from "./StringSchema";
 
 export { ArraySchema } from "./ArraySchema";

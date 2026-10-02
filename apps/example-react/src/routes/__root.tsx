@@ -6,32 +6,9 @@ import { LanguageSelector } from "../components/LanguageSelector";
 import { Skeleton } from "../components/Skeleton";
 import { useStore } from "../store";
 
-const RootComponent = () => (
-	<div className="flex flex-row bg-zinc-900">
-		<SideBar />
-		<Outlet />
-	</div>
-);
-
-const SideBar = () => (
-	<div className="min-h-screen w-1/4 max-w-32 min-w-28 bg-zinc-800">
-		<Link to="/">
-			<h1 className="p-4 text-center text-xl font-bold text-zinc-200">DBug</h1>
-		</Link>
-		<Skeleton width="w-3/4" height="h-6" className="mx-2">
-			<Stats />
-		</Skeleton>
-		<Skeleton width="w-3/4" height="h-14" className="mx-2">
-			<LanguageSelector />
-		</Skeleton>
-		<Divider />
-		<Navigation />
-	</div>
-);
-
 const Stats = () => {
 	const { t } = useTranslation();
-	const [tickets] = useStore((store) => store.tickets);
+	const [tickets] = useStore("tickets");
 
 	return <p className="text-center text-zinc-600">{t("tickets", { count: tickets.length })}</p>;
 };
@@ -50,6 +27,29 @@ const Navigation = () => {
 		</div>
 	);
 };
+
+const SideBar = () => (
+	<div className="min-h-screen w-1/4 max-w-32 min-w-28 bg-zinc-800">
+		<Link to="/">
+			<h1 className="p-4 text-center text-xl font-bold text-zinc-200">DBug</h1>
+		</Link>
+		<Skeleton width="w-3/4" height="h-6" className="mx-2">
+			<Stats />
+		</Skeleton>
+		<Skeleton width="w-3/4" height="h-14" className="mx-2">
+			<LanguageSelector />
+		</Skeleton>
+		<Divider />
+		<Navigation />
+	</div>
+);
+
+const RootComponent = () => (
+	<div className="flex flex-row bg-zinc-900">
+		<SideBar />
+		<Outlet />
+	</div>
+);
 
 export const Route = createRootRoute({
 	component: RootComponent,

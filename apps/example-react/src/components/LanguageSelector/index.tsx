@@ -6,7 +6,7 @@ import { useStore } from "../../store";
 
 export const LanguageSelector = () => {
 	const { i18n, t } = useTranslation();
-	const [language, setLanguage] = useStore((store) => store.language);
+	const [language, setLanguage] = useStore("language");
 	// TBD: Language needs to be an enum
 	const selectedLanguage = isLanguage(language) ? language : defaultLanguage;
 

@@ -10,7 +10,8 @@ interface ColumnProps {
 }
 
 export const Column = ({ title, status }: ColumnProps) => {
-	const [tickets, updateTickets] = useStore((store) => store.tickets.filter((ticket) => ticket.status === status));
+	const [collection, updateTickets] = useStore("tickets");
+	const tickets = collection.filter((ticket) => ticket.status === status);
 
 	const handleAddClick = () => {
 		updateTickets((draft) => {

@@ -6,10 +6,11 @@ export class EventEmitter<Emits extends Record<string, unknown[]>, Event extends
 	emit(event: Event, ...args: Emits[Event]): void {
 		const listeners = this.events.get(event);
 
-		if (listeners)
+		if (listeners) {
 			for (const listener of Array.from(listeners)) {
 				listener(...args);
 			}
+		}
 	}
 
 	on(event: Event, listener: Listener<Emits[Event]>): void {

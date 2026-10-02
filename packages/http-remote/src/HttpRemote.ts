@@ -1,5 +1,5 @@
 import { EventEmitter } from "@nn/event-emitter";
-import type  { Remote } from "@nn/remote";
+import type { Remote } from "@nn/remote";
 
 export class HttpRemote implements Remote {
 	public events = new EventEmitter<{ update: [] }>();

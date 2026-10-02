@@ -1,4 +1,4 @@
-import type  { Unsubscribe } from "@nn/event-emitter/Observable";
+import type { Unsubscribe } from "@nn/event-emitter/Observable";
 
 import { Entity } from "./Entity";
 

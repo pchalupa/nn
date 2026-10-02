@@ -1,4 +1,4 @@
-import type  { Repository } from "@nn/repository";
+import type { Repository } from "@nn/repository";
 import { RepositoryNotInitializedError } from "@nn/repository/errors/RepositoryNotInitializedError";
 
 enum Mode {

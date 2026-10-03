@@ -93,12 +93,12 @@ Run cleanup must restore depth before invoking notifications and clear pending b
 
 Plain `try/finally` has this error table. [try-finally]
 
-| Body | Flush | Observable result |
-| --- | --- | --- |
-| Succeeds | Succeeds | Normal completion |
+| Body     | Flush    | Observable result               |
+| -------- | -------- | ------------------------------- |
+| Succeeds | Succeeds | Normal completion               |
 | Throws A | Succeeds | A propagates after notification |
-| Succeeds | Throws B | B propagates; mutations remain |
-| Throws A | Throws B | B propagates; A is replaced |
+| Succeeds | Throws B | B propagates; mutations remain  |
+| Throws A | Throws B | B propagates; A is replaced     |
 
 If we preserve both failures as recommended, only the last row needs a different rule. Use a separate “body threw” flag if implementing this later: JavaScript permits thrown values such as `undefined`, so `error !== undefined` cannot reliably distinguish success from failure. The ECMAScript throw algorithm carries the expression's value without requiring an `Error` object. [throw]
 
@@ -127,24 +127,24 @@ Entities remain readable during application, entity listeners can run between op
 
 These are recommended checks, not tests added or executed by this research.
 
-| Case | Expected contract |
-| --- | --- |
-| `notify()` outside a scope | Callback runs before `notify()` returns. |
-| Empty run; nested empty runs | No notification. |
-| Several requests, including a nested run | No early notification; one at the outer exit. |
-| Inner failure caught by outer callback | Depth remains active; later writes join one outer flush. |
-| Body throws before requesting notification | Same failure; no notification; next run works. |
-| Body requests notification, then throws | One flush of remaining state before failure escapes; next empty run is silent. |
-| Flush callback throws | Coordinator is reusable; no stale pending replay. |
-| Body and flush both throw | Explicitly chosen double-error contract; cover a non-`Error` thrown value too. |
-| Guarded update from listener A with listener B present | Immediate nested emission, A/A/B/B order; B reads latest state. |
-| Subscribe/unsubscribe during notification | Outer snapshot stays fixed; nested emission sees the new set. |
-| Listener A throws before B | B is not called by that traversal under the current emitter contract. |
-| Store A runs while Store B changes | B emits immediately; A's counter has no effect on B. |
-| Ordinary no-op recipe | No entity application, Store notification, or new persistence call. |
-| Multi-operation patch partially fails | Applied prefix remains; notification reflects that prefix; already-started persistence is not undone. |
-| Successful multi-operation patch with persistence | Entity callbacks and repository calls occur during application; Store emits once afterward. |
-| Promise-returning callback, if accepted | Synchronous requests flush on return; requests after suspension are outside that scope. |
+| Case                                                   | Expected contract                                                                                     |
+| ------------------------------------------------------ | ----------------------------------------------------------------------------------------------------- |
+| `notify()` outside a scope                             | Callback runs before `notify()` returns.                                                              |
+| Empty run; nested empty runs                           | No notification.                                                                                      |
+| Several requests, including a nested run               | No early notification; one at the outer exit.                                                         |
+| Inner failure caught by outer callback                 | Depth remains active; later writes join one outer flush.                                              |
+| Body throws before requesting notification             | Same failure; no notification; next run works.                                                        |
+| Body requests notification, then throws                | One flush of remaining state before failure escapes; next empty run is silent.                        |
+| Flush callback throws                                  | Coordinator is reusable; no stale pending replay.                                                     |
+| Body and flush both throw                              | Explicitly chosen double-error contract; cover a non-`Error` thrown value too.                        |
+| Guarded update from listener A with listener B present | Immediate nested emission, A/A/B/B order; B reads latest state.                                       |
+| Subscribe/unsubscribe during notification              | Outer snapshot stays fixed; nested emission sees the new set.                                         |
+| Listener A throws before B                             | B is not called by that traversal under the current emitter contract.                                 |
+| Store A runs while Store B changes                     | B emits immediately; A's counter has no effect on B.                                                  |
+| Ordinary no-op recipe                                  | No entity application, Store notification, or new persistence call.                                   |
+| Multi-operation patch partially fails                  | Applied prefix remains; notification reflects that prefix; already-started persistence is not undone. |
+| Successful multi-operation patch with persistence      | Entity callbacks and repository calls occur during application; Store emits once afterward.           |
+| Promise-returning callback, if accepted                | Synchronous requests flush on return; requests after suspension are outside that scope.               |
 
 The most valuable integration case is a real partial patch failure after at least one entity has emitted. It distinguishes finally-flushing from the current stale-pending behavior. The most valuable reentrancy case asserts call order and observed state, not just a final notification count. [store] [patch] [emitter]
 
@@ -152,15 +152,15 @@ The most valuable integration case is a real partial patch failure after at leas
 
 Source links below pin the inspected code to commits. Package versions are those declared at those commits, not a claim that a release tag or published package contains identical code. Official documentation was read on 2026-10-02 and can change independently.
 
-| Project | Declared package version | Inspected commit |
-| --- | --- | --- |
-| MobX | [`7.0.6`](https://github.com/mobxjs/mobx/blob/ed5e082d7392466ee4507756ed71205c7d654d64/packages/mobx/package.json) | `ed5e082d7392466ee4507756ed71205c7d654d64` |
-| Solid | [`1.9.15`](https://github.com/solidjs/solid/blob/b25c557754f2ced0d86490e6dbfded9b1745b663/packages/solid/package.json) | `b25c557754f2ced0d86490e6dbfded9b1745b663` |
-| Preact Signals core | [`1.14.4`](https://github.com/preactjs/signals/blob/877e461350556815a631447a3e702ad1063c43a0/packages/core/package.json) | `877e461350556815a631447a3e702ad1063c43a0` |
-| Redux | [`5.0.1`](https://github.com/reduxjs/redux/blob/56abca4749921d68f40cda20afd2043af9751f72/package.json) | `56abca4749921d68f40cda20afd2043af9751f72` |
-| Redux Toolkit | [`2.13.0`](https://github.com/reduxjs/redux-toolkit/blob/e7a8b318df28aaf50ced1e65cd4636b7508263b2/packages/toolkit/package.json) | `e7a8b318df28aaf50ced1e65cd4636b7508263b2` |
-| redux-batched-subscribe | [`0.1.6`](https://github.com/tappleby/redux-batched-subscribe/blob/24efa85565cad8c096ed484c31e529c9450978d8/package.json) | `24efa85565cad8c096ed484c31e529c9450978d8` |
-| React | React 18 announcement and current official teaching docs | Documentation comparison only |
+| Project                 | Declared package version                                                                                                         | Inspected commit                           |
+| ----------------------- | -------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------ |
+| MobX                    | [`7.0.6`](https://github.com/mobxjs/mobx/blob/ed5e082d7392466ee4507756ed71205c7d654d64/packages/mobx/package.json)               | `ed5e082d7392466ee4507756ed71205c7d654d64` |
+| Solid                   | [`1.9.15`](https://github.com/solidjs/solid/blob/b25c557754f2ced0d86490e6dbfded9b1745b663/packages/solid/package.json)           | `b25c557754f2ced0d86490e6dbfded9b1745b663` |
+| Preact Signals core     | [`1.14.4`](https://github.com/preactjs/signals/blob/877e461350556815a631447a3e702ad1063c43a0/packages/core/package.json)         | `877e461350556815a631447a3e702ad1063c43a0` |
+| Redux                   | [`5.0.1`](https://github.com/reduxjs/redux/blob/56abca4749921d68f40cda20afd2043af9751f72/package.json)                           | `56abca4749921d68f40cda20afd2043af9751f72` |
+| Redux Toolkit           | [`2.13.0`](https://github.com/reduxjs/redux-toolkit/blob/e7a8b318df28aaf50ced1e65cd4636b7508263b2/packages/toolkit/package.json) | `e7a8b318df28aaf50ced1e65cd4636b7508263b2` |
+| redux-batched-subscribe | [`0.1.6`](https://github.com/tappleby/redux-batched-subscribe/blob/24efa85565cad8c096ed484c31e529c9450978d8/package.json)        | `24efa85565cad8c096ed484c31e529c9450978d8` |
+| React                   | React 18 announcement and current official teaching docs                                                                         | Documentation comparison only              |
 
 This was a source review, not runtime execution of these libraries. Error and reentrancy results identified as deductions follow the cited control flow. The hosted Redux Toolkit `autoBatchEnhancer` page returned a transport error; its official documentation source and implementation were both accessible at the pinned commit. No required evidence remained inaccessible.
 

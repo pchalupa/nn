@@ -31,6 +31,7 @@ describe("Column", () => {
 	it("should add a ticket", async () => {
 		await act(async () => setup());
 		const button = await screen.findByRole("button");
+		// The store is a module singleton shared across this file, so count against what is already there.
 
 		await act(() => user.click(button));
 

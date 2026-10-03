@@ -1,37 +1,54 @@
+import type { Unsubscribe } from "@nn/event-emitter/Observable";
+
 import { Entity } from "./Entity";
 
-export class LWWMap<Value extends Record<string, Entity>> extends Entity<Value> {
-	private value: Value = Object.create(null);
+export class LWWMap<Fields extends Record<string, Entity>> extends Entity<Fields> {
+	/** Holds a map of field unsubscribe functions. */
+	private subscriptions = new Map<string, Unsubscribe>();
 
-	constructor(value: Value) {
-		super();
+	constructor(
+		private fields: Fields,
+		key?: string,
+	) {
+		super(key);
 
-		for (const property in value) {
-			this.value[property] = value[property];
+		for (const name in fields) {
+			const field = fields[name];
+			const unsubscribe = field.subscribe(() => this.emit("change"));
 
-			this.value[property].subscribe(() => this.emit());
+			this.subscriptions.set(name, unsubscribe);
 		}
 	}
 
-	get [Symbol.toStringTag]() {
+	get [Symbol.toStringTag](): string {
 		return "LWWMap";
 	}
 
-	set current(value: Value) {
-		for (const property in value) {
-			this.value[property] = value[property];
+	get current(): Fields {
+		return this.fields;
+	}
+
+	set current(fields: Fields) {
+		for (const key in fields) {
+			const field = fields[key];
+
+			this.subscriptions.get(key)?.();
+
+			const unsubscribe = field.subscribe(() => this.emit("change"));
+
+			this.fields[key] = field;
+			this.subscriptions.set(key, unsubscribe);
 		}
+
+		this.emit("change");
 	}
 
-	get current(): Value {
-		return this.value;
-	}
+	merge(remote: LWWMap<Fields>): this {
+		for (const key in this.fields) {
+			const localField = this.fields[key];
+			const remoteField = remote.fields[key];
 
-	merge(remote: LWWMap<Value>): LWWMap<Value> {
-		for (const property in this.value) {
-			const remoteEntity = remote.value[property];
-
-			if (remoteEntity) this.value[property].merge(remoteEntity);
+			if (remoteField) localField.merge(remoteField);
 		}
 
 		return this;

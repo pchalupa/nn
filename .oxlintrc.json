@@ -15,26 +15,47 @@
 		"no-param-reassign": "error",
 		"one-var": ["error", "never"],
 		"no-await-in-loop": "off",
-		"no-underscore-dangle": "off",
 
+		"typescript/no-explicit-any": "error",
 		"typescript/no-inferrable-types": "error",
 		"typescript/no-unnecessary-template-expression": "error",
 		"typescript/prefer-as-const": "error",
 		"typescript/prefer-enum-initializers": "error",
-		"unicorn/prefer-number-properties": "error",
+		"typescript/consistent-type-imports": ["error", { "fixStyle": "inline-type-imports" }],
+		"typescript/no-import-type-side-effects": "error",
+		"typescript/no-extraneous-class": ["error", { "allowStaticOnly": true }],
+		"typescript/consistent-type-assertions": ["error", { "assertionStyle": "never" }],
+		"typescript/ban-ts-comment": "error",
+		"typescript/consistent-type-definitions": ["error", "interface"],
+		"typescript/no-non-null-assertion": "error",
+		// "typescript/no-invalid-void-type": "error",
+		"typescript/array-type": ["error", { "default": "array-simple" }],
 
-		"react/self-closing-comp": "error",
+		// "promise/prefer-await-to-then": "error",
+
 		"react/react-in-jsx-scope": "off",
+		"react/exhaustive-deps": "error",
 
 		"unicorn/consistent-function-scoping": "off",
-		"unicorn/no-array-for-each": "off",
 		"unicorn/prefer-add-event-listener": "off",
-		"unicorn/prefer-node-protocol": "off",
+		"unicorn/throw-new-error": "error",
+		"unicorn/prefer-type-error": "error",
+		"unicorn/prefer-at": "error",
+		// "unicorn/no-array-for-each": "error",
 
 		"oxc/no-async-endpoint-handlers": "off",
 
 		"vitest/require-mock-type-parameters": "off",
-		"vitest/warn-todo": "off"
+		"vitest/prefer-to-have-length": "error",
+		"vitest/require-top-level-describe": "error",
+		"vitest/prefer-strict-equal": "error",
+
+		"eslint/eqeqeq": "error",
+		"eslint/curly": ["error", "multi-line"],
+		"eslint/no-use-before-define": ["error", { "functions": false }],
+
+		"import/no-cycle": "error",
+		"import/consistent-type-specifier-style": ["error", "prefer-top-level-if-only-type-imports"]
 	},
 	"ignorePatterns": [
 		"**/node_modules",

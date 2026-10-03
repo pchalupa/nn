@@ -1,32 +1,30 @@
-import { describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { Entity } from "./Entity";
 
 describe("Entity", () => {
+	afterEach(() => vi.restoreAllMocks());
+
 	class TestEntity extends Entity<string> {
-		private _value: string;
-
-		constructor(value: string) {
-			super();
-			this._value = value;
-		}
-
-		get value(): string {
-			return this._value;
+		constructor(
+			private value: string,
+			key?: string,
+		) {
+			super(key);
 		}
 
 		get current(): string {
-			return this._value;
+			return this.value;
 		}
 
 		set current(value: string) {
-			this._value = value;
-			this.emit();
+			this.value = value;
+			this.emit("change");
 		}
 
 		setValue(value: string): void {
-			this._value = value;
-			this.emit();
+			this.value = value;
+			this.emit("change");
 		}
 
 		merge(): this {
@@ -38,7 +36,7 @@ describe("Entity", () => {
 		const entity = new TestEntity("initial");
 
 		expect(entity).toBeInstanceOf(Entity);
-		expect(entity.value).toBe("initial");
+		expect(entity.current).toBe("initial");
 	});
 
 	it("should subscribe to updates", () => {
@@ -103,5 +101,26 @@ describe("Entity", () => {
 		const entity = new TestEntity("initial");
 
 		expect(JSON.stringify(entity)).toMatchInlineSnapshot(`""initial""`);
+	});
+
+	it("should count changes", () => {
+		const entity = new TestEntity("initial");
+
+		expect(entity.revision).toBe(0);
+
+		entity.setValue("updated");
+		entity.setValue("updated again");
+
+		expect(entity.revision).toBe(2);
+	});
+
+	it("should advance its revision through every write path", () => {
+		const entity = new TestEntity("initial");
+		const before = entity.revision;
+
+		entity.set((current) => `${current} updated`);
+		entity.current = "assigned";
+
+		expect(entity.revision).toBe(before + 2);
 	});
 });

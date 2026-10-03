@@ -6,16 +6,16 @@ import { useStore } from "../../store";
 
 export const LanguageSelector = () => {
 	const { i18n, t } = useTranslation();
-	const language = useStore((store) => store.language);
+	const [language, setLanguage] = useStore("language");
 	// TBD: Language needs to be an enum
-	const selectedLanguage = isLanguage(language.current) ? language.current : defaultLanguage;
+	const selectedLanguage = isLanguage(language) ? language : defaultLanguage;
 
 	// TBD: This should happen on the i18n.ts module level. Component like this should not be responsible for this. Current blocker is missing imperative API for store.
 	useEffect(() => {
 		if (i18n.language !== selectedLanguage) i18n.changeLanguage(selectedLanguage);
 	}, [i18n, selectedLanguage]);
 
-	const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => language.set(() => event.target.value);
+	const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => setLanguage(() => event.target.value);
 
 	return (
 		<label className="flex flex-col gap-y-1 px-4 py-2 text-xs text-zinc-600">

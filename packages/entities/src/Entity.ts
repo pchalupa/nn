@@ -11,17 +11,17 @@ export abstract class Entity<Value = unknown> implements Observable {
 		this.id = key ?? ID.create();
 	}
 
-	get key(): string {
+	public get key(): string {
 		return this.id;
 	}
 
-	abstract get current(): Value;
-	abstract set current(value: Value);
+	public abstract get current(): Value;
+	public abstract set current(value: Value);
 
-	abstract merge(remote: Entity): Entity;
+	public abstract merge(remote: Entity): Entity;
 
 	// TBD: this leans more towards Store/State concern.
-	get revision(): number {
+	public get revision(): number {
 		return this.changes;
 	}
 
@@ -32,17 +32,17 @@ export abstract class Entity<Value = unknown> implements Observable {
 		this.eventEmitter.emit(event);
 	}
 
-	set(updater: (current: Value) => Value): void {
+	public set(updater: (current: Value) => Value): void {
 		this.current = updater(this.current);
 	}
 
-	subscribe(callback: Callback): Unsubscribe {
+	public subscribe(callback: Callback): Unsubscribe {
 		this.eventEmitter.on("change", callback);
 
 		return () => this.eventEmitter.off("change", callback);
 	}
 
-	toJSON(): Value {
+	public toJSON(): Value {
 		return this.current;
 	}
 }

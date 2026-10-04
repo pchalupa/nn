@@ -12,21 +12,21 @@ export class LWWRegister<Value> extends Entity<Value> {
 		this.value = value;
 	}
 
-	get [Symbol.toStringTag](): string {
+	public get [Symbol.toStringTag](): string {
 		return "LWWRegister";
 	}
 
-	set current(value: Value) {
+	public set current(value: Value) {
 		this.value = value;
 		this.timestamp = Time.now();
 		this.emit("change");
 	}
 
-	get current(): Value {
+	public get current(): Value {
 		return this.value;
 	}
 
-	merge(remote: LWWRegister<Value>): LWWRegister<Value> {
+	public merge(remote: LWWRegister<Value>): LWWRegister<Value> {
 		if (this.timestamp.isAfter(remote.timestamp)) {
 			remote.value = this.value;
 			remote.timestamp = this.timestamp;

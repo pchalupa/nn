@@ -3,10 +3,10 @@ export type Infer<S> = S extends Schema<infer T> ? T : never;
 declare const InferredType: unique symbol;
 
 export abstract class Schema<Type = unknown> {
-	public declare readonly [InferredType]: Type;
+	declare public readonly [InferredType]: Type;
 	public abstract readonly type: "string" | "number" | "boolean" | "object" | "array";
-	public declare title?: string;
-	public declare description?: string;
+	declare public title?: string;
+	declare public description?: string;
 
 	public entitle(title: string): this {
 		this.title = title;

@@ -13,21 +13,21 @@ describe("Entity", () => {
 			super(key);
 		}
 
-		get current(): string {
+		public get current(): string {
 			return this.value;
 		}
 
-		set current(value: string) {
+		public set current(value: string) {
 			this.value = value;
 			this.emit("change");
 		}
 
-		setValue(value: string): void {
+		public setValue(value: string): void {
 			this.value = value;
 			this.emit("change");
 		}
 
-		merge(): this {
+		public merge(): this {
 			return this;
 		}
 	}

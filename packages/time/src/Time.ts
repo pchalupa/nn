@@ -1,24 +1,44 @@
+import { CounterOverflowError } from "./errors/CounterOverflowError";
+import { TimestampMalformedError } from "./errors/TimestampMalformedError";
+
 const TIMESTAMP_DELIMITER = "+" as const;
+const COUNTER_DIGITS = 5;
+const MAX_COUNTER = 16 ** COUNTER_DIGITS - 1;
 
 class GlobalTime {
 	/** Physical time in milliseconds */
 	protected static time = 0;
 	/** Logical time */
 	protected static counter = 0;
+
+	/**
+	 * Moves the shared clock to the present, keeping the logical time inside the timestamp field.
+
+	* @throws {CounterOverflowError} When the logical time has nowhere left to grow.
+	 */
+	protected static tick(): void {
+		const currentTime = Date.now();
+
+		if (currentTime > GlobalTime.time) {
+			GlobalTime.time = currentTime;
+			GlobalTime.counter = 0;
+		} else {
+			if (GlobalTime.counter >= MAX_COUNTER) throw new CounterOverflowError(GlobalTime.counter + 1, MAX_COUNTER);
+
+			GlobalTime.counter++;
+		}
+	}
 }
 
 /** Represents time using a Hybrid Logical Clock (HLC) model */
 export class Time extends GlobalTime {
-	/** Physical time in milliseconds */
-	private time: number;
-	/** Logical time */
-	private counter: number;
-
-	constructor(time: number, counter: number) {
+	constructor(
+		/** Physical time in milliseconds */
+		private time: number,
+		/** Logical time */
+		private counter: number,
+	) {
 		super();
-
-		this.time = time;
-		this.counter = counter;
 	}
 
 	/** Returns the physical time in milliseconds */
@@ -37,7 +57,7 @@ export class Time extends GlobalTime {
 	 */
 	public toString(): string {
 		const time = new Date(this.time).toISOString();
-		const counter = `00000${this.counter.toString(16)}`.slice(-5);
+		const counter = this.counter.toString(16).padStart(COUNTER_DIGITS, "0");
 
 		return [time, counter].join(TIMESTAMP_DELIMITER);
 	}
@@ -49,23 +69,24 @@ export class Time extends GlobalTime {
 
 	/** Returns the current time */
 	public static now(): Time {
-		const pt = Date.now();
-
-		if (pt > GlobalTime.time) {
-			GlobalTime.time = pt;
-			GlobalTime.counter = 0;
-		} else {
-			GlobalTime.counter++;
-		}
+		GlobalTime.tick();
 
 		return new Time(GlobalTime.time, GlobalTime.counter);
 	}
 
 	/** Returns a time from a timestamp */
 	public static fromTimestamp(timestamp: string): Time {
-		const match = timestamp.split(TIMESTAMP_DELIMITER);
-		const time = new Date(match?.at(0) || 0).getTime();
-		const counter = Number.parseInt(match?.at(1) || "0", 16);
+		const parts = timestamp.split(TIMESTAMP_DELIMITER);
+
+		const physical = parts.at(0);
+		const logical = parts.at(1);
+
+		if (!physical || !logical) throw new TimestampMalformedError(timestamp);
+
+		const time = Date.parse(physical);
+		const counter = Number.parseInt(logical, 16);
+
+		if (Number.isNaN(time)) throw new TimestampMalformedError(timestamp);
 
 		return new Time(time, counter);
 	}

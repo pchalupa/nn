@@ -1,3 +1,5 @@
+import { ID } from "@nn/id";
+
 import { CounterOverflowError } from "./errors/CounterOverflowError";
 import { TimestampMalformedError } from "./errors/TimestampMalformedError";
 
@@ -10,6 +12,8 @@ class GlobalTime {
 	protected static time = 0;
 	/** Logical time */
 	protected static counter = 0;
+	/** Identity of the replica this process stamps onto every time it mints */
+	protected static replicaId = ID.create();
 
 	/**
 	 * Moves the shared clock to the present, keeping the logical time inside the timestamp field.
@@ -37,6 +41,8 @@ export class Time extends GlobalTime {
 		private time: number,
 		/** Logical time */
 		private counter: number,
+		/** Identity of the replica that minted this time */
+		private replicaId: string = GlobalTime.replicaId,
 	) {
 		super();
 	}
@@ -53,18 +59,27 @@ export class Time extends GlobalTime {
 
 	/**
 	 * Returns the timestamp as a string
-	 * @example '2024-11-10T12:39:10.776Z+00002'
+	 * @example '2024-11-10T12:39:10.776Z+00002+9f1d0b07-7a3c-4d1e-9f52-6c2a4e8b1d30'
 	 */
 	public toString(): string {
 		const time = new Date(this.time).toISOString();
 		const counter = this.counter.toString(16).padStart(COUNTER_DIGITS, "0");
 
-		return [time, counter].join(TIMESTAMP_DELIMITER);
+		return [time, counter, this.replicaId].join(TIMESTAMP_DELIMITER);
+	}
+
+	/** Orders this time against another. */
+	public compare(other: Time): number {
+		if (this.time !== other.time) return this.time - other.time;
+		if (this.counter !== other.counter) return this.counter - other.counter;
+		if (this.replicaId === other.replicaId) return 0;
+
+		return this.replicaId < other.replicaId ? -1 : 1;
 	}
 
 	/** Returns true if this time is after another time */
 	public isAfter(other: Time): boolean {
-		return this.time > other.time || (this.time === other.time && this.counter > other.counter);
+		return this.compare(other) > 0;
 	}
 
 	/** Returns the current time */
@@ -80,14 +95,15 @@ export class Time extends GlobalTime {
 
 		const physical = parts.at(0);
 		const logical = parts.at(1);
+		const replicaId = parts.at(2);
 
-		if (!physical || !logical) throw new TimestampMalformedError(timestamp);
+		if (!physical || !logical || !replicaId) throw new TimestampMalformedError(timestamp);
 
 		const time = Date.parse(physical);
 		const counter = Number.parseInt(logical, 16);
 
-		if (Number.isNaN(time)) throw new TimestampMalformedError(timestamp);
+		if (Number.isNaN(time) || Number.isNaN(counter)) throw new TimestampMalformedError(timestamp);
 
-		return new Time(time, counter);
+		return new Time(time, counter, replicaId);
 	}
 }

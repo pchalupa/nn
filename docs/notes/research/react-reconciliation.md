@@ -848,9 +848,12 @@ The relevant commits, in order:
 | Commit      | Date       | PR                | What                                                                                                                                           |
 | ----------- | ---------- | ----------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
 | `d2e914ab4` | 2020-08-21 | [#19673][pr19673] | Remove remaining references to effect list                                                                                                     |
+| `166544360` | 2020-09-04 | [#19755][pr19755] | Rename effect fields — the commit where the name `subtreeFlags` first appears                                                                  |
+| `7baf9d412` | 2020-09-04 | [#19775][pr19775] | Combine `Flags` and `SubtreeFlags` types                                                                                                       |
+| `16fb2b6f9` | 2020-09-15 | [#19836][pr19836] | Moved `resetChildLanes` into complete work — the origin of `bubbleProperties`                                                                  |
 | `de75315d7` | 2020-11-16 | —                 | Track deletions using an array on the parent ("an incremental step away from using the effect list and toward a DFS + subtreeFlags traversal") |
 | `369c3db62` | 2020-11-16 | [#20264][pr20264] | Add separate `ChildDeletion` flag                                                                                                              |
-| `b66ae09b6` | 2020-11-17 | [#19836][pr19836] | Track `subtreeFlags` et al with `bubbleProperties`                                                                                             |
+| `b66ae09b6` | 2020-11-17 | [#19836][pr19836] | Track `subtreeFlags` et al with `bubbleProperties`, porting #19836 into the second reconciler fork ("Original PR: #19836")                     |
 | `fceb75e89` | 2021-01-20 | [#20625][pr20625] | Delete remaining references to effect list                                                                                                     |
 
 All five landed before React 18, so `subtreeFlags` is not a React 19 change.
@@ -1150,7 +1153,7 @@ Strictly this is not React reading the DOM. It is React passing the node it alre
 
 4. **"Keys let React reorder optimally"** — keys let React _reuse_ the right fibers and DOM nodes, which is the important half. The move set is not minimal: `lastPlacedIndex` is a single forward watermark with no longest-increasing-subsequence pass, so `[a,b,c]` → `[c,a,b]` moves two nodes where one would do (verified in jsdom against 19.3.0). The source comments acknowledge the tradeoff.
 
-5. **The effect list is long gone.** The commit phase is a depth-first walk pruned by `subtreeFlags`, introduced by [PR #19836][pr19836] and finished by [PR #20625][pr20625] in early 2021 — before React 18, not in 19.
+5. **The effect list is long gone.** The commit phase is a depth-first walk pruned by `subtreeFlags`. The field was named in [PR #19755][pr19755] (2020-09-04), the `bubbleProperties` bottom-up accumulation came from [PR #19836][pr19836] (2020-09-15), and the last effect-list references were deleted by [PR #20625][pr20625] (2021-01-20) — all before React 18, not in 19.
 
 6. **Deletions are recorded on the parent**, as `parentFiber.deletions` plus a `ChildDeletion` flag ([PR #20264][pr20264]). There is no `Deletion` flag on the removed fiber, because a removed fiber is not in the work-in-progress tree.
 
@@ -1162,7 +1165,6 @@ Strictly this is not React reading the DOM. It is React passing the node it alre
 - `reconcileChildrenIteratable` and `reconcileChildrenAsyncIteratable` are said by the source comment to use "the same algorithm" as `reconcileChildrenArray`. I read the array version only and did not verify the iterator versions line by line.
 - The persistent-renderer path (`supportsPersistence`, used by React Native Fabric) is quoted where it sits next to the mutation path but was not studied.
 - View Transition flags (`ViewTransitionStatic`, `BeforeAndAfterMutationTransitionMask`) change which subtrees the before-mutation walk visits when `enableViewTransition` is on. Not investigated.
-- The exact commit that introduced `subtreeFlags` is given as `b66ae09b6` / [PR #19836][pr19836] based on the commit message ("Original PR: #19836"). I did not open the PR itself.
 
 ---
 
@@ -1183,7 +1185,7 @@ Strictly this is not React reading the DOM. It is React passing the node it alre
   - [`ReactDOMComponent.js`][rdc] — `updateProperties`, `hydrateProperties`, `diffHydratedProperties`
   - [`ReactInputSelection.js`][sel] — `getSelectionInformation`, `restoreSelection`
 - React source, tag `v18.3.1` (commit `f1338f8080abd1386454a10bbf93d67bfe37ce85`) — [`ReactFiberCompleteWork.new.js`][cw18], [`ReactDOMHostConfig.js`][hc18], [`ReactDOMComponent.js`][rdc18]
-- Commits and PRs: [#27409 diff in commit phase][pr27409], [#19673][pr19673], [#20264][pr20264], [#19836][pr19836], [#20625][pr20625]
+- Commits and PRs: [#27409 diff in commit phase][pr27409], [#19673][pr19673], [#19755][pr19755], [#19775][pr19775], [#19836][pr19836], [#20264][pr20264], [#20625][pr20625]
 - Docs, cited for stated intent only: [legacy Reconciliation][doc-recon] (simplifies the child algorithm, see section 4), [Preserving and Resetting State][doc-state] (no pseudo-code, states the position/key rules)
 - Local verification: React 19.3.0 + jsdom, patching `Node.prototype.insertBefore`/`appendChild` on the list parent to record DOM ops, and comparing child node identity before and after. Five cases in section 4.
 
@@ -1208,6 +1210,8 @@ Strictly this is not React reading the DOM. It is React passing the node it alre
 [pr27409]: https://github.com/facebook/react/pull/27409
 [pr19673]: https://github.com/facebook/react/pull/19673
 [pr20264]: https://github.com/facebook/react/pull/20264
+[pr19755]: https://github.com/facebook/react/pull/19755
+[pr19775]: https://github.com/facebook/react/pull/19775
 [pr19836]: https://github.com/facebook/react/pull/19836
 [pr20625]: https://github.com/facebook/react/pull/20625
 [doc-recon]: https://legacy.reactjs.org/docs/reconciliation.html

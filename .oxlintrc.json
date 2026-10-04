@@ -30,6 +30,10 @@
 		"typescript/no-non-null-assertion": "error",
 		// "typescript/no-invalid-void-type": "error",
 		"typescript/array-type": ["error", { "default": "array-simple" }],
+		"typescript/explicit-member-accessibility": [
+			"error",
+			{ "accessibility": "explicit", "overrides": { "constructors": "no-public" } }
+		],
 
 		// "promise/prefer-await-to-then": "error",
 

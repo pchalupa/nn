@@ -4,7 +4,18 @@
 	"import": ["@cspell/dict-cs-cz/cspell-ext.json"],
 	"language": "en,cs",
 	"dictionaries": ["softwareTerms"],
-	"words": ["indexeddb", "noninteractive", "CRDT", "Logoot", "Loro", "LSEQ", "pchalupa", "tombstoned", "Kökörčený"],
+	"words": [
+		"indexeddb",
+		"noninteractive",
+		"CRDT",
+		"Logoot",
+		"Loro",
+		"LSEQ",
+		"pchalupa",
+		"tombstoned",
+		"Kökörčený",
+		"Kulkarni"
+	],
 	"ignorePaths": ["docs/{notes,plans,research}"],
 	"useGitignore": true
 }

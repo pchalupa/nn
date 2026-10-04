@@ -1,3 +1,3 @@
 export class RepositoryError extends Error {
-	override readonly name: string = "RepositoryError";
+	public override readonly name: string = "RepositoryError";
 }

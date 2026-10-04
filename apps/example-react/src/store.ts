@@ -32,6 +32,7 @@ const schema = object({
 const remote = new HttpRemote(import.meta.env.VITE_REMOTE_URL);
 const repository = new IndexDbRepository();
 
+// TBD: Can you have multiple stores?
 const store = createStore({
 	repository,
 	remote,

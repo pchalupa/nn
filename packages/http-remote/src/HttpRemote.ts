@@ -28,17 +28,17 @@ export class HttpRemote implements Remote {
 		return response.json();
 	}
 
-	async pull(): Promise<Record<string, unknown>> {
+	public async pull(): Promise<Record<string, unknown>> {
 		const response = await this.request<Record<string, unknown>>("GET", "/pull");
 
 		return response;
 	}
 
-	async push(data: unknown): Promise<void> {
+	public async push(data: unknown): Promise<void> {
 		await this.request<Record<string, unknown>>("POST", "/push", data);
 	}
 
-	subscribe(): () => void {
+	public subscribe(): () => void {
 		const url = new URL("/subscribe", this.url);
 		const eventSource = new EventSource(url);
 

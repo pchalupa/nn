@@ -20,15 +20,15 @@ export class LWWMap<Fields extends Record<string, Entity>> extends Entity<Fields
 		}
 	}
 
-	get [Symbol.toStringTag](): string {
+	public get [Symbol.toStringTag](): string {
 		return "LWWMap";
 	}
 
-	get current(): Fields {
+	public get current(): Fields {
 		return this.fields;
 	}
 
-	set current(fields: Fields) {
+	public set current(fields: Fields) {
 		for (const key in fields) {
 			const field = fields[key];
 
@@ -43,7 +43,7 @@ export class LWWMap<Fields extends Record<string, Entity>> extends Entity<Fields
 		this.emit("change");
 	}
 
-	merge(remote: LWWMap<Fields>): this {
+	public merge(remote: LWWMap<Fields>): this {
 		for (const key in this.fields) {
 			const localField = this.fields[key];
 			const remoteField = remote.fields[key];

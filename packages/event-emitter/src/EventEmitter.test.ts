@@ -3,14 +3,14 @@ import { describe, expect, it, vi } from "vitest";
 import { EventEmitter } from "./EventEmitter";
 
 describe("EventEmitter", () => {
-	it("should create an instance of event emitter", () => {
+	it("creates an instance of event emitter", () => {
 		const eventEmitter = new EventEmitter<{ test: [string] }>();
 
 		expect(eventEmitter).toBeInstanceOf(EventEmitter);
 		expect(eventEmitter).toHaveProperty("events");
 	});
 
-	it("should emit an event", () => {
+	it("emits an event", () => {
 		const eventEmitter = new EventEmitter<{ test: [string] }>();
 		const listener = vi.fn();
 
@@ -20,7 +20,7 @@ describe("EventEmitter", () => {
 		expect(listener).toHaveBeenCalledWith("hello");
 	});
 
-	it("should emit an event once", () => {
+	it("emits an event once", () => {
 		const eventEmitter = new EventEmitter<{ test: [string] }>();
 		const listener = vi.fn();
 
@@ -31,7 +31,7 @@ describe("EventEmitter", () => {
 		expect(listener).toHaveBeenCalledTimes(1);
 	});
 
-	it("should remove a once listener before invoking it", () => {
+	it("removes a once listener before invoking it", () => {
 		const eventEmitter = new EventEmitter<{ test: [] }>();
 		const listener = vi.fn(() => eventEmitter.emit("test"));
 
@@ -41,7 +41,7 @@ describe("EventEmitter", () => {
 		expect(listener).toHaveBeenCalledOnce();
 	});
 
-	it("should remove a once listener when it throws", () => {
+	it("removes a once listener when it throws", () => {
 		const eventEmitter = new EventEmitter<{ test: [] }>();
 		const listener = vi.fn(() => {
 			throw new Error("test error");
@@ -54,7 +54,7 @@ describe("EventEmitter", () => {
 		expect(listener).toHaveBeenCalledOnce();
 	});
 
-	it("should remove a listener", () => {
+	it("removes a listener", () => {
 		const eventEmitter = new EventEmitter<{ test: [string] }>();
 		const listener = vi.fn();
 

@@ -10,7 +10,7 @@ export class Batch {
 	 *
 	 * @param work Work to run synchronously inside the batch.
 	 */
-	run(work: () => void): void {
+	public run(work: () => void): void {
 		this.activeRuns++;
 
 		try {
@@ -27,7 +27,7 @@ export class Batch {
 	 *
 	 * @param callback Callback to run after the batch completes.
 	 */
-	request(callback: () => void): void {
+	public request(callback: () => void): void {
 		if (this.activeRuns > 0) {
 			this.pendingCallback = () => {
 				this.pendingCallback = undefined;

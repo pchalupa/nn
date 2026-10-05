@@ -4,27 +4,27 @@ import { string } from ".";
 import { BooleanSchema } from "./BooleanSchema";
 
 describe("BooleanSchema", () => {
-	it("should create an instance of BooleanSchema", () => {
+	it("creates an instance of BooleanSchema", () => {
 		const booleanSchema = new BooleanSchema();
 
 		expect(booleanSchema).toBeInstanceOf(BooleanSchema);
 	});
 
-	it("should entitle a boolean schema", () => {
+	it("entitles a boolean schema", () => {
 		const title = "test";
 		const booleanSchema = new BooleanSchema().entitle(title);
 
 		expect(booleanSchema.title).toBe(title);
 	});
 
-	it("should describe a boolean schema", () => {
+	it("describes a boolean schema", () => {
 		const description = "test";
 		const booleanSchema = new BooleanSchema().describe(description);
 
 		expect(booleanSchema.description).toBe(description);
 	});
 
-	it("should guard boolean schema type", () => {
+	it("guards boolean schema type", () => {
 		const booleanSchema = new BooleanSchema();
 
 		expect(BooleanSchema.isBooleanSchema(booleanSchema)).toBeTruthy();

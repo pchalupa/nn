@@ -8,7 +8,7 @@ import { ObjectSchema } from "./ObjectSchema";
 import { StringSchema } from "./StringSchema";
 
 describe("Schema", () => {
-	it("should create a schema for each JSON Schema type", () => {
+	it("creates a schema for each JSON Schema type", () => {
 		expect(string()).toBeInstanceOf(StringSchema);
 		expect(number()).toBeInstanceOf(NumberSchema);
 		expect(boolean()).toBeInstanceOf(BooleanSchema);
@@ -16,7 +16,7 @@ describe("Schema", () => {
 		expect(array(string())).toBeInstanceOf(ArraySchema);
 	});
 
-	it("should name the type after the JSON Schema type", () => {
+	it("names the type after the JSON Schema type", () => {
 		expect(string().type).toBe("string");
 		expect(number().type).toBe("number");
 		expect(boolean().type).toBe("boolean");
@@ -24,24 +24,24 @@ describe("Schema", () => {
 		expect(array(string()).type).toBe("array");
 	});
 
-	it("should distinguish primitives at runtime", () => {
+	it("distinguishes primitives at runtime", () => {
 		expect(string().type).not.toBe(number().type);
 		expect(number().type).not.toBe(boolean().type);
 	});
 
-	it("should set the title", () => {
+	it("sets the title", () => {
 		const schema = string().entitle("email");
 
 		expect(schema.title).toBe("email");
 	});
 
-	it("should set the description", () => {
+	it("sets the description", () => {
 		const schema = string().describe("An email address");
 
 		expect(schema.description).toBe("An email address");
 	});
 
-	it("should chain annotations", () => {
+	it("chains annotations", () => {
 		const schema = string().entitle("email").describe("An email address");
 
 		expect(schema).toBeInstanceOf(StringSchema);
@@ -54,14 +54,14 @@ describe("Schema", () => {
 		`);
 	});
 
-	it("should omit annotations that were not set", () => {
+	it("omits annotations that were not set", () => {
 		const schema = string();
 
 		expect(schema.title).toBeUndefined();
 		expect(schema.description).toBeUndefined();
 	});
 
-	it("should expose object properties", () => {
+	it("exposes object properties", () => {
 		const schema = object({ name: string(), age: number() });
 
 		expect(schema.properties).toMatchInlineSnapshot(`
@@ -76,14 +76,14 @@ describe("Schema", () => {
 		`);
 	});
 
-	it("should expose array items", () => {
+	it("exposes array items", () => {
 		const item = object({ name: string() });
 		const schema = array(item);
 
 		expect(schema.items).toBe(item);
 	});
 
-	it("should describe a nested schema", () => {
+	it("describes a nested schema", () => {
 		const user = object({ name: string().describe("User name") })
 			.entitle("user")
 			.describe("Holds information about a user.");

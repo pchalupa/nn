@@ -1,6 +1,6 @@
 {
 	"$schema": "./node_modules/oxlint/configuration_schema.json",
-	"plugins": ["typescript", "unicorn", "oxc", "import", "react", "jsx-a11y", "promise", "node", "vitest"],
+	"plugins": ["typescript", "unicorn", "oxc", "import", "react", "promise", "vitest"],
 	"categories": {
 		"correctness": "error",
 		"suspicious": "error",
@@ -53,6 +53,9 @@
 		"vitest/prefer-to-have-length": "error",
 		"vitest/require-top-level-describe": "error",
 		"vitest/prefer-strict-equal": "error",
+		"vitest/valid-title": ["error", { "mustMatch": { "it": "^[a-z]" } }],
+		"vitest/no-identical-title": "error",
+		"vitest/consistent-test-it": ["error", { "fn": "it" }],
 
 		"eslint/eqeqeq": "error",
 		"eslint/curly": ["error", "multi-line"],

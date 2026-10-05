@@ -36,17 +36,17 @@ const mount = async (ui: React.ReactNode) => {
 	return { rerender };
 };
 
-afterEach(cleanup);
-
 describe("createStore", () => {
-	it("should create a store", async () => {
+	afterEach(cleanup);
+
+	it("creates a store", async () => {
 		const store = await createStore({ schema: object({}) });
 
 		expect(store).toHaveProperty("events");
 		expect(store.view).toStrictEqual({});
 	});
 
-	it("should expose the schema as a view", async () => {
+	it("exposes the schema as a view", async () => {
 		const store = await createStore({
 			schema: object({ tickets: array(object({ title: string() })), language: string() }),
 		});
@@ -56,7 +56,7 @@ describe("createStore", () => {
 });
 
 describe("useStore", () => {
-	it("should render the selected view", async () => {
+	it("renders the selected view", async () => {
 		const { useStore } = setup();
 		const Tickets = () => {
 			const [tickets] = useStore((view) => view.tickets);
@@ -75,7 +75,7 @@ describe("useStore", () => {
 		expect(screen.getAllByRole("listitem")).toHaveLength(3);
 	});
 
-	it("should re-render when the selection changes", async () => {
+	it("re-renders when the selection changes", async () => {
 		const { tickets, useStore } = setup();
 		const Tickets = () => {
 			const [rows] = useStore((view) => view.tickets);
@@ -94,7 +94,7 @@ describe("useStore", () => {
 		expect(screen.getByTestId("count").textContent).toBe("4");
 	});
 
-	it("should re-render when a field of a row changes", async () => {
+	it("re-renders when a field of a row changes", async () => {
 		const { tickets, useStore } = setup();
 		const Tickets = () => {
 			const [rows] = useStore((view) => view.tickets);
@@ -115,7 +115,7 @@ describe("useStore", () => {
 		expect(screen.getByTestId("statuses").textContent).toBe("todo,todo,done");
 	});
 
-	it("should not re-render when an unrelated property changes", async () => {
+	it("does not re-render when an unrelated property changes", async () => {
 		const { language, useStore } = setup();
 		const rendered = vi.fn();
 		const Tickets = () => {
@@ -137,7 +137,7 @@ describe("useStore", () => {
 		expect(rendered).toHaveBeenCalledTimes(before);
 	});
 
-	it("should settle when the selector derives a new array on every call", async () => {
+	it("settles when the selector derives a new array on every call", async () => {
 		const { language, useStore } = setup();
 		const rendered = vi.fn();
 		const Column = ({ status }: { status: string }) => {
@@ -162,7 +162,7 @@ describe("useStore", () => {
 		expect(screen.getByTestId("count").textContent).toBe("2");
 	});
 
-	it("should follow a selector that closes over a changing prop", async () => {
+	it("follows a selector that closes over a changing prop", async () => {
 		const { useStore } = setup();
 		const Column = ({ status }: { status: string }) => {
 			const [rows] = useStore((view) => view.tickets.filter((row) => row.status === status));
@@ -179,7 +179,7 @@ describe("useStore", () => {
 		expect(screen.getByTestId("count").textContent).toBe("2");
 	});
 
-	it("should write through the updater", async () => {
+	it("writes through the updater", async () => {
 		const { store, useStore } = setup();
 		const Tickets = () => {
 			const [rows, update] = useStore((view) => view.tickets);
@@ -205,7 +205,7 @@ describe("useStore", () => {
 		expect(store.view.tickets.at(-1)).toStrictEqual({ id: "4", status: "todo" });
 	});
 
-	it("should write through the updater for a register", async () => {
+	it("writes through the updater for a register", async () => {
 		const { store, useStore } = setup();
 		const Language = () => {
 			const [language, setLanguage] = useStore((view) => view.language);

@@ -7,7 +7,7 @@ describe("IndexDbRepository", () => {
 		globalThis.indexedDB = new IDBFactory();
 	});
 
-	it("should create a repository", async () => {
+	it("creates a repository", async () => {
 		const repository = new IndexDbRepository();
 
 		await repository.init({});
@@ -15,7 +15,7 @@ describe("IndexDbRepository", () => {
 		expect(repository).toBeInstanceOf(IndexDbRepository);
 	});
 
-	it("should create a store for every key in the schema", async () => {
+	it("creates a store for every key in the schema", async () => {
 		const repository = new IndexDbRepository();
 
 		await repository.init({ users: {}, posts: {} });
@@ -24,7 +24,7 @@ describe("IndexDbRepository", () => {
 		expect(await repository.getAll("posts")).toStrictEqual([]);
 	});
 
-	it("should add a missing store to an existing database via a version upgrade", async () => {
+	it("adds a missing store to an existing database via a version upgrade", async () => {
 		const repository = new IndexDbRepository();
 
 		await repository.init({ users: {} });
@@ -36,7 +36,7 @@ describe("IndexDbRepository", () => {
 		expect(await repository.getAll("posts")).toStrictEqual([]);
 	});
 
-	it("should store and read back a value", async () => {
+	it("stores and read back a value", async () => {
 		const repository = new IndexDbRepository();
 		await repository.init({ test: {} });
 
@@ -45,7 +45,7 @@ describe("IndexDbRepository", () => {
 		expect(await repository.getAll("test")).toStrictEqual(["value"]);
 	});
 
-	it("should read back a single value by its id", async () => {
+	it("reads back a single value by its id", async () => {
 		const repository = new IndexDbRepository();
 		await repository.init({ test: {} });
 
@@ -56,21 +56,21 @@ describe("IndexDbRepository", () => {
 		expect(await repository.get("b", "test")).toStrictEqual({ name: "B" });
 	});
 
-	it("should return undefined for an id that is not stored", async () => {
+	it("returns undefined for an id that is not stored", async () => {
 		const repository = new IndexDbRepository();
 		await repository.init({ test: {} });
 
 		expect(await repository.get("missing", "test")).toBeUndefined();
 	});
 
-	it("should return an empty array for a store with no values", async () => {
+	it("returns an empty array for a store with no values", async () => {
 		const repository = new IndexDbRepository();
 		await repository.init({ test: {} });
 
 		expect(await repository.getAll("test")).toStrictEqual([]);
 	});
 
-	it("should return every value stored under a type", async () => {
+	it("returns every value stored under a type", async () => {
 		const repository = new IndexDbRepository();
 		await repository.init({ test: {} });
 
@@ -80,7 +80,7 @@ describe("IndexDbRepository", () => {
 		expect(await repository.getAll("test")).toStrictEqual([{ name: "A" }, { name: "B" }]);
 	});
 
-	it("should overwrite the value stored under an existing id", async () => {
+	it("overwrites the value stored under an existing id", async () => {
 		const repository = new IndexDbRepository();
 		await repository.init({ test: {} });
 
@@ -90,7 +90,7 @@ describe("IndexDbRepository", () => {
 		expect(await repository.getAll("test")).toStrictEqual(["second"]);
 	});
 
-	it("should delete the value stored under an id and keep the others", async () => {
+	it("deletes the value stored under an id and keep the others", async () => {
 		const repository = new IndexDbRepository();
 		await repository.init({ test: {} });
 

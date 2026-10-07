@@ -10,15 +10,19 @@ interface ColumnProps {
 }
 
 export const Column = ({ title, status }: ColumnProps) => {
-	const tickets = useStore((store) => store.tickets.filter((ticket) => ticket.status === status));
+	const [collection, updateTickets] = useStore("tickets");
+	// TBD: This will re-render whenever there is update in tickets even from different column
+	const tickets = collection.filter((ticket) => ticket.status === status);
 
 	const handleAddClick = () => {
-		tickets.push({
-			id: crypto.randomUUID(),
-			title: status,
-			status,
-			description: "test",
-			assignee: { name: "test", email: "test" },
+		updateTickets((draft) => {
+			draft.push({
+				id: Date.now().toString(),
+				title: status,
+				status,
+				description: "test",
+				assignee: { name: "test", email: "test" },
+			});
 		});
 	};
 

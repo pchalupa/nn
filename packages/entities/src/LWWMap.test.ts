@@ -4,20 +4,20 @@ import { LWWMap } from "./LWWMap";
 import { LWWRegister } from "./LWWRegister";
 
 describe("LWWMap", () => {
-	it("should create a map with initial value", () => {
+	it("creates a map with initial value", () => {
 		const map = new LWWMap({ name: new LWWRegister("John"), age: new LWWRegister(30) });
 
 		expect(map.current.name.current).toBe("John");
 		expect(map).toBeInstanceOf(LWWMap);
 	});
 
-	it("should serialize map", () => {
+	it("serializes map", () => {
 		const map = new LWWMap({ name: new LWWRegister("John"), address: new LWWMap({ city: new LWWRegister("Prague") }) });
 
 		expect(JSON.stringify(map)).toMatchInlineSnapshot(`"{"name":"John","address":{"city":"Prague"}}"`);
 	});
 
-	it("should update property value and reflect changes", () => {
+	it("updates property value and reflect changes", () => {
 		const map = new LWWMap({ name: new LWWRegister("Alice"), age: new LWWRegister(25) });
 
 		expect(map.current.name.current).toBe("Alice");
@@ -30,7 +30,7 @@ describe("LWWMap", () => {
 		expect(map.current.age.current).toBe(40);
 	});
 
-	it("should write values through set", () => {
+	it("writes values through set", () => {
 		const map = new LWWMap({ name: new LWWRegister("John"), age: new LWWRegister(30) });
 
 		map.set((current) => ({ ...current, name: new LWWRegister("Jane") }));
@@ -40,7 +40,7 @@ describe("LWWMap", () => {
 		expect(map.current.age.current).toBe(30);
 	});
 
-	it("should merge maps with multiple properties", () => {
+	it("merges maps with multiple properties", () => {
 		const mapA = new LWWMap({ name: new LWWRegister("foo"), age: new LWWRegister(20) });
 		const mapB = new LWWMap({ name: new LWWRegister("bar"), age: new LWWRegister(30) });
 
@@ -60,7 +60,7 @@ describe("LWWMap", () => {
 		expect("bar" in result.current).toBeFalsy();
 	});
 
-	it("should emit update event when property changes", () => {
+	it("emits update event when property changes", () => {
 		const map = new LWWMap({ name: new LWWRegister("Alice"), age: new LWWRegister(25) });
 		const callback = vi.fn();
 
@@ -77,7 +77,7 @@ describe("LWWMap", () => {
 		expect(callback).toHaveBeenCalledTimes(2);
 	});
 
-	it("should return unsubscribe function", () => {
+	it("returns unsubscribe function", () => {
 		const map = new LWWMap({ name: new LWWRegister("Alice"), age: new LWWRegister(25) });
 		const callback = vi.fn();
 
@@ -90,7 +90,7 @@ describe("LWWMap", () => {
 		expect(callback).not.toHaveBeenCalled();
 	});
 
-	it("should support multiple subscribers", () => {
+	it("supports multiple subscribers", () => {
 		const map = new LWWMap({ name: new LWWRegister("Alice"), age: new LWWRegister(25) });
 		const callback1 = vi.fn();
 		const callback2 = vi.fn();

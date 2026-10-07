@@ -10,6 +10,7 @@
 	"license": "MIT",
 	"author": "pchalupa <chalupa.petr93@gmail.com> (https://github.com/pchalupa)",
 	"repository": "https://github.com/pchalupa/nn",
+	"type": "module",
 	"exports": {
 		".": {
 			"import": "./src/Time.ts"
@@ -19,6 +20,9 @@
 		"ts:check": "tsc --noEmit",
 		"test": "vitest run",
 		"test:watch": "vitest watch"
+	},
+	"dependencies": {
+		"@nn/id": "workspace:"
 	},
 	"devDependencies": {
 		"@nn/typescript-config": "workspace:",

@@ -4,27 +4,27 @@ import { string } from ".";
 import { NumberSchema } from "./NumberSchema";
 
 describe("NumberSchema", () => {
-	it("should create an instance of NumberSchema", () => {
+	it("creates an instance of NumberSchema", () => {
 		const numberSchema = new NumberSchema();
 
 		expect(numberSchema).toBeInstanceOf(NumberSchema);
 	});
 
-	it("should entitle a number schema", () => {
+	it("entitles a number schema", () => {
 		const title = "test";
 		const numberSchema = new NumberSchema().entitle(title);
 
 		expect(numberSchema.title).toBe(title);
 	});
 
-	it("should describe a number schema", () => {
+	it("describes a number schema", () => {
 		const description = "test";
 		const numberSchema = new NumberSchema().describe(description);
 
 		expect(numberSchema.description).toBe(description);
 	});
 
-	it("should guard number schema type", () => {
+	it("guards number schema type", () => {
 		const numberSchema = new NumberSchema();
 
 		expect(NumberSchema.isNumberSchema(numberSchema)).toBeTruthy();

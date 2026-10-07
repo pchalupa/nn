@@ -12,31 +12,31 @@ export class IndexDbRepository implements Repository {
 
 	constructor(private readonly name = "nn-default") {}
 
-	async set<Value>(id: string, value: Value, typeName: string): Promise<void> {
+	public async set<Value>(key: string, value: Value, typeName: string): Promise<void> {
 		IndexDbRepository.assertIndexDB(this.indexDbDatabase);
 
 		const transaction = this.indexDbDatabase.transaction(typeName, Mode.ReadWrite);
 
-		await this.processRequest(transaction.objectStore(typeName).put(value, id));
+		await this.processRequest(transaction.objectStore(typeName).put(value, key));
 	}
 
-	async get<Value>(id: string, typeName: string): Promise<Value | undefined> {
+	public async get<Value>(key: string, typeName: string): Promise<Value | undefined> {
 		IndexDbRepository.assertIndexDB(this.indexDbDatabase);
 
 		const transaction = this.indexDbDatabase.transaction(typeName, Mode.ReadOnly);
 
-		return await this.processRequest<Value | undefined>(transaction.objectStore(typeName).get(id));
+		return await this.processRequest<Value | undefined>(transaction.objectStore(typeName).get(key));
 	}
 
-	async delete(id: string, typeName: string): Promise<void> {
+	public async delete(key: string, typeName: string): Promise<void> {
 		IndexDbRepository.assertIndexDB(this.indexDbDatabase);
 
 		const transaction = this.indexDbDatabase.transaction(typeName, Mode.ReadWrite);
 
-		await this.processRequest(transaction.objectStore(typeName).delete(id));
+		await this.processRequest(transaction.objectStore(typeName).delete(key));
 	}
 
-	async getAll<Value>(typeName: string, _version?: number): Promise<Value[]> {
+	public async getAll<Value>(typeName: string): Promise<Value[]> {
 		IndexDbRepository.assertIndexDB(this.indexDbDatabase);
 
 		const transaction = this.indexDbDatabase.transaction(typeName, Mode.ReadOnly);
@@ -55,7 +55,7 @@ export class IndexDbRepository implements Repository {
 		if (!(database instanceof IDBDatabase)) throw new RepositoryNotInitializedError();
 	}
 
-	async init(schema: Record<string, unknown>): Promise<void> {
+	public async init(schema: Record<string, unknown>): Promise<void> {
 		const typeNames = Object.keys(schema);
 
 		const existingDatabases = await indexedDB.databases();

@@ -1,197 +1,104 @@
-import { Collection } from "@nn/entities/Collection";
-import { LWWRegister } from "@nn/entities/LWWRegister";
+import { RGA } from "@nn/entities/RGA";
 import type { Repository } from "@nn/repository";
 import { array, object, string } from "@nn/schema";
 import { describe, expect, it, vi } from "vitest";
 
+import { State } from "./State";
 import { Store } from "./Store";
 
+const repositoryMock = (overrides: Partial<Repository> = {}): Repository => ({
+	init: vi.fn().mockResolvedValue(undefined),
+	get: vi.fn().mockResolvedValue(undefined),
+	getAll: vi.fn().mockResolvedValue([]),
+	set: vi.fn().mockResolvedValue(undefined),
+	delete: vi.fn().mockResolvedValue(undefined),
+	...overrides,
+});
+
+const ticketsSchema = object({ tickets: array(object({ name: string() })) });
+
 describe("Store", () => {
-	it("should create a store", () => {
-		const store = new Store({});
+	it("creates a store from a state", () => {
+		const store = new Store(new State({ tickets: new RGA() }));
 
-		expect(store).toHaveProperty("snapshotManager");
-		expect(store).toHaveProperty("state");
-		expect(store).toHaveProperty("events");
-		expect(store).toMatchInlineSnapshot(`
-			Store {
-			  "events": EventEmitter {
-			    "events": Map {},
-			  },
-			  "repository": undefined,
-			  "snapshotManager": SnapshotManager {
-			    "snapshots": WeakMap {},
-			  },
-			  "state": {},
-			}
-		`);
+		expect(store.read(["tickets"])).toStrictEqual([]);
 	});
 
-	it("should create a store with a factory method", async () => {
-		const store = new Store({
-			testCollection: new Collection(),
-		});
+	it("creates a store from a schema", async () => {
+		const store = await Store.fromSchema({ schema: ticketsSchema });
 
 		expect(store).toBeInstanceOf(Store);
-		expect(store).toHaveProperty("snapshotManager");
-		expect(store).toHaveProperty("state");
-		expect(store).toHaveProperty("events");
-		expect(store).toMatchInlineSnapshot(`
-			Store {
-			  "events": EventEmitter {
-			    "events": Map {},
-			  },
-			  "repository": undefined,
-			  "snapshotManager": SnapshotManager {
-			    "snapshots": WeakMap {},
-			  },
-			  "state": {
-			    "testCollection": [],
-			  },
-			}
-		`);
+		expect(store.read(["tickets"])).toStrictEqual([]);
 	});
 
-	it("should create a store from a schema", async () => {
-		const store = await Store.fromSchema({
-			schema: object({
-				testCollection: array(object({ name: string() })),
-			}),
-		});
-		const collection = store.getSnapshotOf((state) => state.testCollection);
-
-		expect(store).toBeInstanceOf(Store);
-		expect(collection.current).toEqual([]);
-	});
-
-	it("should initialize and hydrate a store from a repository", async () => {
-		const data = [{ id: "1", name: "Test" }];
-		const repository: Repository = {
-			init: vi.fn().mockResolvedValue(undefined),
-			get: vi.fn().mockResolvedValue(undefined),
-			getAll: vi.fn().mockResolvedValue(data),
-			set: vi.fn().mockResolvedValue(undefined),
-			delete: vi.fn().mockResolvedValue(undefined),
-		};
-		const schema = object({
-			testCollection: array(object({ name: string() })),
+	it("initializes and hydrates a store from a repository", async () => {
+		const repository = repositoryMock({
+			getAll: vi.fn().mockResolvedValue([{ key: "1", name: "Test" }]),
 		});
 
-		const store = await Store.fromSchema({ schema, repository });
-		const collection = store.getSnapshotOf((state) => state.testCollection);
+		const store = await Store.fromSchema({ schema: ticketsSchema, repository });
 
-		expect(repository.init).toHaveBeenCalledWith(schema.properties);
-		expect(repository.getAll).toHaveBeenCalledWith("testCollection");
-		expect(collection.current).toEqual(data);
+		expect(repository.init).toHaveBeenCalledWith(ticketsSchema.properties);
+		expect(repository.getAll).toHaveBeenCalledWith("tickets");
+		expect(store.read(["tickets"])).toStrictEqual([{ key: "1", name: "Test" }]);
 	});
 
-	it("should create a register for a top-level primitive", async () => {
-		const store = await Store.fromSchema({
-			schema: object({ language: string() }),
-		});
-		const language = store.getSnapshotOf((state) => state.language);
+	it("creates a register for a top-level string", async () => {
+		const store = await Store.fromSchema({ schema: object({ language: string() }) });
 
-		expect(language).toBeInstanceOf(LWWRegister);
-		expect(language.current).toBeUndefined();
+		expect(store.read(["language"])).toBeUndefined();
 	});
 
-	it("should hydrate and persist a register through a repository", async () => {
-		const repository: Repository = {
-			init: vi.fn().mockResolvedValue(undefined),
-			get: vi.fn().mockResolvedValue("cs"),
-			getAll: vi.fn().mockResolvedValue([]),
-			set: vi.fn().mockResolvedValue(undefined),
-			delete: vi.fn().mockResolvedValue(undefined),
-		};
-
+	it("hydrates and persists a register through a repository", async () => {
+		const repository = repositoryMock({ get: vi.fn().mockResolvedValue("cs") });
 		const store = await Store.fromSchema({ schema: object({ language: string() }), repository });
-		const language = store.getSnapshotOf((state) => state.language);
 
 		expect(repository.get).toHaveBeenCalledWith("language", "language");
-		expect(language.current).toBe("cs");
+		expect(store.read(["language"])).toBe("cs");
 
-		language.current = "en";
+		store.update(["language"], () => "en");
 
-		expect(repository.set).toHaveBeenCalledWith("language", "en", "language");
+		expect(store.read(["language"])).toBe("en");
+		await vi.waitFor(() => expect(repository.set).toHaveBeenCalledWith("language", "en", "language"));
 	});
 
-	it("should emit an error when persisting a register fails", async () => {
-		const error = new Error("Write failed");
-		const repository: Repository = {
-			init: vi.fn().mockResolvedValue(undefined),
-			get: vi.fn().mockResolvedValue(undefined),
-			getAll: vi.fn().mockResolvedValue([]),
-			set: vi.fn().mockRejectedValue(error),
-			delete: vi.fn().mockResolvedValue(undefined),
-		};
-		const listener = vi.fn();
-
-		const store = await Store.fromSchema({ schema: object({ language: string() }), repository });
-		const language = store.getSnapshotOf((state) => state.language);
-
-		store.events.on("error", listener);
-
-		language.current = "en";
-
-		await vi.waitFor(() => expect(listener).toHaveBeenCalledWith(error));
-	});
-
-	it("should reject a top-level object", async () => {
+	it("rejects a top-level object", async () => {
 		await expect(Store.fromSchema({ schema: object({ settings: object({ theme: string() }) }) })).rejects.toThrow(
 			TypeError,
 		);
 	});
 
-	it("should return a snapshot", async () => {
-		const store = new Store({
-			testCollection: new Collection<{ id: string }>(),
-		});
-		const selector = (schema: { testCollection: Collection<{ id: string }> }) => schema.testCollection;
-		const snapshot = store.getSnapshotOf(selector);
+	it("adds a row to a collection", async () => {
+		const store = await Store.fromSchema({ schema: ticketsSchema });
 
-		expect(snapshot).toBeInstanceOf(Collection);
-		expect(store.getSnapshotIdOf(selector)).toBeDefined();
-		expect(snapshot).toMatchInlineSnapshot(`[]`);
+		store.update(["tickets"], (tickets) => {
+			tickets.push({ name: "Test" });
+		});
+
+		expect(store.read(["tickets"])).toMatchObject([{ name: "Test" }]);
 	});
 
-	it("should select a data and return snapshot", async () => {
-		const collection = new Collection<{ id: string }>();
-		const store = new Store({ testCollection: collection });
-
-		collection.push({ id: "1" });
-		collection.push({ id: "2" });
-
-		const filtered = store.getSnapshotOf((schema) => schema.testCollection.filter((item) => item.id === "1"));
-
-		expect(filtered.length).toBe(1);
-		expect(filtered.current).toStrictEqual([{ id: "1" }]);
-	});
-
-	it("should notify subscribers when a snapshot is updated", async () => {
-		const store = new Store({
-			testCollection: new Collection<{ id: string }>(),
-		});
-		const snapshot = store.getSnapshotOf((schema) => schema.testCollection);
+	it("notifies subscribers when an entity is updated", async () => {
+		const store = await Store.fromSchema({ schema: ticketsSchema });
 		const listener = vi.fn();
 
-		store.events.on("update", listener);
+		store.subscribe(listener);
+		store.update(["tickets"], (tickets) => {
+			tickets.push({ name: "Test" });
+		});
 
-		snapshot.push({ id: "1" });
-
-		expect(listener).toHaveBeenCalled();
+		expect(listener).toHaveBeenCalledTimes(1);
 	});
 
-	it("should remove a subscriber", async () => {
-		const store = new Store({
-			testCollection: new Collection<{ id: string }>(),
-		});
-		const snapshot = store.getSnapshotOf((schema) => schema.testCollection);
+	it("removes a subscriber", async () => {
+		const store = await Store.fromSchema({ schema: ticketsSchema });
 		const listener = vi.fn();
+		const unsubscribe = store.subscribe(listener);
 
-		store.events.on("update", listener);
-		store.events.off("update", listener);
-
-		snapshot.push({ id: "1" });
+		unsubscribe();
+		store.update(["tickets"], (tickets) => {
+			tickets.push({ name: "Test" });
+		});
 
 		expect(listener).not.toHaveBeenCalled();
 	});

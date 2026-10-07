@@ -14,7 +14,7 @@ describe("LWWRegister", () => {
 		vi.restoreAllMocks();
 	});
 
-	it("should create a register with initial value", () => {
+	it("creates a register with initial value", () => {
 		const register = new LWWRegister("initial");
 
 		expect(register.current).toBe("initial");
@@ -22,22 +22,22 @@ describe("LWWRegister", () => {
 		expect(register.toString()).toBe("[object LWWRegister]");
 	});
 
-	it("should work with different types", () => {
+	it("works with different types", () => {
 		const stringRegister = new LWWRegister("string");
 		const numberRegister = new LWWRegister(42);
 		const objectRegister = new LWWRegister({ key: "value" });
 
 		expect(stringRegister.current).toBe("string");
 		expect(numberRegister.current).toBe(42);
-		expect(objectRegister.current).toEqual({ key: "value" });
+		expect(objectRegister.current).toStrictEqual({ key: "value" });
 	});
 
-	it("should serialize register", () => {
+	it("serializes register", () => {
 		expect(JSON.stringify(new LWWRegister("string"))).toMatchInlineSnapshot(`""string""`);
 		expect(JSON.stringify(new LWWRegister(42))).toMatchInlineSnapshot(`"42"`);
 	});
 
-	it("should update value", () => {
+	it("updates value", () => {
 		const register = new LWWRegister("initial");
 
 		register.current = "updated";
@@ -46,7 +46,7 @@ describe("LWWRegister", () => {
 	});
 
 	describe("merge", () => {
-		it("should keep the value from the register with later timestamp", () => {
+		it("keeps the value from the register with later timestamp", () => {
 			const registerA = new LWWRegister("foo");
 			const registerB = new LWWRegister("bar");
 
@@ -56,7 +56,7 @@ describe("LWWRegister", () => {
 			expect(registerB.current).toBe("bar");
 		});
 
-		it("should update remote register when local timestamp is later", () => {
+		it("updates remote register when local timestamp is later", () => {
 			const registerA = new LWWRegister("foo");
 			const registerB = new LWWRegister("bar");
 
@@ -69,7 +69,7 @@ describe("LWWRegister", () => {
 			expect(registerB.current).toBe("updated_foo");
 		});
 
-		it("should update local register when remote timestamp is later", () => {
+		it("updates local register when remote timestamp is later", () => {
 			const registerA = new LWWRegister("foo");
 
 			currentTime = 2000000;
@@ -81,7 +81,7 @@ describe("LWWRegister", () => {
 			expect(registerB.current).toBe("bar");
 		});
 
-		it("should work with multiple sequential merges", () => {
+		it("works with multiple sequential merges", () => {
 			const registerA = new LWWRegister("a");
 
 			currentTime = 2000000;
@@ -95,7 +95,7 @@ describe("LWWRegister", () => {
 			expect(registerA.current).toBe("c");
 		});
 
-		it("should preserve object references correctly", () => {
+		it("preserves object references correctly", () => {
 			const objA = { id: 1, name: "A" };
 			const objB = { id: 2, name: "B" };
 
@@ -110,7 +110,7 @@ describe("LWWRegister", () => {
 			expect(registerA.current).toBe(objB);
 		});
 
-		it("should maintain consistency after bidirectional merge", () => {
+		it("maintains consistency after bidirectional merge", () => {
 			const registerA = new LWWRegister("foo");
 
 			currentTime = 2000000;
@@ -123,7 +123,7 @@ describe("LWWRegister", () => {
 			expect(registerA.current).toBe(registerB.current);
 		});
 
-		it("should handle concurrent updates correctly", async () => {
+		it("handles concurrent updates correctly", async () => {
 			const [registerA, registerB] = await Promise.all([
 				new Promise<LWWRegister<string>>((resolve) => resolve(new LWWRegister("foo"))),
 				new Promise<LWWRegister<string>>((resolve) => resolve(new LWWRegister("bar"))),
@@ -136,7 +136,7 @@ describe("LWWRegister", () => {
 	});
 
 	describe("subscribe", () => {
-		it("should call callback when value is updated", () => {
+		it("calls callback when value is updated", () => {
 			const register = new LWWRegister("initial");
 			const callback = vi.fn();
 
@@ -146,7 +146,7 @@ describe("LWWRegister", () => {
 			expect(callback).toHaveBeenCalledTimes(1);
 		});
 
-		it("should call callback when merged with newer remote", () => {
+		it("calls callback when merged with newer remote", () => {
 			const registerA = new LWWRegister("foo");
 			const callback = vi.fn();
 
@@ -159,7 +159,7 @@ describe("LWWRegister", () => {
 			expect(callback).toHaveBeenCalledTimes(1);
 		});
 
-		it("should return unsubscribe function", () => {
+		it("returns unsubscribe function", () => {
 			const register = new LWWRegister("initial");
 			const callback = vi.fn();
 
@@ -172,7 +172,7 @@ describe("LWWRegister", () => {
 			expect(callback).not.toHaveBeenCalled();
 		});
 
-		it("should handle multiple subscribers", () => {
+		it("handles multiple subscribers", () => {
 			const register = new LWWRegister("initial");
 			const callback1 = vi.fn();
 			const callback2 = vi.fn();

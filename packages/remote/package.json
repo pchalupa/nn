@@ -10,6 +10,7 @@
 	"license": "MIT",
 	"author": "pchalupa <chalupa.petr93@gmail.com> (https://github.com/pchalupa)",
 	"repository": "https://github.com/pchalupa/nn",
+	"type": "module",
 	"exports": {
 		".": {
 			"import": "./src/Remote.ts"

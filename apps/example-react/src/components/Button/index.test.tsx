@@ -11,14 +11,14 @@ describe("Button", () => {
 		return props;
 	};
 
-	it("should render correctly", () => {
+	it("renders correctly", () => {
 		const { text } = setup({ text: "Test" });
 
 		expect(screen.getByText(text)).toBeTruthy();
 		expect(screen.getByRole("button")).toBeTruthy();
 	});
 
-	it("should call onClick when clicked", async () => {
+	it("calls onClick when clicked", async () => {
 		const onClick = vi.fn();
 		const { text } = setup({ text: "Test", onClick });
 

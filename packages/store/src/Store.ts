@@ -1,104 +1,81 @@
-import { Collection } from "@nn/entities/Collection";
-import { LWWRegister } from "@nn/entities/LWWRegister";
+import type { Entity } from "@nn/entities/Entity";
 import { EventEmitter } from "@nn/event-emitter";
-import type { Observable } from "@nn/event-emitter/Observable";
+import type { Callback, Unsubscribe } from "@nn/event-emitter/Observable";
 import type { Remote } from "@nn/remote";
 import type { Repository } from "@nn/repository";
-import type { ArraySchema, Infer, ObjectSchema, Schema } from "@nn/schema";
+import type { ObjectSchema, Schema } from "@nn/schema";
 
-import type { Snapshot } from "./Snapshot";
-import { SnapshotManager } from "./SnapshotManager";
+import { Batch } from "./Batch";
+import type { Recipe } from "./Draft";
+import type { Path, PathDraft, PathValue } from "./Path";
+import { State, type StateFromSchema } from "./State";
+import { materializeRow } from "./View";
 
-// TODO: This needs attention
-type StateFromSchema<StoreSchema extends ObjectSchema<Record<string, Schema>>> = {
-	[Key in keyof StoreSchema["properties"]]: StoreSchema["properties"][Key] extends ArraySchema<infer Item>
-		? Collection<Infer<Item> & { id: string }>
-		: Infer<StoreSchema["properties"][Key]> extends string
-			? LWWRegister<Infer<StoreSchema["properties"][Key]> | undefined>
-			: never;
-};
+export type { Recipe } from "./Draft";
+export type { Path, PathDraft, PathValue } from "./Path";
+export { State, type StateFromSchema } from "./State";
 
-export class Store<State extends object> {
-	public events = new EventEmitter<{ update: []; error: [Error] }>();
-	private snapshotManager = new SnapshotManager();
+export class Store<Entries extends Record<string, Entity>> {
+	private eventEmitter = new EventEmitter<{ update: [] }>();
+	private batch = new Batch();
 
 	constructor(
-		private state: State,
-		private repository?: Repository,
+		private state: State<Entries>,
+		repository?: Repository,
 		_remote?: Remote,
 	) {
-		// Attach event listeners to each entity in the state
-		if (this.repository) {
-			for (const [typeName, entity] of Object.entries(this.state)) {
-				if (entity instanceof Collection) {
-					entity.events.on("update", (value: { id?: string }) => {
-						if (value.id) {
-							this.repository?.set(value.id, value, typeName).catch((error) => {
-								if (error instanceof Error) this.events.emit("error", error);
-							});
+		for (const name in this.state.entries) {
+			const entity = this.state.entries[name];
+
+			entity.subscribe(() => this.batch.request(() => this.eventEmitter.emit("update")));
+
+			if (repository) {
+				// TODO: Persist CRDT metadata
+				entity.subscribe(async () => {
+					if (Array.isArray(entity.current)) {
+						// TODO: This needs rework. Saving one by one is not atomic update, deleted items stays in repository.
+						for (const value of entity.current) {
+							repository.set(value.key, materializeRow(value), name);
 						}
-					});
-					// TBD: This branch will be eventually default one once collection will be aligned with subscribe method
-				} else if (entity instanceof LWWRegister) {
-					const id = typeName;
-					entity.subscribe(() => {
-						this.repository?.set(id, entity.current, typeName).catch((error) => {
-							if (error instanceof Error) this.events.emit("error", error);
-						});
-					});
-				}
+					} else {
+						const value = entity.current;
+
+						repository.set(name, value, name);
+					}
+				});
 			}
 		}
 	}
 
-	static async fromSchema<StoreSchema extends ObjectSchema<Record<string, Schema>>>(options: {
+	public read<const Segments extends Path<Entries>>(path: Segments): PathValue<Entries, Segments, true> {
+		return this.state.read(path);
+	}
+
+	public update<const Segments extends Path<Entries>>(
+		path: Segments,
+		recipe: Recipe<NoInfer<PathDraft<Entries, Segments>>>,
+	): void {
+		this.batch.run(() => this.state.write(path, recipe));
+	}
+
+	public subscribe(listener: Callback): Unsubscribe {
+		this.eventEmitter.on("update", listener);
+
+		return () => this.eventEmitter.off("update", listener);
+	}
+
+	public static async fromSchema<StoreSchema extends ObjectSchema<Record<string, Schema>>>({
+		schema,
+		repository,
+		remote,
+	}: {
 		schema: StoreSchema;
 		repository?: Repository;
 		remote?: Remote;
 	}): Promise<Store<StateFromSchema<StoreSchema>>> {
-		const { schema, repository, remote } = options;
-		const state: Record<string, Collection<{ id: string }> | LWWRegister<string | undefined>> = {};
+		// TODO: schema should not get access to repository.
+		const state = await State.fromSchema(schema, repository);
 
-		await repository?.init(schema.properties);
-
-		for (const [typeName, shape] of Object.entries(schema.properties)) {
-			if (shape.type === "array") {
-				const data = await repository?.getAll<{ id: string }>(typeName);
-
-				state[typeName] = new Collection(data);
-			} else if (shape.type === "string") {
-				const value = await repository?.get<string>(typeName, typeName);
-
-				state[typeName] = new LWWRegister<string | undefined>(value);
-			} else {
-				throw new TypeError(`Unsupported top-level schema shape "${shape.type}" for "${typeName}".`);
-			}
-		}
-
-		return new Store(state as StateFromSchema<StoreSchema>, repository, remote);
-	}
-
-	getSnapshotOf<SelectedState extends Observable>(selector: (state: State) => SelectedState): SelectedState {
-		// TDB: Remove type casting
-		return this.snapshotOf(selector).state as SelectedState;
-	}
-
-	getSnapshotIdOf<SelectedState extends Observable>(selector: (state: State) => SelectedState): string | undefined {
-		return this.snapshotOf(selector).id;
-	}
-
-	private snapshotOf<SelectedState extends Observable>(selector: (state: State) => SelectedState): Snapshot {
-		const snapshotId = selector;
-		let snapshot = this.snapshotManager.getSnapshot(snapshotId);
-
-		if (!snapshot) {
-			const state = selector(this.state);
-			const handleInvalidated = () => this.events.emit("update");
-
-			snapshot = this.snapshotManager.createSnapshot(snapshotId, state);
-			snapshot.events.once("invalidated", handleInvalidated);
-		}
-
-		return snapshot;
+		return new Store<StateFromSchema<StoreSchema>>(state, repository, remote);
 	}
 }

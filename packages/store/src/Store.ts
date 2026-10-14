@@ -1,4 +1,5 @@
 import type { Entity } from "@nn/entities/Entity";
+import { RGA } from "@nn/entities/RGA";
 import { EventEmitter } from "@nn/event-emitter";
 import type { Callback, Unsubscribe } from "@nn/event-emitter/Observable";
 import type { Remote } from "@nn/remote";
@@ -6,13 +7,10 @@ import type { Repository } from "@nn/repository";
 import type { ObjectSchema, Schema } from "@nn/schema";
 
 import { Batch } from "./Batch";
-import type { Recipe } from "./Draft";
-import type { Path, PathDraft, PathValue } from "./Path";
+import type { Path, PathDraft, PathValue, Recipe } from "./Path";
 import { State, type StateFromSchema } from "./State";
-import { materializeRow } from "./View";
 
-export type { Recipe } from "./Draft";
-export type { Path, PathDraft, PathValue } from "./Path";
+export type { Path, PathDraft, PathValue, Recipe } from "./Path";
 export { State, type StateFromSchema } from "./State";
 
 export class Store<Entries extends Record<string, Entity>> {
@@ -32,10 +30,10 @@ export class Store<Entries extends Record<string, Entity>> {
 			if (repository) {
 				// TODO: Persist CRDT metadata
 				entity.subscribe(async () => {
-					if (Array.isArray(entity.current)) {
+					if (entity instanceof RGA) {
 						// TODO: This needs rework. Saving one by one is not atomic update, deleted items stays in repository.
-						for (const value of entity.current) {
-							repository.set(value.key, materializeRow(value), name);
+						for (const row of entity.current) {
+							repository.set(row.key, row.current, name);
 						}
 					} else {
 						const value = entity.current;

@@ -2,6 +2,8 @@
 
 Researched 2026-10-02. This is research for extracting Store notification batching into a small, per-Store `Batch` class. No implementation is included. Local observations refer to the working tree inspected at HEAD `623b119a666db94bc7465b4425849d92c272f648`.
 
+Implementation update, 2026-10-14: the diff/patch references below are historical. `Store.update` wraps `State.write` in `Batch.run`, including the recipe and [reconciliation](../../../packages/store/src/State.ts). Reconciliation validates the result and creates new row entities before executing deferred writes. Preparation failures leave the target unchanged; exceptions during execution still have no rollback guarantee. See the [simplification design](../../superpowers/specs/2026-10-14-simplify-materialized-views-design.md).
+
 ## Recommendation
 
 We can use the proposed coordinator: one depth counter, one pending flag, and one notification callback per Store. `run(callback)` enters a synchronous scope and leaves it in `finally`; only the outermost exit flushes pending work. `notify()` marks pending inside the scope and calls the notification callback immediately outside it. Clear pending before invoking user code.

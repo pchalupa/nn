@@ -20,7 +20,7 @@ const ticket = object({
 	.entitle("ticket")
 	.describe("Holds information about a ticket.");
 
-const tags = array(string());
+const tags = array(object({ name: string() }));
 
 const schema = object({
 	users: array(user).describe("List of users"),

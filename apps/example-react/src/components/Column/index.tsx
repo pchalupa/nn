@@ -23,6 +23,8 @@ export const Column = ({ title, status }: ColumnProps) => {
 				description: "test",
 				assignee: { name: "test", email: "test" },
 			});
+
+			return draft;
 		});
 	};
 

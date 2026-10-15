@@ -335,6 +335,9 @@ importers:
       '@nn/event-emitter':
         specifier: 'workspace:'
         version: link:../event-emitter
+      '@nn/id':
+        specifier: 'workspace:'
+        version: link:../id
       '@nn/repository':
         specifier: 'workspace:'
         version: link:../repository

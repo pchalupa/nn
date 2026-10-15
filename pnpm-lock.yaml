@@ -256,22 +256,13 @@ importers:
 
   packages/react:
     dependencies:
-      '@nn/entities':
-        specifier: 'workspace:'
-        version: link:../entities
-      '@nn/remote':
-        specifier: 'workspace:'
-        version: link:../remote
-      '@nn/repository':
-        specifier: 'workspace:'
-        version: link:../repository
-      '@nn/schema':
-        specifier: 'workspace:'
-        version: link:../schema
       '@nn/store':
         specifier: 'workspace:'
         version: link:../store
     devDependencies:
+      '@nn/schema':
+        specifier: 'workspace:'
+        version: link:../schema
       '@nn/typescript-config':
         specifier: 'workspace:'
         version: link:../typescript-config

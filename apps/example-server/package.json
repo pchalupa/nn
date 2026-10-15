@@ -3,7 +3,8 @@
 	"version": "0.0.0",
 	"private": true,
 	"scripts": {
-		"dev": "tsx watch --clear-screen=false --env-file=.env.development src/index.ts"
+		"dev": "tsx watch --clear-screen=false --env-file=.env.development src/index.ts",
+		"ts:check": "tsc --noEmit"
 	},
 	"dependencies": {
 		"cors": "^2.8.6",
@@ -14,6 +15,7 @@
 	"devDependencies": {
 		"@types/cors": "^2.8.19",
 		"@types/express": "^5.0.6",
+		"tsx": "^4.23.13",
 		"typescript": "catalog:"
 	}
 }

@@ -172,6 +172,9 @@ importers:
       '@types/express':
         specifier: ^5.0.6
         version: 5.0.6
+      tsx:
+        specifier: ^4.23.13
+        version: 4.23.13
       typescript:
         specifier: 'catalog:'
         version: 7.0.2
@@ -241,6 +244,12 @@ importers:
         specifier: 'workspace:'
         version: link:../repository
     devDependencies:
+      '@nn/schema':
+        specifier: 'workspace:'
+        version: link:../schema
+      '@nn/store':
+        specifier: 'workspace:'
+        version: link:../store
       '@nn/typescript-config':
         specifier: 'workspace:'
         version: link:../typescript-config
@@ -335,6 +344,9 @@ importers:
       '@nn/schema':
         specifier: 'workspace:'
         version: link:../schema
+      '@nn/time':
+        specifier: 'workspace:'
+        version: link:../time
     devDependencies:
       '@nn/remote':
         specifier: 'workspace:'
@@ -7335,7 +7347,6 @@ snapshots:
       '@esbuild/win32-arm64': 0.28.2
       '@esbuild/win32-ia32': 0.28.2
       '@esbuild/win32-x64': 0.28.2
-    optional: true
 
   escalade@3.2.0: {}
 
@@ -8640,7 +8651,6 @@ snapshots:
       esbuild: 0.28.2
     optionalDependencies:
       fsevents: 2.3.3
-    optional: true
 
   type-fest@0.16.0: {}
 

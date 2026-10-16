@@ -1,8 +1,12 @@
 export interface Repository {
 	init(schema: Record<string, unknown>): Promise<void>;
 
-	set<Value>(key: string, value: Value, typeName: string): Promise<void>;
-	get<Value>(key: string, typeName: string): Promise<Value | undefined>;
-	delete(key: string, typeName: string): Promise<void>;
-	getAll<Value>(typeName: string): Promise<Value[]>;
+	get(name: string): Promise<Entry | undefined>;
+	set(name: string, entry: Entry): Promise<void>;
+}
+
+export interface Entry<Data = unknown, Metadata extends Record<string, unknown> = Record<string, unknown>> {
+	key: string;
+	data: Data;
+	metadata: Metadata;
 }

@@ -244,12 +244,6 @@ importers:
         specifier: 'workspace:'
         version: link:../repository
     devDependencies:
-      '@nn/schema':
-        specifier: 'workspace:'
-        version: link:../schema
-      '@nn/store':
-        specifier: 'workspace:'
-        version: link:../store
       '@nn/typescript-config':
         specifier: 'workspace:'
         version: link:../typescript-config

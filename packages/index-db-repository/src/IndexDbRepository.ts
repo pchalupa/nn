@@ -1,4 +1,4 @@
-import type { Repository } from "@nn/repository";
+import type { Entry, Repository } from "@nn/repository";
 import { RepositoryNotInitializedError } from "@nn/repository/errors/RepositoryNotInitializedError";
 
 enum Mode {
@@ -12,20 +12,20 @@ export class IndexDbRepository implements Repository {
 
 	constructor(private readonly name = "nn-default") {}
 
-	public async set<Value>(key: string, value: Value, typeName: string): Promise<void> {
+	public async set(name: string, entry: Entry): Promise<void> {
 		IndexDbRepository.assertIndexDB(this.indexDbDatabase);
 
-		const transaction = this.indexDbDatabase.transaction(typeName, Mode.ReadWrite);
+		const transaction = this.indexDbDatabase.transaction(name, Mode.ReadWrite);
 
-		await this.processRequest(transaction.objectStore(typeName).put(value, key));
+		await this.processRequest(transaction.objectStore(name).put(entry, name));
 	}
 
-	public async get<Value>(key: string, typeName: string): Promise<Value | undefined> {
+	public async get(name: string): Promise<Entry | undefined> {
 		IndexDbRepository.assertIndexDB(this.indexDbDatabase);
 
-		const transaction = this.indexDbDatabase.transaction(typeName, Mode.ReadOnly);
+		const transaction = this.indexDbDatabase.transaction(name, Mode.ReadOnly);
 
-		return await this.processRequest<Value | undefined>(transaction.objectStore(typeName).get(key));
+		return await this.processRequest<Entry | undefined>(transaction.objectStore(name).get(name));
 	}
 
 	public async delete(key: string, typeName: string): Promise<void> {
@@ -46,8 +46,14 @@ export class IndexDbRepository implements Repository {
 
 	private processRequest<Value>(request: IDBRequest<Value>): Promise<Value> {
 		return new Promise<Value>((resolve, reject) => {
-			request.onsuccess = () => resolve(request.result);
+			const { transaction } = request;
+
 			request.onerror = () => reject(request.error);
+
+			if (transaction) {
+				transaction.onabort = () => reject(transaction.error);
+				transaction.oncomplete = () => resolve(request.result);
+			}
 		});
 	}
 

@@ -21,6 +21,17 @@ describe("Time", () => {
 		expect(secondEvent.getCounter()).toBeGreaterThanOrEqual(firstEvent.getCounter());
 	});
 
+	it("provides an epoch", () => {
+		const epoch = Time.epoch();
+
+		expect(epoch.getTime()).toBe(0);
+		expect(epoch.getCounter()).toBe(0);
+		expect(epoch.toString()).toBe("1970-01-01T00:00:00.000Z+00000+00000000-0000-0000-0000-000000000000");
+		expect(Time.epoch().compare(epoch)).toBe(0);
+
+		expect(Time.now().isAfter(Time.epoch())).toBe(true);
+	});
+
 	it("updates counter for concurrent events", async () => {
 		const [firstEvent, secondEvent] = await Promise.all([Time.now(), Time.now()]);
 
@@ -46,6 +57,18 @@ describe("Time", () => {
 		expect(() => Time.fromTimestamp("")).toThrow(TimestampMalformedError);
 		expect(() => Time.fromTimestamp("1970-01-01T00:00:00.000Z")).toThrow(TimestampMalformedError);
 		expect(() => Time.fromTimestamp("1970-01-01T00:00:00.000Z+00000")).toThrow(TimestampMalformedError);
+	});
+
+	it.each([
+		"1970-01-01T00:00:00.000Z+00001+replica+extra",
+		"1970-01-01T00:00:00.000Z+00001+",
+		"1970-01-01T00:00:00.000Z+0001+replica",
+		"1970-01-01T00:00:00.000Z+100000+replica",
+		"1970-01-01T00:00:00.000Z+0000g+replica",
+		"1970-01-01T00:00:00.000Z+ggggg+replica",
+		"not-a-date+00001+replica",
+	])("rejects malformed stored timestamp %s", (timestamp) => {
+		expect(() => Time.fromTimestamp(timestamp)).toThrow(TimestampMalformedError);
 	});
 
 	it("compares by physical time, then counter, then replica id", () => {

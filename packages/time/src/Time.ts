@@ -82,6 +82,11 @@ export class Time extends GlobalTime {
 		return this.compare(other) > 0;
 	}
 
+	/** Return epoch time */
+	public static epoch(): Time {
+		return new Time(0, 0, "00000000-0000-0000-0000-000000000000");
+	}
+
 	/** Returns the current time */
 	public static now(): Time {
 		GlobalTime.tick();
@@ -91,18 +96,16 @@ export class Time extends GlobalTime {
 
 	/** Returns a time from a timestamp */
 	public static fromTimestamp(timestamp: string): Time {
-		const parts = timestamp.split(TIMESTAMP_DELIMITER);
-
-		const physical = parts.at(0);
-		const logical = parts.at(1);
-		const replicaId = parts.at(2);
+		const [, physical, logical, replicaId] = timestamp.match(/^(.+)\+([0-9a-f]{5})\+([^+]+)$/) ?? [];
 
 		if (!physical || !logical || !replicaId) throw new TimestampMalformedError(timestamp);
 
 		const time = Date.parse(physical);
 		const counter = Number.parseInt(logical, 16);
 
-		if (Number.isNaN(time) || Number.isNaN(counter)) throw new TimestampMalformedError(timestamp);
+		if (!Number.isFinite(time) || !Number.isFinite(counter)) {
+			throw new TimestampMalformedError(timestamp);
+		}
 
 		return new Time(time, counter, replicaId);
 	}

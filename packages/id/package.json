@@ -1,0 +1,29 @@
+{
+	"name": "@nn/id",
+	"version": "0.0.0",
+	"description": "Local ID generation",
+	"keywords": [],
+	"homepage": "https://github.com/pchalupa/nn/tree/main/packages/id",
+	"bugs": {
+		"url": "https://github.com/pchalupa/nn/issues"
+	},
+	"license": "MIT",
+	"author": "pchalupa <chalupa.petr93@gmail.com> (https://github.com/pchalupa)",
+	"repository": "https://github.com/pchalupa/nn",
+	"type": "module",
+	"exports": {
+		".": {
+			"import": "./src/ID.ts"
+		}
+	},
+	"scripts": {
+		"ts:check": "tsc --noEmit",
+		"test": "vitest run",
+		"test:watch": "vitest watch"
+	},
+	"devDependencies": {
+		"@nn/typescript-config": "workspace:",
+		"typescript": "catalog:",
+		"vitest": "catalog:"
+	}
+}

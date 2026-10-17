@@ -5,9 +5,10 @@ import { ObjectSchema } from "./ObjectSchema";
 import type { Schema } from "./Schema";
 import { StringSchema } from "./StringSchema";
 
-export type { ArraySchema } from "./ArraySchema";
-export type { ObjectSchema } from "./ObjectSchema";
+export { ArraySchema } from "./ArraySchema";
+export { ObjectSchema } from "./ObjectSchema";
 export type { Infer, Schema } from "./Schema";
+export { StringSchema } from "./StringSchema";
 
 export function string(): StringSchema {
 	return new StringSchema();

@@ -1,13 +1,13 @@
 import { type Infer, Schema } from "./Schema";
 
 export class ArraySchema<Item extends Schema> extends Schema<Array<Infer<Item>>> {
-	override readonly type = "array" as const;
+	public override readonly type = "array" as const;
 
 	constructor(public readonly items: Item) {
 		super();
 	}
 
-	static isArraySchema(schema: unknown): schema is ArraySchema<Schema> {
+	public static isArraySchema(schema: unknown): schema is ArraySchema<Schema> {
 		return schema instanceof ArraySchema;
 	}
 }

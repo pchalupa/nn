@@ -3,16 +3,17 @@ type Listener<Arguments extends unknown[]> = (...args: Arguments) => void;
 export class EventEmitter<Emits extends Record<string, unknown[]>, Event extends keyof Emits = keyof Emits> {
 	private events = new Map<Event, Set<Listener<Emits[Event]>>>();
 
-	emit(event: Event, ...args: Emits[Event]): void {
+	public emit(event: Event, ...args: Emits[Event]): void {
 		const listeners = this.events.get(event);
 
-		if (listeners)
+		if (listeners) {
 			for (const listener of Array.from(listeners)) {
 				listener(...args);
 			}
+		}
 	}
 
-	on(event: Event, listener: Listener<Emits[Event]>): void {
+	public on(event: Event, listener: Listener<Emits[Event]>): void {
 		const listeners = this.events.get(event) ?? new Set();
 
 		listeners?.add(listener);
@@ -20,7 +21,7 @@ export class EventEmitter<Emits extends Record<string, unknown[]>, Event extends
 		this.events.set(event, listeners);
 	}
 
-	once(event: Event, listener: Listener<Emits[Event]>): void {
+	public once(event: Event, listener: Listener<Emits[Event]>): void {
 		const once: typeof listener = (...args) => {
 			this.off(event, once);
 			listener(...args);
@@ -29,7 +30,7 @@ export class EventEmitter<Emits extends Record<string, unknown[]>, Event extends
 		this.on(event, once);
 	}
 
-	off(event: Event, listener: Listener<Emits[Event]>): void {
+	public off(event: Event, listener: Listener<Emits[Event]>): void {
 		this.events.get(event)?.delete(listener);
 	}
 }

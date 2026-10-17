@@ -1,104 +1,77 @@
-import { Collection } from "@nn/entities/Collection";
-import { LWWRegister } from "@nn/entities/LWWRegister";
 import { EventEmitter } from "@nn/event-emitter";
-import type { Observable } from "@nn/event-emitter/Observable";
+import type { Callback, Observable, Unsubscribe } from "@nn/event-emitter/Observable";
 import type { Remote } from "@nn/remote";
-import type { Repository } from "@nn/repository";
-import type { ArraySchema, Infer, ObjectSchema, Schema } from "@nn/schema";
+import type { Entry, Repository } from "@nn/repository";
+import type { ObjectSchema, Schema } from "@nn/schema";
 
-import type { Snapshot } from "./Snapshot";
-import { SnapshotManager } from "./SnapshotManager";
+import type { Path, PathDraft, PathValue, Recipe } from "./Path";
+import { type DataFromSchema, State } from "./State";
 
-// TODO: This needs attention
-type StateFromSchema<StoreSchema extends ObjectSchema<Record<string, Schema>>> = {
-	[Key in keyof StoreSchema["properties"]]: StoreSchema["properties"][Key] extends ArraySchema<infer Item>
-		? Collection<Infer<Item> & { id: string }>
-		: Infer<StoreSchema["properties"][Key]> extends string
-			? LWWRegister<Infer<StoreSchema["properties"][Key]> | undefined>
-			: never;
-};
+export type { Path, PathDraft, PathValue, Recipe } from "./Path";
+export { type DataFromSchema } from "./State";
 
-export class Store<State extends object> {
-	public events = new EventEmitter<{ update: []; error: [Error] }>();
-	private snapshotManager = new SnapshotManager();
+export class Store<Data extends Record<string, unknown>> implements Observable {
+	private eventEmitter = new EventEmitter<{ update: [] }>();
 
 	constructor(
-		private state: State,
+		private state: State<Data>,
 		private repository?: Repository,
 		_remote?: Remote,
 	) {
-		// Attach event listeners to each entity in the state
-		if (this.repository) {
-			for (const [typeName, entity] of Object.entries(this.state)) {
-				if (entity instanceof Collection) {
-					entity.events.on("update", (value: { id?: string }) => {
-						if (value.id) {
-							this.repository?.set(value.id, value, typeName).catch((error) => {
-								if (error instanceof Error) this.events.emit("error", error);
-							});
-						}
-					});
-					// TBD: This branch will be eventually default one once collection will be aligned with subscribe method
-				} else if (entity instanceof LWWRegister) {
-					const id = typeName;
-					entity.subscribe(() => {
-						this.repository?.set(id, entity.current, typeName).catch((error) => {
-							if (error instanceof Error) this.events.emit("error", error);
-						});
-					});
-				}
+		state.subscribe((changed) => {
+			if (repository) {
+				for (const name of changed) void this.persist(name, state.capture(name));
 			}
+
+			this.eventEmitter.emit("update");
+		});
+	}
+
+	private async persist(name: string, entry: Entry): Promise<void> {
+		try {
+			await this.repository?.set(name, entry);
+		} catch (error) {
+			//TODO: LOGGER?
+			console.error("Failed to persist Store record.", error);
 		}
 	}
 
-	static async fromSchema<StoreSchema extends ObjectSchema<Record<string, Schema>>>(options: {
+	public read<const Segments extends Path<Data>>(path: Segments): PathValue<Data, Segments> {
+		return this.state.read(path);
+	}
+
+	public update<const Segments extends Path<Data>>(
+		path: Segments,
+		recipe: Recipe<NoInfer<PathDraft<Data, Segments>>>,
+	): void {
+		this.state.write(path, recipe);
+	}
+
+	public subscribe(listener: Callback): Unsubscribe {
+		this.eventEmitter.on("update", listener);
+
+		return () => this.eventEmitter.off("update", listener);
+	}
+
+	public static async fromSchema<StoreSchema extends ObjectSchema<Record<string, Schema>>>({
+		schema,
+		repository,
+		remote,
+	}: {
 		schema: StoreSchema;
 		repository?: Repository;
 		remote?: Remote;
-	}): Promise<Store<StateFromSchema<StoreSchema>>> {
-		const { schema, repository, remote } = options;
-		const state: Record<string, Collection<{ id: string }> | LWWRegister<string | undefined>> = {};
+	}): Promise<Store<DataFromSchema<StoreSchema>>> {
+		const persisted = new Map<string, unknown>();
 
-		await repository?.init(schema.properties);
+		if (repository) {
+			await repository.init(schema.properties);
 
-		for (const [typeName, shape] of Object.entries(schema.properties)) {
-			if (shape.type === "array") {
-				const data = await repository?.getAll<{ id: string }>(typeName);
-
-				state[typeName] = new Collection(data);
-			} else if (shape.type === "string") {
-				const value = await repository?.get<string>(typeName, typeName);
-
-				state[typeName] = new LWWRegister<string | undefined>(value);
-			} else {
-				throw new TypeError(`Unsupported top-level schema shape "${shape.type}" for "${typeName}".`);
+			for (const name of Object.keys(schema.properties)) {
+				persisted.set(name, await repository.get(name));
 			}
 		}
 
-		return new Store(state as StateFromSchema<StoreSchema>, repository, remote);
-	}
-
-	getSnapshotOf<SelectedState extends Observable>(selector: (state: State) => SelectedState): SelectedState {
-		// TDB: Remove type casting
-		return this.snapshotOf(selector).state as SelectedState;
-	}
-
-	getSnapshotIdOf<SelectedState extends Observable>(selector: (state: State) => SelectedState): string | undefined {
-		return this.snapshotOf(selector).id;
-	}
-
-	private snapshotOf<SelectedState extends Observable>(selector: (state: State) => SelectedState): Snapshot {
-		const snapshotId = selector;
-		let snapshot = this.snapshotManager.getSnapshot(snapshotId);
-
-		if (!snapshot) {
-			const state = selector(this.state);
-			const handleInvalidated = () => this.events.emit("update");
-
-			snapshot = this.snapshotManager.createSnapshot(snapshotId, state);
-			snapshot.events.once("invalidated", handleInvalidated);
-		}
-
-		return snapshot;
+		return new Store(State.fromSchema(schema, persisted), repository, remote);
 	}
 }

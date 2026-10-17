@@ -43,6 +43,10 @@ export class LWWMap<Fields extends Record<string, Entity>> extends Entity<Fields
 		this.emit("change");
 	}
 
+	public get(name: string): Entity | undefined {
+		return this.fields[name];
+	}
+
 	public merge(remote: LWWMap<Fields>): this {
 		for (const key in this.fields) {
 			const localField = this.fields[key];

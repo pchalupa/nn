@@ -103,4 +103,17 @@ describe("LWWMap", () => {
 		expect(callback1).toHaveBeenCalledTimes(1);
 		expect(callback2).toHaveBeenCalledTimes(1);
 	});
+
+	it("returns a field entity by name", () => {
+		const title = new LWWRegister("Ticket", "title");
+		const map = new LWWMap({ title }, "row-1");
+
+		expect(map.get("title")).toBe(title);
+	});
+
+	it("returns undefined for an undeclared field", () => {
+		const map = new LWWMap({ title: new LWWRegister("Ticket", "title") }, "row-1");
+
+		expect(map.get("missing")).toBeUndefined();
+	});
 });

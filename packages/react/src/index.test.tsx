@@ -1,23 +1,23 @@
 // @vitest-environment jsdom
-import { Collection } from "@nn/entities/Collection";
-import { LWWRegister } from "@nn/entities/LWWRegister";
-import { Row } from "@nn/entities/Row";
 import { array, object, string } from "@nn/schema";
-import { Store } from "@nn/store";
+import { type DataFromSchema, Store } from "@nn/store";
 import { act, cleanup, render, screen } from "@testing-library/react";
 import { Suspense } from "react";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, expectTypeOf, it, vi } from "vitest";
 
 import { createStore, use } from "./index";
 
-const ticket = (id: string, status: string) => new Row(id, { status: new LWWRegister(status) });
+const setup = async () => {
+	const store = await createStore({
+		schema: object({ tickets: array(object({ status: string() })), language: string() }),
+	});
+	store.update(["tickets"], (rows) => {
+		rows.push({ key: "1", status: "todo" }, { key: "2", status: "done" }, { key: "3", status: "done" });
+		return rows;
+	});
+	store.update(["language"], () => "en");
 
-const setup = () => {
-	const tickets = new Collection([ticket("1", "todo"), ticket("2", "done"), ticket("3", "done")]);
-	const language = new LWWRegister<string | undefined>("en");
-	const store = new Store({ tickets, language });
-
-	return { store, tickets, language, useStore: use(Promise.resolve(store)) };
+	return { store, useStore: use(Promise.resolve(store)) };
 };
 
 const mount = async (ui: React.ReactNode) => {
@@ -33,7 +33,13 @@ const mount = async (ui: React.ReactNode) => {
 		});
 	};
 
-	return { rerender };
+	const unmount = async () => {
+		await act(async () => {
+			rendered?.unmount();
+		});
+	};
+
+	return { rerender, unmount };
 };
 
 describe("createStore", () => {
@@ -42,8 +48,7 @@ describe("createStore", () => {
 	it("creates a store", async () => {
 		const store = await createStore({ schema: object({}) });
 
-		expect(store).toHaveProperty("events");
-		expect(store.view).toStrictEqual({});
+		expect(store).toBeInstanceOf(Store);
 	});
 
 	it("exposes the schema as a view", async () => {
@@ -51,20 +56,23 @@ describe("createStore", () => {
 			schema: object({ tickets: array(object({ title: string() })), language: string() }),
 		});
 
-		expect(store.view).toStrictEqual({ tickets: [], language: undefined });
+		expect(store.read(["tickets"])).toStrictEqual([]);
+		expect(store.read(["language"])).toBeUndefined();
 	});
 });
 
 describe("useStore", () => {
+	afterEach(cleanup);
+
 	it("renders the selected view", async () => {
-		const { useStore } = setup();
+		const { useStore } = await setup();
 		const Tickets = () => {
-			const [tickets] = useStore((view) => view.tickets);
+			const [tickets] = useStore("tickets");
 
 			return (
 				<ul>
 					{tickets.map((row) => (
-						<li key={row.id}>{row.status}</li>
+						<li key={row.key}>{row.status}</li>
 					))}
 				</ul>
 			);
@@ -76,9 +84,9 @@ describe("useStore", () => {
 	});
 
 	it("re-renders when the selection changes", async () => {
-		const { tickets, useStore } = setup();
+		const { store, useStore } = await setup();
 		const Tickets = () => {
-			const [rows] = useStore((view) => view.tickets);
+			const [rows] = useStore("tickets");
 
 			return <span data-testid="count">{rows.length}</span>;
 		};
@@ -88,16 +96,19 @@ describe("useStore", () => {
 		expect(screen.getByTestId("count").textContent).toBe("3");
 
 		await act(async () => {
-			tickets.push(ticket("4", "todo"));
+			store.update(["tickets"], (rows) => {
+				rows.push({ key: "4", status: "todo" });
+				return rows;
+			});
 		});
 
 		expect(screen.getByTestId("count").textContent).toBe("4");
 	});
 
 	it("re-renders when a field of a row changes", async () => {
-		const { tickets, useStore } = setup();
+		const { store, useStore } = await setup();
 		const Tickets = () => {
-			const [rows] = useStore((view) => view.tickets);
+			const [rows] = useStore("tickets");
 
 			return <span data-testid="statuses">{rows.map((row) => row.status).join(",")}</span>;
 		};
@@ -106,20 +117,18 @@ describe("useStore", () => {
 
 		expect(screen.getByTestId("statuses").textContent).toBe("todo,done,done");
 
-		const second = tickets.find("2");
-
 		await act(async () => {
-			if (second) second.field("status").current = "todo";
+			store.update(["tickets", "2", "status"], () => "todo");
 		});
 
 		expect(screen.getByTestId("statuses").textContent).toBe("todo,todo,done");
 	});
 
 	it("does not re-render when an unrelated property changes", async () => {
-		const { language, useStore } = setup();
+		const { store, useStore } = await setup();
 		const rendered = vi.fn();
 		const Tickets = () => {
-			const [rows] = useStore((view) => view.tickets);
+			const [rows] = useStore("tickets");
 
 			rendered();
 
@@ -131,17 +140,88 @@ describe("useStore", () => {
 		const before = rendered.mock.calls.length;
 
 		await act(async () => {
-			language.current = "cs";
+			store.update(["language"], () => "cs");
 		});
 
 		expect(rendered).toHaveBeenCalledTimes(before);
 	});
 
-	it("settles when the selector derives a new array on every call", async () => {
-		const { language, useStore } = setup();
+	it("refreshes a row snapshot when another row changes", async () => {
+		const { store, useStore } = await setup();
+		const rendered = vi.fn();
+		const Ticket = () => {
+			const [row] = useStore("tickets", "1");
+			rendered();
+			return <span>{row?.status}</span>;
+		};
+
+		await mount(<Ticket />);
+		const before = rendered.mock.calls.length;
+
+		await act(async () => {
+			store.update(["tickets", "2", "status"], () => "review");
+		});
+
+		expect(rendered.mock.calls.length).toBeGreaterThan(before);
+		expect(screen.getByText("todo")).toBeDefined();
+
+		await act(async () => {
+			store.update(["tickets", "1", "status"], () => "review");
+		});
+
+		expect(rendered.mock.calls.length).toBeGreaterThan(before);
+		expect(screen.getByText("review")).toBeDefined();
+	});
+
+	it("refreshes rows and collections when a row changes", async () => {
+		const { store, useStore } = await setup();
+		const rowRendered = vi.fn();
+		const collectionRendered = vi.fn();
+		const Ticket = () => {
+			const [row] = useStore("tickets", "1");
+			rowRendered();
+			return <span data-testid="row">{row?.status}</span>;
+		};
+		const Tickets = () => {
+			const [rows] = useStore("tickets");
+			collectionRendered();
+			return <span data-testid="collection">{rows.map((row) => row.status).join(",")}</span>;
+		};
+
+		await mount(
+			<>
+				<Ticket />
+				<Tickets />
+			</>,
+		);
+		const rowBefore = rowRendered.mock.calls.length;
+		const collectionBefore = collectionRendered.mock.calls.length;
+
+		await act(async () => {
+			store.update(["tickets", "1", "status"], () => "progress");
+		});
+
+		expect(rowRendered.mock.calls.length).toBeGreaterThan(rowBefore);
+		expect(collectionRendered.mock.calls.length).toBeGreaterThan(collectionBefore);
+		expect(screen.getByTestId("row").textContent).toBe("progress");
+		expect(screen.getByTestId("collection").textContent).toBe("progress,done,done");
+
+		await act(async () => {
+			store.update(["tickets", "1", "status"], () => "review");
+		});
+
+		expect(rowRendered.mock.calls.length).toBeGreaterThan(rowBefore);
+		expect(collectionRendered.mock.calls.length).toBeGreaterThan(collectionBefore);
+		expect(screen.getByTestId("row").textContent).toBe("review");
+		expect(screen.getByTestId("collection").textContent).toBe("review,done,done");
+	});
+
+	it("keeps collection reads stable when a component filters rows", async () => {
+		const { store, useStore } = await setup();
 		const rendered = vi.fn();
 		const Column = ({ status }: { status: string }) => {
-			const [rows] = useStore((view) => view.tickets.filter((row) => row.status === status));
+			const [tickets] = useStore("tickets");
+			const rows = tickets.filter((row) => row.status === status);
 
 			rendered();
 
@@ -152,41 +232,133 @@ describe("useStore", () => {
 
 		const before = rendered.mock.calls.length;
 
-		// A filtered selection is a fresh array every time the selector runs. If the store did not
-		// return the previous reference, this notification would re-render forever.
 		await act(async () => {
-			language.current = "cs";
+			store.update(["language"], () => "cs");
 		});
 
 		expect(rendered).toHaveBeenCalledTimes(before);
 		expect(screen.getByTestId("count").textContent).toBe("2");
 	});
 
-	it("follows a selector that closes over a changing prop", async () => {
-		const { useStore } = setup();
-		const Column = ({ status }: { status: string }) => {
-			const [rows] = useStore((view) => view.tickets.filter((row) => row.status === status));
+	it("reads and updates the row addressed by a changing prop", async () => {
+		const { store, useStore } = await setup();
+		const Ticket = ({ rowKey }: { rowKey: string }) => {
+			const [status, update] = useStore("tickets", rowKey, "status");
 
-			return <span data-testid="count">{rows.length}</span>;
+			return (
+				<button type="button" onClick={() => update(() => "review")}>
+					{status}
+				</button>
+			);
 		};
 
-		const { rerender } = await mount(<Column status="todo" />);
+		const { rerender } = await mount(<Ticket rowKey="1" />);
 
-		expect(screen.getByTestId("count").textContent).toBe("1");
+		expect(screen.getByRole("button").textContent).toBe("todo");
 
-		await rerender(<Column status="done" />);
+		await rerender(<Ticket rowKey="2" />);
 
-		expect(screen.getByTestId("count").textContent).toBe("2");
+		expect(screen.getByRole("button").textContent).toBe("done");
+
+		await act(async () => {
+			screen.getByRole("button").click();
+		});
+
+		expect(screen.getByRole("button").textContent).toBe("review");
+		expect(store.read(["tickets", "1", "status"])).toBe("todo");
+		expect(store.read(["tickets", "2", "status"])).toBe("review");
+	});
+
+	it("keeps an equal recipe silent after the row-key prop changes", async () => {
+		const { store, useStore } = await setup();
+		const rendered = vi.fn();
+		const Ticket = ({ rowKey }: { rowKey: string }) => {
+			const [row, update] = useStore("tickets", rowKey);
+			rendered();
+			return (
+				<>
+					<span>{row?.status}</span>
+					<button type="button" onClick={() => update((draft) => ({ ...draft }))}>
+						Equal
+					</button>
+					<button type="button" onClick={() => update((draft) => ({ ...draft, status: "review" }))}>
+						Change
+					</button>
+				</>
+			);
+		};
+		const { rerender } = await mount(<Ticket rowKey="1" />);
+		await rerender(<Ticket rowKey="2" />);
+		const before = rendered.mock.calls.length;
+		await act(async () => screen.getByRole("button", { name: "Equal" }).click());
+		expect(rendered).toHaveBeenCalledTimes(before);
+		await act(async () => screen.getByRole("button", { name: "Change" }).click());
+		expect(rendered.mock.calls.length).toBeGreaterThan(before);
+		expect(store.read(["tickets", "1", "status"])).toBe("todo");
+		expect(store.read(["tickets", "2", "status"])).toBe("review");
+		expect(screen.getByText("review")).toBeDefined();
+	});
+
+	it("uses the returned nested object instead of draft mutations", async () => {
+		const store = await createStore({
+			schema: object({ tickets: array(object({ assignee: object({ name: string() }) })) }),
+		});
+		store.update(["tickets"], () => [{ key: "1", assignee: { name: "Ann" } }]);
+		const useStore = use(Promise.resolve(store));
+		const Assignee = () => {
+			const [assignee, update] = useStore("tickets", "1", "assignee");
+			return (
+				<button
+					type="button"
+					onClick={() =>
+						update((draft) => {
+							draft.name = "Ignored";
+							return { name: "Returned" };
+						})
+					}
+				>
+					{assignee?.name}
+				</button>
+			);
+		};
+		await mount(<Assignee />);
+		await act(async () => screen.getByRole("button").click());
+		expect(screen.getByRole("button").textContent).toBe("Returned");
+		expect(store.read(["tickets", "1", "assignee", "name"])).toBe("Returned");
+	});
+
+	it("clears a scalar root when its updater returns undefined", async () => {
+		const { store, useStore } = await setup();
+		const Language = () => {
+			const [language, update] = useStore("language");
+			return (
+				<button type="button" onClick={() => update(() => undefined)}>
+					{language ?? "missing"}
+				</button>
+			);
+		};
+		await mount(<Language />);
+		expect(screen.getByRole("button").textContent).toBe("en");
+		await act(async () => screen.getByRole("button").click());
+		expect(screen.getByRole("button").textContent).toBe("missing");
+		expect(store.read(["language"])).toBeUndefined();
 	});
 
 	it("writes through the updater", async () => {
-		const { store, useStore } = setup();
+		const { store, useStore } = await setup();
 		const Tickets = () => {
-			const [rows, update] = useStore((view) => view.tickets);
+			const [rows, update] = useStore("tickets");
 			const handleClick = () =>
 				update((draft) => {
-					draft.push({ id: "4", status: "todo" });
+					draft.push({ key: "4", status: "todo" });
+					return draft;
 				});
+			const invalid = () =>
+				// @ts-expect-error The hook updater requires the next value.
+				update((draft) => {
+					draft.push({ key: "5", status: "todo" });
+				});
+			expectTypeOf(invalid).toBeFunction();
 
 			return (
 				<button type="button" onClick={handleClick}>
@@ -202,13 +374,50 @@ describe("useStore", () => {
 		});
 
 		expect(screen.getByRole("button").textContent).toBe("4");
-		expect(store.view.tickets.at(-1)).toStrictEqual({ id: "4", status: "todo" });
+		expect(store.read(["tickets"]).at(-1)).toStrictEqual({ key: "4", status: "todo" });
+	});
+
+	it("infers readonly nested snapshots and writable recipes from the schema", async () => {
+		const store = await createStore({
+			schema: object({ tickets: array(object({ assignee: object({ name: string() }) })) }),
+		});
+		store.update(["tickets"], (rows) => {
+			rows.push({ key: "1", assignee: { name: "Ann" } });
+			return rows;
+		});
+		const useStore = use(Promise.resolve(store));
+		const Assignee = () => {
+			const [assignee, update] = useStore("tickets", "1", "assignee");
+			expectTypeOf(assignee).toEqualTypeOf<{ readonly name: string } | undefined>();
+			return (
+				<button
+					type="button"
+					onClick={() =>
+						update((draft) => {
+							expectTypeOf(draft).toEqualTypeOf<{ name: string }>();
+							draft.name = "Bob";
+							return draft;
+						})
+					}
+				>
+					{assignee?.name}
+				</button>
+			);
+		};
+
+		await mount(<Assignee />);
+		expect(screen.getByRole("button").textContent).toBe("Ann");
+		await act(async () => {
+			screen.getByRole("button").click();
+		});
+		expect(screen.getByRole("button").textContent).toBe("Bob");
+		expect(store.read(["tickets", "1", "assignee", "name"])).toBe("Bob");
 	});
 
 	it("writes through the updater for a register", async () => {
-		const { store, useStore } = setup();
+		const { store, useStore } = await setup();
 		const Language = () => {
-			const [language, setLanguage] = useStore((view) => view.language);
+			const [language, setLanguage] = useStore("language");
 
 			return (
 				<button type="button" onClick={() => setLanguage(() => "cs")}>
@@ -226,6 +435,121 @@ describe("useStore", () => {
 		});
 
 		expect(screen.getByRole("button").textContent).toBe("cs");
-		expect(store.view.language).toBe("cs");
+		expect(store.read(["language"])).toBe("cs");
+	});
+
+	it("refreshes a nested snapshot when a sibling field changes", async () => {
+		const store = await createStore({
+			schema: object({
+				tickets: array(
+					object({
+						title: string(),
+						assignee: object({ name: string(), key: string() }),
+					}),
+				),
+			}),
+		});
+		store.update(["tickets"], (rows) => {
+			rows.push({ key: "1", title: "First", assignee: { name: "Ann", key: "data" } });
+			return rows;
+		});
+		const useStore = use(Promise.resolve(store));
+		const rendered = vi.fn();
+		const Assignee = () => {
+			const [assignee, update] = useStore("tickets", "1", "assignee");
+			expectTypeOf(assignee).toEqualTypeOf<{ readonly name: string; readonly key: string } | undefined>();
+			rendered();
+			return (
+				<button
+					type="button"
+					onClick={() =>
+						update((draft) => {
+							expectTypeOf(draft.key).toEqualTypeOf<string>();
+							draft.name = "Bob";
+							draft.key = "changed";
+							return draft;
+						})
+					}
+				>
+					{assignee?.name}
+				</button>
+			);
+		};
+		await mount(<Assignee />);
+		const before = rendered.mock.calls.length;
+		await act(async () => {
+			store.update(["tickets", "1", "title"], () => "Second");
+		});
+		expect(rendered.mock.calls.length).toBeGreaterThan(before);
+		expect(screen.getByRole("button").textContent).toBe("Ann");
+		await act(async () => {
+			screen.getByRole("button").click();
+		});
+		expect(rendered.mock.calls.length).toBeGreaterThan(before);
+		expect(screen.getByRole("button").textContent).toBe("Bob");
+		expect(store.read(["tickets", "1", "assignee", "key"])).toBe("changed");
+	});
+
+	it("resolves a retained setter after row deletion and replacement", async () => {
+		const { store, useStore } = await setup();
+		let retained: ((recipe: (value: string) => string) => void) | undefined;
+		const Ticket = () => {
+			const [status, update] = useStore("tickets", "1", "status");
+			retained ??= update;
+			return <span>{status ?? "missing"}</span>;
+		};
+		await mount(<Ticket />);
+		const update = retained;
+		if (!update) throw new Error("Expected updater");
+		await act(async () => {
+			store.update(["tickets"], (rows) => rows.filter((row) => row.key !== "1"));
+		});
+		const recipe = vi.fn(() => "review");
+		expect(() => update(recipe)).toThrow("missing row");
+		expect(recipe).not.toHaveBeenCalled();
+		await act(async () => {
+			store.update(["tickets"], (rows) => {
+				rows.push({ key: "1", status: "fresh" });
+				return rows;
+			});
+			update(recipe);
+		});
+		expect(recipe).toHaveBeenCalledTimes(1);
+		expect(store.read(["tickets", "1", "status"])).toBe("review");
+		expect(screen.getByText("review")).toBeDefined();
+	});
+
+	it("keeps its subscription across renders and unsubscribes on unmount", async () => {
+		const { store, useStore } = await setup();
+		const subscribe = store.subscribe.bind(store);
+		const unsubscribed = vi.fn();
+		const subscribed = vi.spyOn(store, "subscribe").mockImplementation((listener) => {
+			const unsubscribe = subscribe(listener);
+			return () => {
+				unsubscribe();
+				unsubscribed();
+			};
+		});
+		const Ticket = ({ rowKey }: { rowKey: string }) => {
+			const [status] = useStore("tickets", rowKey, "status");
+			return <span>{status}</span>;
+		};
+		const { rerender, unmount } = await mount(<Ticket rowKey="1" />);
+
+		await rerender(<Ticket rowKey="2" />);
+
+		expect(subscribed).toHaveBeenCalledTimes(1);
+		expect(unsubscribed).not.toHaveBeenCalled();
+
+		await unmount();
+
+		expect(unsubscribed).toHaveBeenCalledTimes(1);
+	});
+
+	it("infers the same store type as the store factory", async () => {
+		const schema = object({ tickets: array(object({ title: string() })) });
+		const store = await createStore({ schema });
+
+		expectTypeOf(store).toEqualTypeOf<Store<DataFromSchema<typeof schema>>>();
 	});
 });

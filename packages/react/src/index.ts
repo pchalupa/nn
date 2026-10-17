@@ -1,32 +1,25 @@
-import type { Entity } from "@nn/entities/Entity";
-import type { Remote } from "@nn/remote";
-import type { Repository } from "@nn/repository";
-import type { ObjectSchema, Schema } from "@nn/schema";
-import { type Recipe, type SelectCache, type Selector, type StateFromSchema, Store } from "@nn/store";
-import { useCallback, useDebugValue, use as usePromise, useRef, useSyncExternalStore } from "react";
+import { type Path, type PathDraft, type PathValue, type Recipe, Store } from "@nn/store";
+import { useCallback, useDebugValue, use as usePromise, useSyncExternalStore } from "react";
 
-type Update<Selected> = (recipe: Recipe<Selected>) => void;
+type Update<Drafted> = (recipe: Recipe<Drafted>) => void;
 
-export async function createStore<StoreSchema extends ObjectSchema<Record<string, Schema>>>(options: {
-	schema: StoreSchema;
-	repository?: Repository;
-	remote?: Remote;
-}): Promise<Store<StateFromSchema<StoreSchema>>> {
-	return Store.fromSchema(options);
-}
+export const createStore = Store.fromSchema;
 
-export function use<State extends Record<string, Entity>>(promisedStore: Promise<Store<State>>) {
-	return function useStore<Selected>(selector: Selector<State, Selected>): readonly [Selected, Update<Selected>] {
+export function use<Data extends Record<string, unknown>>(promisedStore: Promise<Store<Data>>) {
+	return function useStore<const Segments extends Path<Data>>(
+		...path: Segments
+	): [PathValue<Data, Segments>, Update<PathDraft<Data, Segments>>] {
 		const store = usePromise(promisedStore);
-		const cache = useRef<SelectCache<Selected>>({});
 
 		const subscribe = useCallback((listener: () => void) => store.subscribe(listener), [store]);
+		const getSnapshot = useCallback(() => store.read(path), [store, path]);
+		const getServerSnapshot = useCallback(() => store.read(path), [store, path]);
+		const update = useCallback<Update<PathDraft<Data, Segments>>>(
+			(recipe) => store.update(path, recipe),
+			[store, path],
+		);
 
-		const getSnapshot = useCallback(() => store.select(selector, cache.current), [store, selector]);
-
-		const update = useCallback<Update<Selected>>((recipe) => store.update(selector, recipe), [store, selector]);
-
-		const view = useSyncExternalStore(subscribe, getSnapshot, getSnapshot);
+		const view = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
 
 		useDebugValue(view);
 

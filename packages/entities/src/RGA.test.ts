@@ -1,10 +1,14 @@
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, expectTypeOf, it, vi } from "vitest";
 
 import { LWWMap } from "./LWWMap";
 import { LWWRegister } from "./LWWRegister";
 import { RGA } from "./RGA";
 
 describe("RGA", () => {
+	it("accepts only an RGA when merging", () => {
+		expectTypeOf<RGA<LWWRegister<string>>["merge"]>().parameters.toEqualTypeOf<[RGA<LWWRegister<string>>]>();
+	});
+
 	it("creates a rga", () => {
 		const rga = new RGA();
 
@@ -130,7 +134,7 @@ describe("RGA", () => {
 			const callback = vi.fn();
 
 			local.subscribe(callback);
-			local.merge(new RGA([item]));
+			expect(local.merge(new RGA([item]))).toBe(local);
 
 			expect(local.find("a")).toBe(item);
 			expect(local.revision).toBe(1);
@@ -197,6 +201,30 @@ describe("RGA", () => {
 
 			expect(local.find("a")).toBe(item);
 			expect(callback).toHaveBeenCalledExactlyOnceWith();
+		});
+
+		it("keeps local-only rows and their order when incoming rows are reordered", () => {
+			const first = new LWWRegister("first", "a");
+			const kept = new LWWRegister("kept", "b");
+			const local = new RGA([first, kept]);
+			local.merge(new RGA([new LWWRegister("added", "c"), new LWWRegister("updated", "a")]));
+
+			expect(local.current.map((row) => row.current)).toStrictEqual(["updated", "kept", "added"]);
+			expect(local.find("a")).toBe(first);
+			expect(local.find("b")).toBe(kept);
+		});
+
+		it("does not notify when incoming rows are empty or stale", () => {
+			const older = new LWWRegister("old", "a");
+			const local = new RGA([new LWWRegister("local", "a")]);
+			const callback = vi.fn();
+			local.subscribe(callback);
+
+			local.merge(new RGA<LWWRegister<string>>());
+			local.merge(new RGA([older]));
+			expect(local.current.map((row) => row.current)).toStrictEqual(["local"]);
+			expect(local.revision).toBe(0);
+			expect(callback).not.toHaveBeenCalled();
 		});
 	});
 });

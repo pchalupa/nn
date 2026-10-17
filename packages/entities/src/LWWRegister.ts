@@ -3,13 +3,12 @@ import { Time } from "@nn/time";
 import { Entity } from "./Entity";
 
 export class LWWRegister<Value> extends Entity<Value> {
-	private value: Value;
-	private timestamp = Time.now();
-
-	constructor(value: Value, key?: string) {
+	constructor(
+		private value: Value,
+		key?: string,
+		public timestamp = Time.now(),
+	) {
 		super(key);
-
-		this.value = value;
 	}
 
 	public get [Symbol.toStringTag](): string {

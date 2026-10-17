@@ -1,3 +1,4 @@
+import { Time } from "@nn/time";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { LWWRegister } from "./LWWRegister";
@@ -15,11 +16,13 @@ describe("LWWRegister", () => {
 	});
 
 	it("creates a register with initial value", () => {
+		const now = vi.spyOn(Time, "now");
 		const register = new LWWRegister("initial");
 
 		expect(register.current).toBe("initial");
 		expect(register).toBeInstanceOf(LWWRegister);
 		expect(register.toString()).toBe("[object LWWRegister]");
+		expect(now).toHaveBeenCalledOnce();
 	});
 
 	it("works with different types", () => {
@@ -43,6 +46,82 @@ describe("LWWRegister", () => {
 		register.current = "updated";
 
 		expect(register.current).toBe("updated");
+	});
+
+	describe("initial defaults", () => {
+		it("creates a default without minting a timestamp", () => {
+			const now = vi.spyOn(Time, "now");
+			const timestamp = Time.epoch();
+			const register = new LWWRegister("default", "language", timestamp);
+
+			expect(register.key).toBe("language");
+			expect(register.timestamp).toBe(timestamp);
+			expect(now).not.toHaveBeenCalled();
+		});
+
+		it("loses to any timestamped value", () => {
+			const register = new LWWRegister("default", "language", Time.epoch());
+			const remote = new LWWRegister("saved", "language", new Time(1, 0, "remote"));
+			const listener = vi.fn();
+			register.subscribe(listener);
+
+			register.merge(remote);
+
+			expect(register.current).toBe("saved");
+			expect(register.timestamp).toBe(remote.timestamp);
+			expect(listener).toHaveBeenCalledOnce();
+		});
+
+		it("keeps a timestamped value when merging a default", () => {
+			const register = new LWWRegister("written", "language");
+			const remote = new LWWRegister("default", "language", Time.epoch());
+			const listener = vi.fn();
+			register.subscribe(listener);
+
+			register.merge(remote);
+
+			expect(register.current).toBe("written");
+			expect(remote.current).toBe("written");
+			expect(listener).not.toHaveBeenCalled();
+		});
+
+		it("timestamps the first ordinary write", () => {
+			const register = new LWWRegister("default", "language", Time.epoch());
+			const now = vi.spyOn(Time, "now");
+
+			register.current = "written";
+
+			expect(register.timestamp.getTime()).toBe(currentTime);
+			expect(now).toHaveBeenCalledOnce();
+		});
+
+		it("timestamps and notifies an assignment equal to the untouched default", () => {
+			const register = new LWWRegister("default", "language", Time.epoch());
+			const now = vi.spyOn(Time, "now");
+			const listener = vi.fn();
+			register.subscribe(listener);
+
+			register.current = "default";
+
+			expect(register.current).toBe("default");
+			expect(register.timestamp.isAfter(Time.epoch())).toBe(true);
+			expect(now).toHaveBeenCalledOnce();
+			expect(listener).toHaveBeenCalledOnce();
+		});
+	});
+
+	it("keeps a supplied timestamp without minting a new one", () => {
+		const timestamp = new Time(0, 5, "saved-replica");
+		const now = vi.spyOn(Time, "now");
+		const restored = new LWWRegister("Saved", "saved-key", timestamp);
+
+		expect(restored.key).toBe("saved-key");
+		expect(restored.timestamp.toString()).toBe("1970-01-01T00:00:00.000Z+00005+saved-replica");
+		expect(now).not.toHaveBeenCalled();
+
+		restored.current = "Changed";
+
+		expect(restored.timestamp.isAfter(timestamp)).toBe(true);
 	});
 
 	describe("merge", () => {

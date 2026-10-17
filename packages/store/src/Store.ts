@@ -1,59 +1,50 @@
-import type { Entity } from "@nn/entities/Entity";
-import { RGA } from "@nn/entities/RGA";
 import { EventEmitter } from "@nn/event-emitter";
-import type { Callback, Unsubscribe } from "@nn/event-emitter/Observable";
+import type { Callback, Observable, Unsubscribe } from "@nn/event-emitter/Observable";
 import type { Remote } from "@nn/remote";
-import type { Repository } from "@nn/repository";
+import type { Entry, Repository } from "@nn/repository";
 import type { ObjectSchema, Schema } from "@nn/schema";
 
-import { Batch } from "./Batch";
 import type { Path, PathDraft, PathValue, Recipe } from "./Path";
-import { State, type StateFromSchema } from "./State";
+import { type DataFromSchema, State } from "./State";
 
 export type { Path, PathDraft, PathValue, Recipe } from "./Path";
-export { State, type StateFromSchema } from "./State";
+export { type DataFromSchema } from "./State";
 
-export class Store<Entries extends Record<string, Entity>> {
+export class Store<Data extends Record<string, unknown>> implements Observable {
 	private eventEmitter = new EventEmitter<{ update: [] }>();
-	private batch = new Batch();
 
 	constructor(
-		private state: State<Entries>,
-		repository?: Repository,
+		private state: State<Data>,
+		private repository?: Repository,
 		_remote?: Remote,
 	) {
-		for (const name in this.state.entries) {
-			const entity = this.state.entries[name];
-
-			entity.subscribe(() => this.batch.request(() => this.eventEmitter.emit("update")));
-
+		state.subscribe((changed) => {
 			if (repository) {
-				// TODO: Persist CRDT metadata
-				entity.subscribe(async () => {
-					if (entity instanceof RGA) {
-						// TODO: This needs rework. Saving one by one is not atomic update, deleted items stays in repository.
-						for (const row of entity.current) {
-							repository.set(row.key, row.current, name);
-						}
-					} else {
-						const value = entity.current;
-
-						repository.set(name, value, name);
-					}
-				});
+				for (const name of changed) void this.persist(name, state.capture(name));
 			}
+
+			this.eventEmitter.emit("update");
+		});
+	}
+
+	private async persist(name: string, entry: Entry): Promise<void> {
+		try {
+			await this.repository?.set(name, entry);
+		} catch (error) {
+			//TODO: LOGGER?
+			console.error("Failed to persist Store record.", error);
 		}
 	}
 
-	public read<const Segments extends Path<Entries>>(path: Segments): PathValue<Entries, Segments, true> {
+	public read<const Segments extends Path<Data>>(path: Segments): PathValue<Data, Segments> {
 		return this.state.read(path);
 	}
 
-	public update<const Segments extends Path<Entries>>(
+	public update<const Segments extends Path<Data>>(
 		path: Segments,
-		recipe: Recipe<NoInfer<PathDraft<Entries, Segments>>>,
+		recipe: Recipe<NoInfer<PathDraft<Data, Segments>>>,
 	): void {
-		this.batch.run(() => this.state.write(path, recipe));
+		this.state.write(path, recipe);
 	}
 
 	public subscribe(listener: Callback): Unsubscribe {
@@ -70,10 +61,17 @@ export class Store<Entries extends Record<string, Entity>> {
 		schema: StoreSchema;
 		repository?: Repository;
 		remote?: Remote;
-	}): Promise<Store<StateFromSchema<StoreSchema>>> {
-		// TODO: schema should not get access to repository.
-		const state = await State.fromSchema(schema, repository);
+	}): Promise<Store<DataFromSchema<StoreSchema>>> {
+		const persisted = new Map<string, unknown>();
 
-		return new Store<StateFromSchema<StoreSchema>>(state, repository, remote);
+		if (repository) {
+			await repository.init(schema.properties);
+
+			for (const name of Object.keys(schema.properties)) {
+				persisted.set(name, await repository.get(name));
+			}
+		}
+
+		return new Store(State.fromSchema(schema, persisted), repository, remote);
 	}
 }

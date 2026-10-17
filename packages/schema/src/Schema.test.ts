@@ -1,10 +1,11 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, expectTypeOf, it } from "vitest";
 
 import { ArraySchema } from "./ArraySchema";
 import { BooleanSchema } from "./BooleanSchema";
 import { array, boolean, number, object, string } from "./index";
 import { NumberSchema } from "./NumberSchema";
 import { ObjectSchema } from "./ObjectSchema";
+import type { Infer } from "./Schema";
 import { StringSchema } from "./StringSchema";
 
 describe("Schema", () => {
@@ -110,5 +111,23 @@ describe("Schema", () => {
 			  "type": "object",
 			}
 		`);
+	});
+
+	it("infers the declared data type", () => {
+		expectTypeOf<Infer<StringSchema>>().toEqualTypeOf<string>();
+		expectTypeOf<Infer<NumberSchema>>().toEqualTypeOf<number>();
+		expectTypeOf<Infer<BooleanSchema>>().toEqualTypeOf<boolean>();
+	});
+
+	it("infers nested objects and arrays", () => {
+		const schema = object({
+			tickets: array(object({ title: string(), assignee: object({ name: string() }) })),
+			language: string(),
+		});
+
+		expectTypeOf<Infer<typeof schema>>().toEqualTypeOf<{
+			tickets: { title: string; assignee: { name: string } }[];
+			language: string;
+		}>();
 	});
 });

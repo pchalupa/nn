@@ -4,24 +4,23 @@ import type { Remote } from "@nn/remote";
 import type { Entry, Repository } from "@nn/repository";
 import type { ObjectSchema, Schema } from "@nn/schema";
 
-import type { Path, PathDraft, PathValue, Recipe } from "./Path";
+import type { Path, PathValue, Update } from "./Path";
 import { type DataFromSchema, State } from "./State";
 
-export type { Path, PathDraft, PathValue, Recipe } from "./Path";
+export type { Path, PathValue, Update } from "./Path";
 export { type DataFromSchema } from "./State";
 
-export class Store<Data extends Record<string, unknown>> implements Observable {
+export class Store<StateSchema extends ObjectSchema<Record<string, Schema>>> implements Observable {
 	private eventEmitter = new EventEmitter<{ update: [] }>();
 
 	constructor(
-		private state: State<Data>,
+		private state: State<StateSchema>,
 		private repository?: Repository,
-		_remote?: Remote,
+		//@ts-expect-error remote integration is pending
+		private _remote?: Remote,
 	) {
 		state.subscribe((changed) => {
-			if (repository) {
-				for (const name of changed) void this.persist(name, state.capture(name));
-			}
+			if (repository) for (const name of changed) void this.persist(name, state.capture(name));
 
 			this.eventEmitter.emit("update");
 		});
@@ -31,20 +30,22 @@ export class Store<Data extends Record<string, unknown>> implements Observable {
 		try {
 			await this.repository?.set(name, entry);
 		} catch (error) {
-			//TODO: LOGGER?
+			// TODO: LOGGER?
 			console.error("Failed to persist Store record.", error);
 		}
 	}
 
-	public read<const Segments extends Path<Data>>(path: Segments): PathValue<Data, Segments> {
+	public read<const Segments extends readonly string[] & Path<DataFromSchema<StateSchema>>>(
+		path: Segments,
+	): PathValue<DataFromSchema<StateSchema>, Segments> {
 		return this.state.read(path);
 	}
 
-	public update<const Segments extends Path<Data>>(
+	public update<const Segments extends readonly string[] & Path<DataFromSchema<StateSchema>>>(
 		path: Segments,
-		recipe: Recipe<NoInfer<PathDraft<Data, Segments>>>,
+		recipe: Parameters<Update<DataFromSchema<StateSchema>, Segments>>[0],
 	): void {
-		this.state.write(path, recipe);
+		this.state.update(path, recipe);
 	}
 
 	public subscribe(listener: Callback): Unsubscribe {
@@ -53,15 +54,15 @@ export class Store<Data extends Record<string, unknown>> implements Observable {
 		return () => this.eventEmitter.off("update", listener);
 	}
 
-	public static async fromSchema<StoreSchema extends ObjectSchema<Record<string, Schema>>>({
+	public static async fromSchema<StateSchema extends ObjectSchema<Record<string, Schema>>>({
 		schema,
 		repository,
 		remote,
 	}: {
-		schema: StoreSchema;
+		schema: StateSchema;
 		repository?: Repository;
 		remote?: Remote;
-	}): Promise<Store<DataFromSchema<StoreSchema>>> {
+	}): Promise<Store<StateSchema>> {
 		const persisted = new Map<string, unknown>();
 
 		if (repository) {
@@ -72,6 +73,9 @@ export class Store<Data extends Record<string, unknown>> implements Observable {
 			}
 		}
 
-		return new Store(State.fromSchema(schema, persisted), repository, remote);
+		const state = new State(schema, persisted);
+		const store = new Store(state, repository, remote);
+
+		return store;
 	}
 }

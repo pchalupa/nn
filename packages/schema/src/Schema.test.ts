@@ -126,7 +126,7 @@ describe("Schema", () => {
 		});
 
 		expectTypeOf<Infer<typeof schema>>().toEqualTypeOf<{
-			tickets: { title: string; assignee: { name: string } }[];
+			tickets: Array<{ title: string; assignee: { name: string } }>;
 			language: string;
 		}>();
 	});

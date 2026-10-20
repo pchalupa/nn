@@ -5,11 +5,6 @@
 # Dist
 dist/
 dev-dist/
-.vinxi
-.output
-.vercel
-.netlify
-.wrangler
 
 # Playwright
 test-results/

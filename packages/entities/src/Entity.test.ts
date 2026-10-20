@@ -1,47 +1,45 @@
-import { describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { Entity } from "./Entity";
 
 describe("Entity", () => {
+	afterEach(() => vi.restoreAllMocks());
+
 	class TestEntity extends Entity<string> {
-		private _value: string;
-
-		constructor(value: string) {
-			super();
-			this._value = value;
+		constructor(
+			private value: string,
+			key?: string,
+		) {
+			super(key);
 		}
 
-		get value(): string {
-			return this._value;
+		public get current(): string {
+			return this.value;
 		}
 
-		get current(): string {
-			return this._value;
+		public set current(value: string) {
+			this.value = value;
+			this.emit("change");
 		}
 
-		set current(value: string) {
-			this._value = value;
-			this.emit();
+		public setValue(value: string): void {
+			this.value = value;
+			this.emit("change");
 		}
 
-		setValue(value: string): void {
-			this._value = value;
-			this.emit();
-		}
-
-		merge(): this {
+		public merge(): this {
 			return this;
 		}
 	}
 
-	it("should create an entity instance", () => {
+	it("creates an entity instance", () => {
 		const entity = new TestEntity("initial");
 
 		expect(entity).toBeInstanceOf(Entity);
-		expect(entity.value).toBe("initial");
+		expect(entity.current).toBe("initial");
 	});
 
-	it("should subscribe to updates", () => {
+	it("subscribes to updates", () => {
 		const entity = new TestEntity("initial");
 		const callback = vi.fn();
 
@@ -53,7 +51,7 @@ describe("Entity", () => {
 		expect(callback).toHaveBeenCalledWith();
 	});
 
-	it("should support multiple subscribers", () => {
+	it("supports multiple subscribers", () => {
 		const entity = new TestEntity("initial");
 		const callback1 = vi.fn();
 		const callback2 = vi.fn();
@@ -70,7 +68,7 @@ describe("Entity", () => {
 		expect(callback3).toHaveBeenCalledTimes(1);
 	});
 
-	it("should unsubscribe callback", () => {
+	it("unsubscribes callback", () => {
 		const entity = new TestEntity("initial");
 		const callback = vi.fn();
 
@@ -87,7 +85,7 @@ describe("Entity", () => {
 		expect(callback).toHaveBeenCalledTimes(1);
 	});
 
-	it("should write the value through set", () => {
+	it("writes the value through set", () => {
 		const entity = new TestEntity("initial");
 		const callback = vi.fn();
 
@@ -99,9 +97,30 @@ describe("Entity", () => {
 		expect(callback).toHaveBeenCalledTimes(1);
 	});
 
-	it("should serialize entity", () => {
+	it("serializes entity", () => {
 		const entity = new TestEntity("initial");
 
 		expect(JSON.stringify(entity)).toMatchInlineSnapshot(`""initial""`);
+	});
+
+	it("counts changes", () => {
+		const entity = new TestEntity("initial");
+
+		expect(entity.revision).toBe(0);
+
+		entity.setValue("updated");
+		entity.setValue("updated again");
+
+		expect(entity.revision).toBe(2);
+	});
+
+	it("advances its revision through every write path", () => {
+		const entity = new TestEntity("initial");
+		const before = entity.revision;
+
+		entity.set((current) => `${current} updated`);
+		entity.current = "assigned";
+
+		expect(entity.revision).toBe(before + 2);
 	});
 });

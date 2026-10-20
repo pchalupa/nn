@@ -173,6 +173,34 @@ describe("RGA", () => {
 			`);
 		});
 
+		it("keeps both replicas' edits when each changed a different field of the same row", () => {
+			let time = 1000;
+
+			vi.spyOn(Date, "now").mockImplementation(() => time);
+
+			const title = new LWWRegister("Title", "title");
+			const note = new LWWRegister("Note", "note");
+
+			const remoteTitle = new LWWRegister("Title", "title");
+			const remoteNote = new LWWRegister("Note", "note");
+
+			const local = new RGA([new LWWMap({ title, note }, "row-1")], "tickets");
+
+			const remote = new RGA([new LWWMap({ title: remoteTitle, note: remoteNote }, "row-1")], "tickets");
+
+			time = 2000;
+			remoteNote.current = "Remote note";
+
+			time = 3000;
+			title.current = "Local title";
+
+			local.merge(remote);
+
+			expect(title.current).toBe("Local title");
+			expect(note.current).toBe("Remote note");
+			expect(local.current).toHaveLength(1);
+		});
+
 		it("appends unseen items and emits once", () => {
 			const local = new RGA([new LWWRegister("1", "a")]);
 			const callback = vi.fn();

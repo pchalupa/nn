@@ -1,23 +1,23 @@
-import { type Path, type PathDraft, type PathValue, type Recipe, Store } from "@nn/store";
+import type { ObjectSchema, Schema } from "@nn/schema";
+import { type DataFromSchema, type Path, type PathValue, Store, type Update } from "@nn/store";
 import { useCallback, useDebugValue, use as usePromise, useSyncExternalStore } from "react";
-
-type Update<Drafted> = (recipe: Recipe<Drafted>) => void;
 
 export const createStore = Store.fromSchema;
 
-export function use<Data extends Record<string, unknown>>(promisedStore: Promise<Store<Data>>) {
-	return function useStore<const Segments extends Path<Data>>(
+export function use<StoreSchema extends ObjectSchema<Record<string, Schema>>>(
+	promisedStore: Promise<Store<StoreSchema>>,
+) {
+	type Data = DataFromSchema<StoreSchema>;
+
+	return function useStore<const Segments extends readonly string[] & Path<Data>>(
 		...path: Segments
-	): [PathValue<Data, Segments>, Update<PathDraft<Data, Segments>>] {
+	): [PathValue<Data, Segments>, Update<Data, Segments>] {
 		const store = usePromise(promisedStore);
 
-		const subscribe = useCallback((listener: () => void) => store.subscribe(listener), [store]);
-		const getSnapshot = useCallback(() => store.read(path), [store, path]);
-		const getServerSnapshot = useCallback(() => store.read(path), [store, path]);
-		const update = useCallback<Update<PathDraft<Data, Segments>>>(
-			(recipe) => store.update(path, recipe),
-			[store, path],
-		);
+		const subscribe = useCallback((listener: () => void) => store.state.subscribe(listener), [store]);
+		const getSnapshot = useCallback(() => store.state.read(path), [store, path]);
+		const getServerSnapshot = useCallback(() => store.state.read(path), [store, path]);
+		const update = useCallback<Update<Data, Segments>>((input) => store.state.update(path, input), [store, path]);
 
 		const view = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
 

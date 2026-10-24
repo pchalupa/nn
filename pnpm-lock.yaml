@@ -262,6 +262,9 @@ importers:
       '@nn/store':
         specifier: 'workspace:'
         version: link:../store
+      use-sync-external-store:
+        specifier: ^1.7.0
+        version: 1.7.0(react@19.3.0)
     devDependencies:
       '@nn/schema':
         specifier: 'workspace:'
@@ -278,6 +281,9 @@ importers:
       '@types/react-dom':
         specifier: 'catalog:'
         version: 19.3.0(@types/react@19.3.0)
+      '@types/use-sync-external-store':
+        specifier: ^1.7.0
+        version: 1.7.0
       jsdom:
         specifier: ^30.1.0
         version: 30.1.0
@@ -2569,6 +2575,9 @@ packages:
 
   '@types/trusted-types@2.0.7':
     resolution: {integrity: sha512-ScaPdn1dQczgbl0QFTeTOmVHFULt394XJgOQNoyVhZ6r2vLnMLJfBPd53SB52T/3G36VI1/g2MZaX0cwDuXsfw==}
+
+  '@types/use-sync-external-store@1.7.0':
+    resolution: {integrity: sha512-v8435kzWm3FuxyUa4r8o4sG6b0D+r+uOrzF5MXHxZKW4Haoo6txu/lq56Vio45e2i1nkmFPA+R7myWcmV7Z7Bg==}
 
   '@typescript/typescript-aix-ppc64@7.0.2':
     resolution: {integrity: sha512-MTKKkWB7p/0E9xi1d1tHtZ5PiLkGEMIq88pK2CubZjOsLtYTLqhgIgi6zepFa+9GHZ6h05NMCkQxGKiPXMxXtQ==}
@@ -6716,6 +6725,8 @@ snapshots:
       '@types/node': 26.6.1
 
   '@types/trusted-types@2.0.7': {}
+
+  '@types/use-sync-external-store@1.7.0': {}
 
   '@typescript/typescript-aix-ppc64@7.0.2':
     optional: true

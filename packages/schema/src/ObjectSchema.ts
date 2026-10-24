@@ -1,7 +1,7 @@
-import { type Infer, Schema } from "./Schema";
+import { type InferStateType, Schema } from "./Schema";
 
 export class ObjectSchema<Properties extends Record<string, Schema>> extends Schema<{
-	[Key in keyof Properties]: Infer<Properties[Key]>;
+	[Key in keyof Properties]: InferStateType<Properties[Key]>;
 }> {
 	public override readonly type = "object" as const;
 

@@ -4,7 +4,7 @@ import { Ticket } from "../components/Ticket";
 import { useStore } from "../store";
 
 const Backlog = () => {
-	const [tickets] = useStore("tickets");
+	const [tickets] = useStore((data) => data.tickets);
 
 	return (
 		<div className="flex-1 p-2">

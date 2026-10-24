@@ -8,9 +8,9 @@ import { useStore } from "../store";
 
 const Stats = () => {
 	const { t } = useTranslation();
-	const [tickets] = useStore("tickets");
+	const [count] = useStore((data) => data.tickets.length);
 
-	return <p className="text-center text-zinc-600">{t("tickets", { count: tickets.length })}</p>;
+	return <p className="text-center text-zinc-600">{t("tickets", { count })}</p>;
 };
 
 const Navigation = () => {

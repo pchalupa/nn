@@ -4,15 +4,11 @@ import type { ObjectSchema, Schema } from "@nn/schema";
 
 import { State } from "./State";
 
-export type { Path, PathValue, Update } from "./Path";
-export { type DataFromSchema } from "./State";
-
 export class Store<StateSchema extends ObjectSchema<Record<string, Schema>>> {
 	constructor(
 		public state: State<StateSchema>,
 		private repository?: Repository,
-		//@ts-expect-error remote integration is pending
-		private _remote?: Remote,
+		_remote?: Remote,
 	) {
 		// THis can be onChange method on state?
 		state.subscribe((changed) => {

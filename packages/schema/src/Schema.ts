@@ -1,4 +1,4 @@
-export type Infer<S> = S extends Schema<infer T> ? T : never;
+export type InferStateType<FromSchema> = FromSchema extends Schema<infer Type> ? Type : never;
 
 declare const InferredType: unique symbol;
 

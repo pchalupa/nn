@@ -7,7 +7,7 @@ import { StringSchema } from "./StringSchema";
 
 export { ArraySchema } from "./ArraySchema";
 export { ObjectSchema } from "./ObjectSchema";
-export type { Infer, Schema } from "./Schema";
+export type { InferStateType, Schema } from "./Schema";
 export { StringSchema } from "./StringSchema";
 
 export function string(): StringSchema {

@@ -5,7 +5,7 @@ import { BooleanSchema } from "./BooleanSchema";
 import { array, boolean, number, object, string } from "./index";
 import { NumberSchema } from "./NumberSchema";
 import { ObjectSchema } from "./ObjectSchema";
-import type { Infer } from "./Schema";
+import type { InferStateType } from "./Schema";
 import { StringSchema } from "./StringSchema";
 
 describe("Schema", () => {
@@ -114,9 +114,9 @@ describe("Schema", () => {
 	});
 
 	it("infers the declared data type", () => {
-		expectTypeOf<Infer<StringSchema>>().toEqualTypeOf<string>();
-		expectTypeOf<Infer<NumberSchema>>().toEqualTypeOf<number>();
-		expectTypeOf<Infer<BooleanSchema>>().toEqualTypeOf<boolean>();
+		expectTypeOf<InferStateType<StringSchema>>().toEqualTypeOf<string>();
+		expectTypeOf<InferStateType<NumberSchema>>().toEqualTypeOf<number>();
+		expectTypeOf<InferStateType<BooleanSchema>>().toEqualTypeOf<boolean>();
 	});
 
 	it("infers nested objects and arrays", () => {
@@ -125,7 +125,7 @@ describe("Schema", () => {
 			language: string(),
 		});
 
-		expectTypeOf<Infer<typeof schema>>().toEqualTypeOf<{
+		expectTypeOf<InferStateType<typeof schema>>().toEqualTypeOf<{
 			tickets: Array<{ title: string; assignee: { name: string } }>;
 			language: string;
 		}>();

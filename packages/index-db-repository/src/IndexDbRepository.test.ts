@@ -40,6 +40,7 @@ describe("IndexDbRepository", () => {
 
 	it("returns undefined for a name that is not stored", async () => {
 		const repository = new IndexDbRepository();
+
 		await repository.init({ language: {} });
 
 		expect(await repository.get("language")).toBeUndefined();
@@ -47,6 +48,7 @@ describe("IndexDbRepository", () => {
 
 	it("stores, reads back and overwrites an entry under its name", async () => {
 		const repository = new IndexDbRepository();
+
 		await repository.init({ language: {} });
 
 		await repository.set("language", entry);
@@ -58,6 +60,7 @@ describe("IndexDbRepository", () => {
 
 	it("deletes the entry stored under a key and keeps the others", async () => {
 		const repository = new IndexDbRepository();
+
 		await repository.init({ language: {}, theme: {} });
 		await repository.set("language", entry);
 		await repository.set("theme", { ...entry, key: "theme", data: "dark" });

@@ -63,6 +63,7 @@ describe("LWWRegister", () => {
 			const register = new LWWRegister("default", "language", Time.epoch());
 			const remote = new LWWRegister("saved", "language", new Time(1, 0, "remote"));
 			const listener = vi.fn();
+
 			register.subscribe(listener);
 
 			register.merge(remote);
@@ -76,6 +77,7 @@ describe("LWWRegister", () => {
 			const register = new LWWRegister("written", "language");
 			const remote = new LWWRegister("default", "language", Time.epoch());
 			const listener = vi.fn();
+
 			register.subscribe(listener);
 
 			register.merge(remote);
@@ -99,6 +101,7 @@ describe("LWWRegister", () => {
 			const register = new LWWRegister("default", "language", Time.epoch());
 			const now = vi.spyOn(Time, "now");
 			const listener = vi.fn();
+
 			register.subscribe(listener);
 
 			register.current = "default";

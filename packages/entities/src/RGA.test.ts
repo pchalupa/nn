@@ -235,6 +235,7 @@ describe("RGA", () => {
 			const first = new LWWRegister("first", "a");
 			const kept = new LWWRegister("kept", "b");
 			const local = new RGA([first, kept]);
+
 			local.merge(new RGA([new LWWRegister("added", "c"), new LWWRegister("updated", "a")]));
 
 			expect(local.current.map((row) => row.current)).toStrictEqual(["updated", "kept", "added"]);
@@ -246,6 +247,7 @@ describe("RGA", () => {
 			const older = new LWWRegister("old", "a");
 			const local = new RGA([new LWWRegister("local", "a")]);
 			const callback = vi.fn();
+
 			local.subscribe(callback);
 
 			local.merge(new RGA<LWWRegister<string>>());

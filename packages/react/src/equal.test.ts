@@ -32,6 +32,7 @@ describe("equal", () => {
 
 	it("compares null-prototype records by their own properties", () => {
 		const value = { title: "First" };
+
 		Object.setPrototypeOf(value, null);
 
 		expect(equal(value, { title: "First" })).toBe(true);

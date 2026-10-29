@@ -1,6 +1,7 @@
 {
 	"$schema": "./node_modules/oxlint/configuration_schema.json",
 	"plugins": ["typescript", "unicorn", "oxc", "import", "react", "promise", "vitest"],
+	"jsPlugins": ["@stylistic/eslint-plugin"],
 	"categories": {
 		"correctness": "error",
 		"suspicious": "error",
@@ -28,14 +29,11 @@
 		"typescript/ban-ts-comment": "error",
 		"typescript/consistent-type-definitions": ["error", "interface"],
 		"typescript/no-non-null-assertion": "error",
-		// "typescript/no-invalid-void-type": "error",
 		"typescript/array-type": ["error", { "default": "array-simple" }],
 		"typescript/explicit-member-accessibility": [
 			"error",
 			{ "accessibility": "explicit", "overrides": { "constructors": "no-public" } }
 		],
-
-		// "promise/prefer-await-to-then": "error",
 
 		"react/react-in-jsx-scope": "off",
 		"react/exhaustive-deps": "error",
@@ -45,7 +43,6 @@
 		"unicorn/throw-new-error": "error",
 		"unicorn/prefer-type-error": "error",
 		"unicorn/prefer-at": "error",
-		// "unicorn/no-array-for-each": "error",
 
 		"oxc/no-async-endpoint-handlers": "off",
 
@@ -62,7 +59,20 @@
 		"eslint/no-use-before-define": ["error", { "functions": false }],
 
 		"import/no-cycle": "error",
-		"import/consistent-type-specifier-style": ["error", "prefer-top-level-if-only-type-imports"]
+		"import/consistent-type-specifier-style": ["error", "prefer-top-level-if-only-type-imports"],
+
+		"@stylistic/padding-line-between-statements": [
+			"error",
+			{ "blankLine": "always", "prev": ["const", "let"], "next": "*" },
+			{ "blankLine": "any", "prev": ["const", "let"], "next": ["const", "let"] },
+			{ "blankLine": "always", "prev": "*", "next": "if" },
+			{ "blankLine": "always", "prev": "if", "next": "*" },
+			{ "blankLine": "always", "prev": "*", "next": "return" }
+		],
+		"@stylistic/lines-between-class-members": [
+			"error",
+			{ "enforce": [{ "blankLine": "always", "prev": "*", "next": "method" }] }
+		]
 	},
 	"ignorePatterns": [
 		"**/node_modules",

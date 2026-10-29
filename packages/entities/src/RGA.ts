@@ -70,6 +70,7 @@ export class RGA<Value extends Entity> extends Entity<Value[]> {
 
 	public merge(other: RGA<Value>): this {
 		const size = this.items.size;
+
 		for (const item of other.current) this.insert(item);
 
 		if (size !== this.items.size) this.emit("change");

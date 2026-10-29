@@ -71,7 +71,9 @@ export class Time extends GlobalTime {
 	/** Orders this time against another. */
 	public compare(other: Time): number {
 		if (this.time !== other.time) return this.time - other.time;
+
 		if (this.counter !== other.counter) return this.counter - other.counter;
+
 		if (this.replicaId === other.replicaId) return 0;
 
 		return this.replicaId < other.replicaId ? -1 : 1;

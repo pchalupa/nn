@@ -1,6 +1,8 @@
 export function equal(left: unknown, right: unknown): boolean {
 	if (Object.is(left, right)) return true;
+
 	if (Array.isArray(left) && Array.isArray(right)) return equalArrays(left, right);
+
 	if (isObject(left) && isObject(right)) return equalObjects(left, right);
 
 	return false;
@@ -11,6 +13,7 @@ function equalArrays(left: unknown[], right: unknown[]): boolean {
 
 	for (let i = 0; i < left.length; i++) {
 		if (Object.hasOwn(left, i) !== Object.hasOwn(right, i)) return false;
+
 		if (!equal(left[i], right[i])) return false;
 	}
 

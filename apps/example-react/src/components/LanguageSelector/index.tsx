@@ -17,6 +17,7 @@ export const LanguageSelector = () => {
 
 	const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
 		const nextLanguage = event.target.value;
+
 		updateStore((draft) => {
 			draft.language = nextLanguage;
 		});

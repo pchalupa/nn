@@ -14,6 +14,7 @@ describe("Time", () => {
 
 	it("updates physical time", async () => {
 		const firstEvent = Time.now();
+
 		await vi.advanceTimersByTimeAsync(100);
 		const secondEvent = Time.now();
 

@@ -1,6 +1,7 @@
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, expectTypeOf, it, vi } from "vitest";
 
-import { Entity } from "./Entity";
+import { Entity, type InferValueType } from "./Entity";
+import type { LWWRegister } from "./LWWRegister";
 
 describe("Entity", () => {
 	afterEach(() => vi.restoreAllMocks());
@@ -122,5 +123,12 @@ describe("Entity", () => {
 		entity.current = "assigned";
 
 		expect(entity.revision).toBe(before + 2);
+	});
+
+	it("infers entity values", () => {
+		expectTypeOf<InferValueType<Entity<{ title: LWWRegister<string> }>>>().toEqualTypeOf<{ title: string }>();
+		expectTypeOf<InferValueType<Entity<string>>>().toEqualTypeOf<string>();
+		expectTypeOf<InferValueType<Entity>>().toBeUnknown();
+		expectTypeOf<InferValueType<string>>().toEqualTypeOf<string>();
 	});
 });

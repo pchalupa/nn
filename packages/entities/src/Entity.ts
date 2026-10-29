@@ -2,6 +2,13 @@ import { EventEmitter } from "@nn/event-emitter";
 import type { Callback, Observable, Unsubscribe } from "@nn/event-emitter/Observable";
 import { ID } from "@nn/id";
 
+export type InferValueType<Value> =
+	Value extends Entity<infer Current>
+		? Current extends object
+			? { [Key in keyof Current]: InferValueType<Current[Key]> }
+			: Current
+		: Value;
+
 export abstract class Entity<Value = unknown> implements Observable {
 	private eventEmitter = new EventEmitter<{ change: [] }>();
 	private changes = 0;

@@ -1,27 +1,50 @@
-import { StoreError } from "./errors/StoreError";
+import { Entity, type InferValueType } from "@nn/entities/Entity";
 
-export type View<Value> = { readonly [Key in keyof Value]: View<Value[Key]> };
+import { isArray, isObject } from "./guards";
 
-export function isPlainObject(value: unknown): value is Record<string, unknown> {
-	return typeof value === "object" && value !== null && !Array.isArray(value);
-}
+export class View<Root extends Entity = Entity> {
+	private projection?: InferValueType<Root>;
 
-export function clone(value: unknown): unknown {
-	try {
-		return structuredClone(value);
-	} catch {
-		throw StoreError.notPlain();
+	constructor(private readonly root: Root) {}
+
+	public get value(): InferValueType<Root> {
+		if (this.projection === undefined) this.projection = this.materialize(this.root);
+
+		return this.projection;
 	}
-}
 
-function freeze(value: unknown): void {
-	if (typeof value !== "object" || value === null || Object.isFrozen(value)) return;
-	Object.freeze(value);
-	for (const child of Object.values(value)) freeze(child);
-}
+	public invalidate(): void {
+		this.projection = undefined;
+	}
 
-export function snapshot(value: unknown): unknown {
-	const result = clone(value);
-	freeze(result);
-	return result;
+	private materialize<E extends Entity>(entity: E): InferValueType<E>;
+	private materialize(entity: Entity): unknown {
+		const current = entity.current;
+
+		if (isArray(current)) {
+			const result: unknown[] = [];
+
+			for (const item of current) {
+				if (item instanceof Entity) result.push(this.materialize(item));
+				else result.push(structuredClone(item));
+			}
+
+			return result;
+		}
+
+		if (isObject(current)) {
+			const result: Record<string, unknown> = {};
+
+			for (const key in current) {
+				const field: unknown = current[key];
+
+				if (field instanceof Entity) result[key] = this.materialize(field);
+				else result[key] = structuredClone(field);
+			}
+
+			return result;
+		}
+
+		return current;
+	}
 }

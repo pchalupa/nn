@@ -5,8 +5,8 @@ import { useSyncExternalStoreWithSelector } from "use-sync-external-store/with-s
 
 import { equal } from "./equal";
 
-type ReadonlyData<Value> = {
-	readonly [Key in keyof Value]: ReadonlyData<Value[Key]>;
+type View<Value> = {
+	readonly [Key in keyof Value]: View<Value[Key]>;
 };
 
 type Update<Data> = (recipe: (draft: Data) => void) => void;
@@ -18,7 +18,7 @@ export function use<StoreSchema extends ObjectSchema<Record<string, Schema>>>(
 ) {
 	type Data = InferStateType<StoreSchema>;
 
-	return function useStore<Result>(selector: (data: ReadonlyData<Data>) => Result): [Result, Update<Data>] {
+	return function useStore<Result>(selector: (data: View<Data>) => Result): [Result, Update<Data>] {
 		const store = usePromise(promisedStore);
 
 		const getSnapshot = useCallback(() => store.state.read(), [store]);

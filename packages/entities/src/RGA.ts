@@ -1,6 +1,6 @@
 import type { Unsubscribe } from "@nn/event-emitter/Observable";
 
-import { Entity } from "./Entity";
+import { type Encoded, Entity } from "./Entity";
 
 // TODO!: Implementation of RGA isn't done yet. This is just temporary stub!
 export class RGA<Value extends Entity> extends Entity<Value[]> {
@@ -76,5 +76,9 @@ export class RGA<Value extends Entity> extends Entity<Value[]> {
 		if (size !== this.items.size) this.emit("change");
 
 		return this;
+	}
+
+	public encode(): Encoded<Encoded[], { kind: "RGA" }> {
+		return { key: this.key, data: this.current.map((item) => item.encode()), metadata: { kind: "RGA" } };
 	}
 }

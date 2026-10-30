@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, expectTypeOf, it, vi } from "vitest";
 
-import { Entity, type InferValueType } from "./Entity";
+import { type Encoded, Entity, type InferValueType } from "./Entity";
 import type { LWWRegister } from "./LWWRegister";
 
 describe("Entity", () => {
@@ -30,6 +30,10 @@ describe("Entity", () => {
 
 		public merge(): this {
 			return this;
+		}
+
+		public encode(): Encoded<string> {
+			return { key: this.key, data: this.value, metadata: { kind: "test" } };
 		}
 	}
 

@@ -1,6 +1,6 @@
 import { Time } from "@nn/time";
 
-import { Entity } from "./Entity";
+import { type Encoded, Entity } from "./Entity";
 
 export class LWWRegister<Value> extends Entity<Value> {
 	constructor(
@@ -37,5 +37,9 @@ export class LWWRegister<Value> extends Entity<Value> {
 		}
 
 		return this;
+	}
+
+	public encode(): Encoded<Value, { kind: "LWWRegister"; timestamp: string }> {
+		return { key: this.key, data: this.value, metadata: { kind: "LWWRegister", timestamp: this.timestamp.toString() } };
 	}
 }

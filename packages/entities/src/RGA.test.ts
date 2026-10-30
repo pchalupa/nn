@@ -16,6 +16,18 @@ describe("RGA", () => {
 		expect(rga.current).toMatchInlineSnapshot(`[]`);
 	});
 
+	it("encodes its items in order", () => {
+		const first = new LWWRegister("first", "a");
+		const second = new LWWRegister("second", "b");
+		const rga = new RGA([first, second], "items");
+
+		expect(rga.encode()).toStrictEqual({
+			key: "items",
+			data: [first.encode(), second.encode()],
+			metadata: { kind: "RGA" },
+		});
+	});
+
 	it("finds an item by key", () => {
 		const item = new LWWMap({ title: new LWWRegister("first") });
 		const rga = new RGA([item]);

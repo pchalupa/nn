@@ -1,6 +1,6 @@
 import type { Unsubscribe } from "@nn/event-emitter/Observable";
 
-import { Entity } from "./Entity";
+import { type Encoded, Entity } from "./Entity";
 
 export class LWWMap<Fields extends Record<string, Entity>> extends Entity<Fields> {
 	/** Holds a map of field unsubscribe functions. */
@@ -56,5 +56,17 @@ export class LWWMap<Fields extends Record<string, Entity>> extends Entity<Fields
 		}
 
 		return this;
+	}
+
+	public encode(): Encoded<Record<string, Encoded>, { kind: "LWWMap" }> {
+		const data: Record<string, Encoded> = {};
+
+		for (const key in this.fields) {
+			const field = this.fields[key];
+
+			data[key] = field.encode();
+		}
+
+		return { key: this.key, data, metadata: { kind: "LWWMap" } };
 	}
 }

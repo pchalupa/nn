@@ -9,6 +9,12 @@ export type InferValueType<Value> =
 			: Current
 		: Value;
 
+export interface Encoded<Data = unknown, Metadata extends { kind: string } = { kind: string }> {
+	key: string;
+	data: Data;
+	metadata: Metadata;
+}
+
 export abstract class Entity<Value = unknown> implements Observable {
 	private eventEmitter = new EventEmitter<{ change: [] }>();
 	private changes = 0;
@@ -26,6 +32,8 @@ export abstract class Entity<Value = unknown> implements Observable {
 	public abstract set current(value: Value);
 
 	public abstract merge(remote: Entity): Entity;
+
+	public abstract encode(): Encoded;
 
 	// TBD: this leans more towards Store/State concern.
 	public get revision(): number {

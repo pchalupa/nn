@@ -17,6 +17,13 @@ describe("LWWMap", () => {
 		expect(JSON.stringify(map)).toMatchInlineSnapshot(`"{"name":"John","address":{"city":"Prague"}}"`);
 	});
 
+	it("encodes its fields", () => {
+		const name = new LWWRegister("John", "name");
+		const map = new LWWMap({ name }, "person");
+
+		expect(map.encode()).toStrictEqual({ key: "person", data: { name: name.encode() }, metadata: { kind: "LWWMap" } });
+	});
+
 	it("updates property value and reflect changes", () => {
 		const map = new LWWMap({ name: new LWWRegister("Alice"), age: new LWWRegister(25) });
 

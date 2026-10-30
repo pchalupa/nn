@@ -40,6 +40,16 @@ describe("LWWRegister", () => {
 		expect(JSON.stringify(new LWWRegister(42))).toMatchInlineSnapshot(`"42"`);
 	});
 
+	it("encodes its key, value and timestamp", () => {
+		const timestamp = Time.epoch();
+
+		expect(new LWWRegister("value", "title", timestamp).encode()).toStrictEqual({
+			key: "title",
+			data: "value",
+			metadata: { kind: "LWWRegister", timestamp: timestamp.toString() },
+		});
+	});
+
 	it("updates value", () => {
 		const register = new LWWRegister("initial");
 

@@ -12,9 +12,12 @@
 	"repository": "https://github.com/pchalupa/nn",
 	"type": "module",
 	"exports": {
-		".": {
-			"import": "./src/index.ts"
-		}
+		".": "./src/index.ts",
+		"./ArraySchema": "./src/ArraySchema.ts",
+		"./BooleanSchema": "./src/BooleanSchema.ts",
+		"./NumberSchema": "./src/NumberSchema.ts",
+		"./ObjectSchema": "./src/ObjectSchema.ts",
+		"./StringSchema": "./src/StringSchema.ts"
 	},
 	"scripts": {
 		"ts:check": "tsc --noEmit"

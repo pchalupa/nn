@@ -5,10 +5,7 @@ import { ObjectSchema } from "./ObjectSchema";
 import type { Schema } from "./Schema";
 import { StringSchema } from "./StringSchema";
 
-export { ArraySchema } from "./ArraySchema";
-export { ObjectSchema } from "./ObjectSchema";
 export type { InferStateType, Schema } from "./Schema";
-export { StringSchema } from "./StringSchema";
 
 export function string(): StringSchema {
 	return new StringSchema();

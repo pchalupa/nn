@@ -1,4 +1,5 @@
-import type { InferStateType, ObjectSchema, Schema } from "@nn/schema";
+import type { InferStateType, Schema } from "@nn/schema";
+import type { ObjectSchema } from "@nn/schema/ObjectSchema";
 import { Store } from "@nn/store";
 import { useCallback, useDebugValue, use as usePromise } from "react";
 import { useSyncExternalStoreWithSelector } from "use-sync-external-store/with-selector";

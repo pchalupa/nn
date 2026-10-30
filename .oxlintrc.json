@@ -67,7 +67,11 @@
 			{ "blankLine": "any", "prev": ["const", "let"], "next": ["const", "let"] },
 			{ "blankLine": "always", "prev": "*", "next": "if" },
 			{ "blankLine": "always", "prev": "if", "next": "*" },
-			{ "blankLine": "always", "prev": "*", "next": "return" }
+			{ "blankLine": "always", "prev": "*", "next": "return" },
+			{ "blankLine": "always", "prev": ["function", "export"], "next": "*" },
+			{ "blankLine": "always", "prev": "*", "next": ["function", "export"] },
+			{ "blankLine": "always", "prev": ["for", "while", "do"], "next": "*" },
+			{ "blankLine": "always", "prev": "*", "next": ["for", "while", "do"] }
 		],
 		"@stylistic/lines-between-class-members": [
 			"error",

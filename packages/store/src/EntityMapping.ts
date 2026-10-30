@@ -2,7 +2,7 @@ import { Entity } from "@nn/entities/Entity";
 
 import { isArray, isObject } from "./guards";
 
-interface EntityNode {
+export interface EntityNode {
 	readonly entity: Entity;
 	readonly children: ReadonlyMap<string, EntityNode>;
 }
@@ -14,6 +14,10 @@ export class EntityMapping {
 		return this.mapping.get(value);
 	}
 
+	public set(value: object, node: EntityNode): void {
+		this.mapping.set(value, node);
+	}
+
 	public bind(entity: Entity, value: unknown): EntityNode {
 		const children = new Map<string, EntityNode>();
 		const node: EntityNode = { entity, children };
@@ -21,7 +25,7 @@ export class EntityMapping {
 		if (isObject(value)) {
 			const current = entity.current;
 
-			this.mapping.set(value, node);
+			this.set(value, node);
 
 			if (isArray(current)) {
 				for (const [index, child] of current.entries()) {

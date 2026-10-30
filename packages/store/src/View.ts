@@ -1,50 +1,90 @@
 import { Entity, type InferValueType } from "@nn/entities/Entity";
 
+import type { EntityMapping, EntityNode } from "./EntityMapping";
 import { isArray, isObject } from "./guards";
 
-export class View<Root extends Entity = Entity> {
-	private projection?: InferValueType<Root>;
+interface Snapshot<Value> {
+	readonly value: Value;
+	readonly node: EntityNode;
+}
 
-	constructor(private readonly root: Root) {}
+interface CachedSnapshot extends Snapshot<unknown> {
+	readonly revision: number;
+}
 
-	public get value(): InferValueType<Root> {
-		if (this.projection === undefined) this.projection = this.materialize(this.root);
+export class View<State extends Entity = Entity> {
+	private projection?: InferValueType<State>;
+	private snapshots = new WeakMap<Entity, CachedSnapshot>();
+
+	constructor(
+		private state: State,
+		private mapping: EntityMapping,
+	) {}
+
+	public get value(): InferValueType<State> {
+		if (!this.projection) {
+			this.projection = this.materialize(this.state).value;
+		}
 
 		return this.projection;
 	}
 
-	public invalidate(): void {
-		this.projection = undefined;
-	}
+	private materialize<EntityToMaterialize extends Entity>(
+		entity: EntityToMaterialize,
+	): Snapshot<InferValueType<EntityToMaterialize>>;
+	private materialize(entity: Entity): Snapshot<unknown> {
+		const revision = entity.revision;
+		const cached = this.snapshots.get(entity);
 
-	private materialize<E extends Entity>(entity: E): InferValueType<E>;
-	private materialize(entity: Entity): unknown {
+		if (cached !== undefined && cached.revision === revision) return cached;
+
 		const current = entity.current;
+		const children = new Map<string, EntityNode>();
+		const node: EntityNode = { entity, children };
+
+		let value: unknown = current;
 
 		if (isArray(current)) {
 			const result: unknown[] = [];
 
-			for (const item of current) {
-				if (item instanceof Entity) result.push(this.materialize(item));
-				else result.push(structuredClone(item));
+			for (const [index, item] of current.entries()) {
+				if (item instanceof Entity) {
+					const child = this.materialize(item);
+
+					result.push(child.value);
+					children.set(String(index), child.node);
+				} else result.push(structuredClone(item));
 			}
 
-			return result;
-		}
-
-		if (isObject(current)) {
-			const result: Record<string, unknown> = {};
+			value = result;
+		} else if (isObject(current)) {
+			const result: Array<[string, unknown]> = [];
 
 			for (const key in current) {
 				const field: unknown = current[key];
 
-				if (field instanceof Entity) result[key] = this.materialize(field);
-				else result[key] = structuredClone(field);
+				if (field instanceof Entity) {
+					const child = this.materialize(field);
+
+					result.push([key, child.value]);
+					children.set(key, child.node);
+				} else result.push([key, structuredClone(field)]);
 			}
 
-			return result;
+			value = Object.fromEntries(result);
 		}
 
-		return current;
+		if (isObject(value)) this.mapping.set(value, node);
+
+		const snapshot: CachedSnapshot = { value, node, revision };
+
+		this.snapshots.set(entity, snapshot);
+
+		return snapshot;
+	}
+
+	public invalidate(): void {
+		this.projection = undefined;
+		this.snapshots.delete(this.state);
 	}
 }

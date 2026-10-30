@@ -1,6 +1,7 @@
 import type { Remote } from "@nn/remote";
 import type { Entry, Repository } from "@nn/repository";
-import type { ObjectSchema, Schema } from "@nn/schema";
+import type { Schema } from "@nn/schema";
+import type { ObjectSchema } from "@nn/schema/ObjectSchema";
 
 import { State } from "./State";
 

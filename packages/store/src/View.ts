@@ -1,11 +1,10 @@
 import { Entity, type InferValueType } from "@nn/entities/Entity";
 
-import type { EntityMapping, EntityNode } from "./EntityMapping";
+import type { EntityMapping } from "./EntityMapping";
 import { isArray, isObject } from "./guards";
 
 interface Snapshot<Value> {
 	readonly value: Value;
-	readonly node: EntityNode;
 }
 
 interface CachedSnapshot extends Snapshot<unknown> {
@@ -13,7 +12,7 @@ interface CachedSnapshot extends Snapshot<unknown> {
 }
 
 export class View<State extends Entity = Entity> {
-	private projection?: InferValueType<State>;
+	private projection?: Snapshot<InferValueType<State>>;
 	private snapshots = new WeakMap<Entity, CachedSnapshot>();
 
 	constructor(
@@ -22,11 +21,9 @@ export class View<State extends Entity = Entity> {
 	) {}
 
 	public get value(): InferValueType<State> {
-		if (!this.projection) {
-			this.projection = this.materialize(this.state).value;
-		}
+		this.projection ??= this.materialize(this.state);
 
-		return this.projection;
+		return this.projection.value;
 	}
 
 	private materialize<EntityToMaterialize extends Entity>(
@@ -39,21 +36,16 @@ export class View<State extends Entity = Entity> {
 		if (cached !== undefined && cached.revision === revision) return cached;
 
 		const current = entity.current;
-		const children = new Map<string, EntityNode>();
-		const node: EntityNode = { entity, children };
+
+		if (!isObject(current)) return { value: current };
 
 		let value: unknown = current;
 
 		if (isArray(current)) {
 			const result: unknown[] = [];
 
-			for (const [index, item] of current.entries()) {
-				if (item instanceof Entity) {
-					const child = this.materialize(item);
-
-					result.push(child.value);
-					children.set(String(index), child.node);
-				} else result.push(structuredClone(item));
+			for (const item of current) {
+				result.push(item instanceof Entity ? this.materialize(item).value : structuredClone(item));
 			}
 
 			value = result;
@@ -63,20 +55,15 @@ export class View<State extends Entity = Entity> {
 			for (const key in current) {
 				const field: unknown = current[key];
 
-				if (field instanceof Entity) {
-					const child = this.materialize(field);
-
-					result.push([key, child.value]);
-					children.set(key, child.node);
-				} else result.push([key, structuredClone(field)]);
+				result.push([key, field instanceof Entity ? this.materialize(field).value : structuredClone(field)]);
 			}
 
 			value = Object.fromEntries(result);
 		}
 
-		if (isObject(value)) this.mapping.set(value, node);
+		if (isObject(value)) this.mapping.set(value, entity);
 
-		const snapshot: CachedSnapshot = { value, node, revision };
+		const snapshot: CachedSnapshot = { value, revision };
 
 		this.snapshots.set(entity, snapshot);
 

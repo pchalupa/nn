@@ -2,9 +2,9 @@
 "@nn/store": major
 ---
 
-`Store` now owns change subscriptions. `store.state.subscribe` is replaced by `store.subscribe(listener)`, whose listener receives no arguments. `Store` persists the changed entries before calling listeners.
+`state.subscribe` listeners no longer receive the set of changed entry names; they are called with no arguments. `State` reports to `Store` first, so persistence of the changed entries starts before any listener runs.
 
 ```ts
 store.state.subscribe((changed) => {}); // before
-store.subscribe(() => {}); // after
+store.state.subscribe(() => {}); // after
 ```

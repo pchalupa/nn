@@ -31,7 +31,7 @@ Every call means "did change": the sender passes itself first, and the new value
 
 Assigning a delegate replaces the previous one, and assigning `undefined` detaches it. The setter never throws. `LWWMap` and `RGA` set themselves as the delegate of every child they add, and set the old child's delegate to `undefined` when they remove or replace it. When `RGA.merge` keeps an incoming row for a new key, the merging `RGA` takes that row over by assigning itself as its delegate.
 
-`State` is the delegate of the root map. It maps each top-level field entity to its name, so it can turn `entityDidChange(root, child)` into a field name. It throws a `TypeError` if a change arrives without a known field. `State` batches as described in [ADR-05](ADR-05-batch-store-notifications.md), then calls `stateDidChange`. `Store` is that delegate. It starts persisting each changed entry and then calls its listeners. The listeners are a plain `Set<() => void>` behind `Store.subscribe(listener)`, which `@nn/react` uses.
+`State` is the delegate of the root map. It maps each top-level field entity to its name, so it can turn `entityDidChange(root, child)` into a field name. It throws a `TypeError` if a change arrives without a known field. `State` batches as described in [ADR-05](ADR-05-batch-store-notifications.md), then calls `stateDidChange`. `Store` is that delegate, and it starts persisting each changed entry. Only after that does `State` call its listeners. The listeners are a plain `Set<() => void>` behind `State.subscribe(listener)`, which `@nn/react` uses. They get no arguments, because React only needs to know when to read the snapshot again.
 
 `Remote` exposes `connect()`, which opens the connection and returns the function that closes it. Each update goes to the delegate.
 
@@ -49,9 +49,9 @@ Assigning a delegate replaces the previous one, and assigning `undefined` detach
 
 ## Consequences
 
-The public API changes in five packages. `Entity.subscribe` and `state.subscribe` are gone, `Remote.subscribe()` is now `connect()`, and `HttpRemote.events` is gone. Code that observed an entity or `State` directly now assigns a delegate, or subscribes through `Store`. Each change has its own changeset.
+The public API changes in five packages. `Entity.subscribe` is gone, `state.subscribe` listeners no longer receive the changed names, `Remote.subscribe()` is now `connect()`, and `HttpRemote.events` is gone. Code that observed an entity directly now assigns a delegate, or subscribes through `State`. Each change has its own changeset.
 
-An entity or `State` can have only one consumer. A second observer replaces the first without any error. `store.state` is public, so assigning `store.state.delegate` disconnects `Store`, which stops both persistence and React updates. If a second consumer is ever needed, it gets a listener set on `Store` or a new delegate, not a second slot.
+An entity can have only one consumer, and `State` has only one delegate. A second delegate replaces the first without any error. `store.state` is public, so assigning `store.state.delegate` disconnects `Store` and stops persistence, while React listeners keep working. Any other observer subscribes through `State`'s listener set rather than taking a second delegate slot.
 
 Detaching doesn't check who currently owns a child. If a row is ever shared between two live trees, removing it from the old parent would cut it off from the new one. No current path does this, because the only shared rows sit in a decoded tree that is thrown away after the merge. Sync will merge live trees, so it should add the guard `if (item.delegate === this)` before detaching.
 

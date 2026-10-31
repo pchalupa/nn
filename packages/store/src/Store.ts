@@ -4,9 +4,9 @@ import type { Schema } from "@nn/schema";
 import type { ObjectSchema } from "@nn/schema/ObjectSchema";
 
 import { Codec } from "./Codec";
-import { State } from "./State";
+import { State, type StateDelegate } from "./State";
 
-export class Store<StateSchema extends ObjectSchema<Record<string, Schema>>> {
+export class Store<StateSchema extends ObjectSchema<Record<string, Schema>>> implements StateDelegate {
 	private codec = new Codec();
 
 	constructor(
@@ -14,10 +14,15 @@ export class Store<StateSchema extends ObjectSchema<Record<string, Schema>>> {
 		private repository?: Repository,
 		_remote?: Remote,
 	) {
-		// THis can be onChange method on state?
-		state.subscribe((changed) => {
-			if (repository) for (const name of changed) void this.persist(name, this.codec.toEntry(state.encode(name)));
-		});
+		state.delegate = this;
+	}
+
+	public stateDidChange(state: State, changed: ReadonlySet<string>): void {
+		if (this.repository) {
+			for (const name of changed) {
+				void this.persist(name, this.codec.toEntry(state.encode(name)));
+			}
+		}
 	}
 
 	private async persist(name: string, entry: Entry): Promise<void> {

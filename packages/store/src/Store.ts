@@ -1,3 +1,4 @@
+import { Subject, type Observer, type Unsubscribe } from "@nn/observable/Subject";
 import type { Remote } from "@nn/remote";
 import type { Repository } from "@nn/repository";
 import type { Schema } from "@nn/schema";
@@ -8,24 +9,31 @@ import { State } from "./State";
 
 export class Store<StateSchema extends ObjectSchema<Record<string, Schema>>> {
 	private codec = new Codec();
+	private changeSubjectObservers = new Subject();
 
 	constructor(
 		public state: State<StateSchema>,
 		private repository?: Repository,
 		_remote?: Remote,
 	) {
-		if (repository) {
-			state.delegate = {
-				stateDidChange: (_state, changed) => {
-					for (const name of changed) void this.persist(repository, name);
-				},
-			};
-		}
+		state.delegate = {
+			stateDidChange: (_state: State, changed: ReadonlySet<string>) => {
+				for (const name of changed) void this.persist(name);
+
+				this.changeSubjectObservers.notify();
+			},
+		};
 	}
 
-	private async persist(repository: Repository, name: string): Promise<void> {
+	public subscribe(observer: Observer): Unsubscribe {
+		return this.changeSubjectObservers.subscribe(observer);
+	}
+
+	private async persist(name: string): Promise<void> {
+		if (!this.repository) return;
+
 		try {
-			await repository.set(name, this.codec.toEntry(this.state.encode(name)));
+			await this.repository.set(name, this.codec.toEntry(this.state.encode(name)));
 		} catch (error) {
 			// TODO: LOGGER?
 			console.error("Failed to persist Store record.", error);

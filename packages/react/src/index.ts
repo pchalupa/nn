@@ -23,7 +23,7 @@ export function use<StoreSchema extends ObjectSchema<Record<string, Schema>>>(
 		const store = usePromise(promisedStore);
 
 		const getSnapshot = useCallback(() => store.state.read(), [store]);
-		const subscribe = useCallback((listener: () => void) => store.state.subscribe(listener), [store]);
+		const subscribe = useCallback((observer: () => void) => store.subscribe(observer), [store]);
 		const update = useCallback<Update<Data>>((recipe) => store.state.update(recipe), [store]);
 
 		const value = useSyncExternalStoreWithSelector(subscribe, getSnapshot, getSnapshot, selector, equal);

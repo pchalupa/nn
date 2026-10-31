@@ -12,13 +12,17 @@
 	"repository": "https://github.com/pchalupa/nn",
 	"type": "module",
 	"exports": {
-		".": "./src/Observable.ts"
+		".": "./src/Delegatable.ts",
+		"./Subject": "./src/Subject.ts"
 	},
 	"scripts": {
-		"ts:check": "tsc --noEmit"
+		"ts:check": "tsc --noEmit",
+		"test": "vitest run",
+		"test:watch": "vitest watch"
 	},
 	"devDependencies": {
 		"@nn/typescript-config": "workspace:",
-		"typescript": "catalog:"
+		"typescript": "catalog:",
+		"vitest": "catalog:"
 	}
 }

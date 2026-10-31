@@ -1,5 +1,5 @@
 import { ID } from "@nn/id";
-import type { Observable } from "@nn/observable";
+import type { Delegatable } from "@nn/observable";
 
 import type { Encodable, Encoded } from "./Codable";
 
@@ -16,7 +16,7 @@ export interface EntityDelegate {
 	entityDidChange(entity: Entity, child?: Entity): void;
 }
 
-export abstract class Entity<Value = unknown> implements Observable<EntityDelegate>, Encodable {
+export abstract class Entity<Value = unknown> implements Delegatable<EntityDelegate>, Encodable {
 	public delegate?: EntityDelegate;
 	private changes = 0;
 	private id: string;

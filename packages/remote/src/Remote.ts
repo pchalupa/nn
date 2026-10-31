@@ -1,10 +1,10 @@
-import type { Observable } from "@nn/observable";
+import type { Delegatable } from "@nn/observable";
 
 export interface RemoteDelegate {
 	remoteDidUpdate(remote: Remote): void;
 }
 
-export interface Remote extends Observable<RemoteDelegate> {
+export interface Remote extends Delegatable<RemoteDelegate> {
 	pull: () => Promise<unknown>;
 	push: (data: unknown) => Promise<void>;
 	connect: () => () => void;

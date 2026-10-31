@@ -14,7 +14,8 @@
 		"pchalupa",
 		"tombstoned",
 		"Kökörčený",
-		"Kulkarni"
+		"Kulkarni",
+		"Delegatable"
 	],
 	"ignorePaths": ["docs/{notes,plans,research}"],
 	"useGitignore": true

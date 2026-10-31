@@ -1,6 +1,7 @@
 import type { Unsubscribe } from "@nn/event-emitter/Observable";
 
-import { type Encoded, Entity } from "./Entity";
+import type { Decoder, Encoded } from "./Codable";
+import { Entity } from "./Entity";
 
 // TODO!: Implementation of RGA isn't done yet. This is just temporary stub!
 export class RGA<Value extends Entity> extends Entity<Value[]> {
@@ -78,7 +79,23 @@ export class RGA<Value extends Entity> extends Entity<Value[]> {
 		return this;
 	}
 
-	public encode(): Encoded<Encoded[], { kind: "RGA" }> {
-		return { key: this.key, data: this.current.map((item) => item.encode()), metadata: { kind: "RGA" } };
+	public static decode(encoded: Encoded<Encoded[]>, decoder: Decoder): RGA<Entity> {
+		const items: Entity[] = [];
+
+		for (const item of encoded.data) {
+			items.push(decoder.decode(item));
+		}
+
+		return new RGA(items, encoded.key);
+	}
+
+	public encode(): Encoded<Encoded[], { kind: string }> {
+		const data: Encoded[] = [];
+
+		for (const item of this.items.values()) {
+			data.push(item.encode());
+		}
+
+		return { key: this.key, data, metadata: { kind: this.constructor.name } };
 	}
 }

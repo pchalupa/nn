@@ -1,6 +1,7 @@
 import type { Unsubscribe } from "@nn/event-emitter/Observable";
 
-import { type Encoded, Entity } from "./Entity";
+import type { Decoder, Encoded } from "./Codable";
+import { Entity } from "./Entity";
 
 export class LWWMap<Fields extends Record<string, Entity>> extends Entity<Fields> {
 	/** Holds a map of field unsubscribe functions. */
@@ -44,13 +45,13 @@ export class LWWMap<Fields extends Record<string, Entity>> extends Entity<Fields
 	}
 
 	public get(name: string): Entity | undefined {
-		return this.fields[name];
+		return Object.hasOwn(this.fields, name) ? this.fields[name] : undefined;
 	}
 
 	public merge(remote: LWWMap<Fields>): this {
 		for (const key in this.fields) {
 			const localField = this.fields[key];
-			const remoteField = remote.fields[key];
+			const remoteField = Object.hasOwn(remote.fields, key) ? remote.fields[key] : undefined;
 
 			if (remoteField) localField.merge(remoteField);
 		}
@@ -58,15 +59,19 @@ export class LWWMap<Fields extends Record<string, Entity>> extends Entity<Fields
 		return this;
 	}
 
-	public encode(): Encoded<Record<string, Encoded>, { kind: "LWWMap" }> {
+	public static decode(encoded: Encoded<Record<string, Encoded>>, decoder: Decoder): LWWMap<Record<string, Entity>> {
+		const fields: Record<string, Entity> = {};
+
+		for (const key in encoded.data) fields[key] = decoder.decode(encoded.data[key]);
+
+		return new LWWMap(fields, encoded.key);
+	}
+
+	public encode(): Encoded<Record<string, Encoded>, { kind: string }> {
 		const data: Record<string, Encoded> = {};
 
-		for (const key in this.fields) {
-			const field = this.fields[key];
+		for (const key in this.fields) data[key] = this.fields[key].encode();
 
-			data[key] = field.encode();
-		}
-
-		return { key: this.key, data, metadata: { kind: "LWWMap" } };
+		return { key: this.key, data, metadata: { kind: this.constructor.name } };
 	}
 }

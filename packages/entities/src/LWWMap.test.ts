@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 
+import type { Entity } from "./Entity";
 import { LWWMap } from "./LWWMap";
 import { LWWRegister } from "./LWWRegister";
 

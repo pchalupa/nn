@@ -5,6 +5,8 @@ date: 2026-10-02
 
 # ADR-05: Batch Store notifications
 
+Implementation update, 2026-10-31: [ADR-12](ADR-12-report-changes-to-a-single-delegate.md) replaces entity subscriptions and the Store-owned event emitter with delegates. `State` now owns the `Batch` and reports to `Store` through `stateDidChange`. The batching rules below are unchanged.
+
 ## Context
 
 One [`Store.update`](../../packages/store/src/Store.ts) recipe can produce several entity changes and entities report each change immediately. Store subscribers need to read the resulting state, while entity listeners and persistence callbacks receive individual changes.

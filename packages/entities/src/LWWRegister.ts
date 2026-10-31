@@ -19,7 +19,7 @@ export class LWWRegister<Value> extends Entity<Value> {
 	public set current(value: Value) {
 		this.value = value;
 		this.timestamp = Time.now();
-		this.emit("change");
+		this.didChange();
 	}
 
 	public get current(): Value {
@@ -34,7 +34,7 @@ export class LWWRegister<Value> extends Entity<Value> {
 			this.value = remote.value;
 			this.timestamp = remote.timestamp;
 
-			this.emit("change");
+			this.didChange();
 		}
 
 		return this;

@@ -1,5 +1,4 @@
-import { EventEmitter } from "@nn/event-emitter";
-import type { Callback, Observable, Unsubscribe } from "@nn/event-emitter/Observable";
+import type { Observable } from "@nn/event-emitter/Observable";
 import { ID } from "@nn/id";
 
 import type { Encodable, Encoded } from "./Codable";
@@ -13,8 +12,12 @@ export type InferValueType<Value> =
 			: Current
 		: Value;
 
-export abstract class Entity<Value = unknown> implements Observable, Encodable {
-	private eventEmitter = new EventEmitter<{ change: [] }>();
+export interface EntityDelegate {
+	entityDidChange(entity: Entity, child?: Entity): void;
+}
+
+export abstract class Entity<Value = unknown> implements Observable<EntityDelegate>, Encodable {
+	public delegate?: EntityDelegate;
 	private changes = 0;
 	private id: string;
 
@@ -38,21 +41,13 @@ export abstract class Entity<Value = unknown> implements Observable, Encodable {
 		return this.changes;
 	}
 
-	// TODO: Infer event names from event emitter. Consider a generic type to entity.
-	protected emit(event: "change"): void {
-		// TODO: this placement is odd, currently "changed" events is ok, but will break in the future.
+	protected didChange(child?: Entity): void {
 		this.changes++;
-		this.eventEmitter.emit(event);
+		this.delegate?.entityDidChange(this, child);
 	}
 
 	public set(updater: (current: Value) => Value): void {
 		this.current = updater(this.current);
-	}
-
-	public subscribe(callback: Callback): Unsubscribe {
-		this.eventEmitter.on("change", callback);
-
-		return () => this.eventEmitter.off("change", callback);
 	}
 
 	public toJSON(): Value {

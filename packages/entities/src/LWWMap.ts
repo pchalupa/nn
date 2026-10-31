@@ -1,12 +1,7 @@
-import type { Unsubscribe } from "@nn/event-emitter/Observable";
-
 import type { Decoder, Encoded } from "./Codable";
-import { Entity } from "./Entity";
+import { Entity, type EntityDelegate } from "./Entity";
 
-export class LWWMap<Fields extends Record<string, Entity>> extends Entity<Fields> {
-	/** Holds a map of field unsubscribe functions. */
-	private subscriptions = new Map<string, Unsubscribe>();
-
+export class LWWMap<Fields extends Record<string, Entity>> extends Entity<Fields> implements EntityDelegate {
 	constructor(
 		private fields: Fields,
 		key?: string,
@@ -14,11 +9,12 @@ export class LWWMap<Fields extends Record<string, Entity>> extends Entity<Fields
 		super(key);
 
 		for (const name in fields) {
-			const field = fields[name];
-			const unsubscribe = field.subscribe(() => this.emit("change"));
-
-			this.subscriptions.set(name, unsubscribe);
+			fields[name].delegate = this;
 		}
+	}
+
+	public entityDidChange(child: Entity): void {
+		this.didChange(child);
 	}
 
 	public get [Symbol.toStringTag](): string {
@@ -32,16 +28,15 @@ export class LWWMap<Fields extends Record<string, Entity>> extends Entity<Fields
 	public set current(fields: Fields) {
 		for (const key in fields) {
 			const field = fields[key];
+			const previous = this.get(key);
 
-			this.subscriptions.get(key)?.();
+			if (previous) previous.delegate = undefined;
 
-			const unsubscribe = field.subscribe(() => this.emit("change"));
-
+			field.delegate = this;
 			this.fields[key] = field;
-			this.subscriptions.set(key, unsubscribe);
 		}
 
-		this.emit("change");
+		this.didChange();
 	}
 
 	public get(name: string): Entity | undefined {

@@ -1,12 +1,9 @@
-import type { Unsubscribe } from "@nn/event-emitter/Observable";
-
 import type { Decoder, Encoded } from "./Codable";
-import { Entity } from "./Entity";
+import { Entity, type EntityDelegate } from "./Entity";
 
 // TODO!: Implementation of RGA isn't done yet. This is just temporary stub!
-export class RGA<Value extends Entity> extends Entity<Value[]> {
+export class RGA<Value extends Entity> extends Entity<Value[]> implements EntityDelegate {
 	private items = new Map<string, Value>();
-	private subscriptions = new Map<string, Unsubscribe>();
 
 	constructor(items: Value[] = [], key?: string) {
 		super(key);
@@ -20,21 +17,12 @@ export class RGA<Value extends Entity> extends Entity<Value[]> {
 		if (existing) existing.merge(item);
 		else {
 			this.items.set(item.key, item);
-			this.observe(item);
+			item.delegate = this;
 		}
 	}
 
-	private observe(item: Value): void {
-		this.unobserve(item.key);
-		this.subscriptions.set(
-			item.key,
-			item.subscribe(() => this.emit("change")),
-		);
-	}
-
-	private unobserve(key: string): void {
-		this.subscriptions.get(key)?.();
-		this.subscriptions.delete(key);
+	public entityDidChange(child: Entity): void {
+		this.didChange(child);
 	}
 
 	public get current(): Value[] {
@@ -42,13 +30,13 @@ export class RGA<Value extends Entity> extends Entity<Value[]> {
 	}
 
 	public set current(items: Value[]) {
-		for (const item of this.items.values()) this.unobserve(item.key);
+		for (const item of this.items.values()) item.delegate = undefined;
 
 		this.items.clear();
 
 		for (const item of items) this.insert(item);
 
-		this.emit("change");
+		this.didChange();
 	}
 
 	public find(key: string): Value | undefined {
@@ -58,14 +46,16 @@ export class RGA<Value extends Entity> extends Entity<Value[]> {
 	public push(item: Value): void {
 		this.insert(item);
 
-		this.emit("change");
+		this.didChange();
 	}
 
 	public remove(key: string): void {
-		if (this.items.has(key)) {
+		const item = this.items.get(key);
+
+		if (item) {
 			this.items.delete(key);
-			this.unobserve(key);
-			this.emit("change");
+			item.delegate = undefined;
+			this.didChange();
 		}
 	}
 
@@ -74,7 +64,7 @@ export class RGA<Value extends Entity> extends Entity<Value[]> {
 
 		for (const item of other.current) this.insert(item);
 
-		if (size !== this.items.size) this.emit("change");
+		if (size !== this.items.size) this.didChange();
 
 		return this;
 	}

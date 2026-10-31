@@ -9,6 +9,8 @@ date: 2026-10-04
 
 Implementation update, 2026-10-14: [ADR-11](ADR-11-defer-the-ordering-crdt.md) defers the ordering CRDT, so `RGA` no longer has `mergeState`, tombstones, or a clock. The single-notification decision and the `Entity.subscribe` payload stand for the keyed list.
 
+Implementation update, 2026-10-31: [ADR-12](ADR-12-report-changes-to-a-single-delegate.md) replaces `Entity.subscribe` with a single delegate. A sequence reports through `entityDidChange(entity, child?)` instead of an `EntityChange` payload. The single notification per merge still applies.
+
 ## Context
 
 [ADR-07](ADR-07-separate-state-signals-from-projection-updates.md) moved every entity to one state-change subscription and kept the membership descriptions [RGA](../../packages/entities/src/RGA.ts) already emitted, adding `kind: "state"` for changes that add, remove, update and replace do not cover. To carry those descriptions, RGA keeps a second listener set beside the one `Entity` owns, dispatches to both from `emitChange` with its own error aggregation, and tracks in `mergeState` which keys a merge revealed, which it hid, whether tombstones moved, and whether the sequence reordered, so it can pick a kind per emit.

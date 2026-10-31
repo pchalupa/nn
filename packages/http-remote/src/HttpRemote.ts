@@ -1,8 +1,8 @@
-import { EventEmitter } from "@nn/event-emitter";
-import type { Remote } from "@nn/remote";
+import type { Unsubscribe } from "@nn/event-emitter/Observable";
+import type { Remote, RemoteDelegate } from "@nn/remote";
 
 export class HttpRemote implements Remote {
-	public events = new EventEmitter<{ update: [] }>();
+	public delegate?: RemoteDelegate;
 	private url: URL;
 
 	constructor(url: string) {
@@ -38,12 +38,12 @@ export class HttpRemote implements Remote {
 		await this.request<Record<string, unknown>>("POST", "/push", data);
 	}
 
-	public subscribe(): () => void {
+	public connect(): Unsubscribe {
 		const url = new URL("/subscribe", this.url);
 		const eventSource = new EventSource(url);
 
 		const handleMessage = () => {
-			this.events.emit("update");
+			this.delegate?.remoteDidUpdate(this);
 		};
 
 		eventSource.addEventListener("message", handleMessage);

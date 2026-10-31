@@ -1,6 +1,6 @@
 import type { Entry } from "@nn/repository";
 import { RepositoryNotInitializedError } from "@nn/repository/errors/RepositoryNotInitializedError";
-import { beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { IndexDbRepository } from "./IndexDbRepository";
 
@@ -10,6 +10,8 @@ describe("IndexDbRepository", () => {
 	beforeEach(() => {
 		globalThis.indexedDB = new IDBFactory();
 	});
+
+	afterEach(() => vi.restoreAllMocks());
 
 	it("requires initialization before reading or writing", async () => {
 		const repository = new IndexDbRepository();
@@ -25,6 +27,21 @@ describe("IndexDbRepository", () => {
 
 		expect(await repository.getAll("users")).toStrictEqual([]);
 		expect(await repository.getAll("posts")).toStrictEqual([]);
+	});
+
+	it("rejects an unfinished write when a newer write to the same name starts", async () => {
+		const repository = new IndexDbRepository();
+
+		await repository.init({ language: {} });
+
+		const abort = vi.spyOn(IDBTransaction.prototype, "abort");
+		const first = repository.set("language", entry);
+		const second = repository.set("language", { ...entry, data: "en" });
+
+		await expect(first).rejects.toMatchObject({ name: "AbortError" });
+		await expect(second).resolves.toBeUndefined();
+		expect(abort).toHaveBeenCalledOnce();
+		expect(await repository.get("language")).toStrictEqual({ ...entry, data: "en" });
 	});
 
 	it("adds a missing store to an existing database via a version upgrade", async () => {

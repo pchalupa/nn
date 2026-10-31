@@ -1,49 +1,13 @@
-import { Entity } from "@nn/entities/Entity";
-
-import { isArray, isObject } from "./guards";
-
-export interface EntityNode {
-	readonly entity: Entity;
-	readonly children: ReadonlyMap<string, EntityNode>;
-}
+import type { Entity } from "@nn/entities/Entity";
 
 export class EntityMapping {
-	private mapping = new WeakMap<object, EntityNode>();
+	private mapping = new WeakMap<object, Entity>();
 
-	public get(value: object): EntityNode | undefined {
+	public get(value: object): Entity | undefined {
 		return this.mapping.get(value);
 	}
 
-	public set(value: object, node: EntityNode): void {
-		this.mapping.set(value, node);
-	}
-
-	public bind(entity: Entity, value: unknown): EntityNode {
-		const children = new Map<string, EntityNode>();
-		const node: EntityNode = { entity, children };
-
-		if (isObject(value)) {
-			const current = entity.current;
-
-			this.set(value, node);
-
-			if (isArray(current)) {
-				for (const [index, child] of current.entries()) {
-					if (child instanceof Entity) {
-						children.set(String(index), this.bind(child, value[index]));
-					}
-				}
-			} else if (isObject(current)) {
-				for (const key in current) {
-					const child = current[key];
-
-					if (child instanceof Entity) {
-						children.set(key, this.bind(child, value[key]));
-					}
-				}
-			}
-		}
-
-		return node;
+	public set(value: object, entity: Entity): void {
+		this.mapping.set(value, entity);
 	}
 }

@@ -7,17 +7,26 @@ enum Mode {
 }
 
 export class IndexDbRepository implements Repository {
-	private indexDbDatabase?: IDBDatabase;
 	private version = 1;
+	private indexDbDatabase?: IDBDatabase;
+	private transactions = new Map<string, IDBTransaction>();
 
 	constructor(private readonly name = "nn-default") {}
 
 	public async set(name: string, entry: Entry): Promise<void> {
 		IndexDbRepository.assertIndexDB(this.indexDbDatabase);
 
+		this.transactions.get(name)?.abort();
+
 		const transaction = this.indexDbDatabase.transaction(name, Mode.ReadWrite);
 
-		await this.processRequest(transaction.objectStore(name).put(entry, name));
+		this.transactions.set(name, transaction);
+
+		try {
+			await this.processRequest(transaction.objectStore(name).put(entry, name));
+		} finally {
+			this.transactions.delete(name);
+		}
 	}
 
 	public async get(name: string): Promise<Entry | undefined> {

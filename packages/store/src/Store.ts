@@ -1,5 +1,5 @@
 import type { Remote } from "@nn/remote";
-import type { Entry, Repository } from "@nn/repository";
+import type { Repository } from "@nn/repository";
 import type { Schema } from "@nn/schema";
 import type { ObjectSchema } from "@nn/schema/ObjectSchema";
 
@@ -14,20 +14,18 @@ export class Store<StateSchema extends ObjectSchema<Record<string, Schema>>> {
 		private repository?: Repository,
 		_remote?: Remote,
 	) {
-		state.delegate = {
-			stateDidChange: (_state, changed) => {
-				if (repository) {
-					for (const name of changed) {
-						void this.persist(name, this.codec.toEntry(state.encode(name)));
-					}
-				}
-			},
-		};
+		if (repository) {
+			state.delegate = {
+				stateDidChange: (_state, changed) => {
+					for (const name of changed) void this.persist(repository, name);
+				},
+			};
+		}
 	}
 
-	private async persist(name: string, entry: Entry): Promise<void> {
+	private async persist(repository: Repository, name: string): Promise<void> {
 		try {
-			await this.repository?.set(name, entry);
+			await repository.set(name, this.codec.toEntry(this.state.encode(name)));
 		} catch (error) {
 			// TODO: LOGGER?
 			console.error("Failed to persist Store record.", error);

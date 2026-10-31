@@ -17,6 +17,7 @@ node_modules
 
 # Misc
 .DS_Store
+.build
 experiments
 
 # Obsidian
@@ -27,3 +28,9 @@ experiments
 
 # Tests
 coverage
+
+# Deployment
+.vercel
+
+# Agents
+.superpowers

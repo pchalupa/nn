@@ -1,8 +1,7 @@
-import { EventEmitter } from "@nn/event-emitter";
-import type { Remote } from "@nn/remote";
+import type { Remote, RemoteDelegate } from "@nn/remote";
 
 export class HttpRemote implements Remote {
-	public events = new EventEmitter<{ update: [] }>();
+	public delegate?: RemoteDelegate;
 	private url: URL;
 
 	constructor(url: string) {
@@ -28,22 +27,22 @@ export class HttpRemote implements Remote {
 		return response.json();
 	}
 
-	async pull(): Promise<Record<string, unknown>> {
+	public async pull(): Promise<Record<string, unknown>> {
 		const response = await this.request<Record<string, unknown>>("GET", "/pull");
 
 		return response;
 	}
 
-	async push(data: unknown): Promise<void> {
+	public async push(data: unknown): Promise<void> {
 		await this.request<Record<string, unknown>>("POST", "/push", data);
 	}
 
-	subscribe() {
+	public connect(): () => void {
 		const url = new URL("/subscribe", this.url);
 		const eventSource = new EventSource(url);
 
 		const handleMessage = () => {
-			this.events.emit("update");
+			this.delegate?.remoteDidUpdate(this);
 		};
 
 		eventSource.addEventListener("message", handleMessage);

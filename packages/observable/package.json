@@ -1,0 +1,24 @@
+{
+	"name": "@nn/observable",
+	"version": "0.0.0",
+	"description": "Delegate-based observation types",
+	"keywords": [],
+	"homepage": "https://github.com/pchalupa/nn/packages/observable#readme",
+	"bugs": {
+		"url": "https://github.com/pchalupa/nn/issues"
+	},
+	"license": "MIT",
+	"author": "pchalupa <chalupa.petr93@gmail.com> (https://github.com/pchalupa)",
+	"repository": "https://github.com/pchalupa/nn",
+	"type": "module",
+	"exports": {
+		".": "./src/Observable.ts"
+	},
+	"scripts": {
+		"ts:check": "tsc --noEmit"
+	},
+	"devDependencies": {
+		"@nn/typescript-config": "workspace:",
+		"typescript": "catalog:"
+	}
+}

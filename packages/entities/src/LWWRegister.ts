@@ -1,32 +1,32 @@
 import { Time } from "@nn/time";
 
+import type { Encoded } from "./Codable";
 import { Entity } from "./Entity";
 
 export class LWWRegister<Value> extends Entity<Value> {
-	private value: Value;
-	private timestamp = Time.now();
-
-	constructor(value: Value) {
-		super();
-
-		this.value = value;
+	constructor(
+		private value: Value,
+		key?: string,
+		public timestamp = Time.now(),
+	) {
+		super(key);
 	}
 
-	get [Symbol.toStringTag]() {
+	public get [Symbol.toStringTag](): string {
 		return "LWWRegister";
 	}
 
-	set current(value: Value) {
+	public set current(value: Value) {
 		this.value = value;
 		this.timestamp = Time.now();
-		this.emit();
+		this.didChange();
 	}
 
-	get current(): Value {
+	public get current(): Value {
 		return this.value;
 	}
 
-	merge(remote: LWWRegister<Value>): LWWRegister<Value> {
+	public merge(remote: LWWRegister<Value>): LWWRegister<Value> {
 		if (this.timestamp.isAfter(remote.timestamp)) {
 			remote.value = this.value;
 			remote.timestamp = this.timestamp;
@@ -34,9 +34,21 @@ export class LWWRegister<Value> extends Entity<Value> {
 			this.value = remote.value;
 			this.timestamp = remote.timestamp;
 
-			this.emit();
+			this.didChange();
 		}
 
 		return this;
+	}
+
+	public static decode(encoded: Encoded<unknown, { kind: string; timestamp: string }>): LWWRegister<unknown> {
+		return new LWWRegister(encoded.data, encoded.key, Time.fromTimestamp(encoded.metadata.timestamp));
+	}
+
+	public encode(): Encoded<Value, { kind: string; timestamp: string }> {
+		return {
+			key: this.key,
+			data: this.value,
+			metadata: { kind: this.constructor.name, timestamp: this.timestamp.toString() },
+		};
 	}
 }

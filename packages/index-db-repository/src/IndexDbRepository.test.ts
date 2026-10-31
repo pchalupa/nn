@@ -1,105 +1,90 @@
-import { beforeEach, describe, expect, it } from "vitest";
+import type { Entry } from "@nn/repository";
+import { RepositoryNotInitializedError } from "@nn/repository/errors/RepositoryNotInitializedError";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { IndexDbRepository } from "./IndexDbRepository";
 
 describe("IndexDbRepository", () => {
+	const entry: Entry = { key: "language", data: "cs", metadata: { kind: "register" } };
+
 	beforeEach(() => {
 		globalThis.indexedDB = new IDBFactory();
 	});
 
-	it("should create a repository", async () => {
+	afterEach(() => vi.restoreAllMocks());
+
+	it("requires initialization before reading or writing", async () => {
 		const repository = new IndexDbRepository();
 
-		await repository.init({});
-
-		expect(repository).toBeInstanceOf(IndexDbRepository);
+		await expect(repository.get("language")).rejects.toBeInstanceOf(RepositoryNotInitializedError);
+		await expect(repository.set("language", entry)).rejects.toBeInstanceOf(RepositoryNotInitializedError);
 	});
 
-	it("should create a store for every key in the schema", async () => {
+	it("creates a store for every key in the schema", async () => {
 		const repository = new IndexDbRepository();
 
 		await repository.init({ users: {}, posts: {} });
 
-		expect(await repository.getAll("users")).toEqual([]);
-		expect(await repository.getAll("posts")).toEqual([]);
+		expect(await repository.getAll("users")).toStrictEqual([]);
+		expect(await repository.getAll("posts")).toStrictEqual([]);
 	});
 
-	it("should add a missing store to an existing database via a version upgrade", async () => {
+	it("rejects an unfinished write when a newer write to the same name starts", async () => {
 		const repository = new IndexDbRepository();
 
-		await repository.init({ users: {} });
-		await repository.set("id", "value", "users");
+		await repository.init({ language: {} });
 
-		await repository.init({ users: {}, posts: {} });
+		const abort = vi.spyOn(IDBTransaction.prototype, "abort");
+		const first = repository.set("language", entry);
+		const second = repository.set("language", { ...entry, data: "en" });
 
-		expect(await repository.getAll("users")).toEqual(["value"]);
-		expect(await repository.getAll("posts")).toEqual([]);
+		await expect(first).rejects.toMatchObject({ name: "AbortError" });
+		await expect(second).resolves.toBeUndefined();
+		expect(abort).toHaveBeenCalledOnce();
+		expect(await repository.get("language")).toStrictEqual({ ...entry, data: "en" });
 	});
 
-	it("should store and read back a value", async () => {
+	it("adds a missing store to an existing database via a version upgrade", async () => {
 		const repository = new IndexDbRepository();
-		await repository.init({ test: {} });
 
-		await repository.set("id", "value", "test");
+		await repository.init({ language: {} });
+		await repository.set("language", entry);
+		await repository.init({ language: {}, posts: {} });
 
-		expect(await repository.getAll("test")).toEqual(["value"]);
+		expect(await repository.get("language")).toStrictEqual(entry);
+		expect(await repository.getAll("posts")).toStrictEqual([]);
 	});
 
-	it("should read back a single value by its id", async () => {
+	it("returns undefined for a name that is not stored", async () => {
 		const repository = new IndexDbRepository();
-		await repository.init({ test: {} });
 
-		await repository.set("a", { name: "A" }, "test");
-		await repository.set("b", { name: "B" }, "test");
+		await repository.init({ language: {} });
 
-		expect(await repository.get("a", "test")).toEqual({ name: "A" });
-		expect(await repository.get("b", "test")).toEqual({ name: "B" });
+		expect(await repository.get("language")).toBeUndefined();
 	});
 
-	it("should return undefined for an id that is not stored", async () => {
+	it("stores, reads back and overwrites an entry under its name", async () => {
 		const repository = new IndexDbRepository();
-		await repository.init({ test: {} });
 
-		expect(await repository.get("missing", "test")).toBeUndefined();
+		await repository.init({ language: {} });
+
+		await repository.set("language", entry);
+		expect(await repository.get("language")).toStrictEqual(entry);
+
+		await repository.set("language", { ...entry, data: "en" });
+		expect(await repository.getAll("language")).toStrictEqual([{ ...entry, data: "en" }]);
 	});
 
-	it("should return an empty array for a store with no values", async () => {
+	it("deletes the entry stored under a key and keeps the others", async () => {
 		const repository = new IndexDbRepository();
-		await repository.init({ test: {} });
 
-		expect(await repository.getAll("test")).toEqual([]);
-	});
+		await repository.init({ language: {}, theme: {} });
+		await repository.set("language", entry);
+		await repository.set("theme", { ...entry, key: "theme", data: "dark" });
 
-	it("should return every value stored under a type", async () => {
-		const repository = new IndexDbRepository();
-		await repository.init({ test: {} });
+		await repository.delete("language", "language");
 
-		await repository.set("a", { name: "A" }, "test");
-		await repository.set("b", { name: "B" }, "test");
-
-		expect(await repository.getAll("test")).toEqual([{ name: "A" }, { name: "B" }]);
-	});
-
-	it("should overwrite the value stored under an existing id", async () => {
-		const repository = new IndexDbRepository();
-		await repository.init({ test: {} });
-
-		await repository.set("id", "first", "test");
-		await repository.set("id", "second", "test");
-
-		expect(await repository.getAll("test")).toEqual(["second"]);
-	});
-
-	it("should delete the value stored under an id and keep the others", async () => {
-		const repository = new IndexDbRepository();
-		await repository.init({ test: {} });
-
-		await repository.set("a", { name: "A" }, "test");
-		await repository.set("b", { name: "B" }, "test");
-
-		await repository.delete("a", "test");
-
-		expect(await repository.get("a", "test")).toBeUndefined();
-		expect(await repository.getAll("test")).toEqual([{ name: "B" }]);
+		expect(await repository.get("language")).toBeUndefined();
+		expect(await repository.get("theme")).toStrictEqual({ ...entry, key: "theme", data: "dark" });
 	});
 });

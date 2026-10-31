@@ -19,7 +19,7 @@ server.get("/pull", async (_req, res) => {
 
 		res.json(data);
 	} catch (error) {
-		logger.error("Error pulling data:", error);
+		logger.error({ err: error }, "Error pulling data");
 		res.status(500).json({ error: "Failed to fetch data" });
 	}
 });
@@ -37,7 +37,7 @@ server.post("/push", async (req, res) => {
 			eventEmitter.emit("update");
 		}
 	} catch (error) {
-		logger.error("Error pushing data:", error);
+		logger.error({ err: error }, "Error pushing data");
 		res.status(500).json({ error: "Failed to update data" });
 	}
 });

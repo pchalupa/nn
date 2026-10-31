@@ -1,6 +1,6 @@
 ---
 "@nn/typescript-config": major
-"@nn/event-emitter": major
+"@nn/observable": major
 "@nn/repository": major
 "@nn/react": major
 "@nn/store": major

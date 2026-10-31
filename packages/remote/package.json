@@ -10,6 +10,7 @@
 	"license": "MIT",
 	"author": "pchalupa <chalupa.petr93@gmail.com> (https://github.com/pchalupa)",
 	"repository": "https://github.com/pchalupa/nn",
+	"type": "module",
 	"exports": {
 		".": {
 			"import": "./src/Remote.ts"
@@ -17,6 +18,9 @@
 	},
 	"scripts": {
 		"ts:check": "tsc --noEmit"
+	},
+	"dependencies": {
+		"@nn/observable": "workspace:"
 	},
 	"devDependencies": {
 		"@nn/typescript-config": "workspace:",

@@ -1,107 +1,136 @@
-import { describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, expectTypeOf, it, vi } from "vitest";
 
-import { Entity } from "./Entity";
+import { type Encoded, Entity, type InferValueType } from "./Entity";
+import type { LWWRegister } from "./LWWRegister";
 
 describe("Entity", () => {
+	afterEach(() => vi.restoreAllMocks());
+
 	class TestEntity extends Entity<string> {
-		private _value: string;
-
-		constructor(value: string) {
-			super();
-			this._value = value;
+		constructor(
+			private value: string,
+			key?: string,
+		) {
+			super(key);
 		}
 
-		get value(): string {
-			return this._value;
+		public get current(): string {
+			return this.value;
 		}
 
-		get current(): string {
-			return this._value;
+		public set current(value: string) {
+			this.value = value;
+			this.didChange();
 		}
 
-		set current(value: string) {
-			this._value = value;
-			this.emit();
+		public setValue(value: string): void {
+			this.value = value;
+			this.didChange();
 		}
 
-		setValue(value: string): void {
-			this._value = value;
-			this.emit();
-		}
-
-		merge(): this {
+		public merge(): this {
 			return this;
+		}
+
+		public encode(): Encoded<string> {
+			return { key: this.key, data: this.value, metadata: { kind: "test" } };
 		}
 	}
 
-	it("should create an entity instance", () => {
+	it("creates an entity instance", () => {
 		const entity = new TestEntity("initial");
 
 		expect(entity).toBeInstanceOf(Entity);
-		expect(entity.value).toBe("initial");
+		expect(entity.current).toBe("initial");
 	});
 
-	it("should subscribe to updates", () => {
+	it("reports a change to its delegate", () => {
 		const entity = new TestEntity("initial");
-		const callback = vi.fn();
+		const delegate = { entityDidChange: vi.fn() };
 
-		entity.subscribe(callback);
+		entity.delegate = delegate;
+		entity.setValue("updated");
+
+		expect(delegate.entityDidChange).toHaveBeenCalledExactlyOnceWith(entity, undefined);
+		expect(entity.revision).toBe(1);
+	});
+
+	it("replaces the previous delegate", () => {
+		const entity = new TestEntity("initial");
+		const first = { entityDidChange: vi.fn() };
+		const second = { entityDidChange: vi.fn() };
+
+		entity.delegate = first;
+		entity.delegate = second;
+		entity.setValue("updated");
+
+		expect(first.entityDidChange).not.toHaveBeenCalled();
+		expect(second.entityDidChange).toHaveBeenCalledOnce();
+	});
+
+	it("stops reporting once detached", () => {
+		const entity = new TestEntity("initial");
+		const delegate = { entityDidChange: vi.fn() };
+
+		entity.delegate = delegate;
+		entity.delegate = undefined;
+		entity.setValue("updated");
+
+		expect(delegate.entityDidChange).not.toHaveBeenCalled();
+		expect(entity.revision).toBe(1);
+	});
+
+	it("bumps the revision without a delegate", () => {
+		const entity = new TestEntity("initial");
 
 		entity.setValue("updated");
 
-		expect(callback).toHaveBeenCalledTimes(1);
-		expect(callback).toHaveBeenCalledWith();
+		expect(entity.revision).toBe(1);
 	});
 
-	it("should support multiple subscribers", () => {
+	it("writes the value through set", () => {
 		const entity = new TestEntity("initial");
-		const callback1 = vi.fn();
-		const callback2 = vi.fn();
-		const callback3 = vi.fn();
+		const delegate = { entityDidChange: vi.fn() };
 
-		entity.subscribe(callback1);
-		entity.subscribe(callback2);
-		entity.subscribe(callback3);
-
-		entity.setValue("updated");
-
-		expect(callback1).toHaveBeenCalledTimes(1);
-		expect(callback2).toHaveBeenCalledTimes(1);
-		expect(callback3).toHaveBeenCalledTimes(1);
-	});
-
-	it("should unsubscribe callback", () => {
-		const entity = new TestEntity("initial");
-		const callback = vi.fn();
-
-		const unsubscribe = entity.subscribe(callback);
-
-		entity.setValue("first update");
-
-		expect(callback).toHaveBeenCalledTimes(1);
-
-		unsubscribe();
-
-		entity.setValue("second update");
-
-		expect(callback).toHaveBeenCalledTimes(1);
-	});
-
-	it("should write the value through set", () => {
-		const entity = new TestEntity("initial");
-		const callback = vi.fn();
-
-		entity.subscribe(callback);
+		entity.delegate = delegate;
 
 		entity.set((current) => `${current} updated`);
 
 		expect(entity.current).toBe("initial updated");
-		expect(callback).toHaveBeenCalledTimes(1);
+		expect(delegate.entityDidChange).toHaveBeenCalledExactlyOnceWith(entity, undefined);
 	});
 
-	it("should serialize entity", () => {
+	it("serializes entity", () => {
 		const entity = new TestEntity("initial");
 
 		expect(JSON.stringify(entity)).toMatchInlineSnapshot(`""initial""`);
+	});
+
+	it("counts changes", () => {
+		const entity = new TestEntity("initial");
+
+		expect(entity.revision).toBe(0);
+
+		entity.setValue("updated");
+		entity.setValue("updated again");
+
+		expect(entity.revision).toBe(2);
+	});
+
+	it("advances its revision through every write path", () => {
+		const entity = new TestEntity("initial");
+		const before = entity.revision;
+
+		entity.set((current) => `${current} updated`);
+		entity.current = "assigned";
+
+		expect(entity.revision).toBe(before + 2);
+	});
+
+	it("infers entity values", () => {
+		expectTypeOf<InferValueType<Entity<{ title: LWWRegister<string> }>>>().toEqualTypeOf<{ title: string }>();
+		expectTypeOf<InferValueType<Entity<string>>>().toEqualTypeOf<string>();
+		expectTypeOf<InferValueType<Entity>>().toBeUnknown();
+		expectTypeOf<InferValueType<string>>().toEqualTypeOf<string>();
 	});
 });

@@ -10,15 +10,18 @@ interface ColumnProps {
 }
 
 export const Column = ({ title, status }: ColumnProps) => {
-	const tickets = useStore((store) => store.tickets.filter((ticket) => ticket.status === status));
+	const [tickets, updateStore] = useStore((data) => data.tickets.filter((ticket) => ticket.status === status));
 
 	const handleAddClick = () => {
-		tickets.push({
-			id: crypto.randomUUID(),
-			title: status,
-			status,
-			description: "test",
-			assignee: { name: "test", email: "test" },
+		// TODO: Update should inherit the selector from use store
+		updateStore((draft) => {
+			draft.tickets.push({
+				id: crypto.randomUUID(),
+				title: status,
+				status,
+				description: "test",
+				assignee: { name: "test", email: "test" },
+			});
 		});
 	};
 

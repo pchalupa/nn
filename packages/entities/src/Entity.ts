@@ -1,28 +1,56 @@
-import { EventEmitter } from "@nn/event-emitter";
-import type { Callback, Observable, Unsubscribe } from "@nn/event-emitter/Observable";
+import { ID } from "@nn/id";
+import type { Observable } from "@nn/observable";
 
-export abstract class Entity<Value = unknown> implements Observable {
-	private eventEmitter = new EventEmitter<{ update: [] }>();
-	abstract get current(): Value;
-	abstract set current(value: Value);
+import type { Encodable, Encoded } from "./Codable";
 
-	abstract merge(remote: Entity): Entity;
+export type { Encoded } from "./Codable";
 
-	protected emit() {
-		this.eventEmitter.emit("update");
+export type InferValueType<Value> =
+	Value extends Entity<infer Current>
+		? Current extends object
+			? { [Key in keyof Current]: InferValueType<Current[Key]> }
+			: Current
+		: Value;
+
+export interface EntityDelegate {
+	entityDidChange(entity: Entity, child?: Entity): void;
+}
+
+export abstract class Entity<Value = unknown> implements Observable<EntityDelegate>, Encodable {
+	public delegate?: EntityDelegate;
+	private changes = 0;
+	private id: string;
+
+	constructor(key?: string) {
+		this.id = key ?? ID.create();
 	}
 
-	set(updater: (current: Value) => Value): void {
+	public get key(): string {
+		return this.id;
+	}
+
+	public abstract get current(): Value;
+	public abstract set current(value: Value);
+
+	public abstract merge(remote: Entity): Entity;
+
+	public abstract encode(): Encoded;
+
+	// TBD: this leans more towards Store/State concern.
+	public get revision(): number {
+		return this.changes;
+	}
+
+	protected didChange(child?: Entity): void {
+		this.changes++;
+		this.delegate?.entityDidChange(this, child);
+	}
+
+	public set(updater: (current: Value) => Value): void {
 		this.current = updater(this.current);
 	}
 
-	subscribe(callback: Callback): Unsubscribe {
-		this.eventEmitter.on("update", callback);
-
-		return () => this.eventEmitter.off("update", callback);
-	}
-
-	toJSON() {
+	public toJSON(): Value {
 		return this.current;
 	}
 }

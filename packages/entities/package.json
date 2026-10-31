@@ -10,25 +10,20 @@
 	"license": "MIT",
 	"author": "pchalupa <chalupa.petr93@gmail.com> (https://github.com/pchalupa)",
 	"repository": "https://github.com/pchalupa/nn",
+	"type": "module",
 	"exports": {
-		"./Entity": {
-			"import": "./src/Entity.ts"
-		},
-		"./Collection": {
-			"import": "./src/Collection.ts"
-		},
-		"./LWWRegister": {
-			"import": "./src/LWWRegister.ts"
-		},
-		"./LWWMap": {
-			"import": "./src/LWWMap.ts"
-		}
+		"./Entity": "./src/Entity.ts",
+		"./Codable": "./src/Codable.ts",
+		"./kinds/LWWRegister": "./src/LWWRegister.ts",
+		"./kinds/LWWMap": "./src/LWWMap.ts",
+		"./kinds/RGA": "./src/RGA.ts"
 	},
 	"scripts": {
 		"ts:check": "tsc --noEmit"
 	},
 	"dependencies": {
-		"@nn/event-emitter": "workspace:",
+		"@nn/id": "workspace:",
+		"@nn/observable": "workspace:",
 		"@nn/time": "workspace:"
 	},
 	"devDependencies": {

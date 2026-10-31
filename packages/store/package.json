@@ -10,6 +10,7 @@
 	"license": "MIT",
 	"author": "pchalupa <chalupa.petr93@gmail.com> (https://github.com/pchalupa)",
 	"repository": "https://github.com/pchalupa/nn",
+	"type": "module",
 	"exports": {
 		".": {
 			"import": "./src/Store.ts"
@@ -22,9 +23,11 @@
 	},
 	"dependencies": {
 		"@nn/entities": "workspace:",
-		"@nn/event-emitter": "workspace:",
+		"@nn/id": "workspace:",
+		"@nn/observable": "workspace:",
 		"@nn/repository": "workspace:",
-		"@nn/schema": "workspace:"
+		"@nn/schema": "workspace:",
+		"@nn/time": "workspace:"
 	},
 	"devDependencies": {
 		"@nn/remote": "workspace:",

@@ -21,16 +21,17 @@ describe("Column", () => {
 		return { title, status };
 	};
 
-	it("should render without issues", async () => {
+	it("renders without issues", async () => {
 		const { title } = await act(async () => setup());
 
 		expect(await screen.findByText(title)).toBeTruthy();
 		expect(screen.getByRole("button")).toBeTruthy();
 	});
 
-	it("should add a ticket", async () => {
+	it("adds a ticket", async () => {
 		await act(async () => setup());
 		const button = await screen.findByRole("button");
+		// The store is a module singleton shared across this file, so count against what is already there.
 
 		await act(() => user.click(button));
 

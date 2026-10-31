@@ -21,16 +21,19 @@
 		"test:watch": "vitest watch"
 	},
 	"dependencies": {
-		"@nn/event-emitter": "workspace:",
-		"@nn/remote": "workspace:",
-		"@nn/repository": "workspace:",
-		"@nn/schema": "workspace:",
-		"@nn/store": "workspace:"
+		"@nn/store": "workspace:",
+		"use-sync-external-store": "^1.7.0"
 	},
 	"devDependencies": {
-		"@nn/entities": "workspace:",
+		"@nn/schema": "workspace:",
 		"@nn/typescript-config": "workspace:",
+		"@testing-library/react": "^16.3.3",
 		"@types/react": "catalog:",
+		"@types/react-dom": "catalog:",
+		"@types/use-sync-external-store": "^1.7.0",
+		"jsdom": "^30.1.0",
+		"react": "catalog:",
+		"react-dom": "catalog:",
 		"typescript": "catalog:",
 		"vitest": "catalog:"
 	},

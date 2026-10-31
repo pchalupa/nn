@@ -1,23 +1,31 @@
+import { Time } from "@nn/time";
 import { describe, expect, it, vi } from "vitest";
 
 import { LWWMap } from "./LWWMap";
 import { LWWRegister } from "./LWWRegister";
 
 describe("LWWMap", () => {
-	it("should create a map with initial value", () => {
+	it("creates a map with initial value", () => {
 		const map = new LWWMap({ name: new LWWRegister("John"), age: new LWWRegister(30) });
 
 		expect(map.current.name.current).toBe("John");
 		expect(map).toBeInstanceOf(LWWMap);
 	});
 
-	it("should serialize map", () => {
+	it("serializes map", () => {
 		const map = new LWWMap({ name: new LWWRegister("John"), address: new LWWMap({ city: new LWWRegister("Prague") }) });
 
 		expect(JSON.stringify(map)).toMatchInlineSnapshot(`"{"name":"John","address":{"city":"Prague"}}"`);
 	});
 
-	it("should update property value and reflect changes", () => {
+	it("encodes its fields", () => {
+		const name = new LWWRegister("John", "name");
+		const map = new LWWMap({ name }, "person");
+
+		expect(map.encode()).toStrictEqual({ key: "person", data: { name: name.encode() }, metadata: { kind: "LWWMap" } });
+	});
+
+	it("updates property value and reflect changes", () => {
 		const map = new LWWMap({ name: new LWWRegister("Alice"), age: new LWWRegister(25) });
 
 		expect(map.current.name.current).toBe("Alice");
@@ -30,7 +38,7 @@ describe("LWWMap", () => {
 		expect(map.current.age.current).toBe(40);
 	});
 
-	it("should write values through set", () => {
+	it("writes values through set", () => {
 		const map = new LWWMap({ name: new LWWRegister("John"), age: new LWWRegister(30) });
 
 		map.set((current) => ({ ...current, name: new LWWRegister("Jane") }));
@@ -40,7 +48,7 @@ describe("LWWMap", () => {
 		expect(map.current.age.current).toBe(30);
 	});
 
-	it("should merge maps with multiple properties", () => {
+	it("merges maps with multiple properties", () => {
 		const mapA = new LWWMap({ name: new LWWRegister("foo"), age: new LWWRegister(20) });
 		const mapB = new LWWMap({ name: new LWWRegister("bar"), age: new LWWRegister(30) });
 
@@ -60,47 +68,54 @@ describe("LWWMap", () => {
 		expect("bar" in result.current).toBeFalsy();
 	});
 
-	it("should emit update event when property changes", () => {
-		const map = new LWWMap({ name: new LWWRegister("Alice"), age: new LWWRegister(25) });
-		const callback = vi.fn();
+	it("reports a field change with the field as child", () => {
+		const name = new LWWRegister("John");
+		const map = new LWWMap({ name });
+		const delegate = { entityDidChange: vi.fn() };
 
-		map.subscribe(callback);
+		map.delegate = delegate;
+		name.current = "Jane";
 
-		expect(callback).toHaveBeenCalledTimes(0);
-
-		map.current.name.current = "Bob";
-
-		expect(callback).toHaveBeenCalledTimes(1);
-
-		map.current.age.current = 30;
-
-		expect(callback).toHaveBeenCalledTimes(2);
+		expect(delegate.entityDidChange).toHaveBeenCalledExactlyOnceWith(map, name);
+		expect(map.revision).toBe(1);
 	});
 
-	it("should return unsubscribe function", () => {
-		const map = new LWWMap({ name: new LWWRegister("Alice"), age: new LWWRegister(25) });
-		const callback = vi.fn();
+	it("detaches a replaced field", () => {
+		const old = new LWWRegister("John");
+		const next = new LWWRegister("Jane");
+		const map = new LWWMap({ name: old });
+		const delegate = { entityDidChange: vi.fn() };
 
-		const unsubscribe = map.subscribe(callback);
+		map.current = { name: next };
+		map.delegate = delegate;
+		old.current = "Ignored";
+		next.current = "Seen";
 
-		unsubscribe();
-
-		map.current.age.current = 30;
-
-		expect(callback).not.toHaveBeenCalled();
+		expect(old.delegate).toBeUndefined();
+		expect(delegate.entityDidChange).toHaveBeenCalledExactlyOnceWith(map, next);
 	});
 
-	it("should support multiple subscribers", () => {
-		const map = new LWWMap({ name: new LWWRegister("Alice"), age: new LWWRegister(25) });
-		const callback1 = vi.fn();
-		const callback2 = vi.fn();
+	it("forwards a field merge that the remote wins", () => {
+		const local = new LWWRegister("old", "name", Time.epoch());
+		const map = new LWWMap({ name: local });
+		const delegate = { entityDidChange: vi.fn() };
 
-		map.subscribe(callback1);
-		map.subscribe(callback2);
+		map.delegate = delegate;
+		map.merge(new LWWMap({ name: new LWWRegister("new", "name") }));
 
-		map.current.age.current = 30;
+		expect(delegate.entityDidChange).toHaveBeenCalledExactlyOnceWith(map, local);
+	});
 
-		expect(callback1).toHaveBeenCalledTimes(1);
-		expect(callback2).toHaveBeenCalledTimes(1);
+	it("returns a field entity by name", () => {
+		const title = new LWWRegister("Ticket", "title");
+		const map = new LWWMap({ title }, "row-1");
+
+		expect(map.get("title")).toBe(title);
+	});
+
+	it("returns undefined for an undeclared field", () => {
+		const map = new LWWMap({ title: new LWWRegister("Ticket", "title") }, "row-1");
+
+		expect(map.get("missing")).toBeUndefined();
 	});
 });

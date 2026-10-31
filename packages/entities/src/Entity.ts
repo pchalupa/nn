@@ -2,6 +2,10 @@ import { EventEmitter } from "@nn/event-emitter";
 import type { Callback, Observable, Unsubscribe } from "@nn/event-emitter/Observable";
 import { ID } from "@nn/id";
 
+import type { Encodable, Encoded } from "./Codable";
+
+export type { Encoded } from "./Codable";
+
 export type InferValueType<Value> =
 	Value extends Entity<infer Current>
 		? Current extends object
@@ -9,13 +13,7 @@ export type InferValueType<Value> =
 			: Current
 		: Value;
 
-export interface Encoded<Data = unknown, Metadata extends { kind: string } = { kind: string }> {
-	key: string;
-	data: Data;
-	metadata: Metadata;
-}
-
-export abstract class Entity<Value = unknown> implements Observable {
+export abstract class Entity<Value = unknown> implements Observable, Encodable {
 	private eventEmitter = new EventEmitter<{ change: [] }>();
 	private changes = 0;
 	private id: string;

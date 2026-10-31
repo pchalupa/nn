@@ -12,10 +12,13 @@
 	"repository": "https://github.com/pchalupa/nn",
 	"type": "module",
 	"exports": {
-		"./RGA": "./src/RGA.ts",
 		"./Entity": "./src/Entity.ts",
-		"./LWWMap": "./src/LWWMap.ts",
-		"./LWWRegister": "./src/LWWRegister.ts"
+		"./Codable": "./src/Codable.ts",
+		"./EntityDecoder": "./src/EntityDecoder.ts",
+		"./kinds/LWWRegister": "./src/LWWRegister.ts",
+		"./kinds/LWWMap": "./src/LWWMap.ts",
+		"./kinds/RGA": "./src/RGA.ts",
+		"./kinds/entities": "./src/entities.ts"
 	},
 	"scripts": {
 		"ts:check": "tsc --noEmit"

@@ -1,9 +1,9 @@
 {
-	"name": "@nn/event-emitter",
+	"name": "@nn/observable",
 	"version": "0.0.0",
-	"description": "Event emitter",
+	"description": "Delegate-based observation types",
 	"keywords": [],
-	"homepage": "https://github.com/pchalupa/nn/packages/event-emitter#readme",
+	"homepage": "https://github.com/pchalupa/nn/packages/observable#readme",
 	"bugs": {
 		"url": "https://github.com/pchalupa/nn/issues"
 	},
@@ -12,17 +12,13 @@
 	"repository": "https://github.com/pchalupa/nn",
 	"type": "module",
 	"exports": {
-		".": "./src/EventEmitter.ts",
-		"./Observable": "./src/Observable.ts"
+		".": "./src/Observable.ts"
 	},
 	"scripts": {
-		"ts:check": "tsc --noEmit",
-		"test": "vitest run",
-		"test:watch": "vitest watch"
+		"ts:check": "tsc --noEmit"
 	},
 	"devDependencies": {
 		"@nn/typescript-config": "workspace:",
-		"typescript": "catalog:",
-		"vitest": "catalog:"
+		"typescript": "catalog:"
 	}
 }

@@ -184,12 +184,12 @@ importers:
 
   packages/entities:
     dependencies:
-      '@nn/event-emitter':
-        specifier: 'workspace:'
-        version: link:../event-emitter
       '@nn/id':
         specifier: 'workspace:'
         version: link:../id
+      '@nn/observable':
+        specifier: 'workspace:'
+        version: link:../observable
       '@nn/time':
         specifier: 'workspace:'
         version: link:../time
@@ -201,23 +201,8 @@ importers:
         specifier: 'catalog:'
         version: 7.0.2
 
-  packages/event-emitter:
-    devDependencies:
-      '@nn/typescript-config':
-        specifier: 'workspace:'
-        version: link:../typescript-config
-      typescript:
-        specifier: 'catalog:'
-        version: 7.0.2
-      vitest:
-        specifier: 'catalog:'
-        version: 5.0.3(@types/node@26.6.1)(@vitest/coverage-v8@5.0.3)(jsdom@30.1.0)(vite@8.3.0(@types/node@26.6.1)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(tsx@4.23.13)(yaml@2.9.1))
-
   packages/http-remote:
     dependencies:
-      '@nn/event-emitter':
-        specifier: 'workspace:'
-        version: link:../event-emitter
       '@nn/remote':
         specifier: 'workspace:'
         version: link:../remote
@@ -259,6 +244,15 @@ importers:
       vitest:
         specifier: 'catalog:'
         version: 5.0.3(@types/node@26.6.1)(@vitest/coverage-v8@5.0.3)(jsdom@30.1.0)(vite@8.3.0(@types/node@26.6.1)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(tsx@4.23.13)(yaml@2.9.1))
+
+  packages/observable:
+    devDependencies:
+      '@nn/typescript-config':
+        specifier: 'workspace:'
+        version: link:../typescript-config
+      typescript:
+        specifier: 'catalog:'
+        version: 7.0.2
 
   packages/react:
     dependencies:
@@ -305,9 +299,9 @@ importers:
 
   packages/remote:
     dependencies:
-      '@nn/event-emitter':
+      '@nn/observable':
         specifier: 'workspace:'
-        version: link:../event-emitter
+        version: link:../observable
     devDependencies:
       '@nn/typescript-config':
         specifier: 'workspace:'
@@ -339,12 +333,12 @@ importers:
       '@nn/entities':
         specifier: 'workspace:'
         version: link:../entities
-      '@nn/event-emitter':
-        specifier: 'workspace:'
-        version: link:../event-emitter
       '@nn/id':
         specifier: 'workspace:'
         version: link:../id
+      '@nn/observable':
+        specifier: 'workspace:'
+        version: link:../observable
       '@nn/repository':
         specifier: 'workspace:'
         version: link:../repository

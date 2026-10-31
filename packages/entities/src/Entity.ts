@@ -1,5 +1,5 @@
-import type { Observable } from "@nn/event-emitter/Observable";
 import { ID } from "@nn/id";
+import type { Observable } from "@nn/observable";
 
 import type { Encodable, Encoded } from "./Codable";
 

@@ -1,4 +1,3 @@
-import type { Unsubscribe } from "@nn/event-emitter/Observable";
 import type { Remote, RemoteDelegate } from "@nn/remote";
 
 export class HttpRemote implements Remote {
@@ -38,7 +37,7 @@ export class HttpRemote implements Remote {
 		await this.request<Record<string, unknown>>("POST", "/push", data);
 	}
 
-	public connect(): Unsubscribe {
+	public connect(): () => void {
 		const url = new URL("/subscribe", this.url);
 		const eventSource = new EventSource(url);
 

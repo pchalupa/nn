@@ -23,8 +23,8 @@
 	},
 	"dependencies": {
 		"@nn/entities": "workspace:",
-		"@nn/event-emitter": "workspace:",
 		"@nn/id": "workspace:",
+		"@nn/observable": "workspace:",
 		"@nn/repository": "workspace:",
 		"@nn/schema": "workspace:",
 		"@nn/time": "workspace:"

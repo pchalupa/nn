@@ -1,5 +1,5 @@
 ---
-"@nn/event-emitter": major
+"@nn/observable": major
 ---
 
 `Observable` is now a delegate slot, `Observable<Delegate>`, instead of a `subscribe` contract. The `Callback` type is removed; `Unsubscribe` stays.

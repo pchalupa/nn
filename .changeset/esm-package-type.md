@@ -1,6 +1,6 @@
 ---
 "@nn/entities": patch
-"@nn/event-emitter": patch
+"@nn/observable": patch
 "@nn/remote": patch
 "@nn/repository": patch
 "@nn/schema": patch

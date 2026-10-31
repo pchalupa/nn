@@ -7,7 +7,7 @@ date: 2026-10-31
 
 ## Context
 
-[`EventEmitter`](../../packages/event-emitter/src/EventEmitter.ts) supports many named events, each with many listeners. Every production use in nn has one event and one known consumer. Each [`Entity`](../../packages/entities/src/Entity.ts) owned an emitter whose only listener was its parent [`LWWMap`](../../packages/entities/src/LWWMap.ts) or [`RGA`](../../packages/entities/src/RGA.ts), or [`State`](../../packages/store/src/State.ts) for a top-level field. `State` had one internal listener, [`Store`](../../packages/store/src/Store.ts), which persists the changed entries. [`HttpRemote`](../../packages/http-remote/src/HttpRemote.ts) had an `update` event with no listener at all.
+[`EventEmitter`](https://github.com/pchalupa/nn/blob/10e9c363ea49d36d2102bbf37755d4924bbd7bd7/packages/event-emitter/src/EventEmitter.ts) supports many named events, each with many listeners. Every production use in nn has one event and one known consumer. Each [`Entity`](../../packages/entities/src/Entity.ts) owned an emitter whose only listener was its parent [`LWWMap`](../../packages/entities/src/LWWMap.ts) or [`RGA`](../../packages/entities/src/RGA.ts), or [`State`](../../packages/store/src/State.ts) for a top-level field. `State` had one internal listener, [`Store`](../../packages/store/src/Store.ts), which persists the changed entries. [`HttpRemote`](../../packages/http-remote/src/HttpRemote.ts) had an `update` event with no listener at all.
 
 That shape cost one `Map` and one `Set` per entity, a closure per child, and a map of unsubscribe functions in every container. Each class also wrapped `on` and `off` in its own `subscribe`. The code read as if anyone might be listening when the consumer was always one known owner.
 
@@ -21,7 +21,7 @@ Apple's frameworks split the same problem the same way. A delegate serves the on
 
 We will report changes to a single delegate wherever a producer has one structural consumer. We'll keep a listener set only where many observers come and go.
 
-A class that reports to a delegate implements `Observable<Delegate>` from [`Observable.ts`](../../packages/event-emitter/src/Observable.ts), which is just a `delegate?: Delegate` slot. Each delegate interface lives next to the class that calls it and has exactly one method:
+A class that reports to a delegate implements `Observable<Delegate>` from [`@nn/observable`](../../packages/observable/src/Observable.ts), which is just a `delegate?: Delegate` slot. Each delegate interface lives next to the class that calls it and has exactly one method:
 
 - `EntityDelegate.entityDidChange(entity, child?)` in `@nn/entities`. `entity` is the sender. `child` is the direct child whose change caused this one, or `undefined` when the entity changed itself.
 - `StateDelegate.stateDidChange(state, changed)` in `@nn/store`. `changed` holds the names of the changed top-level fields.
@@ -57,4 +57,4 @@ Detaching doesn't check who currently owns a child. If a row is ever shared betw
 
 Entities no longer allocate an emitter, and containers no longer keep unsubscribe maps. On 2026-10-31, `Store.bench.ts` measured 11–14% more throughput for nested updates at 100 and 10,000 rows. Tests now assert through a recording delegate, for example `{ entityDidChange: vi.fn() }`, which also checks the `child` argument.
 
-`EventEmitter` stays exported from `@nn/event-emitter`, although nothing in the repo uses it now. The `Entity.subscribe` and Store-emitter mechanics described in ADR-05 and ADR-08 are replaced by this record. Their decisions about batching and single notifications still apply.
+The unused `EventEmitter` class is removed, and the shared `Observable` and `Unsubscribe` types live in `@nn/observable`. The example server uses Node's built-in event emitter. The `Entity.subscribe` and Store-emitter mechanics described in ADR-05 and ADR-08 are replaced by this record. Their decisions about batching and single notifications still apply.

@@ -19,6 +19,9 @@
 	"scripts": {
 		"ts:check": "tsc --noEmit"
 	},
+	"dependencies": {
+		"@nn/observable": "workspace:"
+	},
 	"devDependencies": {
 		"@nn/typescript-config": "workspace:",
 		"typescript": "catalog:"

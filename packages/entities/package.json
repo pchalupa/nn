@@ -22,8 +22,8 @@
 		"ts:check": "tsc --noEmit"
 	},
 	"dependencies": {
-		"@nn/event-emitter": "workspace:",
 		"@nn/id": "workspace:",
+		"@nn/observable": "workspace:",
 		"@nn/time": "workspace:"
 	},
 	"devDependencies": {

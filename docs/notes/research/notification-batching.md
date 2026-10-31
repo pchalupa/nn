@@ -184,7 +184,7 @@ This was a source review, not runtime execution of these libraries. Error and re
 
 [store]: ../../../packages/store/src/Store.ts
 [patch]: ../../../packages/store/src/applyPatch.ts
-[emitter]: ../../../packages/event-emitter/src/EventEmitter.ts
+[emitter]: https://github.com/pchalupa/nn/blob/10e9c363ea49d36d2102bbf37755d4924bbd7bd7/packages/event-emitter/src/EventEmitter.ts
 [entity]: ../../../packages/entities/src/Entity.ts
 [register]: ../../../packages/entities/src/LWWRegister.ts
 [mobx-transaction]: https://github.com/mobxjs/mobx/blob/ed5e082d7392466ee4507756ed71205c7d654d64/packages/mobx/src/api/transaction.ts#L10-L17

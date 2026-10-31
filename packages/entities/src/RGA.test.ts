@@ -39,7 +39,7 @@ describe("RGA", () => {
 		const rga = new RGA<LWWMap<{ title: LWWRegister<string> }>>();
 		const callback = vi.fn();
 
-		rga.subscribe(callback);
+		rga.delegate = { entityDidChange: callback };
 		rga.push(new LWWMap({ title: new LWWRegister("first") }));
 
 		expect(rga.current).toHaveLength(1);
@@ -50,28 +50,28 @@ describe("RGA", () => {
 			  },
 			]
 		`);
-		expect(callback).toHaveBeenCalledExactlyOnceWith();
+		expect(callback).toHaveBeenCalledExactlyOnceWith(rga, undefined);
 	});
 
 	it("removes an item", () => {
 		const rga = new RGA([new LWWRegister("1", "a"), new LWWRegister("2", "b")]);
 		const callback = vi.fn();
 
-		rga.subscribe(callback);
+		rga.delegate = { entityDidChange: callback };
 
 		expect(rga.current).toHaveLength(2);
 
 		rga.remove("a");
 
 		expect(rga.current).toHaveLength(1);
-		expect(callback).toHaveBeenCalledExactlyOnceWith();
+		expect(callback).toHaveBeenCalledExactlyOnceWith(rga, undefined);
 	});
 
 	it("skips removal of an unknown item", () => {
 		const rga = new RGA([new LWWRegister("1", "a")]);
 		const callback = vi.fn();
 
-		rga.subscribe(callback);
+		rga.delegate = { entityDidChange: callback };
 		rga.remove("b");
 
 		expect(rga.current).toHaveLength(1);
@@ -83,7 +83,7 @@ describe("RGA", () => {
 		const items = [new LWWRegister("2"), new LWWRegister("3")];
 		const callback = vi.fn();
 
-		rga.subscribe(callback);
+		rga.delegate = { entityDidChange: callback };
 
 		expect(rga.current).toMatchInlineSnapshot(`
 			[
@@ -99,7 +99,7 @@ describe("RGA", () => {
 			  "3",
 			]
 		`);
-		expect(callback).toHaveBeenCalledExactlyOnceWith();
+		expect(callback).toHaveBeenCalledExactlyOnceWith(rga, undefined);
 	});
 
 	it("keeps the order items were added in", () => {
@@ -121,10 +121,10 @@ describe("RGA", () => {
 		const rga = new RGA([item]);
 		const callback = vi.fn();
 
-		rga.subscribe(callback);
+		rga.delegate = { entityDidChange: callback };
 		item.current = "2";
 
-		expect(callback).toHaveBeenCalledExactlyOnceWith();
+		expect(callback).toHaveBeenCalledExactlyOnceWith(rga, item);
 	});
 
 	it("stops observing a removed item", () => {
@@ -133,10 +133,11 @@ describe("RGA", () => {
 		const callback = vi.fn();
 
 		rga.remove("a");
-		rga.subscribe(callback);
+		rga.delegate = { entityDidChange: callback };
 		item.current = "2";
 
-		expect(callback).not.toHaveBeenCalledOnce();
+		expect(item.delegate).toBeUndefined();
+		expect(callback).not.toHaveBeenCalled();
 	});
 
 	describe("merge", () => {
@@ -145,12 +146,12 @@ describe("RGA", () => {
 			const item = new LWWRegister("1", "a");
 			const callback = vi.fn();
 
-			local.subscribe(callback);
+			local.delegate = { entityDidChange: callback };
 			expect(local.merge(new RGA([item]))).toBe(local);
 
 			expect(local.find("a")).toBe(item);
 			expect(local.revision).toBe(1);
-			expect(callback).toHaveBeenCalledExactlyOnceWith();
+			expect(callback).toHaveBeenCalledExactlyOnceWith(local, undefined);
 		});
 
 		it("does not notify when the remote rga is a subset", () => {
@@ -158,7 +159,7 @@ describe("RGA", () => {
 			const local = new RGA([first, new LWWRegister("2", "b")]);
 			const callback = vi.fn();
 
-			local.subscribe(callback);
+			local.delegate = { entityDidChange: callback };
 			local.merge(new RGA([first]));
 
 			expect(local).toMatchInlineSnapshot(`
@@ -217,7 +218,7 @@ describe("RGA", () => {
 			const local = new RGA([new LWWRegister("1", "a")]);
 			const callback = vi.fn();
 
-			local.subscribe(callback);
+			local.delegate = { entityDidChange: callback };
 			local.merge(new RGA([new LWWRegister("2", "b"), new LWWRegister("3", "c")]));
 
 			expect(local.current).toMatchInlineSnapshot(`
@@ -227,20 +228,34 @@ describe("RGA", () => {
 				  "3",
 				]
 			`);
-			expect(callback).toHaveBeenCalledExactlyOnceWith();
+			expect(callback).toHaveBeenCalledExactlyOnceWith(local, undefined);
 		});
 
-		it("observes items added by a merge", () => {
+		it("adopts items added by a merge", () => {
 			const item = new LWWRegister("1", "a");
+			const incoming = new RGA([item]);
 			const local = new RGA<LWWRegister<string>>();
-			const callback = vi.fn();
+			const delegate = { entityDidChange: vi.fn() };
 
-			local.merge(new RGA([item]));
-			local.subscribe(callback);
+			local.merge(incoming);
+			local.delegate = delegate;
 			item.current = "2";
 
 			expect(local.find("a")).toBe(item);
-			expect(callback).toHaveBeenCalledExactlyOnceWith();
+			expect(item.delegate).toBe(local);
+			expect(delegate.entityDidChange).toHaveBeenCalledExactlyOnceWith(local, item);
+		});
+
+		it("does not adopt an incoming item whose key already exists", () => {
+			const existing = new LWWRegister("1", "a");
+			const incoming = new LWWRegister("2", "a");
+			const local = new RGA([existing]);
+			const remote = new RGA([incoming]);
+
+			local.merge(remote);
+
+			expect(local.find("a")).toBe(existing);
+			expect(incoming.delegate).toBe(remote);
 		});
 
 		it("keeps local-only rows and their order when incoming rows are reordered", () => {
@@ -260,7 +275,7 @@ describe("RGA", () => {
 			const local = new RGA([new LWWRegister("local", "a")]);
 			const callback = vi.fn();
 
-			local.subscribe(callback);
+			local.delegate = { entityDidChange: callback };
 
 			local.merge(new RGA<LWWRegister<string>>());
 			local.merge(new RGA([older]));

@@ -1,6 +1,6 @@
+import { Time } from "@nn/time";
 import { describe, expect, it, vi } from "vitest";
 
-import type { Entity } from "./Entity";
 import { LWWMap } from "./LWWMap";
 import { LWWRegister } from "./LWWRegister";
 
@@ -68,48 +68,42 @@ describe("LWWMap", () => {
 		expect("bar" in result.current).toBeFalsy();
 	});
 
-	it("emits update event when property changes", () => {
-		const map = new LWWMap({ name: new LWWRegister("Alice"), age: new LWWRegister(25) });
-		const callback = vi.fn();
+	it("reports a field change with the field as child", () => {
+		const name = new LWWRegister("John");
+		const map = new LWWMap({ name });
+		const delegate = { entityDidChange: vi.fn() };
 
-		map.subscribe(callback);
+		map.delegate = delegate;
+		name.current = "Jane";
 
-		expect(callback).toHaveBeenCalledTimes(0);
-
-		map.current.name.current = "Bob";
-
-		expect(callback).toHaveBeenCalledTimes(1);
-
-		map.current.age.current = 30;
-
-		expect(callback).toHaveBeenCalledTimes(2);
+		expect(delegate.entityDidChange).toHaveBeenCalledExactlyOnceWith(map, name);
+		expect(map.revision).toBe(1);
 	});
 
-	it("returns unsubscribe function", () => {
-		const map = new LWWMap({ name: new LWWRegister("Alice"), age: new LWWRegister(25) });
-		const callback = vi.fn();
+	it("detaches a replaced field", () => {
+		const old = new LWWRegister("John");
+		const next = new LWWRegister("Jane");
+		const map = new LWWMap({ name: old });
+		const delegate = { entityDidChange: vi.fn() };
 
-		const unsubscribe = map.subscribe(callback);
+		map.current = { name: next };
+		map.delegate = delegate;
+		old.current = "Ignored";
+		next.current = "Seen";
 
-		unsubscribe();
-
-		map.current.age.current = 30;
-
-		expect(callback).not.toHaveBeenCalled();
+		expect(old.delegate).toBeUndefined();
+		expect(delegate.entityDidChange).toHaveBeenCalledExactlyOnceWith(map, next);
 	});
 
-	it("supports multiple subscribers", () => {
-		const map = new LWWMap({ name: new LWWRegister("Alice"), age: new LWWRegister(25) });
-		const callback1 = vi.fn();
-		const callback2 = vi.fn();
+	it("forwards a field merge that the remote wins", () => {
+		const local = new LWWRegister("old", "name", Time.epoch());
+		const map = new LWWMap({ name: local });
+		const delegate = { entityDidChange: vi.fn() };
 
-		map.subscribe(callback1);
-		map.subscribe(callback2);
+		map.delegate = delegate;
+		map.merge(new LWWMap({ name: new LWWRegister("new", "name") }));
 
-		map.current.age.current = 30;
-
-		expect(callback1).toHaveBeenCalledTimes(1);
-		expect(callback2).toHaveBeenCalledTimes(1);
+		expect(delegate.entityDidChange).toHaveBeenCalledExactlyOnceWith(map, local);
 	});
 
 	it("returns a field entity by name", () => {

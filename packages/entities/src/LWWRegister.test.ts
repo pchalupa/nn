@@ -74,13 +74,13 @@ describe("LWWRegister", () => {
 			const remote = new LWWRegister("saved", "language", new Time(1, 0, "remote"));
 			const listener = vi.fn();
 
-			register.subscribe(listener);
+			register.delegate = { entityDidChange: listener };
 
 			register.merge(remote);
 
 			expect(register.current).toBe("saved");
 			expect(register.timestamp).toBe(remote.timestamp);
-			expect(listener).toHaveBeenCalledOnce();
+			expect(listener).toHaveBeenCalledExactlyOnceWith(register, undefined);
 		});
 
 		it("keeps a timestamped value when merging a default", () => {
@@ -88,7 +88,7 @@ describe("LWWRegister", () => {
 			const remote = new LWWRegister("default", "language", Time.epoch());
 			const listener = vi.fn();
 
-			register.subscribe(listener);
+			register.delegate = { entityDidChange: listener };
 
 			register.merge(remote);
 
@@ -112,7 +112,7 @@ describe("LWWRegister", () => {
 			const now = vi.spyOn(Time, "now");
 			const listener = vi.fn();
 
-			register.subscribe(listener);
+			register.delegate = { entityDidChange: listener };
 
 			register.current = "default";
 
@@ -227,55 +227,28 @@ describe("LWWRegister", () => {
 		});
 	});
 
-	describe("subscribe", () => {
-		it("calls callback when value is updated", () => {
+	describe("delegate", () => {
+		it("reports an assignment", () => {
 			const register = new LWWRegister("initial");
-			const callback = vi.fn();
+			const delegate = { entityDidChange: vi.fn() };
 
-			register.subscribe(callback);
+			register.delegate = delegate;
 			register.current = "updated";
 
-			expect(callback).toHaveBeenCalledTimes(1);
+			expect(delegate.entityDidChange).toHaveBeenCalledExactlyOnceWith(register, undefined);
 		});
 
-		it("calls callback when merged with newer remote", () => {
+		it("reports a merge the remote wins", () => {
 			const registerA = new LWWRegister("foo");
-			const callback = vi.fn();
+			const delegate = { entityDidChange: vi.fn() };
 
-			registerA.subscribe(callback);
+			registerA.delegate = delegate;
 
 			const registerB = new LWWRegister("bar");
 
 			registerA.merge(registerB);
 
-			expect(callback).toHaveBeenCalledTimes(1);
-		});
-
-		it("returns unsubscribe function", () => {
-			const register = new LWWRegister("initial");
-			const callback = vi.fn();
-
-			const unsubscribe = register.subscribe(callback);
-
-			unsubscribe();
-
-			register.current = "updated";
-
-			expect(callback).not.toHaveBeenCalled();
-		});
-
-		it("handles multiple subscribers", () => {
-			const register = new LWWRegister("initial");
-			const callback1 = vi.fn();
-			const callback2 = vi.fn();
-
-			register.subscribe(callback1);
-			register.subscribe(callback2);
-
-			register.current = "updated";
-
-			expect(callback1).toHaveBeenCalledTimes(1);
-			expect(callback2).toHaveBeenCalledTimes(1);
+			expect(delegate.entityDidChange).toHaveBeenCalledExactlyOnceWith(registerA, undefined);
 		});
 	});
 });

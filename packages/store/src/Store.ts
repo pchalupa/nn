@@ -3,9 +3,12 @@ import type { Entry, Repository } from "@nn/repository";
 import type { Schema } from "@nn/schema";
 import type { ObjectSchema } from "@nn/schema/ObjectSchema";
 
+import { Codec } from "./Codec";
 import { State } from "./State";
 
 export class Store<StateSchema extends ObjectSchema<Record<string, Schema>>> {
+	private codec = new Codec();
+
 	constructor(
 		public state: State<StateSchema>,
 		private repository?: Repository,
@@ -13,7 +16,7 @@ export class Store<StateSchema extends ObjectSchema<Record<string, Schema>>> {
 	) {
 		// THis can be onChange method on state?
 		state.subscribe((changed) => {
-			if (repository) for (const name of changed) void this.persist(name, state.capture(name));
+			if (repository) for (const name of changed) void this.persist(name, this.codec.toEntry(state.encode(name)));
 		});
 	}
 
@@ -26,6 +29,16 @@ export class Store<StateSchema extends ObjectSchema<Record<string, Schema>>> {
 		}
 	}
 
+	private async restore(schema: StateSchema): Promise<void> {
+		await this.repository?.init(schema.properties);
+
+		for (const name of Object.keys(schema.properties)) {
+			const entity = this.codec.decode(await this.repository?.get(name), name);
+
+			if (entity) this.state.merge(name, entity);
+		}
+	}
+
 	public static async fromSchema<StateSchema extends ObjectSchema<Record<string, Schema>>>({
 		schema,
 		repository,
@@ -35,18 +48,9 @@ export class Store<StateSchema extends ObjectSchema<Record<string, Schema>>> {
 		repository?: Repository;
 		remote?: Remote;
 	}): Promise<Store<StateSchema>> {
-		const persisted = new Map<string, unknown>();
+		const store = new Store(new State(schema), repository, remote);
 
-		if (repository) {
-			await repository.init(schema.properties);
-
-			for (const name of Object.keys(schema.properties)) {
-				persisted.set(name, await repository.get(name));
-			}
-		}
-
-		const state = new State(schema, persisted);
-		const store = new Store(state, repository, remote);
+		if (repository) await store.restore(schema);
 
 		return store;
 	}

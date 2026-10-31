@@ -14,11 +14,9 @@
 	"exports": {
 		"./Entity": "./src/Entity.ts",
 		"./Codable": "./src/Codable.ts",
-		"./EntityDecoder": "./src/EntityDecoder.ts",
 		"./kinds/LWWRegister": "./src/LWWRegister.ts",
 		"./kinds/LWWMap": "./src/LWWMap.ts",
-		"./kinds/RGA": "./src/RGA.ts",
-		"./kinds/entities": "./src/entities.ts"
+		"./kinds/RGA": "./src/RGA.ts"
 	},
 	"scripts": {
 		"ts:check": "tsc --noEmit"

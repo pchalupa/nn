@@ -45,7 +45,7 @@ export class IndexDbRepository implements Repository {
 		await this.processRequest(transaction.objectStore(typeName).delete(key));
 	}
 
-	public async getAll<Value>(typeName: string): Promise<Value[]> {
+	public async getAll(typeName: string): Promise<Entry[]> {
 		IndexDbRepository.assertIndexDB(this.indexDbDatabase);
 
 		const transaction = this.indexDbDatabase.transaction(typeName, Mode.ReadOnly);
@@ -53,8 +53,8 @@ export class IndexDbRepository implements Repository {
 		return this.processRequest(transaction.objectStore(typeName).getAll());
 	}
 
-	private processRequest<Value>(request: IDBRequest<Value>): Promise<Value> {
-		return new Promise<Value>((resolve, reject) => {
+	private processRequest<Result>(request: IDBRequest<Result>): Promise<Result> {
+		return new Promise<Result>((resolve, reject) => {
 			const { transaction } = request;
 
 			request.onerror = () => reject(request.error);

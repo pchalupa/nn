@@ -14,12 +14,15 @@
 	"exports": {
 		"./Entity": "./src/Entity.ts",
 		"./Codable": "./src/Codable.ts",
+		"./Codec": "./src/Codec.ts",
 		"./kinds/LWWRegister": "./src/LWWRegister.ts",
 		"./kinds/LWWMap": "./src/LWWMap.ts",
 		"./kinds/RGA": "./src/RGA.ts"
 	},
 	"scripts": {
-		"ts:check": "tsc --noEmit"
+		"ts:check": "tsc --noEmit",
+		"test": "vitest run",
+		"test:watch": "vitest watch"
 	},
 	"dependencies": {
 		"@nn/id": "workspace:",
@@ -28,6 +31,7 @@
 	},
 	"devDependencies": {
 		"@nn/typescript-config": "workspace:",
-		"typescript": "catalog:"
+		"typescript": "catalog:",
+		"vitest": "catalog:"
 	}
 }

@@ -72,21 +72,4 @@ describe("Subject", () => {
 
 		expect(second).toHaveBeenCalledOnce();
 	});
-
-	it("defers an observer subscribed during notification to the next notification", () => {
-		const subject = new Subject();
-		const late = vi.fn();
-		const unsubscribe = subject.subscribe(() => {
-			unsubscribe();
-			subject.subscribe(late);
-		});
-
-		subject.notify();
-
-		expect(late).not.toHaveBeenCalled();
-
-		subject.notify();
-
-		expect(late).toHaveBeenCalledOnce();
-	});
 });

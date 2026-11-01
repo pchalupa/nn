@@ -1,6 +1,6 @@
-import type { Entry } from "@nn/repository";
+import type { Entry, Repository } from "@nn/repository";
 import { RepositoryNotInitializedError } from "@nn/repository/errors/RepositoryNotInitializedError";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, expectTypeOf, it, vi } from "vitest";
 
 import { IndexDbRepository } from "./IndexDbRepository";
 
@@ -66,13 +66,22 @@ describe("IndexDbRepository", () => {
 	it("stores, reads back and overwrites an entry under its name", async () => {
 		const repository = new IndexDbRepository();
 
+		expectTypeOf<Repository["set"]>().parameter(1).toEqualTypeOf<Entry>();
+		expectTypeOf(repository.set).parameter(1).toEqualTypeOf<Entry>();
+
 		await repository.init({ language: {} });
 
 		await repository.set("language", entry);
-		expect(await repository.get("language")).toStrictEqual(entry);
+		const stored = await repository.get("language");
+
+		expectTypeOf(stored).toEqualTypeOf<Entry | undefined>();
+		expect(stored).toStrictEqual(entry);
 
 		await repository.set("language", { ...entry, data: "en" });
-		expect(await repository.getAll("language")).toStrictEqual([{ ...entry, data: "en" }]);
+		const entries = await repository.getAll("language");
+
+		expectTypeOf(entries).toEqualTypeOf<Entry[]>();
+		expect(entries).toStrictEqual([{ ...entry, data: "en" }]);
 	});
 
 	it("deletes the entry stored under a key and keeps the others", async () => {

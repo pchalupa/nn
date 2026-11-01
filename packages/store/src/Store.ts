@@ -1,10 +1,10 @@
+import { Codec } from "@nn/entities/Codec";
 import { Subject, type Observer, type Unsubscribe } from "@nn/observable/Subject";
 import type { Remote } from "@nn/remote";
 import type { Repository } from "@nn/repository";
 import type { Schema } from "@nn/schema";
 import type { ObjectSchema } from "@nn/schema/ObjectSchema";
 
-import { Codec } from "./Codec";
 import { State } from "./State";
 
 export class Store<StateSchema extends ObjectSchema<Record<string, Schema>>> {
@@ -30,13 +30,15 @@ export class Store<StateSchema extends ObjectSchema<Record<string, Schema>>> {
 	}
 
 	private async persist(name: string): Promise<void> {
-		if (!this.repository) return;
+		if (this.repository) {
+			try {
+				const entry = this.codec.encode(this.state.entity(name));
 
-		try {
-			await this.repository.set(name, this.codec.toEntry(this.state.encode(name)));
-		} catch (error) {
-			// TODO: LOGGER?
-			console.error("Failed to persist Store record.", error);
+				await this.repository.set(name, entry);
+			} catch (error) {
+				// TODO: LOGGER?
+				console.error("Failed to persist Store record.", error);
+			}
 		}
 	}
 
@@ -44,9 +46,9 @@ export class Store<StateSchema extends ObjectSchema<Record<string, Schema>>> {
 		await this.repository?.init(schema.properties);
 
 		for (const name of Object.keys(schema.properties)) {
-			const entity = this.codec.decode(await this.repository?.get(name), name);
+			const entry = await this.repository?.get(name);
 
-			if (entity) this.state.merge(name, entity);
+			if (entry) this.state.merge(name, this.codec.decode(entry));
 		}
 	}
 

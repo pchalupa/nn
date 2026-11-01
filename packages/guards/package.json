@@ -1,0 +1,31 @@
+{
+	"name": "@nn/guards",
+	"version": "0.0.0",
+	"description": "Runtime type guards",
+	"keywords": [],
+	"homepage": "https://github.com/pchalupa/nn/packages/guards#readme",
+	"bugs": {
+		"url": "https://github.com/pchalupa/nn/issues"
+	},
+	"license": "MIT",
+	"author": "pchalupa <chalupa.petr93@gmail.com> (https://github.com/pchalupa)",
+	"repository": "https://github.com/pchalupa/nn",
+	"type": "module",
+	"exports": {
+		"./isArray": "./src/isArray.ts",
+		"./isObject": "./src/isObject.ts",
+		"./isPlainObject": "./src/isPlainObject.ts",
+		"./assertArray": "./src/assertArray.ts",
+		"./assertObject": "./src/assertObject.ts"
+	},
+	"scripts": {
+		"ts:check": "tsc --noEmit",
+		"test": "vitest run",
+		"test:watch": "vitest watch"
+	},
+	"devDependencies": {
+		"@nn/typescript-config": "workspace:",
+		"typescript": "catalog:",
+		"vitest": "catalog:"
+	}
+}

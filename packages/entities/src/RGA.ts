@@ -1,3 +1,5 @@
+import { isArray } from "@nn/guards/isArray";
+
 import type { Decoder, Encoded } from "./Codable";
 import { Entity, type EntityDelegate } from "./Entity";
 
@@ -100,6 +102,6 @@ export class RGA<Value extends Entity> extends Entity<Value[]> implements Entity
 	}
 
 	private static assertEncoded(encoded: Encoded): asserts encoded is Encoded<readonly unknown[]> {
-		if (!Array.isArray(encoded.data)) throw new TypeError("Invalid encoded RGA.");
+		if (!isArray(encoded.data)) throw new TypeError("Invalid encoded RGA.");
 	}
 }

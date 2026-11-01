@@ -1,10 +1,10 @@
 import type { Entity } from "@nn/entities/Entity";
 import { RGA } from "@nn/entities/kinds/RGA";
+import { isArray } from "@nn/guards/isArray";
+import { isObject } from "@nn/guards/isObject";
 import { ID } from "@nn/id";
 import type { Time } from "@nn/time";
 
-import { isArray } from "../guards/isArray";
-import { isObject } from "../guards/isObject";
 import type { Strategy } from "./Strategy";
 
 interface Match {

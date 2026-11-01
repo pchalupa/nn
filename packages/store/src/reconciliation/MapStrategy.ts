@@ -1,8 +1,8 @@
 import type { Entity } from "@nn/entities/Entity";
 import { LWWMap } from "@nn/entities/kinds/LWWMap";
+import { isObject } from "@nn/guards/isObject";
 import type { Time } from "@nn/time";
 
-import { isObject } from "../guards/isObject";
 import type { Strategy } from "./Strategy";
 
 export class MapStrategy implements Strategy {

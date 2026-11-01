@@ -15,7 +15,7 @@ Immer is covered in depth in [`immer-copy-on-write.md`](./immer-copy-on-write.md
 - Every proxy-based library here makes four choices: **when a node is copied** (first write, or first read of a child), **how a change reaches ancestors** (flag the chain at write time and assemble at finalize, or copy the chain at write time), **how unchanged subtrees stay shared** (any node that was never copied is referenced as is), and **what the change record is** (a "modified" flag, a version number, a path list or JSON-Patch-like patches).
 - **Mutative** works like Immer: a parent is shallow-copied the first time a draftable child is read through it, `markChanged` flags the ancestor chain on write, and finalize writes each child's copy (or its original) back into its parent. It differs from Immer in that it does not freeze by default, takes options per call (`mark`, `strict`, `enablePatches`), runs `shift`/`unshift`/`splice`/`reverse` natively on the copy, and emits `length` replace patches for shorter arrays. Its large speedups over Immer are its own measurements from one machine.
 - **Valtio** is not a draft library. State is a long-lived mutable proxy. Writes bump a global version counter, and `snapshot()` rebuilds only the nodes whose version changed, reusing cached snapshots for the rest. Copying happens when a snapshot is read, not when a write happens.
-- **limu** shallow-copies on **read** (the proxy target *is* the copy) and only flags on write. Finalize chooses `copy` or `self` for each node it visited.
+- **limu** shallow-copies on **read** (the proxy target _is_ the copy) and only flags on write. Finalize chooses `copy` or `self` for each node it visited.
 - **structura.js** copies on **write** and walks the parent links right away, copying every ancestor and linking the child copy in, so there is no finalize pass. It builds patches during that walk.
 - **`@nn/store` today** `structuredClone`s the whole projection on every `update`, then makes about four more full passes (identity transfer, `normalize`, `prepare`, `reconcile`) to find changes **by value equality at the leaves**. It never records which paths were written. Its output shares structure only per top-level field: inside a changed field, every node is rebuilt. That was confirmed with a probe.
 - A draft-based CoW would cut the write cost to O(touched paths). The cheapest fit is probably to **keep `prepare`/`reconcile` and prune any subtree whose next value `===` the previous projection node**, because array patches are positional and do not map onto `RGA` row keys. The constraints are row identity by object identity, `LWWRegister` timestamps (writes must be value-gated), the prepare-then-apply split that makes updates atomic, and two existing tests that depend on the clone (detached drafts and `defineProperty` on a draft).
@@ -24,12 +24,12 @@ Immer is covered in depth in [`immer-copy-on-write.md`](./immer-copy-on-write.md
 
 ## 1. The four decisions
 
-| Decision                   | Options seen in the ecosystem                                                                                                                                                         |
-| -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| When a node is copied      | First write to it (structura), first read of a draftable child through it (Immer, Mutative), first read of it (limu), never on write but per changed node at snapshot time (Valtio) |
+| Decision                   | Options seen in the ecosystem                                                                                                                                                                      |
+| -------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| When a node is copied      | First write to it (structura), first read of a draftable child through it (Immer, Mutative), first read of it (limu), never on write but per changed node at snapshot time (Valtio)                |
 | How ancestors learn        | A `modified`/`operated` flag set up the parent chain on first write (Immer, Mutative, limu); eager copying of every parent during the write (structura); version polling or listener push (Valtio) |
-| How the next tree is built | Finalize pass from the recorded drafts (Immer, Mutative, limu); already built during writes (structura); built lazily per version (Valtio)                                            |
-| Change record              | A boolean per node; `assignedMap` per node; patches; op tuples with paths; version numbers                                                                                            |
+| How the next tree is built | Finalize pass from the recorded drafts (Immer, Mutative, limu); already built during writes (structura); built lazily per version (Valtio)                                                         |
+| Change record              | A boolean per node; `assignedMap` per node; patches; op tuples with paths; version numbers                                                                                                         |
 
 The sections below answer the same questions for each library: allocation, propagation, sharing, arrays, freezing and patches.
 
@@ -39,7 +39,7 @@ The sections below answer the same questions for each library: allocation, propa
 
 These are the only Immer facts this note relies on:
 
-- **Copy on child read.** When a draftable value is read from a draft and is still the base value at that key, the get trap calls `prepareCopy(state)` to shallow-copy the *parent*. It then creates the child proxy and stores it in `state.copy_[key]` ([`src/core/proxy.ts` L150–L160](https://github.com/immerjs/immer/blob/75a290e44ba14bd723c8ef8546b6559c8ef3ae88/src/core/proxy.ts#L150-L160), [`prepareCopy` L356–L366](https://github.com/immerjs/immer/blob/75a290e44ba14bd723c8ef8546b6559c8ef3ae88/src/core/proxy.ts#L356-L366)).
+- **Copy on child read.** When a draftable value is read from a draft and is still the base value at that key, the get trap calls `prepareCopy(state)` to shallow-copy the _parent_. It then creates the child proxy and stores it in `state.copy_[key]` ([`src/core/proxy.ts` L150–L160](https://github.com/immerjs/immer/blob/75a290e44ba14bd723c8ef8546b6559c8ef3ae88/src/core/proxy.ts#L150-L160), [`prepareCopy` L356–L366](https://github.com/immerjs/immer/blob/75a290e44ba14bd723c8ef8546b6559c8ef3ae88/src/core/proxy.ts#L356-L366)).
 - **Freezing is on by default** (`autoFreeze_: boolean = true`, [`src/core/immerClass.ts` L48](https://github.com/immerjs/immer/blob/75a290e44ba14bd723c8ef8546b6559c8ef3ae88/src/core/immerClass.ts#L48)).
 - Immer 11.0.0 adopted Mutative's finalization callbacks in place of a recursive tree walk ([immerjs/immer#1183](https://github.com/immerjs/immer/pull/1183), as stated in Mutative's [comparison page](https://github.com/unadlib/mutative/blob/7ef4bb8274f74502dfb8b013307c70ce1086c4e4/website/content/docs/extra-topics/comparison-with-immer.mdx)).
 
@@ -150,15 +150,15 @@ Source: <https://github.com/GiuseppeRaso/structura.js/tree/0c1af36ead5d9285dc260
 
 ## 7. Side by side
 
-|                         | Immer 11.2.9                       | Mutative 2.0.1                                  | limu 4.1.3                          | structura 0.12.9                         | Valtio 2.3.2                                 |
-| ----------------------- | ---------------------------------- | ----------------------------------------------- | ----------------------------------- | ---------------------------------------- | -------------------------------------------- |
-| Copy allocated on       | parent: first child read; leaf: first write | same as Immer                          | first read of the node              | first write                              | snapshot of a changed node                   |
-| Ancestors               | flag chain, assemble at finalize   | `markChanged` chain, finalize per draft         | `markModified` chain, `clearScopes` | eager copy and link along every parent   | version bump, push or pull                   |
-| Shared refs in input    | one draft per path                 | one draft per path                              | tracked via `keyPaths`              | one proxy per object, many parents       | one proxy per object                         |
-| Array moves             | through proxy (opt-in plugin)      | native on copy for `shift`/`unshift`/`splice`/`reverse` | native on copy               | through proxy                            | native on the live array                     |
-| Auto-freeze default     | on                                 | off                                             | off                                 | off                                      | none (non-writable props)                    |
-| Change record           | patches (plugin)                   | patches built in, positional for arrays         | `onOperate` path stream             | nested patch tree                        | op tuples (unstable, opt-in)                 |
-| "Changed" cleared on revert | no                             | no (`operated` sticky; patch skipped)           | no                                  | no                                       | n/a (`Object.is` early-out per write)        |
+|                             | Immer 11.2.9                                | Mutative 2.0.1                                          | limu 4.1.3                          | structura 0.12.9                       | Valtio 2.3.2                          |
+| --------------------------- | ------------------------------------------- | ------------------------------------------------------- | ----------------------------------- | -------------------------------------- | ------------------------------------- |
+| Copy allocated on           | parent: first child read; leaf: first write | same as Immer                                           | first read of the node              | first write                            | snapshot of a changed node            |
+| Ancestors                   | flag chain, assemble at finalize            | `markChanged` chain, finalize per draft                 | `markModified` chain, `clearScopes` | eager copy and link along every parent | version bump, push or pull            |
+| Shared refs in input        | one draft per path                          | one draft per path                                      | tracked via `keyPaths`              | one proxy per object, many parents     | one proxy per object                  |
+| Array moves                 | through proxy (opt-in plugin)               | native on copy for `shift`/`unshift`/`splice`/`reverse` | native on copy                      | through proxy                          | native on the live array              |
+| Auto-freeze default         | on                                          | off                                                     | off                                 | off                                    | none (non-writable props)             |
+| Change record               | patches (plugin)                            | patches built in, positional for arrays                 | `onOperate` path stream             | nested patch tree                      | op tuples (unstable, opt-in)          |
+| "Changed" cleared on revert | no                                          | no (`operated` sticky; patch skipped)                   | no                                  | no                                     | n/a (`Object.is` early-out per write) |
 
 ---
 
@@ -203,15 +203,15 @@ Changes are detected **by value at the leaves**, not by tracking writes: `Object
 
 A scratch Vitest probe was run against the working tree, with no repo files changed. It used `object({ language, settings: object({ theme }), tickets: array(object({ title, assignee: object({ name }) })) })` with two rows, and changed `tickets[0].title`:
 
-| Check                                                 | Result  |
-| ----------------------------------------------------- | ------- |
-| `Object.isFrozen(read())`                             | `true`  |
+| Check                                                  | Result  |
+| ------------------------------------------------------ | ------- |
+| `Object.isFrozen(read())`                              | `true`  |
 | `Object.isFrozen(read().tickets)` / a row / `settings` | `false` |
-| `after === before` (root)                             | `false` |
+| `after === before` (root)                              | `false` |
 | `after.settings === before.settings` (untouched field) | `true`  |
-| `after.tickets === before.tickets`                    | `false` |
-| untouched row `tickets[1]` shared                     | `false` |
-| untouched nested `tickets[0].assignee` shared         | `false` |
+| `after.tickets === before.tickets`                     | `false` |
+| untouched row `tickets[1]` shared                      | `false` |
+| untouched nested `tickets[0].assignee` shared          | `false` |
 
 Sharing is therefore **per top-level field only**, and only the root object is frozen. `View.materialize` never calls `freeze`, although the test title in `View.test.ts:22` says "deeply frozen". The reason for the coarse sharing is that `Entity.emit("change")` carries no payload (`Entity.ts:29`), and `View` caches one projection per field and drops it on any change (`View.ts:23`).
 
@@ -248,6 +248,7 @@ These are options, not decisions.
   - "preserves existing row identity while normalizing a computed field once" calls `Object.defineProperty` on a draft row. Mutative's `defineProperty` trap throws (`src/draft.ts` L319–L321).
 
   Either the tests change, or the draft keeps these behaviours.
+
 - **Caller-owned inserted values** are already detached: `createEntity` clones register values (`entities.ts:46`). That stays true under any CoW, as long as new rows still go through `createEntity`.
 
 ---

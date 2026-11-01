@@ -1,6 +1,6 @@
 import type { Entity } from "@nn/entities/Entity";
+import { isObject } from "@nn/guards/isObject";
 
-import { isObject } from "../guards/isObject";
 import { Projector } from "./Projector";
 
 interface Snapshot {

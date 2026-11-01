@@ -1,3 +1,6 @@
+import { isArray } from "@nn/guards/isArray";
+import { isObject } from "@nn/guards/isObject";
+
 import type { Decoder, Encoded } from "./Codable";
 import { Entity, type EntityDelegate } from "./Entity";
 
@@ -87,7 +90,7 @@ export class LWWMap<Fields extends Record<string, Entity>> extends Entity<Fields
 	private static assertEncoded(encoded: Encoded): asserts encoded is Encoded<Record<string, unknown>> {
 		const { data } = encoded;
 
-		if (typeof data !== "object" || data === null || Array.isArray(data)) {
+		if (!isObject(data) || isArray(data)) {
 			throw new TypeError("Invalid encoded LWWMap.");
 		}
 	}

@@ -2,10 +2,10 @@ import type { Entity } from "@nn/entities/Entity";
 import { LWWMap } from "@nn/entities/kinds/LWWMap";
 import { LWWRegister } from "@nn/entities/kinds/LWWRegister";
 import { RGA } from "@nn/entities/kinds/RGA";
+import { assertArray } from "@nn/guards/assertArray";
+import { assertObject } from "@nn/guards/assertObject";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { assertArray } from "../guards/assertArray";
-import { assertObject } from "../guards/assertObject";
 import { View } from "./View";
 
 describe("View", () => {

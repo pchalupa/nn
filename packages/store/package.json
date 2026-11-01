@@ -23,6 +23,7 @@
 	},
 	"dependencies": {
 		"@nn/entities": "workspace:",
+		"@nn/guards": "workspace:",
 		"@nn/id": "workspace:",
 		"@nn/observable": "workspace:",
 		"@nn/repository": "workspace:",

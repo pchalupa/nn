@@ -1,14 +1,17 @@
+import { isArray } from "@nn/guards/isArray";
+import { isPlainObject } from "@nn/guards/isPlainObject";
+
 export function equal(left: unknown, right: unknown): boolean {
 	if (Object.is(left, right)) return true;
 
-	if (Array.isArray(left) && Array.isArray(right)) return equalArrays(left, right);
+	if (isArray(left) && isArray(right)) return equalArrays(left, right);
 
-	if (isObject(left) && isObject(right)) return equalObjects(left, right);
+	if (isPlainObject(left) && isPlainObject(right)) return equalObjects(left, right);
 
 	return false;
 }
 
-function equalArrays(left: unknown[], right: unknown[]): boolean {
+function equalArrays(left: readonly unknown[], right: readonly unknown[]): boolean {
 	if (left.length !== right.length) return false;
 
 	for (let i = 0; i < left.length; i++) {
@@ -27,14 +30,6 @@ function equalObjects(left: Record<string, unknown>, right: Record<string, unkno
 	) {
 		return true;
 	}
-
-	return false;
-}
-
-function isObject(value: unknown): value is Record<string, unknown> {
-	if (typeof value !== "object") return false;
-	else if (value === null) return false;
-	else if (Object.getPrototypeOf(value) === Object.prototype || Object.getPrototypeOf(value) === null) return true;
 
 	return false;
 }

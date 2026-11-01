@@ -21,6 +21,7 @@
 		"test:watch": "vitest watch"
 	},
 	"dependencies": {
+		"@nn/guards": "workspace:",
 		"@nn/store": "workspace:",
 		"use-sync-external-store": "^1.7.0"
 	},

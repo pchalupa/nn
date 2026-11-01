@@ -54,19 +54,33 @@ export class LWWMap<Fields extends Record<string, Entity>> extends Entity<Fields
 		return this;
 	}
 
-	public static decode(encoded: Encoded<Record<string, Encoded>>, decoder: Decoder): LWWMap<Record<string, Entity>> {
-		const fields: Record<string, Entity> = {};
-
-		for (const key in encoded.data) fields[key] = decoder.decode(encoded.data[key]);
-
-		return new LWWMap(fields, encoded.key);
-	}
-
 	public encode(): Encoded<Record<string, Encoded>, { kind: string }> {
 		const data: Record<string, Encoded> = {};
 
 		for (const key in this.fields) data[key] = this.fields[key].encode();
 
 		return { key: this.key, data, metadata: { kind: this.constructor.name } };
+	}
+
+	public static decode(encoded: Encoded, decoder: Decoder): LWWMap<Record<string, Entity>> {
+		LWWMap.assertEncoded(encoded);
+
+		const fields: Record<string, Entity> = {};
+
+		for (const key in encoded.data) {
+			const value = encoded.data[key];
+
+			fields[key] = decoder.decode(value);
+		}
+
+		return new LWWMap(fields, encoded.key);
+	}
+
+	private static assertEncoded(encoded: Encoded): asserts encoded is Encoded<Record<string, unknown>> {
+		const { data } = encoded;
+
+		if (typeof data !== "object" || data === null || Array.isArray(data)) {
+			throw new TypeError("Invalid encoded LWWMap.");
+		}
 	}
 }

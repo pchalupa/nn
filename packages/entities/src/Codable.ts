@@ -14,7 +14,7 @@ export interface Encodable {
 }
 
 export interface Decoder {
-	decode(encoded: Encoded): Entity;
+	decode(value: unknown): Entity;
 }
 
 export interface Decodable<Instance extends Entity = Entity> {

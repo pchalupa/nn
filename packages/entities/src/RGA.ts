@@ -69,7 +69,19 @@ export class RGA<Value extends Entity> extends Entity<Value[]> implements Entity
 		return this;
 	}
 
-	public static decode(encoded: Encoded<Encoded[]>, decoder: Decoder): RGA<Entity> {
+	public encode(): Encoded<Encoded[], { kind: string }> {
+		const data: Encoded[] = [];
+
+		for (const item of this.items.values()) {
+			data.push(item.encode());
+		}
+
+		return { key: this.key, data, metadata: { kind: this.constructor.name } };
+	}
+
+	public static decode(encoded: Encoded, decoder: Decoder): RGA<Entity> {
+		RGA.assertEncoded(encoded);
+
 		const items: Entity[] = [];
 
 		for (const item of encoded.data) {
@@ -79,13 +91,7 @@ export class RGA<Value extends Entity> extends Entity<Value[]> implements Entity
 		return new RGA(items, encoded.key);
 	}
 
-	public encode(): Encoded<Encoded[], { kind: string }> {
-		const data: Encoded[] = [];
-
-		for (const item of this.items.values()) {
-			data.push(item.encode());
-		}
-
-		return { key: this.key, data, metadata: { kind: this.constructor.name } };
+	private static assertEncoded(encoded: Encoded): asserts encoded is Encoded<readonly unknown[]> {
+		if (!Array.isArray(encoded.data)) throw new TypeError("Invalid encoded RGA.");
 	}
 }

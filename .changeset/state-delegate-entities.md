@@ -2,13 +2,13 @@
 "@nn/store": major
 ---
 
-`StateDelegate.stateDidChange` now receives the changed entries as a `ReadonlyMap` from entry name to live root entity, instead of a `ReadonlySet` of names. `State.entity(name)` is removed. Read changed entities from the delegate payload instead.
+`StateDelegate.stateDidChange` now receives the changed root entities as a `ReadonlySet<Entity>`, instead of a `ReadonlySet` of names. Each entity's `key` is its entry name. `State.entity(name)` is removed. Read changed entities from the delegate payload instead.
 
 ```ts
 state.delegate = {
 	stateDidChange: (state, changed) => {
 		for (const name of changed) persist(name, state.entity(name)); // before
-		for (const [name, entity] of changed) persist(name, entity); // after
+		for (const entity of changed) persist(entity.key, entity); // after
 	},
 };
 ```

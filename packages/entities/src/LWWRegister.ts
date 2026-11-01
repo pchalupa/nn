@@ -40,15 +40,27 @@ export class LWWRegister<Value> extends Entity<Value> {
 		return this;
 	}
 
-	public static decode(encoded: Encoded<unknown, { kind: string; timestamp: string }>): LWWRegister<unknown> {
-		return new LWWRegister(encoded.data, encoded.key, Time.fromTimestamp(encoded.metadata.timestamp));
-	}
-
 	public encode(): Encoded<Value, { kind: string; timestamp: string }> {
 		return {
 			key: this.key,
 			data: this.value,
 			metadata: { kind: this.constructor.name, timestamp: this.timestamp.toString() },
 		};
+	}
+
+	public static decode(encoded: Encoded): LWWRegister<unknown> {
+		LWWRegister.assertEncoded(encoded);
+
+		return new LWWRegister(encoded.data, encoded.key, Time.fromTimestamp(encoded.metadata.timestamp));
+	}
+
+	private static assertEncoded(
+		encoded: Encoded,
+	): asserts encoded is Encoded<unknown, { kind: string; timestamp: string }> {
+		const { metadata } = encoded;
+
+		if (!("timestamp" in metadata) || typeof metadata.timestamp !== "string") {
+			throw new TypeError("Invalid encoded LWWRegister.");
+		}
 	}
 }

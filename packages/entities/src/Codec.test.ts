@@ -57,6 +57,20 @@ describe("Codec", () => {
 		expect(() => codec.decode(value)).toThrow("Invalid encoded entity.");
 	});
 
+	it.each([
+		[{ key: "k", data: "a", metadata: { kind: "LWWRegister" } }, "Invalid encoded LWWRegister."],
+		[{ key: "k", data: "a", metadata: { kind: "LWWRegister", timestamp: 1 } }, "Invalid encoded LWWRegister."],
+		[{ key: "k", data: null, metadata: { kind: "LWWMap" } }, "Invalid encoded LWWMap."],
+		[{ key: "k", data: [], metadata: { kind: "LWWMap" } }, "Invalid encoded LWWMap."],
+		[{ key: "k", data: "a", metadata: { kind: "LWWMap" } }, "Invalid encoded LWWMap."],
+		[{ key: "k", data: 5, metadata: { kind: "RGA" } }, "Invalid encoded RGA."],
+		[{ key: "k", data: {}, metadata: { kind: "RGA" } }, "Invalid encoded RGA."],
+		[{ key: "k", data: { name: 1 }, metadata: { kind: "LWWMap" } }, "Invalid encoded entity."],
+		[{ key: "k", data: [null], metadata: { kind: "RGA" } }, "Invalid encoded entity."],
+	])("throws for malformed data or metadata %o", (value, message) => {
+		expect(() => codec.decode(value)).toThrow(message);
+	});
+
 	it("throws for a kind inherited from the object prototype", () => {
 		expect(() => codec.decode({ key: "k", data: null, metadata: { kind: "toString" } })).toThrow(
 			'Unknown entity kind "toString".',

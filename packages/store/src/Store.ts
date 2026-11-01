@@ -1,4 +1,5 @@
 import { Codec } from "@nn/entities/Codec";
+import type { Entity } from "@nn/entities/Entity";
 import { Subject, type Observer, type Unsubscribe } from "@nn/observable/Subject";
 import type { Remote } from "@nn/remote";
 import type { Repository } from "@nn/repository";
@@ -17,8 +18,8 @@ export class Store<StateSchema extends ObjectSchema<Record<string, Schema>>> {
 		_remote?: Remote,
 	) {
 		state.delegate = {
-			stateDidChange: (_state: State, changed: ReadonlySet<string>) => {
-				for (const name of changed) void this.persist(name);
+			stateDidChange: (_state: State, changed: ReadonlySet<Entity>) => {
+				for (const entity of changed) void this.persist(entity);
 
 				this.changeSubjectObservers.notify();
 			},
@@ -29,12 +30,10 @@ export class Store<StateSchema extends ObjectSchema<Record<string, Schema>>> {
 		return this.changeSubjectObservers.subscribe(observer);
 	}
 
-	private async persist(name: string): Promise<void> {
+	private async persist(entity: Entity): Promise<void> {
 		if (this.repository) {
 			try {
-				const entry = this.codec.encode(this.state.entity(name));
-
-				await this.repository.set(name, entry);
+				await this.repository.set(entity.key, this.codec.encode(entity));
 			} catch (error) {
 				// TODO: LOGGER?
 				console.error("Failed to persist Store record.", error);

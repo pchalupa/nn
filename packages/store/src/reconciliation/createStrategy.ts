@@ -8,7 +8,6 @@ import { StringSchema } from "@nn/schema/StringSchema";
 
 import { ListStrategy } from "./ListStrategy";
 import { MapStrategy } from "./MapStrategy";
-import { byIdentity, byIndex } from "./matchers";
 import { RegisterStrategy } from "./RegisterStrategy";
 import type { Strategy } from "./Strategy";
 
@@ -24,11 +23,9 @@ export function createReconciliationStrategy(schema: Schema, entities: WeakMap<o
 	}
 
 	if (ArraySchema.is(schema)) {
-		if (ObjectSchema.is(schema.items)) {
-			return new ListStrategy(createReconciliationStrategy(schema.items, entities), byIdentity(entities));
-		}
+		const items = createReconciliationStrategy(schema.items, entities);
 
-		return new ListStrategy(createReconciliationStrategy(schema.items, entities), byIndex);
+		return new ListStrategy(items, entities);
 	}
 
 	if (StringSchema.is(schema)) return new RegisterStrategy("");

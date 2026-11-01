@@ -26,10 +26,6 @@ export class Store<StateSchema extends ObjectSchema<Record<string, Schema>>> {
 		};
 	}
 
-	public subscribe(observer: Observer): Unsubscribe {
-		return this.changeSubjectObservers.subscribe(observer);
-	}
-
 	private async persist(entity: Entity): Promise<void> {
 		if (this.repository) {
 			try {
@@ -49,6 +45,10 @@ export class Store<StateSchema extends ObjectSchema<Record<string, Schema>>> {
 
 			if (entry) this.state.merge(name, this.codec.decode(entry));
 		}
+	}
+
+	public subscribe(observer: Observer): Unsubscribe {
+		return this.changeSubjectObservers.subscribe(observer);
 	}
 
 	public static async fromSchema<StateSchema extends ObjectSchema<Record<string, Schema>>>({

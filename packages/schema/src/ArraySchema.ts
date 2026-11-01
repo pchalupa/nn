@@ -7,7 +7,7 @@ export class ArraySchema<Item extends Schema> extends Schema<Array<InferStateTyp
 		super();
 	}
 
-	public static isArraySchema(schema: unknown): schema is ArraySchema<Schema> {
+	public static override is(schema: unknown): schema is ArraySchema<Schema> {
 		return schema instanceof ArraySchema;
 	}
 }

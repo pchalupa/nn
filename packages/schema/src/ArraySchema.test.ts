@@ -34,10 +34,10 @@ describe("ArraySchema", () => {
 	it("guards array schema type", () => {
 		const arraySchema = new ArraySchema(string());
 
-		expect(ArraySchema.isArraySchema(arraySchema)).toBeTruthy();
-		expect(ArraySchema.isArraySchema(object({}))).toBeFalsy();
-		expect(ArraySchema.isArraySchema({ items: string(), type: "array" })).toBeFalsy();
-		expect(ArraySchema.isArraySchema(undefined)).toBeFalsy();
-		expect(ArraySchema.isArraySchema(null)).toBeFalsy();
+		expect(ArraySchema.is(arraySchema)).toBeTruthy();
+		expect(ArraySchema.is(object({}))).toBeFalsy();
+		expect(ArraySchema.is({ items: string(), type: "array" })).toBeFalsy();
+		expect(ArraySchema.is(undefined)).toBeFalsy();
+		expect(ArraySchema.is(null)).toBeFalsy();
 	});
 });

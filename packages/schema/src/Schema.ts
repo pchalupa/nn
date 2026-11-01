@@ -19,4 +19,8 @@ export abstract class Schema<Type = unknown> {
 
 		return this;
 	}
+
+	public static is(schema: unknown): schema is Schema {
+		return schema instanceof Schema;
+	}
 }

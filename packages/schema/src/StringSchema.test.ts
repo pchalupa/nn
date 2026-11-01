@@ -27,10 +27,10 @@ describe("StringSchema", () => {
 	it("guards string schema type", () => {
 		const stringSchema = new StringSchema();
 
-		expect(StringSchema.isStringSchema(stringSchema)).toBeTruthy();
-		expect(StringSchema.isStringSchema(number())).toBeFalsy();
-		expect(StringSchema.isStringSchema({ type: "string" })).toBeFalsy();
-		expect(StringSchema.isStringSchema(undefined)).toBeFalsy();
-		expect(StringSchema.isStringSchema(null)).toBeFalsy();
+		expect(StringSchema.is(stringSchema)).toBeTruthy();
+		expect(StringSchema.is(number())).toBeFalsy();
+		expect(StringSchema.is({ type: "string" })).toBeFalsy();
+		expect(StringSchema.is(undefined)).toBeFalsy();
+		expect(StringSchema.is(null)).toBeFalsy();
 	});
 });

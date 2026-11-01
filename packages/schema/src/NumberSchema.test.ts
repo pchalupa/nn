@@ -27,10 +27,10 @@ describe("NumberSchema", () => {
 	it("guards number schema type", () => {
 		const numberSchema = new NumberSchema();
 
-		expect(NumberSchema.isNumberSchema(numberSchema)).toBeTruthy();
-		expect(NumberSchema.isNumberSchema(string())).toBeFalsy();
-		expect(NumberSchema.isNumberSchema({ type: "number" })).toBeFalsy();
-		expect(NumberSchema.isNumberSchema(undefined)).toBeFalsy();
-		expect(NumberSchema.isNumberSchema(null)).toBeFalsy();
+		expect(NumberSchema.is(numberSchema)).toBeTruthy();
+		expect(NumberSchema.is(string())).toBeFalsy();
+		expect(NumberSchema.is({ type: "number" })).toBeFalsy();
+		expect(NumberSchema.is(undefined)).toBeFalsy();
+		expect(NumberSchema.is(null)).toBeFalsy();
 	});
 });

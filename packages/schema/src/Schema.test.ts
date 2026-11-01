@@ -5,7 +5,7 @@ import { BooleanSchema } from "./BooleanSchema";
 import { array, boolean, number, object, string } from "./index";
 import { NumberSchema } from "./NumberSchema";
 import { ObjectSchema } from "./ObjectSchema";
-import type { InferStateType } from "./Schema";
+import { type InferStateType, Schema } from "./Schema";
 import { StringSchema } from "./StringSchema";
 
 describe("Schema", () => {
@@ -111,6 +111,14 @@ describe("Schema", () => {
 			  "type": "object",
 			}
 		`);
+	});
+
+	it("guards any schema type", () => {
+		expect(Schema.is(string())).toBeTruthy();
+		expect(Schema.is(array(object({})))).toBeTruthy();
+		expect(Schema.is({ type: "string" })).toBeFalsy();
+		expect(Schema.is(undefined)).toBeFalsy();
+		expect(Schema.is(null)).toBeFalsy();
 	});
 
 	it("infers the declared data type", () => {

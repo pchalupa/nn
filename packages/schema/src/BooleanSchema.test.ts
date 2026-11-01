@@ -27,10 +27,10 @@ describe("BooleanSchema", () => {
 	it("guards boolean schema type", () => {
 		const booleanSchema = new BooleanSchema();
 
-		expect(BooleanSchema.isBooleanSchema(booleanSchema)).toBeTruthy();
-		expect(BooleanSchema.isBooleanSchema(string())).toBeFalsy();
-		expect(BooleanSchema.isBooleanSchema({ type: "boolean" })).toBeFalsy();
-		expect(BooleanSchema.isBooleanSchema(undefined)).toBeFalsy();
-		expect(BooleanSchema.isBooleanSchema(null)).toBeFalsy();
+		expect(BooleanSchema.is(booleanSchema)).toBeTruthy();
+		expect(BooleanSchema.is(string())).toBeFalsy();
+		expect(BooleanSchema.is({ type: "boolean" })).toBeFalsy();
+		expect(BooleanSchema.is(undefined)).toBeFalsy();
+		expect(BooleanSchema.is(null)).toBeFalsy();
 	});
 });

@@ -34,10 +34,10 @@ describe("ObjectSchema", () => {
 	it("guards object schema type", () => {
 		const objectSchema = new ObjectSchema({ name: string() });
 
-		expect(ObjectSchema.isObjectSchema(objectSchema)).toBeTruthy();
-		expect(ObjectSchema.isObjectSchema(array(string()))).toBeFalsy();
-		expect(ObjectSchema.isObjectSchema({ properties: {}, type: "object" })).toBeFalsy();
-		expect(ObjectSchema.isObjectSchema(undefined)).toBeFalsy();
-		expect(ObjectSchema.isObjectSchema(null)).toBeFalsy();
+		expect(ObjectSchema.is(objectSchema)).toBeTruthy();
+		expect(ObjectSchema.is(array(string()))).toBeFalsy();
+		expect(ObjectSchema.is({ properties: {}, type: "object" })).toBeFalsy();
+		expect(ObjectSchema.is(undefined)).toBeFalsy();
+		expect(ObjectSchema.is(null)).toBeFalsy();
 	});
 });

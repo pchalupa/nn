@@ -9,7 +9,7 @@ export class ObjectSchema<Properties extends Record<string, Schema>> extends Sch
 		super();
 	}
 
-	public static isObjectSchema(schema: unknown): schema is ObjectSchema<Record<string, Schema>> {
+	public static override is(schema: unknown): schema is ObjectSchema<Record<string, Schema>> {
 		return schema instanceof ObjectSchema;
 	}
 }

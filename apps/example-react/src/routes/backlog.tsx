@@ -1,10 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
 
 import { Ticket } from "../components/Ticket";
-import { useStore } from "../store";
+import { useRead } from "../store";
 
 const Backlog = () => {
-	const [tickets] = useStore((data) => data.tickets);
+	const tickets = useRead((data) => data.tickets);
 
 	return (
 		<div className="flex-1 p-2">

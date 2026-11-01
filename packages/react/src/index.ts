@@ -19,17 +19,24 @@ export function use<StoreSchema extends ObjectSchema<Record<string, Schema>>>(
 ) {
 	type Data = InferStateType<StoreSchema>;
 
-	return function useStore<Result>(selector: (data: Snapshot<Data>) => Result): [Result, Update<Data>] {
+	function useRead<Result>(selector: (data: Snapshot<Data>) => Result): Result {
 		const store = usePromise(promisedStore);
 
 		const getSnapshot = useCallback(() => store.state.read(), [store]);
 		const subscribe = useCallback((observer: () => void) => store.subscribe(observer), [store]);
-		const update = useCallback<Update<Data>>((recipe) => store.state.update(recipe), [store]);
 
 		const value = useSyncExternalStoreWithSelector(subscribe, getSnapshot, getSnapshot, selector, equal);
 
 		useDebugValue(value);
 
-		return [value, update];
-	};
+		return value;
+	}
+
+	function useUpdate(): Update<Data> {
+		const store = usePromise(promisedStore);
+
+		return useCallback<Update<Data>>((recipe) => store.state.update(recipe), [store]);
+	}
+
+	return { useRead, useUpdate };
 }

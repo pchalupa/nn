@@ -39,4 +39,4 @@ const store = createStore({
 	schema,
 });
 
-export const useStore = use(store);
+export const { useRead, useUpdate } = use(store);

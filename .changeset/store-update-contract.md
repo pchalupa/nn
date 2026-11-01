@@ -3,7 +3,7 @@
 "@nn/react": major
 ---
 
-Makes `Store.update` and the updater returned by `useStore` accept only recipes. A primitive recipe receives the current value and returns the next value. Object and array recipes mutate their draft and return nothing.
+Makes `Store.update` accept only recipes. A primitive recipe receives the current value and returns the next value. Object and array recipes mutate their draft and return nothing.
 
 ```ts
 // Before
@@ -36,4 +36,4 @@ A final snapshot naming a field the row schema does not declare is rejected inst
 
 Replacing a collection with a value — `update(["tickets"], [])` — is rejected by the types. Push rows to add them and set `length` to `0` to remove them.
 
-`useStore` returns `[view, Update<Data, Segments>]`. The hook forwards to `Store.update` and adds no rule of its own.
+In React, `useUpdate()` returns an updater that always takes a recipe for the store root, `(draft) => void`. It forwards to `store.state.update` and adds no rule of its own.

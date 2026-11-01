@@ -4,11 +4,11 @@ import { useTranslation } from "react-i18next";
 import { Divider } from "../components/Divider";
 import { LanguageSelector } from "../components/LanguageSelector";
 import { Skeleton } from "../components/Skeleton";
-import { useStore } from "../store";
+import { useRead } from "../store";
 
 const Stats = () => {
 	const { t } = useTranslation();
-	const [count] = useStore((data) => data.tickets.length);
+	const count = useRead((data) => data.tickets.length);
 
 	return <p className="text-center text-zinc-600">{t("tickets", { count })}</p>;
 };

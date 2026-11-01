@@ -2,11 +2,12 @@ import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 
 import { defaultLanguage, isLanguage, languages } from "../../i18n";
-import { useStore } from "../../store";
+import { useRead, useUpdate } from "../../store";
 
 export const LanguageSelector = () => {
 	const { i18n, t } = useTranslation();
-	const [language, updateStore] = useStore((data) => data.language);
+	const language = useRead((data) => data.language);
+	const updateStore = useUpdate();
 	// TBD: Language needs to be an enum
 	const selectedLanguage = isLanguage(language) ? language : defaultLanguage;
 

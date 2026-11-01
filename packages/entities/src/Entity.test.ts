@@ -127,6 +127,20 @@ describe("Entity", () => {
 		expect(entity.revision).toBe(before + 2);
 	});
 
+	it("guards any entity type", () => {
+		expect(Entity.is(new TestEntity("value"))).toBeTruthy();
+		expect(Entity.is({ key: "key", current: "value" })).toBeFalsy();
+		expect(Entity.is(undefined)).toBeFalsy();
+		expect(Entity.is(null)).toBeFalsy();
+	});
+
+	it("asserts any entity type", () => {
+		expect(() => Entity.assert(new TestEntity("value"))).not.toThrow();
+		expect(() => Entity.assert({ key: "key", current: "value" })).toThrow(new TypeError("Invalid entity."));
+		expect(() => Entity.assert(undefined)).toThrow(TypeError);
+		expect(() => Entity.assert(null)).toThrow(TypeError);
+	});
+
 	it("infers entity values", () => {
 		expectTypeOf<InferValueType<Entity<{ title: LWWRegister<string> }>>>().toEqualTypeOf<{ title: string }>();
 		expectTypeOf<InferValueType<Entity<string>>>().toEqualTypeOf<string>();

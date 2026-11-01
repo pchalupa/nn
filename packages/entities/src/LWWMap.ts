@@ -76,6 +76,14 @@ export class LWWMap<Fields extends Record<string, Entity>> extends Entity<Fields
 		return new LWWMap(fields, encoded.key);
 	}
 
+	public static override is(entity: unknown): entity is LWWMap<Record<string, Entity>> {
+		return entity instanceof LWWMap;
+	}
+
+	public static override assert(entity: unknown): asserts entity is LWWMap<Record<string, Entity>> {
+		if (!LWWMap.is(entity)) throw new TypeError("Invalid LWWMap.");
+	}
+
 	private static assertEncoded(encoded: Encoded): asserts encoded is Encoded<Record<string, unknown>> {
 		const { data } = encoded;
 

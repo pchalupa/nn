@@ -5,6 +5,22 @@ import { LWWRegister } from "./LWWRegister";
 import { RGA } from "./RGA";
 
 describe("RGA", () => {
+	it("guards an RGA", () => {
+		expect(RGA.is(new RGA([new LWWRegister("value")]))).toBeTruthy();
+		expect(RGA.is(new LWWMap({}))).toBeFalsy();
+		expect(RGA.is({ key: "key", current: [] })).toBeFalsy();
+		expect(RGA.is(undefined)).toBeFalsy();
+		expect(RGA.is(null)).toBeFalsy();
+	});
+
+	it("asserts an RGA", () => {
+		expect(() => RGA.assert(new RGA([new LWWRegister("value")]))).not.toThrow();
+		expect(() => RGA.assert(new LWWMap({}))).toThrow(new TypeError("Invalid RGA."));
+		expect(() => RGA.assert({ key: "key", current: [] })).toThrow(TypeError);
+		expect(() => RGA.assert(undefined)).toThrow(TypeError);
+		expect(() => RGA.assert(null)).toThrow(TypeError);
+	});
+
 	it("accepts only an RGA when merging", () => {
 		expectTypeOf<RGA<LWWRegister<string>>["merge"]>().parameters.toEqualTypeOf<[RGA<LWWRegister<string>>]>();
 	});

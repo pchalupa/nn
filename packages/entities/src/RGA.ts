@@ -91,6 +91,14 @@ export class RGA<Value extends Entity> extends Entity<Value[]> implements Entity
 		return new RGA(items, encoded.key);
 	}
 
+	public static override is(entity: unknown): entity is RGA<Entity> {
+		return entity instanceof RGA;
+	}
+
+	public static override assert(entity: unknown): asserts entity is RGA<Entity> {
+		if (!RGA.is(entity)) throw new TypeError("Invalid RGA.");
+	}
+
 	private static assertEncoded(encoded: Encoded): asserts encoded is Encoded<readonly unknown[]> {
 		if (!Array.isArray(encoded.data)) throw new TypeError("Invalid encoded RGA.");
 	}

@@ -12,6 +12,22 @@ describe("LWWMap", () => {
 		expect(map).toBeInstanceOf(LWWMap);
 	});
 
+	it("guards a map", () => {
+		expect(LWWMap.is(new LWWMap({ title: new LWWRegister("Ticket") }))).toBeTruthy();
+		expect(LWWMap.is(new LWWRegister("value"))).toBeFalsy();
+		expect(LWWMap.is({ key: "key", current: {} })).toBeFalsy();
+		expect(LWWMap.is(undefined)).toBeFalsy();
+		expect(LWWMap.is(null)).toBeFalsy();
+	});
+
+	it("asserts a map", () => {
+		expect(() => LWWMap.assert(new LWWMap({ title: new LWWRegister("Ticket") }))).not.toThrow();
+		expect(() => LWWMap.assert(new LWWRegister("value"))).toThrow(new TypeError("Invalid LWWMap."));
+		expect(() => LWWMap.assert({ key: "key", current: {} })).toThrow(TypeError);
+		expect(() => LWWMap.assert(undefined)).toThrow(TypeError);
+		expect(() => LWWMap.assert(null)).toThrow(TypeError);
+	});
+
 	it("serializes map", () => {
 		const map = new LWWMap({ name: new LWWRegister("John"), address: new LWWMap({ city: new LWWRegister("Prague") }) });
 

@@ -53,4 +53,12 @@ export abstract class Entity<Value = unknown> implements Delegatable<EntityDeleg
 	public toJSON(): Value {
 		return this.current;
 	}
+
+	public static is(entity: unknown): entity is Entity {
+		return entity instanceof Entity;
+	}
+
+	public static assert(entity: unknown): asserts entity is Entity {
+		if (!Entity.is(entity)) throw new TypeError("Invalid entity.");
+	}
 }

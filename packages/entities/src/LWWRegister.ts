@@ -54,6 +54,14 @@ export class LWWRegister<Value> extends Entity<Value> {
 		return new LWWRegister(encoded.data, encoded.key, Time.fromTimestamp(encoded.metadata.timestamp));
 	}
 
+	public static override is(entity: unknown): entity is LWWRegister<unknown> {
+		return entity instanceof LWWRegister;
+	}
+
+	public static override assert(entity: unknown): asserts entity is LWWRegister<unknown> {
+		if (!LWWRegister.is(entity)) throw new TypeError("Invalid LWWRegister.");
+	}
+
 	private static assertEncoded(
 		encoded: Encoded,
 	): asserts encoded is Encoded<unknown, { kind: string; timestamp: string }> {

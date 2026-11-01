@@ -1,6 +1,7 @@
 import { Time } from "@nn/time";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
+import { LWWMap } from "./LWWMap";
 import { LWWRegister } from "./LWWRegister";
 
 describe("LWWRegister", () => {
@@ -23,6 +24,22 @@ describe("LWWRegister", () => {
 		expect(register).toBeInstanceOf(LWWRegister);
 		expect(register.toString()).toBe("[object LWWRegister]");
 		expect(now).toHaveBeenCalledOnce();
+	});
+
+	it("guards a register", () => {
+		expect(LWWRegister.is(new LWWRegister("value"))).toBeTruthy();
+		expect(LWWRegister.is(new LWWMap({}))).toBeFalsy();
+		expect(LWWRegister.is({ key: "key", current: "value" })).toBeFalsy();
+		expect(LWWRegister.is(undefined)).toBeFalsy();
+		expect(LWWRegister.is(null)).toBeFalsy();
+	});
+
+	it("asserts a register", () => {
+		expect(() => LWWRegister.assert(new LWWRegister("value"))).not.toThrow();
+		expect(() => LWWRegister.assert(new LWWMap({}))).toThrow(new TypeError("Invalid LWWRegister."));
+		expect(() => LWWRegister.assert({ key: "key", current: "value" })).toThrow(TypeError);
+		expect(() => LWWRegister.assert(undefined)).toThrow(TypeError);
+		expect(() => LWWRegister.assert(null)).toThrow(TypeError);
 	});
 
 	it("works with different types", () => {

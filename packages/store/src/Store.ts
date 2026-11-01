@@ -37,6 +37,7 @@ export class Store<StateSchema extends ObjectSchema<Record<string, Schema>>> {
 		}
 	}
 
+	// TBD: This method is oddly placed.
 	private async restore(schema: StateSchema): Promise<void> {
 		await this.repository?.init(schema.properties);
 
@@ -51,6 +52,7 @@ export class Store<StateSchema extends ObjectSchema<Record<string, Schema>>> {
 		return this.changeSubjectObservers.subscribe(observer);
 	}
 
+	// TBD: store creation should be sync. The restore has to happen independently.
 	public static async fromSchema<StateSchema extends ObjectSchema<Record<string, Schema>>>({
 		schema,
 		repository,

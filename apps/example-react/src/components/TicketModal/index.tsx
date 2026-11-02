@@ -2,8 +2,8 @@ import { useEffect, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 
-import { isStatus, statuses, statusLabels } from "../../statuses";
-import { useRead, useUpdate } from "../../store";
+import { statusLabels } from "../../i18n";
+import { status, useRead, useUpdate } from "../../store";
 import { Button } from "../Button";
 import { Input } from "../Input";
 import { Modal, type ModalHandle } from "../Modal";
@@ -65,9 +65,9 @@ export const TicketModal = ({ id, onClose }: TicketModalProps) => {
 							{t("status")}
 							<select
 								className="rounded bg-zinc-700 px-2 py-1 text-sm text-zinc-200 normal-case"
-								{...form.register("status", { validate: isStatus })}
+								{...form.register("status")}
 							>
-								{statuses.map((option) => (
+								{status.literals.map((option) => (
 									<option key={option} value={option}>
 										{t(statusLabels[option])}
 									</option>

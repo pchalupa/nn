@@ -1,15 +1,19 @@
 import { createInstance } from "i18next";
 
-export const languages = {
+import type { Language, Status } from "./store";
+
+export const languageNames: Record<Language, string> = {
 	en: "English",
 	cs: "Čeština",
 };
 
-export type Language = keyof typeof languages;
+export const statusLabels: Record<Status, string> = {
+	todo: "todo",
+	"in-progress": "inProgress",
+	done: "done",
+};
 
-export const defaultLanguage: Language = "en";
-
-export const isLanguage = (value: unknown): value is Language => typeof value === "string" && value in languages;
+const defaultLanguage: Language = "en";
 
 const resources = {
 	en: {

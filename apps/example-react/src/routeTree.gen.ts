@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as AppRouteImport } from './routes/_app'
+import { Route as SignUpRouteImport } from './routes/sign-up'
 import { Route as WelcomeRouteImport } from './routes/welcome'
 import { Route as AppBoardRouteImport } from './routes/_app/_board'
 import { Route as AppBacklogRouteImport } from './routes/_app/backlog'
@@ -19,6 +20,11 @@ import { Route as AppBacklogTicketsTicketIdRouteImport } from './routes/_app/bac
 
 const AppRoute = AppRouteImport.update({
   id: '/_app',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SignUpRoute = SignUpRouteImport.update({
+  id: '/sign-up',
+  path: '/sign-up',
   getParentRoute: () => rootRouteImport,
 } as any)
 const WelcomeRoute = WelcomeRouteImport.update({
@@ -54,6 +60,7 @@ const AppBacklogTicketsTicketIdRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof AppBoardIndexRoute
+  '/sign-up': typeof SignUpRoute
   '/welcome': typeof WelcomeRoute
   '/backlog': typeof AppBacklogRouteWithChildren
   '/tickets/$ticketId': typeof AppBoardTicketsTicketIdRoute
@@ -61,6 +68,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof AppBoardIndexRoute
+  '/sign-up': typeof SignUpRoute
   '/welcome': typeof WelcomeRoute
   '/backlog': typeof AppBacklogRouteWithChildren
   '/tickets/$ticketId': typeof AppBoardTicketsTicketIdRoute
@@ -69,6 +77,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_app': typeof AppRouteWithChildren
+  '/sign-up': typeof SignUpRoute
   '/welcome': typeof WelcomeRoute
   '/_app/_board': typeof AppBoardRouteWithChildren
   '/_app/backlog': typeof AppBacklogRouteWithChildren
@@ -80,6 +89,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/sign-up'
     | '/welcome'
     | '/backlog'
     | '/tickets/$ticketId'
@@ -87,6 +97,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/sign-up'
     | '/welcome'
     | '/backlog'
     | '/tickets/$ticketId'
@@ -94,6 +105,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/_app'
+    | '/sign-up'
     | '/welcome'
     | '/_app/_board'
     | '/_app/backlog'
@@ -104,6 +116,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   AppRoute: typeof AppRouteWithChildren
+  SignUpRoute: typeof SignUpRoute
   WelcomeRoute: typeof WelcomeRoute
 }
 
@@ -114,6 +127,13 @@ declare module '@tanstack/react-router' {
       path: ''
       fullPath: '/'
       preLoaderRoute: typeof AppRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sign-up': {
+      id: '/sign-up'
+      path: '/sign-up'
+      fullPath: '/sign-up'
+      preLoaderRoute: typeof SignUpRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/welcome': {
@@ -201,6 +221,7 @@ const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   AppRoute: AppRouteWithChildren,
+  SignUpRoute: SignUpRoute,
   WelcomeRoute: WelcomeRoute,
 }
 export const routeTree = rootRouteImport

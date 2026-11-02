@@ -3,12 +3,19 @@
 "@nn/react": major
 ---
 
-Replace typed paths with schema-shaped root snapshots, readonly selectors, and draft updates.
+Replaces snapshot selectors with `store.state`, a schema-shaped root you read as plain data and update through a draft.
 
-This is a breaking API change. Read state with `store.state.read()` and update it with `store.state.update((draft) => { draft.language = "cs"; })`. Replace path reads with ordinary property access or array searches. The public data type is `InferType<typeof schema>`; the path class and path-derived data types are removed.
+```ts
+store.state.read().language; // "cs"
 
-In React, bind `const { useRead, useUpdate } = use(store)`. `useRead` returns the selection directly: `const tickets = useRead((data) => data.tickets)`. `const update = useUpdate()` always drafts the store root. Components that only write call `useUpdate()` alone and never subscribe. Update collections through `draft.tickets.push(ticket)` and primitives through assignments. Selector results reuse structurally equal arrays and plain objects, so unrelated selected-data changes do not force re-renders.
+store.state.update((draft) => {
+	draft.language = "en";
+	draft.tickets.push({ id, title, status });
+});
+```
 
-State now initializes strings to `""`, numbers to `0`, booleans to `false`, arrays to `[]`, and object fields recursively. Restoration also defaults missing fields while preserving valid stored values and timestamps. Draft insertions require complete schema-shaped values, and invalid updates apply no partial changes.
+`read()` returns the whole state typed as `InferStateType<typeof schema>`. `update(recipe)` hands the recipe a mutable copy of the root and reconciles it into the store's entities when the recipe returns. `Store.getSnapshotOf`, `Store.events` and the React `Selector` type are removed.
 
-Generated row identity is internal instead of a public `key`. Declare an application identifier for row lookups and React list keys. Editing a draft row preserves identity; inserting a fresh object creates new identity. Object collections still support removal and appending, but reject reordering and inserting new rows ahead of surviving rows.
+Every field starts at a default: strings `""`, numbers `0`, booleans `false`, arrays `[]`, and objects with each of their fields defaulted.
+
+Row identity is internal; rows have no public `key`. Declare your own identifier for lookups and React list keys. Editing a row of the draft keeps its identity, and pushing a new object creates a new row. A new row always lands at the end of its list, wherever it was inserted in the draft, and reordering existing rows has no effect.

@@ -1,16 +1,17 @@
 ---
-"@nn/store": major
+"@nn/store": minor
 ---
 
-`StateDelegate.stateDidChange` now receives the changed root entities as a `ReadonlySet<Entity>`, instead of a `ReadonlySet` of names. Each entity's `key` is its entry name. `State.entity(name)` is removed. Read changed entities from the delegate payload instead.
+Adds `State`, which holds the store's entities and reports changes to a single `StateDelegate`. `stateDidChange(state, changed)` receives the changed top-level entities as a `ReadonlySet<Entity>`; each entity's `key` is its field name.
 
 ```ts
 state.delegate = {
 	stateDidChange: (state, changed) => {
-		for (const name of changed) persist(name, state.entity(name)); // before
-		for (const entity of changed) persist(entity.key, entity); // after
+		for (const entity of changed) persist(entity.key, entity);
 	},
 };
 ```
 
-`State.merge(name, remote)` now ignores an unknown entry name instead of throwing a `TypeError`. `State.update` applies the draft in a single pass, so an error thrown while applying it, for example by key generation, keeps the edits already applied and still publishes them. `update` also no longer validates the draft: it does not throw "Store state does not match its schema." Instead, a list or object field holding a value of the wrong type is left unchanged, and newly created rows fill missing fields with their schema defaults.
+`State` takes only the schema. `update` and `merge(name, entity)` each publish a single notification, however many fields change. `merge` ignores an unknown field name and an entity whose key does not match the field.
+
+`update` does not validate the draft. A list or object field set to a value of the wrong type is left unchanged, scalar fields take whatever value is assigned, and new rows fill missing fields with their schema defaults. An error thrown while the draft is applied keeps the edits already applied and still publishes them.

@@ -21,5 +21,3 @@ const stored = await repository.get("tickets");
 `@nn/entities` newly exports `./Codec` with the `Codec` class.
 
 `IndexDbRepository` keeps its object store per schema property and stores each root's entry under the root name in that store. `set` and `delete` resolve only after their transaction commits, so an aborted transaction rejects the write instead of reporting a successful save.
-
-`@nn/store` specializes the entry into its register and collection shapes. `Store.fromSchema` reads each root with `repository.get(name)` and validates every entry it loads.

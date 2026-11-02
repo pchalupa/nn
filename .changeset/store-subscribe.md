@@ -2,9 +2,11 @@
 "@nn/store": major
 ---
 
-`state.subscribe` moves to `store.subscribe`, and listeners are called with no arguments instead of the set of changed entry names. `Store` now always owns `state.delegate`, so persistence of the changed entries starts before any listener runs.
+Replaces `store.events` with `store.subscribe`. Listeners are called with no arguments after each state change, and `subscribe` returns the function that removes the listener.
 
 ```ts
-store.state.subscribe((changed) => {}); // before
+store.events.on("update", () => {}); // before
 store.subscribe(() => {}); // after
 ```
+
+`Store` always owns `state.delegate`, so persisting the changed fields starts before any listener runs.

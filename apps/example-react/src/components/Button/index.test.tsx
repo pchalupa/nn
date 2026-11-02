@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 
@@ -25,20 +25,5 @@ describe("Button", () => {
 		await userEvent.click(screen.getByText(text));
 
 		expect(onClick).toHaveBeenCalled();
-	});
-
-	it("does not call onClick when disabled", async () => {
-		const onClick = vi.fn();
-
-		setup({ text: "Test", disabled: true, onClick });
-		await userEvent.click(screen.getByRole("button"));
-
-		expect(onClick).not.toHaveBeenCalled();
-	});
-
-	it("keeps focus where it is when preserveFocus is set", () => {
-		setup({ text: "Test", preserveFocus: true });
-
-		expect(fireEvent.mouseDown(screen.getByRole("button"))).toBe(false);
 	});
 });

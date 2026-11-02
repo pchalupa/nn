@@ -49,10 +49,8 @@ test.describe("TicketModal", () => {
 		const { dialog } = await addTicket(page);
 
 		await page.getByRole("link", { name: "todo" }).click();
-		const title = dialog.getByRole("group", { name: "Title" });
-
-		await title.getByRole("button").click();
-		const box = await title.getByRole("textbox").boundingBox();
+		await dialog.getByRole("button", { name: "Edit" }).click();
+		const box = await dialog.getByRole("textbox", { name: "Title" }).boundingBox();
 
 		if (!box) throw new Error("Title input is not rendered");
 
@@ -93,22 +91,20 @@ test.describe("TicketModal", () => {
 	});
 });
 
-test.describe("TicketModal fields", () => {
-	const openTicket = async (page: Page) => {
+test.describe("TicketModal editing", () => {
+	const editTicket = async (page: Page) => {
 		const result = await addTicket(page);
 
 		await page.getByRole("link", { name: "todo" }).click();
-		await expect(result.dialog).toBeVisible();
+		await result.dialog.getByRole("button", { name: "Edit" }).click();
 
 		return result;
 	};
 
-	test("should rename the ticket only after submitting", async ({ page }) => {
-		const { dialog, card } = await openTicket(page);
-		const title = dialog.getByRole("group", { name: "Title" });
+	test("should rename the ticket only after saving", async ({ page }) => {
+		const { dialog, card } = await editTicket(page);
 
-		await title.getByRole("button").click();
-		await title.getByRole("textbox").fill("Renamed");
+		await dialog.getByRole("textbox", { name: "Title" }).fill("Renamed");
 
 		await expect(card).toHaveText(/todo/);
 
@@ -116,77 +112,68 @@ test.describe("TicketModal fields", () => {
 
 		await expect(card).toHaveText(/Renamed/);
 		await expect(dialog).toBeVisible();
+		await expect(dialog.getByRole("button", { name: "Edit" })).toBeVisible();
 	});
 
-	test("should keep the dialog open when Escape cancels an edit", async ({ page }) => {
-		const { dialog, card } = await openTicket(page);
-		const title = dialog.getByRole("group", { name: "Title" });
+	test("should save every field in one submit", async ({ page }) => {
+		const { dialog } = await editTicket(page);
 
-		await title.getByRole("button").click();
-		await title.getByRole("textbox").fill("Draft");
+		await dialog.getByRole("textbox", { name: "Title" }).fill("Renamed");
+		await dialog.getByRole("textbox", { name: "Description" }).fill("Line one");
+		await dialog.getByRole("combobox", { name: "Status" }).selectOption("done");
+		await dialog.getByRole("textbox", { name: "Name" }).fill("Ann");
+		await dialog.getByRole("textbox", { name: "Email" }).fill("ann@example.com");
+		await dialog.getByRole("button", { name: "Save" }).click();
+
+		const card = columnCards(page, "Done");
+
+		await expect(columnCards(page, "To Do")).toHaveCount(0);
+		await expect(card).toHaveText(/Renamed/);
+		await expect(card).toHaveText(/Line one/);
+		await expect(card).toHaveText(/Ann/);
+		await expect(dialog).toBeVisible();
+	});
+
+	test("should discard changes with Cancel", async ({ page }) => {
+		const { dialog, card } = await editTicket(page);
+
+		await dialog.getByRole("textbox", { name: "Title" }).fill("Draft");
+		await dialog.getByRole("button", { name: "Cancel" }).click();
+
+		await expect(dialog.getByRole("textbox")).toHaveCount(0);
+		await expect(dialog).toContainText("todo");
+		await expect(card).toHaveText(/todo/);
+	});
+
+	test("should keep the dialog open when Escape cancels editing", async ({ page }) => {
+		const { dialog, card } = await editTicket(page);
+
+		await dialog.getByRole("textbox", { name: "Title" }).fill("Draft");
 		await page.keyboard.press("Escape");
 
 		await expect(dialog).toBeVisible();
+		await expect(dialog.getByRole("textbox")).toHaveCount(0);
 		await expect(card).toHaveText(/todo/);
-		await expect(title.getByRole("button")).toHaveText("todo");
 	});
 
-	test("should discard a title draft when another field is opened", async ({ page }) => {
-		const { dialog, card } = await openTicket(page);
-		const title = dialog.getByRole("group", { name: "Title" });
-		const description = dialog.getByRole("group", { name: "Description" });
+	test("should not save an empty title", async ({ page }) => {
+		const { dialog, card } = await editTicket(page);
 
-		await title.getByRole("button").click();
-		await title.getByRole("textbox").fill("Draft");
-		await description.getByRole("button").click();
+		await dialog.getByRole("textbox", { name: "Title" }).fill("   ");
+		await dialog.getByRole("button", { name: "Save" }).click();
 
+		await expect(dialog.getByRole("textbox", { name: "Title" })).toBeVisible();
 		await expect(card).toHaveText(/todo/);
-		await expect(title.getByRole("textbox")).toBeHidden();
-		await expect(description.getByRole("textbox")).toBeVisible();
 	});
 
-	test("should save the description", async ({ page }) => {
-		const { dialog, card } = await openTicket(page);
-		const description = dialog.getByRole("group", { name: "Description" });
+	test("should keep saved values after a reload", async ({ page }) => {
+		const { dialog } = await editTicket(page);
 
-		await description.getByRole("button").click();
-		await description.getByRole("textbox").fill("Line one");
-		await description.getByRole("button", { name: "Save" }).click();
-
-		await expect(card).toHaveText(/Line one/);
-	});
-
-	test("should move the card when the status changes", async ({ page }) => {
-		const { dialog, card } = await openTicket(page);
-
-		await dialog.getByRole("combobox", { name: "Status" }).selectOption("done");
-
-		await expect(card).toHaveCount(0);
-		await expect(columnCards(page, "Done")).toHaveCount(1);
-		await expect(dialog).toBeVisible();
-	});
-
-	test("should show the new assignee on the card", async ({ page }) => {
-		const { dialog, card } = await openTicket(page);
-		const assignee = dialog.getByRole("group", { name: "Assignee" });
-
-		await assignee.getByRole("button").click();
-		await assignee.getByRole("textbox", { name: "Name" }).fill("Ann");
-		await assignee.getByRole("textbox", { name: "Email" }).fill("ann@example.com");
-		await assignee.getByRole("button", { name: "Save" }).click();
-
-		await expect(card).toHaveText(/Ann/);
-	});
-
-	test("should keep submitted values after a reload", async ({ page }) => {
-		const { dialog } = await openTicket(page);
-		const title = dialog.getByRole("group", { name: "Title" });
-
-		await title.getByRole("button").click();
-		await title.getByRole("textbox").fill("Renamed");
+		await dialog.getByRole("textbox", { name: "Title" }).fill("Renamed");
 		await page.keyboard.press("Enter");
+		await expect(dialog.getByRole("button", { name: "Edit" })).toBeVisible();
 		await page.reload();
 
-		await expect(title.getByRole("button")).toHaveText("Renamed");
+		await expect(dialog.getByRole("heading", { name: "Renamed" })).toBeVisible();
 	});
 });

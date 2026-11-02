@@ -34,8 +34,6 @@ export const TicketModal = ({ id, onClose }: TicketModalProps) => {
 
 	useEffect(() => modalRef.current?.open(), []);
 
-	const handleCancel = () => form.reset(ticket, { keepDirtyValues: false, keepFieldsRef: true });
-
 	const handleSubmit = form.handleSubmit((draft) => {
 		updateStore((data) => {
 			const item = data.tickets.find((entry) => entry.id === id);
@@ -79,7 +77,6 @@ export const TicketModal = ({ id, onClose }: TicketModalProps) => {
 					</div>
 				</div>
 				<div className="flex flex-row justify-end gap-x-2">
-					<Button text={t("cancel")} color="secondary" size="sm" onClick={handleCancel} />
 					<Button text={t("save")} type="submit" size="sm" />
 				</div>
 			</form>

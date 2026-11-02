@@ -7,7 +7,7 @@ import { Divider } from "../components/Divider";
 import { authenticated, signIn, UnknownAccountError } from "../modules/authentication";
 import { useRead } from "../store";
 
-const Welcome = () => {
+const SignIn = () => {
 	const { t } = useTranslation();
 	const navigate = useNavigate();
 	const accounts = useRead((data) => data.users);
@@ -40,10 +40,10 @@ const Welcome = () => {
 	);
 };
 
-export const Route = createFileRoute("/welcome")({
+export const Route = createFileRoute("/sign-in")({
 	beforeLoad: () => {
 		if (authenticated()) throw redirect({ to: "/" });
 	},
-	component: Welcome,
+	component: SignIn,
 	wrapInSuspense: true,
 });

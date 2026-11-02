@@ -38,7 +38,7 @@ const SignUp = () => {
 					</button>
 				</form>
 				<Divider />
-				<Link to="/welcome" className="text-center text-sm text-zinc-400 hover:text-zinc-200">
+				<Link to="/sign-in" className="text-center text-sm text-zinc-400 hover:text-zinc-200">
 					{t("signIn")}
 				</Link>
 			</div>

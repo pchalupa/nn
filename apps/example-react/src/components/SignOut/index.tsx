@@ -9,7 +9,7 @@ export const SignOut = () => {
 
 	const handleSignOut = () => {
 		signOut();
-		navigate({ to: "/welcome" });
+		navigate({ to: "/sign-in" });
 	};
 
 	return (

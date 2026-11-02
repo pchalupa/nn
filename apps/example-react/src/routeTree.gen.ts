@@ -10,8 +10,8 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as AppRouteImport } from './routes/_app'
+import { Route as SignInRouteImport } from './routes/sign-in'
 import { Route as SignUpRouteImport } from './routes/sign-up'
-import { Route as WelcomeRouteImport } from './routes/welcome'
 import { Route as AppBoardRouteImport } from './routes/_app/_board'
 import { Route as AppBacklogRouteImport } from './routes/_app/backlog'
 import { Route as AppBoardIndexRouteImport } from './routes/_app/_board.index'
@@ -22,14 +22,14 @@ const AppRoute = AppRouteImport.update({
   id: '/_app',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SignInRoute = SignInRouteImport.update({
+  id: '/sign-in',
+  path: '/sign-in',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SignUpRoute = SignUpRouteImport.update({
   id: '/sign-up',
   path: '/sign-up',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const WelcomeRoute = WelcomeRouteImport.update({
-  id: '/welcome',
-  path: '/welcome',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AppBoardRoute = AppBoardRouteImport.update({
@@ -60,16 +60,16 @@ const AppBacklogTicketsTicketIdRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof AppBoardIndexRoute
+  '/sign-in': typeof SignInRoute
   '/sign-up': typeof SignUpRoute
-  '/welcome': typeof WelcomeRoute
   '/backlog': typeof AppBacklogRouteWithChildren
   '/tickets/$ticketId': typeof AppBoardTicketsTicketIdRoute
   '/backlog/tickets/$ticketId': typeof AppBacklogTicketsTicketIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof AppBoardIndexRoute
+  '/sign-in': typeof SignInRoute
   '/sign-up': typeof SignUpRoute
-  '/welcome': typeof WelcomeRoute
   '/backlog': typeof AppBacklogRouteWithChildren
   '/tickets/$ticketId': typeof AppBoardTicketsTicketIdRoute
   '/backlog/tickets/$ticketId': typeof AppBacklogTicketsTicketIdRoute
@@ -77,8 +77,8 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_app': typeof AppRouteWithChildren
+  '/sign-in': typeof SignInRoute
   '/sign-up': typeof SignUpRoute
-  '/welcome': typeof WelcomeRoute
   '/_app/_board': typeof AppBoardRouteWithChildren
   '/_app/backlog': typeof AppBacklogRouteWithChildren
   '/_app/_board/': typeof AppBoardIndexRoute
@@ -89,24 +89,24 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/sign-in'
     | '/sign-up'
-    | '/welcome'
     | '/backlog'
     | '/tickets/$ticketId'
     | '/backlog/tickets/$ticketId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/sign-in'
     | '/sign-up'
-    | '/welcome'
     | '/backlog'
     | '/tickets/$ticketId'
     | '/backlog/tickets/$ticketId'
   id:
     | '__root__'
     | '/_app'
+    | '/sign-in'
     | '/sign-up'
-    | '/welcome'
     | '/_app/_board'
     | '/_app/backlog'
     | '/_app/_board/'
@@ -116,8 +116,8 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   AppRoute: typeof AppRouteWithChildren
+  SignInRoute: typeof SignInRoute
   SignUpRoute: typeof SignUpRoute
-  WelcomeRoute: typeof WelcomeRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -129,18 +129,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/sign-in': {
+      id: '/sign-in'
+      path: '/sign-in'
+      fullPath: '/sign-in'
+      preLoaderRoute: typeof SignInRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/sign-up': {
       id: '/sign-up'
       path: '/sign-up'
       fullPath: '/sign-up'
       preLoaderRoute: typeof SignUpRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/welcome': {
-      id: '/welcome'
-      path: '/welcome'
-      fullPath: '/welcome'
-      preLoaderRoute: typeof WelcomeRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_app/_board': {
@@ -221,8 +221,8 @@ const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   AppRoute: AppRouteWithChildren,
+  SignInRoute: SignInRoute,
   SignUpRoute: SignUpRoute,
-  WelcomeRoute: WelcomeRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

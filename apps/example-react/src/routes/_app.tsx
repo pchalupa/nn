@@ -81,7 +81,7 @@ const AppLayout = () => (
 
 export const Route = createFileRoute("/_app")({
 	beforeLoad: () => {
-		if (!authenticated()) throw redirect({ to: "/welcome" });
+		if (!authenticated()) throw redirect({ to: "/sign-in" });
 	},
 	component: AppLayout,
 });

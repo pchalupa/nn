@@ -1,6 +1,6 @@
 {
 	"name": "@nn/id",
-	"version": "0.0.0",
+	"version": "0.1.0",
 	"description": "Local ID generation",
 	"keywords": [],
 	"homepage": "https://github.com/pchalupa/nn/tree/main/packages/id",

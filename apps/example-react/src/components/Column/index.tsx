@@ -1,3 +1,6 @@
+import { Link } from "@tanstack/react-router";
+
+import type { Status } from "../../statuses";
 import { useRead, useUpdate } from "../../store";
 import { Divider } from "../Divider";
 import { Ticket } from "../Ticket";
@@ -5,7 +8,7 @@ import { Header } from "./parts/Header";
 
 interface ColumnProps {
 	title: string;
-	status: "todo" | "in-progress" | "done";
+	status: Status;
 	onAddClick?: () => void;
 }
 
@@ -32,7 +35,9 @@ export const Column = ({ title, status }: ColumnProps) => {
 			<Divider />
 			<div className="flex flex-col gap-y-2">
 				{tickets.map((data) => (
-					<Ticket key={data.id} title={data?.title} description={data?.description} />
+					<Link key={data.id} to="/tickets/$ticketId" params={{ ticketId: data.id }} aria-label={data.title}>
+						<Ticket title={data.title} description={data.description} assignee={data.assignee.name} />
+					</Link>
 				))}
 			</div>
 		</section>

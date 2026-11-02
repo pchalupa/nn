@@ -354,7 +354,10 @@ describe("Store", () => {
 
 	describe("persistence", () => {
 		it("encodes a collection as rows of field entities with their timestamps", () => {
-			const rows = new RGA([createReconciliationStrategy(ticket, new WeakMap()).create({ title: "A" }, "row-1")], "tickets");
+			const rows = new RGA(
+				[createReconciliationStrategy(ticket, new WeakMap()).create({ title: "A" }, "row-1")],
+				"tickets",
+			);
 
 			expect(rows.encode()).toMatchObject({
 				metadata: { kind: "RGA" },

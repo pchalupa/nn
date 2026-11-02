@@ -152,10 +152,19 @@ test.describe("TicketModal", () => {
 		await expect(dialog.getByRole("textbox", { name: "Title" })).toHaveValue("todo");
 	});
 
-	test("should report an unknown ticket", async ({ page }) => {
+	test("should create a ticket from an unknown ticket", async ({ page }) => {
 		await page.goto("/tickets/missing");
 
-		await expect(page.locator("dialog")).toContainText("Ticket not found");
+		const dialog = page.locator("dialog");
+
+		await expect(dialog.getByRole("textbox", { name: "Title" })).toHaveValue("");
+
+		await dialog.getByRole("textbox", { name: "Title" }).fill("Recovered");
+		await dialog.getByRole("button", { name: "Save" }).click();
+
+		await expect(dialog).toBeHidden();
+		await expect(page).toHaveURL(/\/$/);
+		await expect(columnCards(page, "To Do")).toHaveText(/Recovered/);
 	});
 
 	test("should open a ticket from the backlog", async ({ page }) => {

@@ -10,7 +10,7 @@ import { Modal, type ModalHandle } from "../Modal";
 import { TextArea } from "../TextArea";
 
 interface TicketModalProps {
-	id: string;
+	id?: string;
 	onClose: () => void;
 }
 
@@ -35,26 +35,27 @@ export const TicketModal = ({ id, onClose }: TicketModalProps) => {
 	useEffect(() => modalRef.current?.open(), []);
 
 	const handleSubmit = form.handleSubmit((draft) => {
-		updateStore((data) => {
-			const item = data.tickets.find((entry) => entry.id === id);
+		const title = draft.title.trim();
 
-			if (!item) return;
+		if (!ticket) {
+			updateStore((data) => {
+				data.tickets.push({ ...draft, id: crypto.randomUUID(), title });
+			});
+			onClose();
+		} else {
+			updateStore((data) => {
+				const item = data.tickets.find((entry) => entry.id === id);
 
-			item.title = draft.title.trim();
-			item.description = draft.description;
-			item.status = draft.status;
-			item.assignee.name = draft.assignee.name;
-			item.assignee.email = draft.assignee.email;
-		});
+				if (item) {
+					item.title = title;
+					item.description = draft.description;
+					item.status = draft.status;
+					item.assignee.name = draft.assignee.name;
+					item.assignee.email = draft.assignee.email;
+				}
+			});
+		}
 	});
-
-	if (!ticket) {
-		return (
-			<Modal ref={modalRef} onClose={onClose}>
-				<p>{t("ticketNotFound")}</p>
-			</Modal>
-		);
-	}
 
 	return (
 		<Modal ref={modalRef} onClose={onClose}>

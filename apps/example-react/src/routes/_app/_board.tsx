@@ -1,10 +1,10 @@
 import { createFileRoute, Outlet } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 
-import { Column } from "../components/Column";
-import { Skeleton } from "../components/Skeleton";
-import { statusLabels } from "../i18n";
-import { status } from "../store";
+import { Column } from "../../components/Column";
+import { Skeleton } from "../../components/Skeleton";
+import { statusLabels } from "../../i18n";
+import { status } from "../../store";
 
 const Board = () => {
 	const { t } = useTranslation();
@@ -21,6 +21,6 @@ const Board = () => {
 	);
 };
 
-export const Route = createFileRoute("/_board")({
+export const Route = createFileRoute("/_app/_board")({
 	component: Board,
 });

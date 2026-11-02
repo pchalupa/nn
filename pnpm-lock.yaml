@@ -65,9 +65,6 @@ importers:
 
   apps/example-react:
     dependencies:
-      '@nn/guards':
-        specifier: 'workspace:'
-        version: link:../../packages/guards
       '@nn/http-remote':
         specifier: 'workspace:'
         version: link:../../packages/http-remote

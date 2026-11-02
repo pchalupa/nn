@@ -15,7 +15,6 @@
 		"start": "vite"
 	},
 	"dependencies": {
-		"@nn/guards": "workspace:",
 		"@nn/http-remote": "workspace:",
 		"@nn/indexdb-repository": "workspace:*",
 		"@nn/react": "workspace:*",

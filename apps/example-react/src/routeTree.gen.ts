@@ -9,143 +9,199 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as BoardRouteImport } from './routes/_board'
-import { Route as BacklogRouteImport } from './routes/backlog'
-import { Route as BoardIndexRouteImport } from './routes/_board.index'
-import { Route as BoardTicketsTicketIdRouteImport } from './routes/_board.tickets.$ticketId'
-import { Route as BacklogTicketsTicketIdRouteImport } from './routes/backlog.tickets.$ticketId'
+import { Route as AppRouteImport } from './routes/_app'
+import { Route as WelcomeRouteImport } from './routes/welcome'
+import { Route as AppBoardRouteImport } from './routes/_app/_board'
+import { Route as AppBacklogRouteImport } from './routes/_app/backlog'
+import { Route as AppBoardIndexRouteImport } from './routes/_app/_board.index'
+import { Route as AppBoardTicketsTicketIdRouteImport } from './routes/_app/_board.tickets.$ticketId'
+import { Route as AppBacklogTicketsTicketIdRouteImport } from './routes/_app/backlog.tickets.$ticketId'
 
-const BoardRoute = BoardRouteImport.update({
-  id: '/_board',
+const AppRoute = AppRouteImport.update({
+  id: '/_app',
   getParentRoute: () => rootRouteImport,
 } as any)
-const BacklogRoute = BacklogRouteImport.update({
+const WelcomeRoute = WelcomeRouteImport.update({
+  id: '/welcome',
+  path: '/welcome',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AppBoardRoute = AppBoardRouteImport.update({
+  id: '/_board',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppBacklogRoute = AppBacklogRouteImport.update({
   id: '/backlog',
   path: '/backlog',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => AppRoute,
 } as any)
-const BoardIndexRoute = BoardIndexRouteImport.update({
+const AppBoardIndexRoute = AppBoardIndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => BoardRoute,
+  getParentRoute: () => AppBoardRoute,
 } as any)
-const BoardTicketsTicketIdRoute = BoardTicketsTicketIdRouteImport.update({
+const AppBoardTicketsTicketIdRoute = AppBoardTicketsTicketIdRouteImport.update({
   id: '/tickets/$ticketId',
   path: '/tickets/$ticketId',
-  getParentRoute: () => BoardRoute,
+  getParentRoute: () => AppBoardRoute,
 } as any)
-const BacklogTicketsTicketIdRoute = BacklogTicketsTicketIdRouteImport.update({
-  id: '/tickets/$ticketId',
-  path: '/tickets/$ticketId',
-  getParentRoute: () => BacklogRoute,
-} as any)
+const AppBacklogTicketsTicketIdRoute =
+  AppBacklogTicketsTicketIdRouteImport.update({
+    id: '/tickets/$ticketId',
+    path: '/tickets/$ticketId',
+    getParentRoute: () => AppBacklogRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
-  '/': typeof BoardIndexRoute
-  '/backlog': typeof BacklogRouteWithChildren
-  '/tickets/$ticketId': typeof BoardTicketsTicketIdRoute
-  '/backlog/tickets/$ticketId': typeof BacklogTicketsTicketIdRoute
+  '/': typeof AppBoardIndexRoute
+  '/welcome': typeof WelcomeRoute
+  '/backlog': typeof AppBacklogRouteWithChildren
+  '/tickets/$ticketId': typeof AppBoardTicketsTicketIdRoute
+  '/backlog/tickets/$ticketId': typeof AppBacklogTicketsTicketIdRoute
 }
 export interface FileRoutesByTo {
-  '/backlog': typeof BacklogRouteWithChildren
-  '/': typeof BoardIndexRoute
-  '/tickets/$ticketId': typeof BoardTicketsTicketIdRoute
-  '/backlog/tickets/$ticketId': typeof BacklogTicketsTicketIdRoute
+  '/': typeof AppBoardIndexRoute
+  '/welcome': typeof WelcomeRoute
+  '/backlog': typeof AppBacklogRouteWithChildren
+  '/tickets/$ticketId': typeof AppBoardTicketsTicketIdRoute
+  '/backlog/tickets/$ticketId': typeof AppBacklogTicketsTicketIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
-  '/_board': typeof BoardRouteWithChildren
-  '/backlog': typeof BacklogRouteWithChildren
-  '/_board/': typeof BoardIndexRoute
-  '/_board/tickets/$ticketId': typeof BoardTicketsTicketIdRoute
-  '/backlog/tickets/$ticketId': typeof BacklogTicketsTicketIdRoute
+  '/_app': typeof AppRouteWithChildren
+  '/welcome': typeof WelcomeRoute
+  '/_app/_board': typeof AppBoardRouteWithChildren
+  '/_app/backlog': typeof AppBacklogRouteWithChildren
+  '/_app/_board/': typeof AppBoardIndexRoute
+  '/_app/_board/tickets/$ticketId': typeof AppBoardTicketsTicketIdRoute
+  '/_app/backlog/tickets/$ticketId': typeof AppBacklogTicketsTicketIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    '/' | '/backlog' | '/tickets/$ticketId' | '/backlog/tickets/$ticketId'
+    | '/'
+    | '/welcome'
+    | '/backlog'
+    | '/tickets/$ticketId'
+    | '/backlog/tickets/$ticketId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/backlog' | '/' | '/tickets/$ticketId' | '/backlog/tickets/$ticketId'
+  to:
+    | '/'
+    | '/welcome'
+    | '/backlog'
+    | '/tickets/$ticketId'
+    | '/backlog/tickets/$ticketId'
   id:
     | '__root__'
-    | '/_board'
-    | '/backlog'
-    | '/_board/'
-    | '/_board/tickets/$ticketId'
-    | '/backlog/tickets/$ticketId'
+    | '/_app'
+    | '/welcome'
+    | '/_app/_board'
+    | '/_app/backlog'
+    | '/_app/_board/'
+    | '/_app/_board/tickets/$ticketId'
+    | '/_app/backlog/tickets/$ticketId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  BoardRoute: typeof BoardRouteWithChildren
-  BacklogRoute: typeof BacklogRouteWithChildren
+  AppRoute: typeof AppRouteWithChildren
+  WelcomeRoute: typeof WelcomeRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/_board': {
-      id: '/_board'
+    '/_app': {
+      id: '/_app'
       path: ''
       fullPath: '/'
-      preLoaderRoute: typeof BoardRouteImport
+      preLoaderRoute: typeof AppRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/backlog': {
-      id: '/backlog'
+    '/welcome': {
+      id: '/welcome'
+      path: '/welcome'
+      fullPath: '/welcome'
+      preLoaderRoute: typeof WelcomeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_app/_board': {
+      id: '/_app/_board'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AppBoardRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/backlog': {
+      id: '/_app/backlog'
       path: '/backlog'
       fullPath: '/backlog'
-      preLoaderRoute: typeof BacklogRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof AppBacklogRouteImport
+      parentRoute: typeof AppRoute
     }
-    '/_board/': {
-      id: '/_board/'
+    '/_app/_board/': {
+      id: '/_app/_board/'
       path: '/'
       fullPath: '/'
-      preLoaderRoute: typeof BoardIndexRouteImport
-      parentRoute: typeof BoardRoute
+      preLoaderRoute: typeof AppBoardIndexRouteImport
+      parentRoute: typeof AppBoardRoute
     }
-    '/_board/tickets/$ticketId': {
-      id: '/_board/tickets/$ticketId'
+    '/_app/_board/tickets/$ticketId': {
+      id: '/_app/_board/tickets/$ticketId'
       path: '/tickets/$ticketId'
       fullPath: '/tickets/$ticketId'
-      preLoaderRoute: typeof BoardTicketsTicketIdRouteImport
-      parentRoute: typeof BoardRoute
+      preLoaderRoute: typeof AppBoardTicketsTicketIdRouteImport
+      parentRoute: typeof AppBoardRoute
     }
-    '/backlog/tickets/$ticketId': {
-      id: '/backlog/tickets/$ticketId'
+    '/_app/backlog/tickets/$ticketId': {
+      id: '/_app/backlog/tickets/$ticketId'
       path: '/tickets/$ticketId'
       fullPath: '/backlog/tickets/$ticketId'
-      preLoaderRoute: typeof BacklogTicketsTicketIdRouteImport
-      parentRoute: typeof BacklogRoute
+      preLoaderRoute: typeof AppBacklogTicketsTicketIdRouteImport
+      parentRoute: typeof AppBacklogRoute
     }
   }
 }
 
-interface BoardRouteChildren {
-  BoardIndexRoute: typeof BoardIndexRoute
-  BoardTicketsTicketIdRoute: typeof BoardTicketsTicketIdRoute
+interface AppBoardRouteChildren {
+  AppBoardIndexRoute: typeof AppBoardIndexRoute
+  AppBoardTicketsTicketIdRoute: typeof AppBoardTicketsTicketIdRoute
 }
 
-const BoardRouteChildren: BoardRouteChildren = {
-  BoardIndexRoute: BoardIndexRoute,
-  BoardTicketsTicketIdRoute: BoardTicketsTicketIdRoute,
+const AppBoardRouteChildren: AppBoardRouteChildren = {
+  AppBoardIndexRoute: AppBoardIndexRoute,
+  AppBoardTicketsTicketIdRoute: AppBoardTicketsTicketIdRoute,
 }
 
-const BoardRouteWithChildren = BoardRoute._addFileChildren(BoardRouteChildren)
+const AppBoardRouteWithChildren = AppBoardRoute._addFileChildren(
+  AppBoardRouteChildren,
+)
 
-interface BacklogRouteChildren {
-  BacklogTicketsTicketIdRoute: typeof BacklogTicketsTicketIdRoute
+interface AppBacklogRouteChildren {
+  AppBacklogTicketsTicketIdRoute: typeof AppBacklogTicketsTicketIdRoute
 }
 
-const BacklogRouteChildren: BacklogRouteChildren = {
-  BacklogTicketsTicketIdRoute: BacklogTicketsTicketIdRoute,
+const AppBacklogRouteChildren: AppBacklogRouteChildren = {
+  AppBacklogTicketsTicketIdRoute: AppBacklogTicketsTicketIdRoute,
 }
 
-const BacklogRouteWithChildren =
-  BacklogRoute._addFileChildren(BacklogRouteChildren)
+const AppBacklogRouteWithChildren = AppBacklogRoute._addFileChildren(
+  AppBacklogRouteChildren,
+)
+
+interface AppRouteChildren {
+  AppBoardRoute: typeof AppBoardRouteWithChildren
+  AppBacklogRoute: typeof AppBacklogRouteWithChildren
+}
+
+const AppRouteChildren: AppRouteChildren = {
+  AppBoardRoute: AppBoardRouteWithChildren,
+  AppBacklogRoute: AppBacklogRouteWithChildren,
+}
+
+const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
-  BoardRoute: BoardRouteWithChildren,
-  BacklogRoute: BacklogRouteWithChildren,
+  AppRoute: AppRouteWithChildren,
+  WelcomeRoute: WelcomeRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

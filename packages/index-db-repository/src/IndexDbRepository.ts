@@ -19,14 +19,18 @@ export class IndexDbRepository implements Repository {
 		this.transactions.get(name)?.abort();
 
 		const transaction = this.indexDbDatabase.transaction(name, Mode.ReadWrite);
+		const request = transaction.objectStore(name).put(entry, name);
 
 		this.transactions.set(name, transaction);
 
-		try {
-			await this.processRequest(transaction.objectStore(name).put(entry, name));
-		} finally {
+		queueMicrotask(() => {
+			if (this.transactions.get(name) !== transaction) return;
+
 			this.transactions.delete(name);
-		}
+			transaction.commit();
+		});
+
+		await this.processRequest(request);
 	}
 
 	public async get(name: string): Promise<Entry | undefined> {

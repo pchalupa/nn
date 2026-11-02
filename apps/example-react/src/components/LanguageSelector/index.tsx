@@ -1,15 +1,13 @@
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 
-import { defaultLanguage, isLanguage, languages } from "../../i18n";
-import { useRead, useUpdate } from "../../store";
+import { languageNames } from "../../i18n";
+import { language, useRead, useUpdate } from "../../store";
 
 export const LanguageSelector = () => {
 	const { i18n, t } = useTranslation();
-	const language = useRead((data) => data.language);
+	const selectedLanguage = useRead((data) => data.language);
 	const updateStore = useUpdate();
-	// TBD: Language needs to be an enum
-	const selectedLanguage = isLanguage(language) ? language : defaultLanguage;
 
 	// TBD: This should happen on the i18n.ts module level. Component like this should not be responsible for this. Current blocker is missing imperative API for store.
 	useEffect(() => {
@@ -17,11 +15,13 @@ export const LanguageSelector = () => {
 	}, [i18n, selectedLanguage]);
 
 	const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-		const nextLanguage = event.target.value;
+		const nextLanguage = language.literals.find((code) => code === event.target.value);
 
-		updateStore((draft) => {
-			draft.language = nextLanguage;
-		});
+		if (nextLanguage) {
+			updateStore((draft) => {
+				draft.language = nextLanguage;
+			});
+		}
 	};
 
 	return (
@@ -33,9 +33,9 @@ export const LanguageSelector = () => {
 				className="rounded bg-zinc-700 px-2 py-1 text-sm text-zinc-200"
 				aria-label={t("language")}
 			>
-				{Object.entries(languages).map(([code, name]) => (
+				{language.literals.map((code) => (
 					<option key={code} value={code}>
-						{name}
+						{languageNames[code]}
 					</option>
 				))}
 			</select>

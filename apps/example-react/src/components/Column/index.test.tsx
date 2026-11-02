@@ -1,3 +1,4 @@
+import { createMemoryHistory, createRootRoute, createRouter, RouterProvider } from "@tanstack/react-router";
 import { act, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { Suspense } from "react";
@@ -12,9 +13,12 @@ describe("Column", () => {
 		const title = "Test";
 		const status = "todo";
 
+		const routeTree = createRootRoute({ component: () => <Column title={title} status={status} /> });
+		const router = createRouter({ routeTree, history: createMemoryHistory() });
+
 		render(
 			<Suspense fallback={"fallback"}>
-				<Column title={title} status={status} />
+				<RouterProvider router={router} />
 			</Suspense>,
 		);
 

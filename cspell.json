@@ -15,7 +15,10 @@
 		"tombstoned",
 		"Kökörčený",
 		"Kulkarni",
-		"Delegatable"
+		"Delegatable",
+		"webauthn",
+		"ctap",
+		"simplewebauthn"
 	],
 	"ignorePaths": ["docs/{notes,plans,research}"],
 	"useGitignore": true

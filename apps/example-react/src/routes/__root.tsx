@@ -3,10 +3,10 @@ import { Suspense, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import { Button } from "../components/Button";
-import { CreateTicketModal } from "../components/CreateTicketModal";
 import { Divider } from "../components/Divider";
 import { LanguageSelector } from "../components/LanguageSelector";
 import { Skeleton } from "../components/Skeleton";
+import { TicketModal } from "../components/TicketModal";
 import { useRead } from "../store";
 
 const Stats = () => {
@@ -59,7 +59,7 @@ const TopBar = () => {
 			<Button text={t("create")} size="sm" onClick={handleOpen} />
 			{isOpen && (
 				<Suspense>
-					<CreateTicketModal onClose={handleClose} />
+					<TicketModal onClose={handleClose} />
 				</Suspense>
 			)}
 		</header>

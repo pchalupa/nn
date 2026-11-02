@@ -18,7 +18,7 @@ const SignIn = () => {
 		try {
 			await signIn(accounts);
 			navigate({ to: "/" });
-		} catch (error) {
+		} catch {
 			form.setError("root", { message: t("authFailed") });
 		}
 	});

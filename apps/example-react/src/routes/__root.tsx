@@ -1,6 +1,9 @@
 import { createRootRoute, Link, Outlet } from "@tanstack/react-router";
+import { Suspense, useState } from "react";
 import { useTranslation } from "react-i18next";
 
+import { Button } from "../components/Button";
+import { CreateTicketModal } from "../components/CreateTicketModal";
 import { Divider } from "../components/Divider";
 import { LanguageSelector } from "../components/LanguageSelector";
 import { Skeleton } from "../components/Skeleton";
@@ -44,10 +47,32 @@ const SideBar = () => (
 	</div>
 );
 
+const TopBar = () => {
+	const { t } = useTranslation();
+	const [isOpen, setIsOpen] = useState(false);
+
+	const handleOpen = () => setIsOpen(true);
+	const handleClose = () => setIsOpen(false);
+
+	return (
+		<header className="flex flex-row justify-end px-4 pt-4">
+			<Button text={t("create")} size="sm" onClick={handleOpen} />
+			{isOpen && (
+				<Suspense>
+					<CreateTicketModal onClose={handleClose} />
+				</Suspense>
+			)}
+		</header>
+	);
+};
+
 const RootComponent = () => (
 	<div className="flex flex-row bg-zinc-900">
 		<SideBar />
-		<Outlet />
+		<div className="flex flex-1 flex-col">
+			<TopBar />
+			<Outlet />
+		</div>
 	</div>
 );
 

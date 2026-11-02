@@ -134,7 +134,9 @@ describe("authentication", () => {
 		it("throws when the passkey is not one of the account's passkeys", async () => {
 			vi.mocked(startAuthentication).mockResolvedValue(assertion);
 
-			await expect(signIn([{ ...account, passkeys: [{ credentialId: "credential-2" }] }])).rejects.toThrow("Unknown passkey");
+			await expect(signIn([{ ...account, passkeys: [{ credentialId: "credential-2" }] }])).rejects.toThrow(
+				"Unknown passkey",
+			);
 			expect(authenticated()).toBe(false);
 		});
 

@@ -1,5 +1,6 @@
 import { ArraySchema } from "./ArraySchema";
 import { BooleanSchema } from "./BooleanSchema";
+import { EnumerationSchema } from "./EnumerationSchema";
 import { NumberSchema } from "./NumberSchema";
 import { ObjectSchema } from "./ObjectSchema";
 import type { Schema } from "./Schema";
@@ -17,6 +18,12 @@ export function number(): NumberSchema {
 
 export function boolean(): BooleanSchema {
 	return new BooleanSchema();
+}
+
+export function enumeration<const Literals extends readonly [string, ...string[]]>(
+	...literals: Literals
+): EnumerationSchema<Literals> {
+	return new EnumerationSchema(literals);
 }
 
 export function object<Properties extends Record<string, Schema>>(properties: Properties): ObjectSchema<Properties> {

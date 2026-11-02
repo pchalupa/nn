@@ -2,7 +2,7 @@
 "@nn/entities": major
 ---
 
-Groups the concrete entity kinds under `@nn/entities/kinds`, separate from the shared `Entity`, `Codable` and `EntityDecoder` modules. Update imports:
+Groups the concrete entity kinds under `@nn/entities/kinds`, separate from the shared `Entity`, `Codable` and `Codec` modules. Update imports:
 
 ```ts
 import { LWWMap } from "@nn/entities/LWWMap"; // before

@@ -1,10 +1,8 @@
 ---
-"@nn/schema": minor
+"@nn/schema": major
 ---
 
-Adds a static `is` type guard to every schema class, so you can branch on a schema shape and keep the type.
-
-`ArraySchema.is(value)` takes an `unknown` value and narrows it to `ArraySchema`:
+Exports every schema class from its own subpath and adds a static `is` type guard to each, so you can branch on a schema shape and keep the type.
 
 ```ts
 import { ArraySchema } from "@nn/schema/ArraySchema";
@@ -14,6 +12,11 @@ if (ArraySchema.is(shape)) {
 }
 ```
 
-`Schema.is` matches any schema, and `StringSchema`, `NumberSchema`, `BooleanSchema`, `ObjectSchema` and `ArraySchema` override it with their own. The guards check the instance, not the `type` field, so a plain object that looks like a schema does not pass.
+Import `StringSchema`, `NumberSchema`, `BooleanSchema`, `ObjectSchema` and `ArraySchema` from `@nn/schema/<ClassName>`. `Schema.is` matches any schema. The guards check the instance, not the `type` field, so a plain object that looks like a schema does not pass.
 
-Every schema class is now a package export, so you can import the class itself from `@nn/schema/StringSchema`, `@nn/schema/NumberSchema`, `@nn/schema/BooleanSchema`, `@nn/schema/ObjectSchema`, `@nn/schema/ArraySchema` and `@nn/schema/Schema`. The root export is unchanged.
+The package root keeps the builders and the `Schema` type but no longer exports the `ArraySchema` and `ObjectSchema` types. `Infer` is renamed `InferStateType`:
+
+```ts
+import type { Infer } from "@nn/schema"; // before
+import type { InferStateType } from "@nn/schema"; // after
+```

@@ -1,25 +1,17 @@
 import { expect, test } from "@playwright/test";
 
 test.describe("Column", () => {
-	test("should add a ticket", async ({ page }) => {
+	test("should keep a created ticket after a reload", async ({ page }) => {
 		await page.goto("/");
 
 		const column = page.locator("section").filter({ has: page.getByRole("heading", { name: "To Do" }) });
-		const tickets = column.getByRole("article");
+		const dialog = page.locator("dialog");
 
-		await expect(tickets).toHaveCount(0);
+		await expect(column.getByRole("article")).toHaveCount(0);
 
-		await column.getByRole("button", { name: "+" }).click();
-
-		await expect(tickets).toHaveCount(1);
-	});
-
-	test("should keep a ticket after a reload", async ({ page }) => {
-		await page.goto("/");
-
-		const column = page.locator("section").filter({ has: page.getByRole("heading", { name: "To Do" }) });
-
-		await column.getByRole("button", { name: "+" }).click();
+		await page.getByRole("button", { name: "Create" }).click();
+		await dialog.getByRole("textbox", { name: "Title" }).fill("Persisted");
+		await dialog.getByRole("button", { name: "Save" }).click();
 		await expect(column.getByRole("article")).toHaveCount(1);
 
 		await page.reload();

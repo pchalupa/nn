@@ -11,7 +11,7 @@ graph TD
   httpRemote["@nn/http-remote"]
   indexdbRepository["@nn/indexdb-repository"]
   repository["@nn/repository"]
-  eventEmitter["@nn/event-emitter"]
+  observable["@nn/observable"]
   schema["@nn/schema"]
   remote["@nn/remote"]
   time["@nn/time"]
@@ -19,15 +19,17 @@ graph TD
   react --> store
 
   store --> repository
-  store --> eventEmitter
+  store --> observable
   store --> entities
   store --> schema
 
   entities --> time
-  entities --> eventEmitter
+  entities --> observable
 
   httpRemote --> remote
-  httpRemote --> eventEmitter
+  httpRemote --> observable
+
+  remote --> observable
 
   indexdbRepository --> repository
 
@@ -40,9 +42,9 @@ graph TD
 
 ## Notes
 
-- The graph is acyclic. `@nn/event-emitter` has the most consumers (`@nn/store`,
-  `@nn/entities`, `@nn/http-remote`).
-- `@nn/time`, `@nn/event-emitter`, `@nn/remote`, `@nn/repository` and `@nn/schema`
+- The graph is acyclic. `@nn/observable` has the most consumers (`@nn/store`,
+  `@nn/entities`, `@nn/http-remote`, `@nn/remote`).
+- `@nn/time`, `@nn/observable`, `@nn/repository` and `@nn/schema`
   are leaves — they depend on nothing inside the workspace.
 - `@nn/http-remote` and `@nn/indexdb-repository` are adapters implementing the
   `@nn/remote` and `@nn/repository` abstractions. No library package depends on

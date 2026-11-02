@@ -19,7 +19,6 @@
 		"ts:check": "tsc --noEmit"
 	},
 	"dependencies": {
-		"@nn/event-emitter": "workspace:",
 		"@nn/remote": "workspace:"
 	},
 	"devDependencies": {

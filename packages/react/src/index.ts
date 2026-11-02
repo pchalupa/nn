@@ -1,36 +1,42 @@
-import type { Observable } from "@nn/event-emitter/Observable";
-import type { Remote } from "@nn/remote";
-import type { Repository } from "@nn/repository";
-import type { ObjectSchema, Schema } from "@nn/schema";
+import type { InferStateType, Schema } from "@nn/schema";
+import type { ObjectSchema } from "@nn/schema/ObjectSchema";
 import { Store } from "@nn/store";
-import { useDebugValue, use as usePromise, useRef, useSyncExternalStore } from "react";
+import { useCallback, useDebugValue, use as usePromise } from "react";
+import { useSyncExternalStoreWithSelector } from "use-sync-external-store/with-selector";
 
-import { getSnapshot } from "./getSnapshot";
-import { subscribe } from "./subscribe";
+import { equal } from "./equal";
 
-export type Selector<StoreSchema, Snapshot extends Observable = Observable> = (store: StoreSchema) => Snapshot;
+type Snapshot<Value> = {
+	readonly [Key in keyof Value]: Snapshot<Value[Key]>;
+};
 
-export async function createStore<StoreSchema extends ObjectSchema<Record<string, Schema>>>(options: {
-	schema: StoreSchema;
-	repository?: Repository;
-	remote?: Remote;
-}) {
-	return Store.fromSchema(options);
-}
+type Update<Data> = (recipe: (draft: Data) => void) => void;
 
-export function use<StoreSchema extends object>(promisedStore: Promise<Store<StoreSchema>>) {
-	return function useStore<Type extends Observable>(selector: Selector<StoreSchema, Type>) {
+export const createStore = Store.fromSchema;
+
+export function use<StoreSchema extends ObjectSchema<Record<string, Schema>>>(
+	promisedStore: Promise<Store<StoreSchema>>,
+) {
+	type Data = InferStateType<StoreSchema>;
+
+	function useRead<Result>(selector: (data: Snapshot<Data>) => Result): Result {
 		const store = usePromise(promisedStore);
-		const selectorRef = useRef(selector);
-		const subscribeRef = useRef(subscribe(store));
-		const getSnapshotRef = useRef(getSnapshot(selectorRef.current, store));
-		const snapshot = store.getSnapshotOf<Type>(selectorRef.current);
 
-		// TODO: get snapshot id here
-		// TODO: Add server get snapshot
-		useSyncExternalStore(subscribeRef.current, getSnapshotRef.current);
-		useDebugValue(snapshot);
+		const getSnapshot = useCallback(() => store.state.read(), [store]);
+		const subscribe = useCallback((observer: () => void) => store.subscribe(observer), [store]);
 
-		return snapshot;
-	};
+		const value = useSyncExternalStoreWithSelector(subscribe, getSnapshot, getSnapshot, selector, equal);
+
+		useDebugValue(value);
+
+		return value;
+	}
+
+	function useUpdate(): Update<Data> {
+		const store = usePromise(promisedStore);
+
+		return useCallback<Update<Data>>((recipe) => store.state.update(recipe), [store]);
+	}
+
+	return { useRead, useUpdate };
 }

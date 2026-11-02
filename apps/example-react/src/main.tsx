@@ -11,8 +11,11 @@ declare module "@tanstack/react-router" {
 		router: typeof router;
 	}
 }
+const app = document.getElementById("app");
 
-const root = ReactDOM.createRoot(document.getElementById("app")!);
+if (!app) throw new Error("No app root found!");
+
+const root = ReactDOM.createRoot(app);
 const router = createRouter({
 	routeTree,
 });

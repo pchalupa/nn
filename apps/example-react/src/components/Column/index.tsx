@@ -1,4 +1,4 @@
-import { useStore } from "../../store";
+import { useRead, useUpdate } from "../../store";
 import { Divider } from "../Divider";
 import { Ticket } from "../Ticket";
 import { Header } from "./parts/Header";
@@ -10,15 +10,19 @@ interface ColumnProps {
 }
 
 export const Column = ({ title, status }: ColumnProps) => {
-	const tickets = useStore((store) => store.tickets.filter((ticket) => ticket.status === status));
+	const tickets = useRead((data) => data.tickets.filter((ticket) => ticket.status === status));
+	const updateStore = useUpdate();
 
 	const handleAddClick = () => {
-		tickets.push({
-			id: crypto.randomUUID(),
-			title: status,
-			status,
-			description: "test",
-			assignee: { name: "test", email: "test" },
+		// TODO: Update should inherit the selector from use store
+		updateStore((draft) => {
+			draft.tickets.push({
+				id: crypto.randomUUID(),
+				title: status,
+				status,
+				description: "test",
+				assignee: { name: "test", email: "test" },
+			});
 		});
 	};
 

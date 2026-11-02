@@ -8,7 +8,7 @@ import { LanguageSelector } from "../components/LanguageSelector";
 import { SignOut } from "../components/SignOut";
 import { Skeleton } from "../components/Skeleton";
 import { TicketModal } from "../components/TicketModal";
-import { authenticated } from "../modules/authentication";
+import { authenticated } from "../modules/authentication/session";
 import { useRead } from "../store";
 
 const Stats = () => {

@@ -1,7 +1,7 @@
 import { useNavigate } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 
-import { signOut } from "../../modules/authentication";
+import { signOut } from "../../modules/authentication/session";
 
 export const SignOut = () => {
 	const { t } = useTranslation();

@@ -5,7 +5,8 @@ import { useTranslation } from "react-i18next";
 import { classNames } from "../components/Button/index.styles";
 import { Divider } from "../components/Divider";
 import { Input } from "../components/Input";
-import { authenticated, signUp } from "../modules/authentication";
+import { signUp } from "../modules/authentication/authentication";
+import { authenticated } from "../modules/authentication/session";
 import { useUpdate } from "../store";
 
 const SignUp = () => {

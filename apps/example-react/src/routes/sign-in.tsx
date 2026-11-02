@@ -4,7 +4,8 @@ import { useTranslation } from "react-i18next";
 
 import { classNames } from "../components/Button/index.styles";
 import { Divider } from "../components/Divider";
-import { authenticated, signIn, UnknownAccountError } from "../modules/authentication";
+import { signIn } from "../modules/authentication/authentication";
+import { authenticated } from "../modules/authentication/session";
 import { useRead } from "../store";
 
 const SignIn = () => {
@@ -18,7 +19,7 @@ const SignIn = () => {
 			await signIn(accounts);
 			navigate({ to: "/" });
 		} catch (error) {
-			form.setError("root", { message: t(error instanceof UnknownAccountError ? "accountNotOnDevice" : "authFailed") });
+			form.setError("root", { message: t("authFailed") });
 		}
 	});
 

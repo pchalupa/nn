@@ -18,7 +18,6 @@ const defaultLanguage: Language = "en";
 const resources = {
 	en: {
 		translation: {
-			accountNotOnDevice: "This account isn't on this device. Sign up to create it here.",
 			addDescription: "Add a description",
 			assignee: "Assignee",
 			authFailed: "Couldn't verify your passkey. Try again.",
@@ -45,7 +44,6 @@ const resources = {
 	},
 	cs: {
 		translation: {
-			accountNotOnDevice: "Tento účet na tomto zařízení není. Zaregistrujte se a vytvořte ho tady.",
 			addDescription: "Přidat popis",
 			assignee: "Řešitel",
 			authFailed: "Přístupový klíč se nepodařilo ověřit. Zkuste to znovu.",

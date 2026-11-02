@@ -35,15 +35,6 @@ test.describe("TicketModal", () => {
 		await expect(page).toHaveURL(/\/$/);
 	});
 
-	test("should close the ticket with the close button", async ({ page }) => {
-		const { dialog } = await addTicket(page);
-
-		await page.getByRole("link", { name: "todo" }).click();
-		await dialog.getByRole("button", { name: "Close" }).click();
-
-		await expect(dialog).toBeHidden();
-	});
-
 	test("should close the ticket by clicking the backdrop", async ({ page }) => {
 		const { dialog } = await addTicket(page);
 

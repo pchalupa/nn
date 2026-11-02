@@ -13,4 +13,5 @@ const BacklogTicket = () => {
 
 export const Route = createFileRoute("/backlog/tickets/$ticketId")({
 	component: BacklogTicket,
+	wrapInSuspense: true,
 });

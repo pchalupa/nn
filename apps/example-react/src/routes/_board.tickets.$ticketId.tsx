@@ -13,4 +13,5 @@ const BoardTicket = () => {
 
 export const Route = createFileRoute("/_board/tickets/$ticketId")({
 	component: BoardTicket,
+	wrapInSuspense: true,
 });

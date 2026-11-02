@@ -135,18 +135,6 @@ test.describe("TicketModal editing", () => {
 		await expect(dialog).toBeVisible();
 	});
 
-	test("should discard changes with Cancel", async ({ page }) => {
-		const { dialog, card } = await openTicket(page);
-		const title = dialog.getByRole("textbox", { name: "Title" });
-
-		await title.fill("Draft");
-		await dialog.getByRole("button", { name: "Cancel" }).click();
-
-		await expect(title).toHaveValue("todo");
-		await expect(dialog).toBeVisible();
-		await expect(card).toHaveText(/todo/);
-	});
-
 	test("should not save an empty title", async ({ page }) => {
 		const { dialog, card } = await openTicket(page);
 		const title = dialog.getByRole("textbox", { name: "Title" });

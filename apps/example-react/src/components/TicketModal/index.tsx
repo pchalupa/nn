@@ -48,14 +48,24 @@ export const TicketModal = ({ id, onClose }: TicketModalProps) => {
 		});
 	});
 
-	if (!ticket) return null;
+	if (!ticket) {
+		return (
+			<Modal ref={modalRef} onClose={onClose}>
+				<p>{t("ticketNotFound")}</p>
+			</Modal>
+		);
+	}
 
 	return (
 		<Modal ref={modalRef} onClose={onClose}>
 			<form className="flex flex-col gap-y-6" noValidate onSubmit={handleSubmit}>
 				<div className="flex flex-col gap-6 md:flex-row">
 					<div className="flex flex-1 flex-col gap-y-4">
-						<Input label={t("title")} size="lg" {...form.register("title")} />
+						<Input
+							label={t("title")}
+							size="lg"
+							{...form.register("title", { validate: (value) => value.trim() !== "" })}
+						/>
 						<TextArea label={t("description")} {...form.register("description")} />
 					</div>
 					<div className="flex w-full flex-col gap-y-4 rounded bg-zinc-900 p-4 md:w-64">

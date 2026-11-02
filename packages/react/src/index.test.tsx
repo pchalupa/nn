@@ -1,555 +1,400 @@
 // @vitest-environment jsdom
-import { array, object, string } from "@nn/schema";
-import { type DataFromSchema, Store } from "@nn/store";
+import { array, type InferStateType, object, string } from "@nn/schema";
+import { Store } from "@nn/store";
 import { act, cleanup, render, screen } from "@testing-library/react";
-import { Suspense } from "react";
+import { startTransition, StrictMode, Suspense, useState, type ReactNode } from "react";
+import { renderToString } from "react-dom/server";
 import { afterEach, describe, expect, expectTypeOf, it, vi } from "vitest";
 
 import { createStore, use } from "./index";
 
-const setup = async () => {
-	const store = await createStore({
-		schema: object({ tickets: array(object({ status: string() })), language: string() }),
-	});
-	store.update(["tickets"], (rows) => {
-		rows.push({ key: "1", status: "todo" }, { key: "2", status: "done" }, { key: "3", status: "done" });
-		return rows;
-	});
-	store.update(["language"], () => "en");
-
-	return { store, useStore: use(Promise.resolve(store)) };
-};
-
-const mount = async (ui: React.ReactNode) => {
-	let rendered: ReturnType<typeof render> | undefined;
-
-	await act(async () => {
-		rendered = render(<Suspense fallback="loading">{ui}</Suspense>);
-	});
-
-	const rerender = async (next: React.ReactNode) => {
-		await act(async () => {
-			rendered?.rerender(<Suspense fallback="loading">{next}</Suspense>);
-		});
-	};
-
-	const unmount = async () => {
-		await act(async () => {
-			rendered?.unmount();
-		});
-	};
-
-	return { rerender, unmount };
-};
-
-describe("createStore", () => {
-	afterEach(cleanup);
-
-	it("creates a store", async () => {
-		const store = await createStore({ schema: object({}) });
-
-		expect(store).toBeInstanceOf(Store);
-	});
-
-	it("exposes the schema as a view", async () => {
-		const store = await createStore({
-			schema: object({ tickets: array(object({ title: string() })), language: string() }),
-		});
-
-		expect(store.read(["tickets"])).toStrictEqual([]);
-		expect(store.read(["language"])).toBeUndefined();
-	});
+const schema = object({
+	tickets: array(object({ id: string(), title: string(), status: string() })),
+	language: string(),
 });
 
-describe("useStore", () => {
-	afterEach(cleanup);
+type Data = InferStateType<typeof schema>;
 
-	it("renders the selected view", async () => {
-		const { useStore } = await setup();
-		const Tickets = () => {
-			const [tickets] = useStore("tickets");
+const setup = async () => {
+	const store = await createStore({ schema });
 
-			return (
-				<ul>
-					{tickets.map((row) => (
-						<li key={row.key}>{row.status}</li>
-					))}
-				</ul>
-			);
-		};
-
-		await mount(<Tickets />);
-
-		expect(screen.getAllByRole("listitem")).toHaveLength(3);
-	});
-
-	it("re-renders when the selection changes", async () => {
-		const { store, useStore } = await setup();
-		const Tickets = () => {
-			const [rows] = useStore("tickets");
-
-			return <span data-testid="count">{rows.length}</span>;
-		};
-
-		await mount(<Tickets />);
-
-		expect(screen.getByTestId("count").textContent).toBe("3");
-
-		await act(async () => {
-			store.update(["tickets"], (rows) => {
-				rows.push({ key: "4", status: "todo" });
-				return rows;
-			});
-		});
-
-		expect(screen.getByTestId("count").textContent).toBe("4");
-	});
-
-	it("re-renders when a field of a row changes", async () => {
-		const { store, useStore } = await setup();
-		const Tickets = () => {
-			const [rows] = useStore("tickets");
-
-			return <span data-testid="statuses">{rows.map((row) => row.status).join(",")}</span>;
-		};
-
-		await mount(<Tickets />);
-
-		expect(screen.getByTestId("statuses").textContent).toBe("todo,done,done");
-
-		await act(async () => {
-			store.update(["tickets", "2", "status"], () => "todo");
-		});
-
-		expect(screen.getByTestId("statuses").textContent).toBe("todo,todo,done");
-	});
-
-	it("does not re-render when an unrelated property changes", async () => {
-		const { store, useStore } = await setup();
-		const rendered = vi.fn();
-		const Tickets = () => {
-			const [rows] = useStore("tickets");
-
-			rendered();
-
-			return <span data-testid="count">{rows.length}</span>;
-		};
-
-		await mount(<Tickets />);
-
-		const before = rendered.mock.calls.length;
-
-		await act(async () => {
-			store.update(["language"], () => "cs");
-		});
-
-		expect(rendered).toHaveBeenCalledTimes(before);
-	});
-
-	it("refreshes a row snapshot when another row changes", async () => {
-		const { store, useStore } = await setup();
-		const rendered = vi.fn();
-		const Ticket = () => {
-			const [row] = useStore("tickets", "1");
-			rendered();
-			return <span>{row?.status}</span>;
-		};
-
-		await mount(<Ticket />);
-		const before = rendered.mock.calls.length;
-
-		await act(async () => {
-			store.update(["tickets", "2", "status"], () => "review");
-		});
-
-		expect(rendered.mock.calls.length).toBeGreaterThan(before);
-		expect(screen.getByText("todo")).toBeDefined();
-
-		await act(async () => {
-			store.update(["tickets", "1", "status"], () => "review");
-		});
-
-		expect(rendered.mock.calls.length).toBeGreaterThan(before);
-		expect(screen.getByText("review")).toBeDefined();
-	});
-
-	it("refreshes rows and collections when a row changes", async () => {
-		const { store, useStore } = await setup();
-		const rowRendered = vi.fn();
-		const collectionRendered = vi.fn();
-		const Ticket = () => {
-			const [row] = useStore("tickets", "1");
-			rowRendered();
-			return <span data-testid="row">{row?.status}</span>;
-		};
-		const Tickets = () => {
-			const [rows] = useStore("tickets");
-			collectionRendered();
-			return <span data-testid="collection">{rows.map((row) => row.status).join(",")}</span>;
-		};
-
-		await mount(
-			<>
-				<Ticket />
-				<Tickets />
-			</>,
+	store.state.update((draft) => {
+		draft.tickets.push(
+			{ id: "1", title: "First", status: "todo" },
+			{ id: "2", title: "Second", status: "done" },
+			{ id: "3", title: "Third", status: "done" },
 		);
-		const rowBefore = rowRendered.mock.calls.length;
-		const collectionBefore = collectionRendered.mock.calls.length;
-
-		await act(async () => {
-			store.update(["tickets", "1", "status"], () => "progress");
-		});
-
-		expect(rowRendered.mock.calls.length).toBeGreaterThan(rowBefore);
-		expect(collectionRendered.mock.calls.length).toBeGreaterThan(collectionBefore);
-		expect(screen.getByTestId("row").textContent).toBe("progress");
-		expect(screen.getByTestId("collection").textContent).toBe("progress,done,done");
-
-		await act(async () => {
-			store.update(["tickets", "1", "status"], () => "review");
-		});
-
-		expect(rowRendered.mock.calls.length).toBeGreaterThan(rowBefore);
-		expect(collectionRendered.mock.calls.length).toBeGreaterThan(collectionBefore);
-		expect(screen.getByTestId("row").textContent).toBe("review");
-		expect(screen.getByTestId("collection").textContent).toBe("review,done,done");
+		draft.language = "en";
 	});
 
-	it("keeps collection reads stable when a component filters rows", async () => {
-		const { store, useStore } = await setup();
-		const rendered = vi.fn();
-		const Column = ({ status }: { status: string }) => {
-			const [tickets] = useStore("tickets");
-			const rows = tickets.filter((row) => row.status === status);
+	return { store, ...use(Promise.resolve(store)) };
+};
 
-			rendered();
+const mount = async (ui: ReactNode) => {
+	const rendered = await act(async () => render(<Suspense fallback="loading">{ui}</Suspense>));
 
-			return <span data-testid="count">{rows.length}</span>;
-		};
+	return {
+		rerender: (next: ReactNode) => act(async () => rendered.rerender(<Suspense fallback="loading">{next}</Suspense>)),
+		unmount: () => act(async () => rendered.unmount()),
+	};
+};
 
-		await mount(<Column status="done" />);
-
-		const before = rendered.mock.calls.length;
-
-		await act(async () => {
-			store.update(["language"], () => "cs");
-		});
-
-		expect(rendered).toHaveBeenCalledTimes(before);
-		expect(screen.getByTestId("count").textContent).toBe("2");
+describe("@nn/react", () => {
+	afterEach(() => {
+		cleanup();
 	});
 
-	it("reads and updates the row addressed by a changing prop", async () => {
-		const { store, useStore } = await setup();
-		const Ticket = ({ rowKey }: { rowKey: string }) => {
-			const [status, update] = useStore("tickets", rowKey, "status");
+	describe("createStore", () => {
+		it("creates schema-shaped initialized state", async () => {
+			const store = await createStore({ schema });
 
-			return (
-				<button type="button" onClick={() => update(() => "review")}>
-					{status}
-				</button>
-			);
-		};
-
-		const { rerender } = await mount(<Ticket rowKey="1" />);
-
-		expect(screen.getByRole("button").textContent).toBe("todo");
-
-		await rerender(<Ticket rowKey="2" />);
-
-		expect(screen.getByRole("button").textContent).toBe("done");
-
-		await act(async () => {
-			screen.getByRole("button").click();
+			expect(store).toBeInstanceOf(Store);
+			expect(store.state.read()).toStrictEqual({ tickets: [], language: "" });
 		});
-
-		expect(screen.getByRole("button").textContent).toBe("review");
-		expect(store.read(["tickets", "1", "status"])).toBe("todo");
-		expect(store.read(["tickets", "2", "status"])).toBe("review");
 	});
 
-	it("keeps an equal recipe silent after the row-key prop changes", async () => {
-		const { store, useStore } = await setup();
-		const rendered = vi.fn();
-		const Ticket = ({ rowKey }: { rowKey: string }) => {
-			const [row, update] = useStore("tickets", rowKey);
-			rendered();
-			return (
-				<>
-					<span>{row?.status}</span>
-					<button type="button" onClick={() => update((draft) => ({ ...draft }))}>
-						Equal
-					</button>
-					<button type="button" onClick={() => update((draft) => ({ ...draft, status: "review" }))}>
-						Change
-					</button>
-				</>
-			);
-		};
-		const { rerender } = await mount(<Ticket rowKey="1" />);
-		await rerender(<Ticket rowKey="2" />);
-		const before = rendered.mock.calls.length;
-		await act(async () => screen.getByRole("button", { name: "Equal" }).click());
-		expect(rendered).toHaveBeenCalledTimes(before);
-		await act(async () => screen.getByRole("button", { name: "Change" }).click());
-		expect(rendered.mock.calls.length).toBeGreaterThan(before);
-		expect(store.read(["tickets", "1", "status"])).toBe("todo");
-		expect(store.read(["tickets", "2", "status"])).toBe("review");
-		expect(screen.getByText("review")).toBeDefined();
-	});
+	describe("useRead", () => {
+		it("renders selected rows and updates only when their data changes", async () => {
+			const { store, useRead } = await setup();
+			const rendered = vi.fn();
+			const Column = () => {
+				const tickets = useRead((data) => data.tickets.filter((ticket) => ticket.status === "todo"));
 
-	it("uses the returned nested object instead of draft mutations", async () => {
-		const store = await createStore({
-			schema: object({ tickets: array(object({ assignee: object({ name: string() }) })) }),
-		});
-		store.update(["tickets"], () => [{ key: "1", assignee: { name: "Ann" } }]);
-		const useStore = use(Promise.resolve(store));
-		const Assignee = () => {
-			const [assignee, update] = useStore("tickets", "1", "assignee");
-			return (
-				<button
-					type="button"
-					onClick={() =>
-						update((draft) => {
-							draft.name = "Ignored";
-							return { name: "Returned" };
-						})
-					}
-				>
-					{assignee?.name}
-				</button>
-			);
-		};
-		await mount(<Assignee />);
-		await act(async () => screen.getByRole("button").click());
-		expect(screen.getByRole("button").textContent).toBe("Returned");
-		expect(store.read(["tickets", "1", "assignee", "name"])).toBe("Returned");
-	});
+				rendered();
 
-	it("clears a scalar root when its updater returns undefined", async () => {
-		const { store, useStore } = await setup();
-		const Language = () => {
-			const [language, update] = useStore("language");
-			return (
-				<button type="button" onClick={() => update(() => undefined)}>
-					{language ?? "missing"}
-				</button>
-			);
-		};
-		await mount(<Language />);
-		expect(screen.getByRole("button").textContent).toBe("en");
-		await act(async () => screen.getByRole("button").click());
-		expect(screen.getByRole("button").textContent).toBe("missing");
-		expect(store.read(["language"])).toBeUndefined();
-	});
-
-	it("writes through the updater", async () => {
-		const { store, useStore } = await setup();
-		const Tickets = () => {
-			const [rows, update] = useStore("tickets");
-			const handleClick = () =>
-				update((draft) => {
-					draft.push({ key: "4", status: "todo" });
-					return draft;
-				});
-			const invalid = () =>
-				// @ts-expect-error The hook updater requires the next value.
-				update((draft) => {
-					draft.push({ key: "5", status: "todo" });
-				});
-			expectTypeOf(invalid).toBeFunction();
-
-			return (
-				<button type="button" onClick={handleClick}>
-					{rows.length}
-				</button>
-			);
-		};
-
-		await mount(<Tickets />);
-
-		await act(async () => {
-			screen.getByRole("button").click();
-		});
-
-		expect(screen.getByRole("button").textContent).toBe("4");
-		expect(store.read(["tickets"]).at(-1)).toStrictEqual({ key: "4", status: "todo" });
-	});
-
-	it("infers readonly nested snapshots and writable recipes from the schema", async () => {
-		const store = await createStore({
-			schema: object({ tickets: array(object({ assignee: object({ name: string() }) })) }),
-		});
-		store.update(["tickets"], (rows) => {
-			rows.push({ key: "1", assignee: { name: "Ann" } });
-			return rows;
-		});
-		const useStore = use(Promise.resolve(store));
-		const Assignee = () => {
-			const [assignee, update] = useStore("tickets", "1", "assignee");
-			expectTypeOf(assignee).toEqualTypeOf<{ readonly name: string } | undefined>();
-			return (
-				<button
-					type="button"
-					onClick={() =>
-						update((draft) => {
-							expectTypeOf(draft).toEqualTypeOf<{ name: string }>();
-							draft.name = "Bob";
-							return draft;
-						})
-					}
-				>
-					{assignee?.name}
-				</button>
-			);
-		};
-
-		await mount(<Assignee />);
-		expect(screen.getByRole("button").textContent).toBe("Ann");
-		await act(async () => {
-			screen.getByRole("button").click();
-		});
-		expect(screen.getByRole("button").textContent).toBe("Bob");
-		expect(store.read(["tickets", "1", "assignee", "name"])).toBe("Bob");
-	});
-
-	it("writes through the updater for a register", async () => {
-		const { store, useStore } = await setup();
-		const Language = () => {
-			const [language, setLanguage] = useStore("language");
-
-			return (
-				<button type="button" onClick={() => setLanguage(() => "cs")}>
-					{language}
-				</button>
-			);
-		};
-
-		await mount(<Language />);
-
-		expect(screen.getByRole("button").textContent).toBe("en");
-
-		await act(async () => {
-			screen.getByRole("button").click();
-		});
-
-		expect(screen.getByRole("button").textContent).toBe("cs");
-		expect(store.read(["language"])).toBe("cs");
-	});
-
-	it("refreshes a nested snapshot when a sibling field changes", async () => {
-		const store = await createStore({
-			schema: object({
-				tickets: array(
-					object({
-						title: string(),
-						assignee: object({ name: string(), key: string() }),
-					}),
-				),
-			}),
-		});
-		store.update(["tickets"], (rows) => {
-			rows.push({ key: "1", title: "First", assignee: { name: "Ann", key: "data" } });
-			return rows;
-		});
-		const useStore = use(Promise.resolve(store));
-		const rendered = vi.fn();
-		const Assignee = () => {
-			const [assignee, update] = useStore("tickets", "1", "assignee");
-			expectTypeOf(assignee).toEqualTypeOf<{ readonly name: string; readonly key: string } | undefined>();
-			rendered();
-			return (
-				<button
-					type="button"
-					onClick={() =>
-						update((draft) => {
-							expectTypeOf(draft.key).toEqualTypeOf<string>();
-							draft.name = "Bob";
-							draft.key = "changed";
-							return draft;
-						})
-					}
-				>
-					{assignee?.name}
-				</button>
-			);
-		};
-		await mount(<Assignee />);
-		const before = rendered.mock.calls.length;
-		await act(async () => {
-			store.update(["tickets", "1", "title"], () => "Second");
-		});
-		expect(rendered.mock.calls.length).toBeGreaterThan(before);
-		expect(screen.getByRole("button").textContent).toBe("Ann");
-		await act(async () => {
-			screen.getByRole("button").click();
-		});
-		expect(rendered.mock.calls.length).toBeGreaterThan(before);
-		expect(screen.getByRole("button").textContent).toBe("Bob");
-		expect(store.read(["tickets", "1", "assignee", "key"])).toBe("changed");
-	});
-
-	it("resolves a retained setter after row deletion and replacement", async () => {
-		const { store, useStore } = await setup();
-		let retained: ((recipe: (value: string) => string) => void) | undefined;
-		const Ticket = () => {
-			const [status, update] = useStore("tickets", "1", "status");
-			retained ??= update;
-			return <span>{status ?? "missing"}</span>;
-		};
-		await mount(<Ticket />);
-		const update = retained;
-		if (!update) throw new Error("Expected updater");
-		await act(async () => {
-			store.update(["tickets"], (rows) => rows.filter((row) => row.key !== "1"));
-		});
-		const recipe = vi.fn(() => "review");
-		expect(() => update(recipe)).toThrow("missing row");
-		expect(recipe).not.toHaveBeenCalled();
-		await act(async () => {
-			store.update(["tickets"], (rows) => {
-				rows.push({ key: "1", status: "fresh" });
-				return rows;
-			});
-			update(recipe);
-		});
-		expect(recipe).toHaveBeenCalledTimes(1);
-		expect(store.read(["tickets", "1", "status"])).toBe("review");
-		expect(screen.getByText("review")).toBeDefined();
-	});
-
-	it("keeps its subscription across renders and unsubscribes on unmount", async () => {
-		const { store, useStore } = await setup();
-		const subscribe = store.subscribe.bind(store);
-		const unsubscribed = vi.fn();
-		const subscribed = vi.spyOn(store, "subscribe").mockImplementation((listener) => {
-			const unsubscribe = subscribe(listener);
-			return () => {
-				unsubscribe();
-				unsubscribed();
+				return (
+					<ul>
+						{tickets.map((ticket) => (
+							<li key={ticket.id}>{ticket.title}</li>
+						))}
+					</ul>
+				);
 			};
+
+			await mount(<Column />);
+			const renders = rendered.mock.calls.length;
+
+			await act(async () =>
+				store.state.update((draft) => {
+					draft.tickets[1].title = "Elsewhere";
+					draft.language = "cs";
+				}),
+			);
+			expect(rendered).toHaveBeenCalledTimes(renders);
+			expect(screen.getAllByRole("listitem")).toHaveLength(1);
+
+			await act(async () =>
+				store.state.update((draft) => {
+					draft.tickets[0].title = "Changed";
+				}),
+			);
+			expect(screen.getByText("Changed")).toBeDefined();
+			expect(rendered.mock.calls.length).toBeGreaterThan(renders);
 		});
-		const Ticket = ({ rowKey }: { rowKey: string }) => {
-			const [status] = useStore("tickets", rowKey, "status");
-			return <span>{status}</span>;
-		};
-		const { rerender, unmount } = await mount(<Ticket rowKey="1" />);
 
-		await rerender(<Ticket rowKey="2" />);
+		it("does not rerender when none of several reads change", async () => {
+			const { store, useRead } = await setup();
+			const rendered = vi.fn();
+			const Summary = () => {
+				const language = useRead((data) => data.language);
+				const count = useRead((data) => data.tickets.length);
+				const title = useRead((data) => data.tickets[0]?.title);
 
-		expect(subscribed).toHaveBeenCalledTimes(1);
-		expect(unsubscribed).not.toHaveBeenCalled();
+				rendered();
 
-		await unmount();
+				return <span>{`${language}:${count}:${title}`}</span>;
+			};
 
-		expect(unsubscribed).toHaveBeenCalledTimes(1);
+			await mount(<Summary />);
+			await act(async () =>
+				store.state.update((draft) => {
+					draft.tickets[0].title = "Changed";
+				}),
+			);
+			expect(screen.getByText("en:3:Changed")).toBeDefined();
+			const renders = rendered.mock.calls.length;
+
+			await act(async () =>
+				store.state.update((draft) => {
+					draft.tickets[1].title = "Elsewhere";
+				}),
+			);
+			expect(rendered).toHaveBeenCalledTimes(renders);
+		});
+
+		it("uses a changed captured prop without requiring a store update", async () => {
+			const { useRead } = await setup();
+			const Column = ({ status }: { status: string }) => {
+				const titles = useRead((data) =>
+					data.tickets.filter((ticket) => ticket.status === status).map((ticket) => ticket.title),
+				);
+
+				return <span>{titles.join(",")}</span>;
+			};
+			const { rerender } = await mount(<Column status="todo" />);
+
+			expect(screen.getByText("First")).toBeDefined();
+			await rerender(<Column status="done" />);
+			expect(screen.getByText("Second,Third")).toBeDefined();
+		});
+
+		it("keeps the committed subscription's selector when a concurrent render suspends", async () => {
+			const { store, useRead } = await setup();
+			const evaluated: string[] = [];
+			const Column = ({ status }: { status: string }) => {
+				const titles = useRead((data) => {
+					evaluated.push(status);
+
+					return data.tickets.filter((ticket) => ticket.status === status).map((ticket) => ticket.title);
+				});
+
+				if (status === "done") throw new Promise(() => {});
+
+				return <span>{titles.join(",")}</span>;
+			};
+			const App = () => {
+				const [status, setStatus] = useState("todo");
+
+				return (
+					<>
+						<button type="button" onClick={() => startTransition(() => setStatus("done"))}>
+							Switch
+						</button>
+						<Column status={status} />
+					</>
+				);
+			};
+
+			await mount(<App />);
+			await act(async () => screen.getByRole("button").click());
+			expect(evaluated).toContain("done");
+			evaluated.length = 0;
+
+			await act(async () =>
+				store.state.update((draft) => {
+					draft.tickets[0].title = "Changed";
+				}),
+			);
+			expect(evaluated[0]).toBe("todo");
+			expect(screen.getByText("Changed")).toBeDefined();
+		});
+
+		it("infers scalar, derived, optional and readonly collection selections", async () => {
+			const { useRead, useUpdate } = await setup();
+			const Typed = () => {
+				const language = useRead((data) => data.language);
+				const count = useRead((data) => data.tickets.length);
+				const tickets = useRead((data) => data.tickets);
+				const ticket = useRead((data) => data.tickets.find((item) => item.id === "missing"));
+				const update = useUpdate();
+
+				expectTypeOf(language).toEqualTypeOf<string>();
+				expectTypeOf(count).toEqualTypeOf<number>();
+				expectTypeOf(tickets).toEqualTypeOf<
+					ReadonlyArray<{ readonly id: string; readonly title: string; readonly status: string }>
+				>();
+				expectTypeOf(ticket).toEqualTypeOf<
+					{ readonly id: string; readonly title: string; readonly status: string } | undefined
+				>();
+				expectTypeOf(update).toEqualTypeOf<(recipe: (draft: Data) => void) => void>();
+
+				return <span>{`${language}:${count}:${ticket?.title ?? "missing"}`}</span>;
+			};
+
+			await mount(<Typed />);
+			expect(screen.getByText("en:3:missing")).toBeDefined();
+		});
+
+		it("provides a server snapshot for a resolved store", async () => {
+			const { useRead } = await setup();
+			const Language = () => <span>{useRead((data) => data.language)}</span>;
+
+			await mount(<Language />);
+			expect(renderToString(<Language />)).toBe("<span>en</span>");
+		});
+
+		it("keeps one live subscription through StrictMode and removes it on unmount", async () => {
+			const { store, useRead } = await setup();
+			const subscribe = store.subscribe.bind(store);
+			let active = 0;
+
+			vi.spyOn(store, "subscribe").mockImplementation((listener) => {
+				active++;
+				const unsubscribe = subscribe(listener);
+
+				return () => {
+					active--;
+					unsubscribe();
+				};
+			});
+			const Language = () => <span>{useRead((data) => data.language)}</span>;
+			const { unmount, rerender } = await mount(
+				<StrictMode>
+					<Language />
+				</StrictMode>,
+			);
+
+			expect(active).toBe(1);
+			await rerender(
+				<StrictMode>
+					<Language />
+				</StrictMode>,
+			);
+			expect(active).toBe(1);
+			await unmount();
+			expect(active).toBe(0);
+		});
 	});
 
-	it("infers the same store type as the store factory", async () => {
-		const schema = object({ tickets: array(object({ title: string() })) });
-		const store = await createStore({ schema });
+	describe("useUpdate", () => {
+		it("keeps its identity and never subscribes or rerenders on store changes", async () => {
+			const { store, useUpdate } = await setup();
+			const subscribe = vi.spyOn(store, "subscribe");
+			const updates: unknown[] = [];
+			const Writer = () => {
+				updates.push(useUpdate());
 
-		expectTypeOf(store).toEqualTypeOf<Store<DataFromSchema<typeof schema>>>();
+				return null;
+			};
+			const { rerender } = await mount(
+				<StrictMode>
+					<Writer />
+				</StrictMode>,
+			);
+			const renders = updates.length;
+
+			await act(async () =>
+				store.state.update((draft) => {
+					draft.language = "cs";
+				}),
+			);
+			expect(updates).toHaveLength(renders);
+
+			await rerender(
+				<StrictMode>
+					<Writer />
+				</StrictMode>,
+			);
+			expect(updates.length).toBeGreaterThan(renders);
+			expect(new Set(updates).size).toBe(1);
+			expect(subscribe).not.toHaveBeenCalled();
+		});
+
+		it("updates a reading sibling without rerendering the writer", async () => {
+			const { useRead, useUpdate } = await setup();
+			const rendered = vi.fn();
+			const Writer = () => {
+				const update = useUpdate();
+
+				rendered();
+
+				return (
+					<button
+						type="button"
+						onClick={() =>
+							update((draft) => {
+								draft.language = "cs";
+							})
+						}
+					>
+						Switch
+					</button>
+				);
+			};
+			const Label = () => <span>{useRead((data) => data.language)}</span>;
+
+			await mount(
+				<>
+					<Writer />
+					<Label />
+				</>,
+			);
+			expect(screen.getByText("en")).toBeDefined();
+			await act(async () => screen.getByRole("button").click());
+			expect(screen.getByText("cs")).toBeDefined();
+			expect(rendered).toHaveBeenCalledTimes(1);
+		});
+
+		it("rerenders a reading component that writes through its own updater", async () => {
+			const { store, useRead, useUpdate } = await setup();
+			const Editor = () => {
+				const language = useRead((data) => data.language);
+				const update = useUpdate();
+
+				return (
+					<button
+						type="button"
+						onClick={() =>
+							update((draft) => {
+								draft.language = "cs";
+							})
+						}
+					>
+						{language}
+					</button>
+				);
+			};
+
+			await mount(<Editor />);
+			expect(screen.getByRole("button").textContent).toBe("en");
+			await act(async () => screen.getByRole("button").click());
+			expect(screen.getByRole("button").textContent).toBe("cs");
+			expect(store.state.read().language).toBe("cs");
+		});
+
+		it("writes against current state after its component unmounts", async () => {
+			const { store, useUpdate } = await setup();
+			const updates: Array<(recipe: (draft: Data) => void) => void> = [];
+			const Writer = () => {
+				updates.push(useUpdate());
+
+				return null;
+			};
+			const { unmount } = await mount(<Writer />);
+
+			await unmount();
+			store.state.update((draft) => {
+				draft.tickets.splice(0, draft.tickets.length, { id: "4", title: "Fresh", status: "todo" });
+			});
+			updates[0]((draft) => {
+				draft.tickets[0].title += " updated";
+			});
+			expect(store.state.read().tickets).toStrictEqual([{ id: "4", title: "Fresh updated", status: "todo" }]);
+		});
+
+		it("suspends until the promised store resolves, then reads and writes it", async () => {
+			const store = await createStore({ schema });
+			let resolve: (store: Store<typeof schema>) => void = () => {};
+			const { useRead, useUpdate } = use(
+				new Promise<Store<typeof schema>>((done) => {
+					resolve = done;
+				}),
+			);
+			const Editor = () => {
+				const update = useUpdate();
+				const language = useRead((data) => data.language);
+
+				return (
+					<button
+						type="button"
+						onClick={() =>
+							update((draft) => {
+								draft.language = "cs";
+							})
+						}
+					>
+						{language || "empty"}
+					</button>
+				);
+			};
+
+			await mount(<Editor />);
+			expect(screen.getByText("loading")).toBeDefined();
+			await act(async () => resolve(store));
+			expect(screen.getByRole("button").textContent).toBe("empty");
+			await act(async () => screen.getByRole("button").click());
+			expect(screen.getByRole("button").textContent).toBe("cs");
+			expect(store.state.read().language).toBe("cs");
+		});
 	});
 });

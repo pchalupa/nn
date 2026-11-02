@@ -1,6 +1,6 @@
 {
 	"name": "@nn/store",
-	"version": "0.0.0",
+	"version": "1.0.0",
 	"description": "State management library",
 	"keywords": [],
 	"homepage": "https://github.com/pchalupa/nn/packages/store#readme",

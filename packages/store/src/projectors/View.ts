@@ -30,7 +30,11 @@ export class View extends Projector {
 
 		const value = this.project(entity);
 
-		if (isObject(value)) this.snapshots.set(entity, { value, revision });
+		if (isObject(value)) {
+			Object.freeze(value);
+
+			this.snapshots.set(entity, { value, revision });
+		}
 
 		return value;
 	}

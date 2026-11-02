@@ -42,6 +42,26 @@ describe("State reads", () => {
 		});
 	});
 
+	it("protects cached snapshots passed to a mutable consumer", () => {
+		const state = setup();
+		const before = state.read();
+		const listener = listen(state);
+		const rename = (assignee: { name: string }) => {
+			assignee.name = "Changed";
+		};
+
+		expect(() => rename(before.tickets[0].assignee)).toThrow(TypeError);
+		expect(state.read()).toBe(before);
+		expect(state.read().tickets[0].assignee.name).toBe("Ann");
+		expect(listener).not.toHaveBeenCalled();
+		state.update((draft) => {
+			draft.language = "cs";
+		});
+		expect(state.read().tickets).toBe(before.tickets);
+		expect(state.read().tickets[0].assignee.name).toBe("Ann");
+		expect(listener).toHaveBeenCalledOnce();
+	});
+
 	it("reuses unchanged projections without reading their entities again", () => {
 		const state = setup();
 		const reads = vi.spyOn(RGA.prototype, "current", "get");

@@ -29,6 +29,26 @@ describe("View", () => {
 		});
 	});
 
+	it.each(["root", "rows", "row"])("rejects mutations to the projected %s", (target) => {
+		const row = new LWWMap({ title: new LWWRegister("First") });
+		const view = new View(new LWWMap({ rows: new RGA([row]) }), new WeakMap<object, Entity>());
+		const value = view.value;
+
+		assertObject(value);
+		assertArray(value.rows);
+		const first = value.rows[0];
+
+		assertObject(first);
+		const container = target === "root" ? value : target === "rows" ? value.rows : first;
+		const property = target === "root" ? "rows" : target === "rows" ? "0" : "title";
+
+		expect(Reflect.set(container, property, "Changed")).toBe(false);
+		expect(Reflect.deleteProperty(container, property)).toBe(false);
+		expect(Reflect.set(container, "extra", true)).toBe(false);
+		expect(view.value).toBe(value);
+		expect(view.value).toStrictEqual({ rows: [{ title: "First" }] });
+	});
+
 	it("maps each container to its entity", () => {
 		const tags = new RGA([new LWWRegister("red")]);
 		const settings = new LWWMap({ tags });
@@ -149,5 +169,7 @@ describe("View", () => {
 		assertObject(value.tag);
 
 		expect(value.tag.label).toBe(label);
+		label.text = "blue";
+		expect(value.tag.label).toStrictEqual({ text: "blue" });
 	});
 });

@@ -2,7 +2,7 @@ import type { Entity } from "@nn/entities/Entity";
 import { LWWMap } from "@nn/entities/kinds/LWWMap";
 import { LWWRegister } from "@nn/entities/kinds/LWWRegister";
 import { RGA } from "@nn/entities/kinds/RGA";
-import { array, boolean, number, object, type Schema, string } from "@nn/schema";
+import { array, boolean, enumeration, number, object, type Schema, string } from "@nn/schema";
 import { describe, expect, it } from "vitest";
 
 import { createReconciliationStrategy } from "./createStrategy";
@@ -80,6 +80,7 @@ describe("createReconciliationStrategy", () => {
 		["string", string(), ""],
 		["number", number(), 0],
 		["boolean", boolean(), false],
+		["enumeration", enumeration("todo", "done"), "todo"],
 	])("creates a register strategy with a default for a %s schema", (_name, schema, value) => {
 		const strategy = createReconciliationStrategy(schema, new WeakMap());
 		const entity = strategy.create(undefined, "field");

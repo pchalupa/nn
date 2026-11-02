@@ -1,7 +1,7 @@
 import { HttpRemote } from "@nn/http-remote";
 import { IndexDbRepository } from "@nn/indexdb-repository";
 import { createStore, use } from "@nn/react";
-import { array, object, string } from "@nn/schema";
+import { array, enumeration, object, string } from "@nn/schema";
 
 const user = object({
 	name: string().describe("User name"),
@@ -14,7 +14,7 @@ const ticket = object({
 	id: string(),
 	title: string().describe("Ticket description."),
 	description: string(),
-	status: string(),
+	status: enumeration("todo", "in-progress", "done"),
 	assignee: user,
 })
 	.entitle("ticket")

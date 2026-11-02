@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link, Outlet } from "@tanstack/react-router";
 
 import { Ticket } from "../components/Ticket";
 import { useRead } from "../store";
@@ -10,9 +10,17 @@ const Backlog = () => {
 		<div className="flex-1 p-2">
 			<div className="flex min-h-screen flex-1 flex-col gap-y-2 p-4">
 				{tickets.map((ticket) => (
-					<Ticket key={ticket.id} title={ticket.title} description={ticket.description} />
+					<Link
+						key={ticket.id}
+						to="/backlog/tickets/$ticketId"
+						params={{ ticketId: ticket.id }}
+						aria-label={ticket.title}
+					>
+						<Ticket title={ticket.title} description={ticket.description} assignee={ticket.assignee.name} />
+					</Link>
 				))}
 			</div>
+			<Outlet />
 		</div>
 	);
 };

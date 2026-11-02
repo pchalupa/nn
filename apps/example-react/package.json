@@ -25,6 +25,7 @@
 		"i18next": "^26.5.11",
 		"react": "catalog:",
 		"react-dom": "catalog:",
+		"react-hook-form": "^7.91.0",
 		"react-i18next": "^17.1.9",
 		"tailwind-variants": "~4.0.0"
 	},

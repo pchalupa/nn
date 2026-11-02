@@ -1,6 +1,6 @@
 {
 	"name": "@nn/schema",
-	"version": "1.0.0",
+	"version": "1.1.0",
 	"description": "Schema",
 	"keywords": [],
 	"homepage": "https://github.com/pchalupa/nn/packages/repository#readme",
@@ -15,6 +15,7 @@
 		".": "./src/index.ts",
 		"./ArraySchema": "./src/ArraySchema.ts",
 		"./BooleanSchema": "./src/BooleanSchema.ts",
+		"./EnumerationSchema": "./src/EnumerationSchema.ts",
 		"./NumberSchema": "./src/NumberSchema.ts",
 		"./ObjectSchema": "./src/ObjectSchema.ts",
 		"./StringSchema": "./src/StringSchema.ts"

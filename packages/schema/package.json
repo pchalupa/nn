@@ -15,6 +15,7 @@
 		".": "./src/index.ts",
 		"./ArraySchema": "./src/ArraySchema.ts",
 		"./BooleanSchema": "./src/BooleanSchema.ts",
+		"./EnumerationSchema": "./src/EnumerationSchema.ts",
 		"./NumberSchema": "./src/NumberSchema.ts",
 		"./ObjectSchema": "./src/ObjectSchema.ts",
 		"./StringSchema": "./src/StringSchema.ts"

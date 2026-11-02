@@ -2,6 +2,7 @@ import type { Entity } from "@nn/entities/Entity";
 import type { Schema } from "@nn/schema";
 import { ArraySchema } from "@nn/schema/ArraySchema";
 import { BooleanSchema } from "@nn/schema/BooleanSchema";
+import { EnumerationSchema } from "@nn/schema/EnumerationSchema";
 import { NumberSchema } from "@nn/schema/NumberSchema";
 import { ObjectSchema } from "@nn/schema/ObjectSchema";
 import { StringSchema } from "@nn/schema/StringSchema";
@@ -33,6 +34,8 @@ export function createReconciliationStrategy(schema: Schema, entities: WeakMap<o
 	if (NumberSchema.is(schema)) return new RegisterStrategy(0);
 
 	if (BooleanSchema.is(schema)) return new RegisterStrategy(false);
+
+	if (EnumerationSchema.is(schema)) return new RegisterStrategy(schema.literals.at(0));
 
 	throw new TypeError(`Unsupported schema type "${schema.type}".`);
 }

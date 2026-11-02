@@ -1,5 +1,11 @@
 # @nn/indexdb-repository
 
+## 1.0.1
+
+### Patch Changes
+
+- ad6f758: `IndexDbRepository.set()` commits its transaction once the current task ends, so a write is no longer lost when the page reloads or closes right after a change. A newer write to the same name started in the same task still aborts the older one.
+
 ## 1.0.0
 
 ### Major Changes

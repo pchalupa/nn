@@ -29,7 +29,7 @@ We will keep `Repository` and `Remote` as separate interfaces. One transport int
 
 We will ship each sync engine as its own package, and the `Sync` interface in `@nn/sync`. `RepositorySync` lives in `@nn/repository-sync`, and a remote engine will get its own package. `Store` never refers to `Sync`, so an engine depends on the store and never the other way round. An app that doesn't sync installs no sync code, and a third party can write an engine against `@nn/sync` alone. This mirrors the repository's existing split of abstraction and adapter packages, such as `@nn/repository` and `@nn/indexdb-repository`. `@nn/react` provides `createStore(schema)`, which wraps `new Store(schema)`, so a React app installs `@nn/react` and the engines it uses, not `@nn/store` directly.
 
-We will add `Store.observe(observer)`, which calls the observer with the `ReadonlySet<Entity>` of changed entities on every commit and returns an unsubscribe function. Observers run before the no-argument `subscribe` listeners, so an adapter starts persisting before React reads. This amends ADR-12 on one point: its "listeners get no arguments" rule still holds for `subscribe`, and `observe` is the second channel for observers that need the changed entities. `State` still has `Store` as its single delegate.
+We will expose two public `Observable` channels on `Store`. `store.changes` calls its observers with the `ReadonlySet<Entity>` of changed entities on every commit. `store.updates` calls its observers with no arguments, and React subscribes to it. `changes` is notified before `updates`, so an engine starts persisting before React reads. This amends ADR-12 on one point: its "listeners get no arguments" rule still holds for `updates`, and `changes` is the second channel for observers that need the changed entities. `State` still has `Store` as its single delegate. The channels are plain `Observable`s for now, so a consumer could call `notify()` on them. A read-only type can hide that later.
 
 ## Alternatives considered
 
@@ -49,7 +49,7 @@ We will add `Store.observe(observer)`, which calls the observer with the `Readon
 
 **Keep `Sync` and `RepositorySync` in `@nn/store`, or put every engine in one `@nn/sync` package.** Either means fewer packages to version. We rejected the first because the store would carry code most of its consumers don't use and would point the dependency the wrong way. We rejected the second because it ties every engine's release and transport dependencies together, and an outside engine author would still depend on all of them.
 
-**Pass the changed entities to `subscribe` listeners.** It would avoid a second channel. We rejected it because it changes every React listener's signature for data React doesn't use, and it reverses the ADR-12 decision instead of narrowing it.
+**Pass the changed entities to every `updates` observer.** It would avoid a second channel. We rejected it because it changes every React listener's signature for data React doesn't use, and it reverses the ADR-12 decision instead of narrowing it.
 
 ## Consequences
 
@@ -59,7 +59,7 @@ The store is usable with the schema defaults as soon as it exists. Components re
 
 `RepositorySync` persists only changes reported after it attaches. An edit made before that, or while it is detached, is saved only if the same field changes again. A restore failure leaves the failed field unwritten, so stored data that was never merged isn't overwritten. The details are in the spec and in `RepositorySync.test.ts`.
 
-`observe` observers run synchronously inside the commit, in the order they were added. A slow or throwing observer delays or breaks the listeners after it, so adapters must handle their own errors. `RepositorySync` reports them with `console.error`.
+`changes` observers run synchronously inside the commit, in the order they were added. A slow or throwing observer delays or breaks the observers after it, so engines must handle their own errors. `Sync` reports them to its delegate.
 
 A remote adapter can now be added without changing `Store` or `Sync`. Offline handling isn't covered yet: a failed write is reported and dropped, with no retry. When `RemoteSync` is built, `Sync` will probably need a queue of pending writes and an `"offline"` status.
 

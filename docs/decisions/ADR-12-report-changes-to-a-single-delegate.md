@@ -5,7 +5,7 @@ date: 2026-10-31
 
 # ADR-12: Report changes to a single delegate
 
-Amended by [ADR-13](ADR-13-attach-persistence-and-sync-from-outside-the-store.md): `Store` no longer persists. Persistence moved to [`RepositorySync`](../../packages/repository-sync/src/RepositorySync.ts), which observes changes through `Store.observe`.
+Amended by [ADR-13](ADR-13-attach-persistence-and-sync-from-outside-the-store.md): `Store` no longer persists. Persistence moved to [`RepositorySync`](../../packages/repository-sync/src/RepositorySync.ts), which observes changes through `store.changes`.
 
 ## Context
 

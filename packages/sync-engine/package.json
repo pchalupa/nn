@@ -21,7 +21,6 @@
 	},
 	"dependencies": {
 		"@nn/entities": "workspace:",
-		"@nn/observable": "workspace:",
 		"@nn/store": "workspace:"
 	},
 	"devDependencies": {

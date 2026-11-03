@@ -1,7 +1,7 @@
 ---
-"@nn/repository": minor
+"@nn/repository": major
 ---
 
-Adds an optional `close()` method to `Repository` for implementations that hold a connection.
+Adds a required `close()` method to `Repository`, which sync engines call when they detach.
 
-Sync engines call it when they detach. A repository that holds nothing can leave it out.
+Implementations of `Repository` must add it. A repository that holds no connection can implement it as a no-op.

@@ -1,16 +1,12 @@
 import type { Encoded } from "@nn/entities/Codable";
 import { Codec } from "@nn/entities/Codec";
 import type { Entity } from "@nn/entities/Entity";
-import type { Unsubscribe } from "@nn/observable/Observable";
 import type { Store } from "@nn/store";
-
-import { Outbox } from "./Outbox";
 
 export abstract class SyncEngine {
 	private codec = new Codec();
-	private outbox = new Outbox((entity) => void this.send(entity));
 
-	private unsubscribe?: Unsubscribe;
+	private unsubscribeFromStoreChanges?: () => void;
 
 	protected constructor(protected readonly store: Store) {}
 
@@ -20,35 +16,30 @@ export abstract class SyncEngine {
 	protected abstract push(name: string, entry: Encoded): Promise<void>;
 
 	protected attach(): void {
-		this.unsubscribe = this.store.changes.subscribe((changed) => {
-			for (const entity of changed) {
-				this.outbox.add(entity);
-			}
+		this.unsubscribeFromStoreChanges = this.store.changes.subscribe((changed) => {
+			for (const entity of changed) this.send(entity);
 		});
-		this.bootstrap();
+		//TODO: bootstrap is async, connection needs to be made first
+		void this.bootstrap();
 	}
 
 	public detach(): void {
-		this.unsubscribe?.();
-		this.close?.();
+		this.unsubscribeFromStoreChanges?.();
+		this.close();
 	}
 
 	protected receive(entries: Record<string, unknown>): void {
-		if (this.outbox.released) {
-			for (const name of Object.keys(this.store.schema.properties)) {
-				if (name in entries && !this.outbox.isBlocked(name)) {
-					const entry = entries[name];
+		for (const name of Object.keys(this.store.schema.properties)) {
+			const entry = entries[name];
 
-					this.store.state.merge(name, this.codec.decode(entry));
-				}
-			}
+			this.store.state.merge(name, this.codec.decode(entry));
 		}
 	}
 
 	private async send(entity: Entity): Promise<void> {
 		const entry = this.codec.encode(entity);
 
-		await this.push(entity.key, entry).catch(() => {});
+		await this.push(entity.key, entry);
 	}
 
 	private async bootstrap(): Promise<void> {
@@ -56,18 +47,14 @@ export abstract class SyncEngine {
 			await this.open();
 
 			for (const name in this.store.schema.properties) {
-				try {
-					const value = await this.pull(name);
+				const value = await this.pull(name);
 
-					if (value) {
-						this.store.state.merge(name, this.codec.decode(value));
-					}
-				} catch {
-					this.outbox.block(name);
+				if (value) {
+					const entity = this.codec.decode(value);
+
+					this.store.state.merge(name, entity);
 				}
 			}
-
-			this.outbox.release();
 		} catch {
 			this.detach();
 		}

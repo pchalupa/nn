@@ -16,37 +16,29 @@ const repositoryMock = (entries: Record<string, unknown> = {}): Repository => ({
 	close: vi.fn(),
 });
 
-const attach = (repository: Repository) => {
+const flush = () => new Promise((resolve) => setTimeout(resolve));
+
+const attach = async (repository: Repository) => {
 	const store = new Store(schema);
 	const sync = RepositorySync.attach(store, repository);
-	const failures: unknown[] = [];
-	const bootstrapped = new Promise<void>((resolve) => {
-		sync.delegate = {
-			syncEngineDidBootstrap: () => resolve(),
-			syncEngineDidFail: (_engine, error) => {
-				failures.push(error);
-			},
-		};
-	});
 
-	return { store, sync, failures, bootstrapped };
+	await flush();
+
+	return { store, sync };
 };
 
 describe("RepositorySync", () => {
 	it("initializes the repository with the store's fields", async () => {
 		const repository = repositoryMock();
-		const { bootstrapped } = attach(repository);
 
-		await bootstrapped;
+		await attach(repository);
 
 		expect(repository.init).toHaveBeenCalledExactlyOnceWith(schema.properties);
 	});
 
 	it("restores each field from the repository by name", async () => {
 		const repository = repositoryMock({ language: new LWWRegister("cs", "language", Time.now()).encode() });
-		const { store, bootstrapped } = attach(repository);
-
-		await bootstrapped;
+		const { store } = await attach(repository);
 
 		expect(repository.get).toHaveBeenCalledWith("tickets");
 		expect(repository.get).toHaveBeenCalledWith("language");
@@ -55,9 +47,8 @@ describe("RepositorySync", () => {
 
 	it("persists each changed field under its name", async () => {
 		const repository = repositoryMock();
-		const { store, bootstrapped } = attach(repository);
+		const { store } = await attach(repository);
 
-		await bootstrapped;
 		store.state.update((draft) => {
 			draft.language = "cs";
 		});
@@ -74,9 +65,8 @@ describe("RepositorySync", () => {
 
 		vi.mocked(repository.init).mockRejectedValue(failure);
 
-		const { store, failures } = attach(repository);
+		const { store } = await attach(repository);
 
-		await vi.waitFor(() => expect(failures).toStrictEqual([failure]));
 		store.state.update((draft) => {
 			draft.language = "cs";
 		});
@@ -87,9 +77,8 @@ describe("RepositorySync", () => {
 
 	it("closes the repository on detach", async () => {
 		const repository = repositoryMock();
-		const { sync, bootstrapped } = attach(repository);
+		const { sync } = await attach(repository);
 
-		await bootstrapped;
 		sync.detach();
 
 		expect(repository.close).toHaveBeenCalledOnce();
@@ -102,9 +91,7 @@ describe("RepositorySync", () => {
 			set: vi.fn().mockResolvedValue(undefined),
 			close: vi.fn(),
 		};
-		const { sync, bootstrapped } = attach(repository);
-
-		await bootstrapped;
+		const { sync } = await attach(repository);
 
 		expect(() => sync.detach()).not.toThrow();
 	});

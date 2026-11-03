@@ -422,9 +422,6 @@ importers:
       '@nn/entities':
         specifier: 'workspace:'
         version: link:../entities
-      '@nn/observable':
-        specifier: 'workspace:'
-        version: link:../observable
       '@nn/store':
         specifier: 'workspace:'
         version: link:../store

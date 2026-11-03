@@ -7,7 +7,7 @@ enum Mode {
 	ReadWrite = "readwrite",
 }
 
-export class IndexDbRepository {
+export class IndexDb {
 	private version = 1;
 	private indexDbDatabase?: IDBDatabase;
 	private transactions = new Map<string, IDBTransaction>();
@@ -15,7 +15,7 @@ export class IndexDbRepository {
 	constructor(private readonly name = "nn-default") {}
 
 	public async set(name: string, entry: Encoded): Promise<void> {
-		IndexDbRepository.assertIndexDB(this.indexDbDatabase);
+		IndexDb.assertIndexDB(this.indexDbDatabase);
 
 		this.transactions.get(name)?.abort();
 
@@ -35,7 +35,7 @@ export class IndexDbRepository {
 	}
 
 	public async get(name: string): Promise<Encoded | undefined> {
-		IndexDbRepository.assertIndexDB(this.indexDbDatabase);
+		IndexDb.assertIndexDB(this.indexDbDatabase);
 
 		const transaction = this.indexDbDatabase.transaction(name, Mode.ReadOnly);
 
@@ -43,7 +43,7 @@ export class IndexDbRepository {
 	}
 
 	public async delete(key: string, typeName: string): Promise<void> {
-		IndexDbRepository.assertIndexDB(this.indexDbDatabase);
+		IndexDb.assertIndexDB(this.indexDbDatabase);
 
 		const transaction = this.indexDbDatabase.transaction(typeName, Mode.ReadWrite);
 
@@ -51,7 +51,7 @@ export class IndexDbRepository {
 	}
 
 	public async getAll(typeName: string): Promise<Encoded[]> {
-		IndexDbRepository.assertIndexDB(this.indexDbDatabase);
+		IndexDb.assertIndexDB(this.indexDbDatabase);
 
 		const transaction = this.indexDbDatabase.transaction(typeName, Mode.ReadOnly);
 

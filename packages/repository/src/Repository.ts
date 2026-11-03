@@ -9,4 +9,5 @@ export interface Repository {
 
 	get(name: string): Promise<Entry | undefined>;
 	set(name: string, entry: Entry): Promise<void>;
+	close(): void;
 }

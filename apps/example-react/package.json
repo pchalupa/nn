@@ -15,9 +15,9 @@
 		"start": "vite"
 	},
 	"dependencies": {
-		"@nn/http-remote": "workspace:",
 		"@nn/indexdb-repository": "workspace:*",
 		"@nn/react": "workspace:*",
+		"@nn/repository-sync": "workspace:*",
 		"@nn/schema": "workspace:",
 		"@simplewebauthn/browser": "^14.0.0",
 		"@tanstack/react-router": "~1.170.46",

@@ -1,6 +1,5 @@
 // @vitest-environment jsdom
 import { array, type InferStateType, object, string } from "@nn/schema";
-import { Store } from "@nn/store";
 import { act, cleanup, render, screen } from "@testing-library/react";
 import { startTransition, StrictMode, Suspense, useState, type ReactNode } from "react";
 import { renderToString } from "react-dom/server";
@@ -15,8 +14,8 @@ const schema = object({
 
 type Data = InferStateType<typeof schema>;
 
-const setup = async () => {
-	const store = await createStore({ schema });
+const setup = () => {
+	const store = createStore(schema);
 
 	store.state.update((draft) => {
 		draft.tickets.push(
@@ -27,7 +26,7 @@ const setup = async () => {
 		draft.language = "en";
 	});
 
-	return { store, ...use(Promise.resolve(store)) };
+	return { store, ...use(store) };
 };
 
 const mount = async (ui: ReactNode) => {
@@ -45,17 +44,17 @@ describe("@nn/react", () => {
 	});
 
 	describe("createStore", () => {
-		it("creates schema-shaped initialized state", async () => {
-			const store = await createStore({ schema });
+		it("creates a store with the schema defaults", () => {
+			const store = createStore(schema);
 
-			expect(store).toBeInstanceOf(Store);
 			expect(store.state.read()).toStrictEqual({ tickets: [], language: "" });
+			expectTypeOf(store.state.read().language).toEqualTypeOf<string>();
 		});
 	});
 
 	describe("useRead", () => {
 		it("renders selected rows and updates only when their data changes", async () => {
-			const { store, useRead } = await setup();
+			const { store, useRead } = setup();
 			const rendered = vi.fn();
 			const Column = () => {
 				const tickets = useRead((data) => data.tickets.filter((ticket) => ticket.status === "todo"));
@@ -93,7 +92,7 @@ describe("@nn/react", () => {
 		});
 
 		it("does not rerender when none of several reads change", async () => {
-			const { store, useRead } = await setup();
+			const { store, useRead } = setup();
 			const rendered = vi.fn();
 			const Summary = () => {
 				const language = useRead((data) => data.language);
@@ -123,7 +122,7 @@ describe("@nn/react", () => {
 		});
 
 		it("uses a changed captured prop without requiring a store update", async () => {
-			const { useRead } = await setup();
+			const { useRead } = setup();
 			const Column = ({ status }: { status: string }) => {
 				const titles = useRead((data) =>
 					data.tickets.filter((ticket) => ticket.status === status).map((ticket) => ticket.title),
@@ -139,7 +138,7 @@ describe("@nn/react", () => {
 		});
 
 		it("keeps the committed subscription's selector when a concurrent render suspends", async () => {
-			const { store, useRead } = await setup();
+			const { store, useRead } = setup();
 			const evaluated: string[] = [];
 			const Column = ({ status }: { status: string }) => {
 				const titles = useRead((data) => {
@@ -180,7 +179,7 @@ describe("@nn/react", () => {
 		});
 
 		it("infers scalar, derived, optional and readonly collection selections", async () => {
-			const { useRead, useUpdate } = await setup();
+			const { useRead, useUpdate } = setup();
 			const Typed = () => {
 				const language = useRead((data) => data.language);
 				const count = useRead((data) => data.tickets.length);
@@ -206,7 +205,7 @@ describe("@nn/react", () => {
 		});
 
 		it("provides a server snapshot for a resolved store", async () => {
-			const { useRead } = await setup();
+			const { useRead } = setup();
 			const Language = () => <span>{useRead((data) => data.language)}</span>;
 
 			await mount(<Language />);
@@ -214,11 +213,11 @@ describe("@nn/react", () => {
 		});
 
 		it("keeps one live subscription through StrictMode and removes it on unmount", async () => {
-			const { store, useRead } = await setup();
-			const subscribe = store.subscribe.bind(store);
+			const { store, useRead } = setup();
+			const subscribe = store.updates.subscribe.bind(store.updates);
 			let active = 0;
 
-			vi.spyOn(store, "subscribe").mockImplementation((listener) => {
+			vi.spyOn(store.updates, "subscribe").mockImplementation((listener) => {
 				active++;
 				const unsubscribe = subscribe(listener);
 
@@ -248,8 +247,8 @@ describe("@nn/react", () => {
 
 	describe("useUpdate", () => {
 		it("keeps its identity and never subscribes or rerenders on store changes", async () => {
-			const { store, useUpdate } = await setup();
-			const subscribe = vi.spyOn(store, "subscribe");
+			const { store, useUpdate } = setup();
+			const subscribe = vi.spyOn(store.updates, "subscribe");
 			const updates: unknown[] = [];
 			const Writer = () => {
 				updates.push(useUpdate());
@@ -281,7 +280,7 @@ describe("@nn/react", () => {
 		});
 
 		it("updates a reading sibling without rerendering the writer", async () => {
-			const { useRead, useUpdate } = await setup();
+			const { useRead, useUpdate } = setup();
 			const rendered = vi.fn();
 			const Writer = () => {
 				const update = useUpdate();
@@ -316,7 +315,7 @@ describe("@nn/react", () => {
 		});
 
 		it("rerenders a reading component that writes through its own updater", async () => {
-			const { store, useRead, useUpdate } = await setup();
+			const { store, useRead, useUpdate } = setup();
 			const Editor = () => {
 				const language = useRead((data) => data.language);
 				const update = useUpdate();
@@ -343,7 +342,7 @@ describe("@nn/react", () => {
 		});
 
 		it("writes against current state after its component unmounts", async () => {
-			const { store, useUpdate } = await setup();
+			const { store, useUpdate } = setup();
 			const updates: Array<(recipe: (draft: Data) => void) => void> = [];
 			const Writer = () => {
 				updates.push(useUpdate());
@@ -362,14 +361,9 @@ describe("@nn/react", () => {
 			expect(store.state.read().tickets).toStrictEqual([{ id: "4", title: "Fresh updated", status: "todo" }]);
 		});
 
-		it("suspends until the promised store resolves, then reads and writes it", async () => {
-			const store = await createStore({ schema });
-			let resolve: (store: Store<typeof schema>) => void = () => {};
-			const { useRead, useUpdate } = use(
-				new Promise<Store<typeof schema>>((done) => {
-					resolve = done;
-				}),
-			);
+		it("reads and writes a store without a suspense boundary", async () => {
+			const store = createStore(schema);
+			const { useRead, useUpdate } = use(store);
 			const Editor = () => {
 				const update = useUpdate();
 				const language = useRead((data) => data.language);
@@ -388,13 +382,11 @@ describe("@nn/react", () => {
 				);
 			};
 
-			await mount(<Editor />);
-			expect(screen.getByText("loading")).toBeDefined();
-			await act(async () => resolve(store));
+			render(<Editor />);
 			expect(screen.getByRole("button").textContent).toBe("empty");
 			await act(async () => screen.getByRole("button").click());
-			expect(screen.getByRole("button").textContent).toBe("cs");
 			expect(store.state.read().language).toBe("cs");
+			expect(screen.getByRole("button").textContent).toBe("cs");
 		});
 	});
 });

@@ -13,7 +13,7 @@
 	"type": "module",
 	"exports": {
 		".": "./src/Delegatable.ts",
-		"./Subject": "./src/Subject.ts"
+		"./Observable": "./src/Observable.ts"
 	},
 	"scripts": {
 		"ts:check": "tsc --noEmit",

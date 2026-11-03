@@ -26,12 +26,10 @@
 		"@nn/guards": "workspace:",
 		"@nn/id": "workspace:",
 		"@nn/observable": "workspace:",
-		"@nn/repository": "workspace:",
 		"@nn/schema": "workspace:",
 		"@nn/time": "workspace:"
 	},
 	"devDependencies": {
-		"@nn/remote": "workspace:",
 		"@nn/typescript-config": "workspace:",
 		"typescript": "catalog:",
 		"vitest": "catalog:"

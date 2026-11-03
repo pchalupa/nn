@@ -84,6 +84,34 @@ describe("IndexDbRepository", () => {
 		expect(entries).toStrictEqual([{ ...entry, data: "en" }]);
 	});
 
+	it("requires initialization again after closing and keeps what was stored", async () => {
+		const repository = new IndexDbRepository();
+
+		await repository.init({ language: {} });
+		await repository.set("language", entry);
+		repository.close();
+
+		await expect(repository.get("language")).rejects.toBeInstanceOf(RepositoryNotInitializedError);
+
+		await repository.init({ language: {} });
+
+		expect(await repository.get("language")).toStrictEqual(entry);
+	});
+
+	it("finishes a write that started before closing", async () => {
+		const repository = new IndexDbRepository();
+
+		await repository.init({ language: {} });
+
+		const write = repository.set("language", entry);
+
+		repository.close();
+		await write;
+		await repository.init({ language: {} });
+
+		expect(await repository.get("language")).toStrictEqual(entry);
+	});
+
 	it("deletes the entry stored under a key and keeps the others", async () => {
 		const repository = new IndexDbRepository();
 

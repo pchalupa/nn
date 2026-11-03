@@ -57,6 +57,11 @@ export class IndexDbRepository implements Repository {
 		return this.processRequest(transaction.objectStore(typeName).getAll());
 	}
 
+	public close(): void {
+		this.indexDbDatabase?.close();
+		this.indexDbDatabase = undefined;
+	}
+
 	private processRequest<Result>(request: IDBRequest<Result>): Promise<Result> {
 		return new Promise<Result>((resolve, reject) => {
 			const { transaction } = request;

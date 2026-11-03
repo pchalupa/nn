@@ -1,0 +1,35 @@
+{
+	"name": "@nn/repository-sync",
+	"version": "0.0.0",
+	"description": "Sync engine that persists a store to a repository",
+	"keywords": [],
+	"homepage": "https://github.com/pchalupa/nn/packages/repository-sync#readme",
+	"bugs": {
+		"url": "https://github.com/pchalupa/nn/issues"
+	},
+	"license": "MIT",
+	"author": "pchalupa <chalupa.petr93@gmail.com> (https://github.com/pchalupa)",
+	"repository": "https://github.com/pchalupa/nn",
+	"type": "module",
+	"exports": {
+		".": "./src/RepositorySync.ts"
+	},
+	"scripts": {
+		"ts:check": "tsc --noEmit",
+		"test": "vitest run",
+		"test:watch": "vitest watch"
+	},
+	"dependencies": {
+		"@nn/entities": "workspace:",
+		"@nn/repository": "workspace:",
+		"@nn/store": "workspace:",
+		"@nn/sync-engine": "workspace:"
+	},
+	"devDependencies": {
+		"@nn/schema": "workspace:",
+		"@nn/time": "workspace:",
+		"@nn/typescript-config": "workspace:",
+		"typescript": "catalog:",
+		"vitest": "catalog:"
+	}
+}

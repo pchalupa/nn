@@ -1,10 +1,10 @@
 import { describe, expect, it, vi } from "vitest";
 
-import { Subject } from "./Subject";
+import { Observable } from "./Observable";
 
-describe("Subject", () => {
+describe("Observable", () => {
 	it("notifies every observer", () => {
-		const subject = new Subject();
+		const subject = new Observable();
 		const first = vi.fn();
 		const second = vi.fn();
 
@@ -17,7 +17,7 @@ describe("Subject", () => {
 	});
 
 	it("stops notifying an observer after it unsubscribes", () => {
-		const subject = new Subject();
+		const subject = new Observable();
 		const observer = vi.fn();
 
 		subject.subscribe(observer)();
@@ -27,7 +27,7 @@ describe("Subject", () => {
 	});
 
 	it("stops notifying only the unsubscribed observer", () => {
-		const subject = new Subject();
+		const subject = new Observable();
 		const removed = vi.fn();
 		const kept = vi.fn();
 
@@ -41,7 +41,7 @@ describe("Subject", () => {
 	});
 
 	it("ignores unsubscribing an observer that never subscribed", () => {
-		const subject = new Subject();
+		const subject = new Observable();
 		const observer = vi.fn();
 
 		subject.subscribe(observer);
@@ -52,7 +52,7 @@ describe("Subject", () => {
 	});
 
 	it("notifies an observer subscribed twice once", () => {
-		const subject = new Subject();
+		const subject = new Observable();
 		const observer = vi.fn();
 
 		subject.subscribe(observer);
@@ -63,7 +63,7 @@ describe("Subject", () => {
 	});
 
 	it("notifies every observer when one unsubscribes during notification", () => {
-		const subject = new Subject();
+		const subject = new Observable();
 		const second = vi.fn();
 		const unsubscribe = subject.subscribe(() => unsubscribe());
 
@@ -71,5 +71,15 @@ describe("Subject", () => {
 		subject.notify();
 
 		expect(second).toHaveBeenCalledOnce();
+	});
+
+	it("passes the notified arguments to every observer", () => {
+		const subject = new Observable<[string, number]>();
+		const observer = vi.fn();
+
+		subject.subscribe(observer);
+		subject.notify("changed", 2);
+
+		expect(observer).toHaveBeenCalledExactlyOnceWith("changed", 2);
 	});
 });

@@ -1,0 +1,35 @@
+{
+	"name": "@nn/sync-engine",
+	"version": "0.0.0",
+	"description": "Base class for sync engines",
+	"keywords": [],
+	"homepage": "https://github.com/pchalupa/nn/packages/sync-engine#readme",
+	"bugs": {
+		"url": "https://github.com/pchalupa/nn/issues"
+	},
+	"license": "MIT",
+	"author": "pchalupa <chalupa.petr93@gmail.com> (https://github.com/pchalupa)",
+	"repository": "https://github.com/pchalupa/nn",
+	"type": "module",
+	"exports": {
+		".": "./src/SyncEngine.ts"
+	},
+	"scripts": {
+		"ts:check": "tsc --noEmit",
+		"test": "vitest run",
+		"test:watch": "vitest watch"
+	},
+	"dependencies": {
+		"@nn/entities": "workspace:",
+		"@nn/observable": "workspace:",
+		"@nn/store": "workspace:"
+	},
+	"devDependencies": {
+		"@nn/id": "workspace:",
+		"@nn/schema": "workspace:",
+		"@nn/time": "workspace:",
+		"@nn/typescript-config": "workspace:",
+		"typescript": "catalog:",
+		"vitest": "catalog:"
+	}
+}

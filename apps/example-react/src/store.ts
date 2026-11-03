@@ -1,6 +1,6 @@
-import { HttpRemote } from "@nn/http-remote";
 import { IndexDbRepository } from "@nn/indexdb-repository";
 import { createStore, use } from "@nn/react";
+import { RepositorySync } from "@nn/repository-sync";
 import { array, enumeration, type InferStateType, number, object, string } from "@nn/schema";
 
 export type Status = InferStateType<typeof status>;
@@ -52,14 +52,11 @@ const schema = object({
 	language,
 	tags,
 });
-const remote = new HttpRemote(import.meta.env.VITE_REMOTE_URL);
+
+// TODO: Create store can return hooks useRead and useUpdate too
+const store = createStore(schema);
 const repository = new IndexDbRepository();
 
-// TBD: Can you have multiple stores?
-const store = createStore({
-	repository,
-	remote,
-	schema,
-});
+RepositorySync.attach(store, repository);
 
 export const { useRead, useUpdate } = use(store);

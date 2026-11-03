@@ -1,7 +1,7 @@
 import type { Encoded } from "@nn/entities/Codable";
 import type { Repository } from "@nn/repository";
 import type { Store } from "@nn/store";
-import { SyncEngine } from "@nn/sync-engine";
+import { type Close, SyncEngine } from "@nn/sync-engine";
 
 export class RepositorySync extends SyncEngine {
 	private constructor(
@@ -11,8 +11,10 @@ export class RepositorySync extends SyncEngine {
 		super(store);
 	}
 
-	protected open(): Promise<void> {
-		return this.repository.init(this.store.schema.properties);
+	protected async open(): Promise<Close> {
+		await this.repository.init(this.store.schema.properties);
+
+		return this.repository.close;
 	}
 
 	protected pull(name: string): Promise<unknown> {

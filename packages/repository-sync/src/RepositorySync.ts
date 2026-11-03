@@ -4,9 +4,9 @@ import type { Store } from "@nn/store";
 import { type Close, SyncEngine } from "@nn/sync-engine";
 
 export class RepositorySync extends SyncEngine {
-	private constructor(
+	constructor(
 		store: Store,
-		private readonly repository: Repository,
+		private repository: Repository,
 	) {
 		super(store);
 	}

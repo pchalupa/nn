@@ -37,8 +37,10 @@ const schema = object({
 	tags,
 });
 
+// TODO: Create store can return hooks useRead and useUpdate too
 const store = createStore(schema);
+const repository = new IndexDbRepository();
 
-RepositorySync.attach(store, new IndexDbRepository());
+RepositorySync.attach(store, repository);
 
 export const { useRead, useUpdate } = use(store);

@@ -27,10 +27,10 @@ export class RepositorySync extends SyncEngine {
 		return this.repository.set(name, entry);
 	}
 
-	public static attach(store: Store, repository: Repository): RepositorySync {
+	public static async attach(store: Store, repository: Repository): Promise<RepositorySync> {
 		const repositorySync = new RepositorySync(store, repository);
 
-		repositorySync.attach();
+		await repositorySync.attach();
 
 		return repositorySync;
 	}

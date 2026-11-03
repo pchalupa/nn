@@ -16,29 +16,21 @@ const repositoryMock = (entries: Record<string, unknown> = {}): Repository => ({
 	close: vi.fn(),
 });
 
-const flush = () => new Promise((resolve) => setTimeout(resolve));
-
-const attach = async (repository: Repository) => {
-	const store = new Store(schema);
-	const sync = RepositorySync.attach(store, repository);
-
-	await flush();
-
-	return { store, sync };
-};
-
 describe("RepositorySync", () => {
 	it("initializes the repository with the store's fields", async () => {
 		const repository = repositoryMock();
+		const store = new Store(schema);
 
-		await attach(repository);
+		await RepositorySync.attach(store, repository);
 
 		expect(repository.init).toHaveBeenCalledExactlyOnceWith(schema.properties);
 	});
 
 	it("restores each field from the repository by name", async () => {
 		const repository = repositoryMock({ language: new LWWRegister("cs", "language", Time.now()).encode() });
-		const { store } = await attach(repository);
+		const store = new Store(schema);
+
+		await RepositorySync.attach(store, repository);
 
 		expect(repository.get).toHaveBeenCalledWith("tickets");
 		expect(repository.get).toHaveBeenCalledWith("language");
@@ -47,7 +39,9 @@ describe("RepositorySync", () => {
 
 	it("persists each changed field under its name", async () => {
 		const repository = repositoryMock();
-		const { store } = await attach(repository);
+		const store = new Store(schema);
+
+		await RepositorySync.attach(store, repository);
 
 		store.state.update((draft) => {
 			draft.language = "cs";
@@ -65,7 +59,7 @@ describe("RepositorySync", () => {
 
 		vi.mocked(repository.init).mockRejectedValue(failure);
 
-		const { store } = await attach(repository);
+		const store = new Store(schema);
 
 		store.state.update((draft) => {
 			draft.language = "cs";
@@ -77,9 +71,10 @@ describe("RepositorySync", () => {
 
 	it("closes the repository on detach", async () => {
 		const repository = repositoryMock();
-		const { sync } = await attach(repository);
+		const store = new Store(schema);
+		const repositorySync = await RepositorySync.attach(store, repository);
 
-		sync.detach();
+		repositorySync.detach();
 
 		expect(repository.close).toHaveBeenCalledOnce();
 	});
@@ -91,8 +86,9 @@ describe("RepositorySync", () => {
 			set: vi.fn().mockResolvedValue(undefined),
 			close: vi.fn(),
 		};
-		const { sync } = await attach(repository);
+		const store = new Store(schema);
+		const repositorySync = await RepositorySync.attach(store, repository);
 
-		expect(() => sync.detach()).not.toThrow();
+		expect(() => repositorySync.detach()).not.toThrow();
 	});
 });

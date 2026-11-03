@@ -4,6 +4,12 @@
 
 Adds the abstract `SyncEngine` class that every sync engine extends.
 
-`SyncEngine` keeps an engine safe without the engine author having to get it right. It holds edits until the bootstrap has merged the stored data, so they never overwrite stored data. It also never writes a field that failed to restore, and it stops cleanly on `detach()`. An engine implements only its transport: `open()`, `close()`, `pull(name)` and `push(name, entry)`. `detach()` always calls `close()`, and calls it again if `open()` finishes afterwards, so `close()` must be safe before `open()` has finished, after it failed, and more than once. A push-based engine passes incoming records to `receive(entries)`.
+An engine implements only its transport: `open()`, `close()`, `pull(name)` and `push(name, entry)`. It starts by calling the protected `attach()`, for example from a static factory as `RepositorySync.attach()` does. `SyncEngine` then pushes every change the store reports and runs the bootstrap in the background. The bootstrap calls `open()`, then pulls each schema field and merges the stored value into the store. If `open()` or any `pull()` throws, the engine detaches itself.
+
+`push()` can run before `open()` finishes, because changes are pushed right away. Restored values are pushed back too, since merging them counts as a change. A failed `push()` isn't caught, so it surfaces as an unhandled promise rejection.
+
+`detach()` stops pushing and calls `close()` once. It can run before `open()` has finished or after it failed, so `close()` must handle both. `close()` isn't called again when `open()` finishes after `detach()`.
+
+A push-based engine passes incoming records to `receive(entries)`. `entries` must hold a record for every schema field.
 
 Install this package only to write your own sync engine; the engines depend on it already.

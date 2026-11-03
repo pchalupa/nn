@@ -4,7 +4,7 @@
 
 Adds `RepositorySync`, a sync engine that restores a store from a repository and persists its changes.
 
-Attach it with `RepositorySync.attach(store, repository)`. The bootstrap runs in the background and merges stored values into the store when they arrive. Edits made in the meantime are written only after the merge, so they never overwrite stored data. Call `sync.detach()` to stop. Detaching also closes the repository if it has a `close()` method, as `IndexDbRepository` does.
+Attach it with `RepositorySync.attach(store, repository)`. The bootstrap runs in the background: it calls the repository's `init()`, then reads each field and merges the stored value into the store. Call `sync.detach()` to stop persisting and close the repository.
 
 ```ts
 import { IndexDbRepository } from "@nn/indexdb-repository";
@@ -13,6 +13,6 @@ import { RepositorySync } from "@nn/repository-sync";
 const sync = RepositorySync.attach(store, new IndexDbRepository());
 ```
 
-`RepositorySync` persists only changes reported after it attaches. If the repository's `init` fails, it detaches itself and persists nothing. A field that failed to restore is never written by that engine. Failures aren't reported yet.
+Every change is written right away, including edits made before the bootstrap finishes. With `IndexDbRepository`, an edit made before `init()` finishes fails, and an edit to a field that isn't restored yet overwrites its stored value. Restored values are written back too. If `init()` or a read fails, `RepositorySync` detaches itself and stops persisting. Failures aren't reported yet, and a failed write surfaces as an unhandled promise rejection.
 
 Each store needs its own repository. Records are keyed by field name, so two stores sharing one database would overwrite each other's fields. Give each `IndexDbRepository` its own database name, for example `new IndexDbRepository("settings")`.

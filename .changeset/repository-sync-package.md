@@ -11,13 +11,8 @@ import { IndexDbRepository } from "@nn/indexdb-repository";
 import { RepositorySync } from "@nn/repository-sync";
 
 const sync = RepositorySync.attach(store, new IndexDbRepository());
-
-sync.delegate = {
-	syncEngineDidBootstrap: () => console.info("Restored"),
-	syncEngineDidFail: (_sync, error) => console.warn("Persistence failed", error),
-};
 ```
 
-`RepositorySync` persists only changes reported after it attaches. If the repository's `init` fails, it detaches itself and persists nothing, and `syncEngineDidBootstrap` is never called. A field that failed to restore is never written by that engine. Each failure goes to `syncEngineDidFail`.
+`RepositorySync` persists only changes reported after it attaches. If the repository's `init` fails, it detaches itself and persists nothing. A field that failed to restore is never written by that engine. Failures aren't reported yet.
 
 Each store needs its own repository. Records are keyed by field name, so two stores sharing one database would overwrite each other's fields. Give each `IndexDbRepository` its own database name, for example `new IndexDbRepository("settings")`.

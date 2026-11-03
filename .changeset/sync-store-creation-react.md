@@ -21,4 +21,4 @@ const sync = RepositorySync.attach(store, repository);
 const { useRead, useUpdate } = use(store);
 ```
 
-Keep `sync` if you want to set `sync.delegate` to hear when the bootstrap finishes or fails, or to call `sync.detach()`.
+Keep `sync` if you want to call `sync.detach()` later.

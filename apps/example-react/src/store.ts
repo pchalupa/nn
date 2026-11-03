@@ -1,3 +1,4 @@
+import { BroadcastSync } from "@nn/broadcast-sync";
 import { IndexDbRepository } from "@nn/indexdb-repository";
 import { createStore, use } from "@nn/react";
 import { RepositorySync } from "@nn/repository-sync";
@@ -51,5 +52,6 @@ const store = createStore(schema);
 const repository = new IndexDbRepository();
 
 RepositorySync.attach(store, repository);
+BroadcastSync.attach(store);
 
 export const { useRead, useUpdate } = use(store);

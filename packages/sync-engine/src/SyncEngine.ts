@@ -21,12 +21,28 @@ export abstract class SyncEngine implements Delegatable<SyncEngineDelegate> {
 	protected abstract pull(name: string): Promise<unknown>;
 	protected abstract push(name: string, entry: Encoded): Promise<void>;
 
-	protected attach(): void {
-		this.unsubscribeFromStoreChanges = this.store.changes.subscribe((changed) => {
-			for (const entity of changed) this.send(entity);
-		});
-		//TODO: bootstrap is async, connection needs to be made first
-		void this.bootstrap();
+	protected async attach(): Promise<void> {
+		try {
+			await this.open();
+
+			this.unsubscribeFromStoreChanges = this.store.changes.subscribe((changed) => {
+				for (const entity of changed) {
+					void this.send(entity);
+				}
+			});
+
+			for (const name in this.store.schema.properties) {
+				const value = await this.pull(name);
+
+				if (value) {
+					const entity = this.codec.decode(value);
+
+					this.store.state.merge(name, entity);
+				}
+			}
+		} catch {
+			this.detach();
+		}
 	}
 
 	public detach(): void {
@@ -49,24 +65,6 @@ export abstract class SyncEngine implements Delegatable<SyncEngineDelegate> {
 			await this.push(entity.key, entry);
 		} catch (error) {
 			this.delegate?.syncEngineDidFailToPush(this, error);
-		}
-	}
-
-	private async bootstrap(): Promise<void> {
-		try {
-			await this.open();
-
-			for (const name in this.store.schema.properties) {
-				const value = await this.pull(name);
-
-				if (value) {
-					const entity = this.codec.decode(value);
-
-					this.store.state.merge(name, entity);
-				}
-			}
-		} catch {
-			this.detach();
 		}
 	}
 }

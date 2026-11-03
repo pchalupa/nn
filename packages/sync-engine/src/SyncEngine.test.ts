@@ -63,6 +63,38 @@ const attach = async (transport: Transport) => {
 const register = (value: string) => new LWWRegister(value, "language", Time.now()).encode();
 
 describe("SyncEngine", () => {
+	it("waits for the transport to open before pushing store changes", async () => {
+		let finishOpening: (() => void) | undefined;
+		const opening = new Promise<void>((resolve) => {
+			finishOpening = resolve;
+		});
+		const transport = transportMock();
+
+		transport.open.mockReturnValue(opening);
+
+		const { store, sync } = await attach(transport);
+
+		store.state.update((draft) => {
+			draft.language = "cs";
+		});
+
+		expect(transport.push).not.toHaveBeenCalled();
+		expect(transport.pull).not.toHaveBeenCalled();
+
+		finishOpening?.();
+		await flush();
+
+		store.state.update((draft) => {
+			draft.language = "en";
+		});
+
+		expect(transport.push).toHaveBeenCalledExactlyOnceWith(
+			"language",
+			expect.objectContaining({ key: "language", data: "en" }),
+		);
+		sync.detach();
+	});
+
 	it("opens the transport and restores each field by name", async () => {
 		const transport = transportMock({ language: register("cs") });
 		const { store } = await attach(transport);

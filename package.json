@@ -8,6 +8,7 @@
 	"scripts": {
 		"dev": "pnpm -r --parallel run dev",
 		"ts:check": "pnpm -r --parallel ts:check",
+		"ts:watch": "pnpm -r --parallel ts:check --watch",
 		"lint:check": "oxlint",
 		"lint:write": "oxlint --fix",
 		"format": "oxfmt .",

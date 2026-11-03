@@ -199,6 +199,17 @@ describe("SyncEngine", () => {
 		expect(store.state.read().language).toBe("cs");
 	});
 
+	it("merges only the received fields", async () => {
+		const { store, sync } = await attach(transportMock());
+
+		store.state.update((draft) => {
+			draft.tickets.push({ title: "First" });
+		});
+		sync.deliver({ language: register("cs") });
+
+		expect(store.state.read()).toStrictEqual({ tickets: [{ title: "First" }], language: "cs" });
+	});
+
 	it("throws on a received entry that cannot be decoded", async () => {
 		const { store, sync } = await attach(transportMock());
 

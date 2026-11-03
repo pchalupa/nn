@@ -52,9 +52,9 @@ export abstract class SyncEngine implements Delegatable<SyncEngineDelegate> {
 
 	protected receive(entries: Record<string, unknown>): void {
 		for (const name of Object.keys(this.store.schema.properties)) {
-			const entry = entries[name];
-
-			this.store.state.merge(name, this.codec.decode(entry));
+			if (Object.hasOwn(entries, name)) {
+				this.store.state.merge(name, this.codec.decode(entries[name]));
+			}
 		}
 	}
 

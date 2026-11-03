@@ -25,6 +25,7 @@ test.describe("Create ticket", () => {
 		await expect(dialog).toBeVisible();
 		await expect(dialog.getByRole("textbox", { name: "Title" })).toHaveValue("");
 		await expect(dialog.getByRole("combobox", { name: "Status" })).toHaveValue("todo");
+		await expect(dialog.getByRole("combobox", { name: "Assignee" })).toHaveValue("");
 	});
 
 	test("should create a ticket with every field after saving", async ({ page }) => {
@@ -36,8 +37,7 @@ test.describe("Create ticket", () => {
 		await dialog.getByRole("textbox", { name: "Title" }).fill("Created");
 		await dialog.getByRole("textbox", { name: "Description" }).fill("Line one");
 		await dialog.getByRole("combobox", { name: "Status" }).selectOption("in-progress");
-		await dialog.getByRole("textbox", { name: "Name" }).fill("Ann");
-		await dialog.getByRole("textbox", { name: "Email" }).fill("ann@example.com");
+		await dialog.getByRole("combobox", { name: "Assignee" }).selectOption({ label: "Jan Novak" });
 
 		await expect(columnCards(page, "In Progress")).toHaveCount(0);
 
@@ -49,7 +49,7 @@ test.describe("Create ticket", () => {
 		await expect(card).toHaveCount(1);
 		await expect(card).toHaveText(/Created/);
 		await expect(card).toHaveText(/Line one/);
-		await expect(card).toHaveText(/Ann/);
+		await expect(card).toHaveText(/Jan Novak/);
 	});
 
 	test("should not create a ticket when closed without saving", async ({ page }) => {
@@ -198,7 +198,7 @@ test.describe("TicketModal editing", () => {
 		await page.keyboard.press("Enter");
 
 		await expect(card).toHaveText(/Renamed/);
-		await expect(dialog).toBeVisible();
+		await expect(dialog).toBeHidden();
 	});
 
 	test("should save every field in one submit", async ({ page }) => {
@@ -207,8 +207,7 @@ test.describe("TicketModal editing", () => {
 		await dialog.getByRole("textbox", { name: "Title" }).fill("Renamed");
 		await dialog.getByRole("textbox", { name: "Description" }).fill("Line one");
 		await dialog.getByRole("combobox", { name: "Status" }).selectOption("done");
-		await dialog.getByRole("textbox", { name: "Name" }).fill("Ann");
-		await dialog.getByRole("textbox", { name: "Email" }).fill("ann@example.com");
+		await dialog.getByRole("combobox", { name: "Assignee" }).selectOption({ label: "Jan Novak" });
 
 		await expect(columnCards(page, "To Do")).toHaveCount(1);
 
@@ -219,8 +218,8 @@ test.describe("TicketModal editing", () => {
 		await expect(columnCards(page, "To Do")).toHaveCount(0);
 		await expect(card).toHaveText(/Renamed/);
 		await expect(card).toHaveText(/Line one/);
-		await expect(card).toHaveText(/Ann/);
-		await expect(dialog).toBeVisible();
+		await expect(card).toHaveText(/Jan Novak/);
+		await expect(dialog).toBeHidden();
 	});
 
 	test("should not save an empty title", async ({ page }) => {
@@ -241,6 +240,7 @@ test.describe("TicketModal editing", () => {
 		await page.keyboard.press("Enter");
 		await expect(card).toHaveText(/Renamed/);
 		await page.reload();
+		await page.getByRole("link", { name: "Renamed" }).click();
 
 		await expect(dialog.getByRole("textbox", { name: "Title" })).toHaveValue("Renamed");
 	});

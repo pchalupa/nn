@@ -1,17 +1,35 @@
 import { act, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { Suspense } from "react";
+import { type ReactNode, Suspense, useEffect } from "react";
 import { I18nextProvider } from "react-i18next";
 import { beforeAll, describe, expect, it, vi } from "vitest";
 
 import { TicketModal } from ".";
 import { i18n } from "../../i18n";
-import { useRead } from "../../store";
+import { useRead, useUpdate } from "../../store";
 
 const Titles = () => {
 	const titles = useRead((data) => data.tickets.map((ticket) => ticket.title));
 
 	return <output aria-label="titles">{titles.join(",")}</output>;
+};
+
+const Assignees = () => {
+	const assignees = useRead((data) => data.tickets.map((ticket) => ticket.assignee));
+
+	return <output aria-label="assignees">{assignees.join(",")}</output>;
+};
+
+const AddUser = () => {
+	const updateStore = useUpdate();
+
+	useEffect(() => {
+		updateStore((data) => {
+			data.users.push({ id: "ann", name: "Ann", passkeys: [] });
+		});
+	}, [updateStore]);
+
+	return null;
 };
 
 describe("TicketModal", () => {
@@ -27,7 +45,7 @@ describe("TicketModal", () => {
 		};
 	});
 
-	const setup = async () => {
+	const setup = async (children?: ReactNode) => {
 		const onClose = vi.fn();
 
 		await act(async () =>
@@ -36,6 +54,7 @@ describe("TicketModal", () => {
 					<Suspense fallback="fallback">
 						<TicketModal onClose={onClose} />
 						<Titles />
+						{children}
 					</Suspense>
 				</I18nextProvider>,
 			),
@@ -50,6 +69,23 @@ describe("TicketModal", () => {
 		expect(dialog).toHaveProperty("open", true);
 		expect(screen.getByRole("textbox", { name: "Title" })).toHaveProperty("value", "");
 		expect(screen.getByRole("combobox", { name: "Status" })).toHaveProperty("value", "todo");
+		expect(screen.getByRole("combobox", { name: "Assignee" })).toHaveProperty("value", "");
+	});
+
+	it("assigns a user from the dropdown", async () => {
+		await setup(
+			<>
+				<AddUser />
+				<Assignees />
+			</>,
+		);
+
+		await user.type(screen.getByRole("textbox", { name: "Title" }), "Assigned");
+		await screen.findByRole("option", { name: "Ann" });
+		await user.selectOptions(screen.getByRole("combobox", { name: "Assignee" }), "Ann");
+		await user.click(screen.getByRole("button", { name: "Save" }));
+
+		expect(screen.getByRole("status", { name: "assignees" }).textContent).toContain("ann");
 	});
 
 	it("creates a ticket and closes on save", async () => {

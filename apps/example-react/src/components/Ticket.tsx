@@ -1,7 +1,7 @@
 interface TicketProps {
 	title: string;
 	description: string;
-	assignee: string;
+	assignee?: string;
 	onDragStart?: (event: React.DragEvent) => void;
 }
 

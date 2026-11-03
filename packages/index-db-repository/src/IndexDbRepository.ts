@@ -105,17 +105,17 @@ export class IndexDbRepository implements Repository {
 
 			openRequest.onerror = () => reject(openRequest.error);
 		});
-		const needsUpgrade = typeNames.some((typeName) => !this.indexDbDatabase?.objectStoreNames.contains(typeName));
+		const needsUpgrade = typeNames.some((typeName) => !indexDbDatabase.objectStoreNames.contains(typeName));
+
+		if (needsUpgrade) {
+			indexDbDatabase.close();
+			this.version = indexDbDatabase.version + 1;
+
+			return await this.init(schema);
+		}
 
 		indexDbDatabase.onversionchange = () => indexDbDatabase.close();
 
 		this.indexDbDatabase = indexDbDatabase;
-
-		if (needsUpgrade) {
-			this.indexDbDatabase.close();
-			this.version++;
-
-			return await this.init(schema);
-		}
 	}
 }

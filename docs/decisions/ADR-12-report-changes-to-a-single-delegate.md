@@ -5,6 +5,8 @@ date: 2026-10-31
 
 # ADR-12: Report changes to a single delegate
 
+Amended by [ADR-13](ADR-13-attach-persistence-and-sync-from-outside-the-store.md): `Store` no longer persists. Persistence moved to [`RepositorySync`](../../packages/repository-sync/src/RepositorySync.ts), which observes changes through `Store.observe`.
+
 ## Context
 
 [`EventEmitter`](https://github.com/pchalupa/nn/blob/10e9c363ea49d36d2102bbf37755d4924bbd7bd7/packages/event-emitter/src/EventEmitter.ts) supports many named events, each with many listeners. Every production use in nn has one event and one known consumer. Each [`Entity`](../../packages/entities/src/Entity.ts) owned an emitter whose only listener was its parent [`LWWMap`](../../packages/entities/src/LWWMap.ts) or [`RGA`](../../packages/entities/src/RGA.ts), or [`State`](../../packages/store/src/State.ts) for a top-level field. `State` had one internal listener, [`Store`](../../packages/store/src/Store.ts), which persists the changed entries. [`HttpRemote`](../../packages/http-remote/src/HttpRemote.ts) had an `update` event with no listener at all.

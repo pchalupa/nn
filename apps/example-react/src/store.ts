@@ -1,8 +1,7 @@
 import { IndexDbRepository } from "@nn/indexdb-repository";
-import { use } from "@nn/react";
+import { createStore, use } from "@nn/react";
+import { RepositorySync } from "@nn/repository-sync";
 import { array, enumeration, type InferStateType, object, string } from "@nn/schema";
-import { Store } from "@nn/store";
-import { RepositorySync } from "@nn/store/RepositorySync";
 
 export type Status = InferStateType<typeof status>;
 
@@ -38,7 +37,7 @@ const schema = object({
 	tags,
 });
 
-const store = new Store(schema);
+const store = createStore(schema);
 
 RepositorySync.attach(store, new IndexDbRepository());
 

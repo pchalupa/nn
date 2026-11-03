@@ -1,6 +1,6 @@
 import type { InferStateType, Schema } from "@nn/schema";
 import type { ObjectSchema } from "@nn/schema/ObjectSchema";
-import type { Store } from "@nn/store";
+import { Store } from "@nn/store";
 import { useDebugValue } from "react";
 import { useSyncExternalStoreWithSelector } from "use-sync-external-store/with-selector";
 
@@ -12,13 +12,19 @@ type Snapshot<Value> = {
 
 type Update<Data> = (recipe: (draft: Data) => void) => void;
 
+export function createStore<StoreSchema extends ObjectSchema<Record<string, Schema>>>(
+	schema: StoreSchema,
+): Store<StoreSchema> {
+	return new Store(schema);
+}
+
 export function use<StoreSchema extends ObjectSchema<Record<string, Schema>>>(store: Store<StoreSchema>) {
 	type Data = InferStateType<StoreSchema>;
+	const getSnapshot = () => store.state.read();
+	const subscribe = (observer: () => void) => store.subscribe(observer);
+	const update: Update<Data> = (recipe) => store.state.update(recipe);
 
 	function useRead<Result>(selector: (data: Snapshot<Data>) => Result): Result {
-		const getSnapshot = () => store.state.read();
-		const subscribe = (observer: () => void) => store.subscribe(observer);
-
 		const value = useSyncExternalStoreWithSelector(subscribe, getSnapshot, getSnapshot, selector, equal);
 
 		useDebugValue(value);
@@ -27,8 +33,6 @@ export function use<StoreSchema extends ObjectSchema<Record<string, Schema>>>(st
 	}
 
 	function useUpdate(): Update<Data> {
-		const update: Update<Data> = (recipe) => store.state.update(recipe);
-
 		return update;
 	}
 

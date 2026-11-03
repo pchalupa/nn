@@ -290,7 +290,7 @@ Links below refer to the working tree inspected on 2026-10-04. Related backgroun
 [state]: ../../../packages/store/src/State.ts
 [persistence]: ../../superpowers/plans/2026-10-03-crdt-root-snapshots.md#resume-after-view-materialization
 [repository]: https://github.com/pchalupa/nn/blob/a67280fad54b78ae8c03d6c6608819e166f47ce2/packages/repository/src/Repository.ts
-[indexeddb]: ../../../packages/indexdb-sync/src/IndexDbRepository.ts
+[indexeddb]: ../../../packages/indexdb-sync/src/IndexDb.ts
 [entity-tests]: ../../../packages/entities/src/fromRecord.test.ts
 [persistence-tests]: ../../superpowers/plans/2026-10-03-crdt-root-snapshots.md#resume-after-view-materialization
 [idb-tests]: ../../../packages/index-db-repository/src/Persistence.test.ts

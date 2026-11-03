@@ -1,7 +1,5 @@
 import type { Encoded } from "@nn/entities/Codable";
 
-import { RepositoryNotInitializedError } from "./errors/RepositoryNotInitializedError";
-
 enum Mode {
 	ReadOnly = "readonly",
 	ReadWrite = "readwrite",
@@ -77,7 +75,7 @@ export class IndexDb {
 	}
 
 	private static assertIndexDB(database: unknown): asserts database is IDBDatabase {
-		if (!(database instanceof IDBDatabase)) throw new RepositoryNotInitializedError();
+		if (!(database instanceof IDBDatabase)) throw new Error("Index DB is not initialized.");
 	}
 
 	public async init(schema: Record<string, unknown>): Promise<void> {

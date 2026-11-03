@@ -1,7 +1,6 @@
 import type { Encoded } from "@nn/entities/Codable";
 import { afterEach, beforeEach, describe, expect, expectTypeOf, it, vi } from "vitest";
 
-import { RepositoryNotInitializedError } from "./errors/RepositoryNotInitializedError";
 import { IndexDb } from "./IndexDb";
 
 describe("IndexDb", () => {
@@ -16,8 +15,8 @@ describe("IndexDb", () => {
 	it("requires initialization before reading or writing", async () => {
 		const indexDb = new IndexDb();
 
-		await expect(indexDb.get("language")).rejects.toBeInstanceOf(RepositoryNotInitializedError);
-		await expect(indexDb.set("language", entry)).rejects.toBeInstanceOf(RepositoryNotInitializedError);
+		await expect(indexDb.get("language")).rejects.toThrow("Index DB is not initialized.");
+		await expect(indexDb.set("language", entry)).rejects.toThrow("Index DB is not initialized.");
 	});
 
 	it("creates a store for every key in the schema", async () => {
@@ -115,7 +114,7 @@ describe("IndexDb", () => {
 		await indexDb.set("language", entry);
 		indexDb.close();
 
-		await expect(indexDb.get("language")).rejects.toBeInstanceOf(RepositoryNotInitializedError);
+		await expect(indexDb.get("language")).rejects.toThrow("Index DB is not initialized.");
 
 		await indexDb.init({ language: {} });
 

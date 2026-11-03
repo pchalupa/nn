@@ -19,7 +19,7 @@ Amends [ADR-13](ADR-13-attach-persistence-and-sync-from-outside-the-store.md).
 
 We will ship IndexedDB persistence as one package, `@nn/indexdb-sync`, which exports only [`IndexDbSync`](../../packages/indexdb-sync/src/IndexDbSync.ts). An app attaches it with `IndexDbSync.attach(store, name)`. `name` is the database name and defaults to `"nn-default"`. The constructor is private, as in `BroadcastSync`.
 
-[`IndexDbRepository`](../../packages/indexdb-sync/src/IndexDbRepository.ts) stays as a class inside the package. `IndexDbSync` creates it in its constructor and calls it from each hook. The package doesn't export it, so its methods can change without a major release. It works with `Encoded` instead of `Entry`, and `RepositoryNotInitializedError` moves into the package.
+`IndexDbRepository` stays as a class inside the package, renamed to [`IndexDb`](../../packages/indexdb-sync/src/IndexDb.ts). `IndexDbSync` creates it in its constructor and calls it from each hook. The package doesn't export it, so its methods can change without a major release. It works with `Encoded` instead of `Entry`, and it throws a plain `Error` instead of `RepositoryNotInitializedError` when it is used before `init()`.
 
 We will remove `@nn/repository`, `@nn/indexdb-repository` and `@nn/repository-sync`. The database name, the object stores and the stored values stay the same, so data saved by `RepositorySync` restores with `IndexDbSync`.
 
@@ -31,7 +31,7 @@ This amends one point of ADR-13: an engine and its storage adapter ship together
 
 **Keep `Repository` as a public interface, in `@nn/indexdb-sync` or `@nn/sync-engine`.** It would let a SQLite backend plug in without writing an engine. We rejected it because no second backend exists. An engine on top of `SyncEngine` is about 30 lines, and `SyncEngine` already owns the ordering and failure rules that are easy to get wrong.
 
-**Move the IndexedDB code into `IndexDbSync` and remove `IndexDbRepository`.** It removes a class that only `IndexDbSync` calls. We rejected it because the IndexedDB work (opening the database, version upgrades, aborting a write that a newer write replaces) is a different job from the engine lifecycle. Keeping it in its own class keeps that file's history and lets its tests drive it directly.
+**Move the IndexedDB code into `IndexDbSync` and remove `IndexDb`.** It removes a class that only `IndexDbSync` calls. We rejected it because the IndexedDB work (opening the database, version upgrades, aborting a write that a newer write replaces) is a different job from the engine lifecycle. Keeping it in its own class keeps that file's history and lets its tests drive it directly.
 
 ## Consequences
 
@@ -41,6 +41,6 @@ The removed packages get no further releases. Changesets can't release a package
 
 A new storage backend is now a new engine package, not a `Repository` implementation. If two backends later share enough code to need a common interface, we add it then, inside the packages that need it.
 
-`IndexDbRepository` keeps `delete` and `getAll`, which `IndexDbSync` doesn't call. Only its tests use them until an engine needs them.
+`IndexDb` keeps `delete` and `getAll`, which `IndexDbSync` doesn't call. Only its tests use them until an engine needs them.
 
 `IndexDbSync.test.ts` now runs against [`fake-indexeddb`](https://github.com/dumbmatter/fakeIndexedDB) instead of a `Repository` mock, so the engine tests also cover the IndexedDB behavior they depend on.

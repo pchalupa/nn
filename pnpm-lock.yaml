@@ -351,9 +351,6 @@ importers:
       '@nn/entities':
         specifier: 'workspace:'
         version: link:../entities
-      '@nn/observable':
-        specifier: 'workspace:'
-        version: link:../observable
       '@nn/repository':
         specifier: 'workspace:'
         version: link:../repository
@@ -427,6 +424,16 @@ importers:
         version: 5.0.5(@types/node@26.6.6)(@vitest/coverage-v8@5.0.5)(jsdom@30.1.3)(vite@8.3.5(@types/node@26.6.6)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(tsx@4.23.15)(yaml@2.9.1))
 
   packages/sync:
+    dependencies:
+      '@nn/entities':
+        specifier: 'workspace:'
+        version: link:../entities
+      '@nn/observable':
+        specifier: 'workspace:'
+        version: link:../observable
+      '@nn/store':
+        specifier: 'workspace:'
+        version: link:../store
     devDependencies:
       '@nn/typescript-config':
         specifier: 'workspace:'

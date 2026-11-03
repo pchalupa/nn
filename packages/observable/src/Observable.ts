@@ -2,7 +2,7 @@ export type Observer = () => void;
 
 export type Unsubscribe = () => void;
 
-export class Subject {
+export class Observable {
 	private observers = new Set<Observer>();
 
 	public subscribe(observer: Observer): Unsubscribe {

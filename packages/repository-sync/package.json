@@ -21,7 +21,6 @@
 	},
 	"dependencies": {
 		"@nn/entities": "workspace:",
-		"@nn/observable": "workspace:",
 		"@nn/repository": "workspace:",
 		"@nn/store": "workspace:",
 		"@nn/sync": "workspace:"

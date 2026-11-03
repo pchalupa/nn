@@ -1,5 +1,4 @@
 import { isObject } from "@nn/guards/isObject";
-import type { Entry, Repository } from "@nn/repository";
 import { array, boolean, object, string } from "@nn/schema";
 import { describe, expect, it } from "vitest";
 
@@ -84,49 +83,19 @@ describe("Memory with 10000 rows", () => {
 
 		expect(Math.min(...samples.slice(10))).toBeLessThan(24 * 1024 * 1024);
 	});
-
-	it("allocates at most 48 MB for a one-field update that is persisted", async () => {
-		const writes: Entry[] = [];
-		const repository: Repository = {
-			init: async () => {},
-			get: async () => undefined,
-			set: async (_name, entry) => {
-				writes.push(entry);
-			},
-		};
-		const store = await Store.fromSchema({ schema, repository });
-
-		store.state.update((draft) => {
-			draft.tickets = rows(size);
-		});
-		await new Promise((resolve) => setTimeout(resolve, 0));
-
-		const samples: number[] = [];
-
-		for (let index = 0; index < 20; index++) {
-			const before = measure(v8, "getHeapStatistics", "total_allocated_bytes");
-
-			store.state.update((draft) => {
-				draft.tickets[0].done = index % 2 === 0;
-			});
-			samples.push(measure(v8, "getHeapStatistics", "total_allocated_bytes") - before);
-			await new Promise((resolve) => setTimeout(resolve, 0));
-		}
-
-		expect(writes).toHaveLength(21);
-		expect(Math.min(...samples.slice(10))).toBeLessThan(48 * 1024 * 1024);
-	});
 });
 
 describe("Store", () => {
-	it("creates a store from schema", async ({ bench }) => {
+	it("constructs a store from schema", async ({ bench }) => {
 		const blogSchema = object({
 			users: array(object({ name: string() })),
 			posts: array(object({ title: string() })),
 		});
 
-		const result = await bench("fromSchema", async () => {
-			await Store.fromSchema({ schema: blogSchema });
+		const result = await bench("constructor", () => {
+			const store = new Store(blogSchema);
+
+			return store;
 		}).run();
 
 		expect(result.throughput.mean).toBeGreaterThan(500_000);

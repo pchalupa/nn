@@ -1,7 +1,7 @@
 {
 	"name": "@nn/sync",
 	"version": "0.0.0",
-	"description": "Sync engine interface",
+	"description": "Base class for sync engines",
 	"keywords": [],
 	"homepage": "https://github.com/pchalupa/nn/packages/sync#readme",
 	"bugs": {
@@ -16,6 +16,11 @@
 	},
 	"scripts": {
 		"ts:check": "tsc --noEmit"
+	},
+	"dependencies": {
+		"@nn/entities": "workspace:",
+		"@nn/observable": "workspace:",
+		"@nn/store": "workspace:"
 	},
 	"devDependencies": {
 		"@nn/typescript-config": "workspace:",

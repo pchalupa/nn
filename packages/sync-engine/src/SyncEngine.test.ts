@@ -96,6 +96,25 @@ describe("SyncEngine", () => {
 		);
 	});
 
+	it("notifies the delegate when a push fails", async () => {
+		const transport = transportMock();
+		const error = new Error("write failed");
+
+		transport.push.mockRejectedValue(error);
+
+		const { store, sync } = await attach(transport);
+		const delegate = { syncEngineDidFailToPush: vi.fn() };
+
+		sync.delegate = delegate;
+		store.state.update((draft) => {
+			draft.language = "cs";
+		});
+		await flush();
+
+		expect(delegate.syncEngineDidFailToPush).toHaveBeenCalledExactlyOnceWith(sync, error);
+		expect(transport.close).not.toHaveBeenCalled();
+	});
+
 	it("detaches without pulling when opening fails", async () => {
 		const transport = transportMock();
 

@@ -1,9 +1,15 @@
 import type { Encoded } from "@nn/entities/Codable";
 import { Codec } from "@nn/entities/Codec";
 import type { Entity } from "@nn/entities/Entity";
+import type { Delegatable } from "@nn/observable";
 import type { Store } from "@nn/store";
 
-export abstract class SyncEngine {
+export interface SyncEngineDelegate {
+	syncEngineDidFailToPush(syncEngine: SyncEngine, error: unknown): void;
+}
+
+export abstract class SyncEngine implements Delegatable<SyncEngineDelegate> {
+	public delegate?: SyncEngineDelegate;
 	private codec = new Codec();
 
 	private unsubscribeFromStoreChanges?: () => void;
@@ -39,7 +45,11 @@ export abstract class SyncEngine {
 	private async send(entity: Entity): Promise<void> {
 		const entry = this.codec.encode(entity);
 
-		await this.push(entity.key, entry);
+		try {
+			await this.push(entity.key, entry);
+		} catch (error) {
+			this.delegate?.syncEngineDidFailToPush(this, error);
+		}
 	}
 
 	private async bootstrap(): Promise<void> {

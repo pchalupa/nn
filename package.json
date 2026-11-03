@@ -30,7 +30,7 @@
 		"@stylistic/eslint-plugin": "^5.10.0",
 		"@vitest/coverage-v8": "catalog:",
 		"cspell": "^10.4.0",
-		"knip": "^6.44.0",
+		"knip": "^6.44.1",
 		"oxfmt": "^0.75.0",
 		"oxlint": "^1.90.0",
 		"typescript": "catalog:",

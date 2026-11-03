@@ -1,5 +1,18 @@
 # @nn/indexdb-repository
 
+## 1.1.0
+
+### Minor Changes
+
+- b04e31b: Adds `close()`, which closes the IndexedDB connection that `init()` opened.
+
+  Writes already started still finish, as IndexedDB waits for pending transactions before closing. After `close()`, `get()` and `set()` throw `RepositoryNotInitializedError` until `init()` runs again, and stored entries are kept.
+
+### Patch Changes
+
+- Updated dependencies [b04e31b]
+  - @nn/repository@2.0.0
+
 ## 1.0.1
 
 ### Patch Changes

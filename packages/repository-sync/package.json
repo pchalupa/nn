@@ -1,6 +1,6 @@
 {
 	"name": "@nn/repository-sync",
-	"version": "0.0.0",
+	"version": "1.0.0",
 	"description": "Sync engine that persists a store to a repository",
 	"keywords": [],
 	"homepage": "https://github.com/pchalupa/nn/packages/repository-sync#readme",

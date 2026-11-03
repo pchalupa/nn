@@ -198,7 +198,7 @@ test.describe("TicketModal editing", () => {
 		await page.keyboard.press("Enter");
 
 		await expect(card).toHaveText(/Renamed/);
-		await expect(dialog).toBeVisible();
+		await expect(dialog).toBeHidden();
 	});
 
 	test("should save every field in one submit", async ({ page }) => {
@@ -219,7 +219,7 @@ test.describe("TicketModal editing", () => {
 		await expect(card).toHaveText(/Renamed/);
 		await expect(card).toHaveText(/Line one/);
 		await expect(card).toHaveText(/Jan Novak/);
-		await expect(dialog).toBeVisible();
+		await expect(dialog).toBeHidden();
 	});
 
 	test("should not save an empty title", async ({ page }) => {
@@ -240,6 +240,7 @@ test.describe("TicketModal editing", () => {
 		await page.keyboard.press("Enter");
 		await expect(card).toHaveText(/Renamed/);
 		await page.reload();
+		await page.getByRole("link", { name: "Renamed" }).click();
 
 		await expect(dialog.getByRole("textbox", { name: "Title" })).toHaveValue("Renamed");
 	});

@@ -11,7 +11,7 @@ describe("Entity", () => {
 			private value: string,
 			key?: string,
 		) {
-			super(key);
+			super("test", key);
 		}
 
 		public get current(): string {
@@ -33,7 +33,7 @@ describe("Entity", () => {
 		}
 
 		public encode(): Encoded<string> {
-			return { key: this.key, data: this.value, metadata: { kind: "test" } };
+			return { key: this.key, data: this.value, metadata: { kind: this.kind } };
 		}
 	}
 
@@ -42,6 +42,10 @@ describe("Entity", () => {
 
 		expect(entity).toBeInstanceOf(Entity);
 		expect(entity.current).toBe("initial");
+	});
+
+	it("exposes the kind passed by its subclass", () => {
+		expect(new TestEntity("initial").kind).toBe("test");
 	});
 
 	it("reports a change to its delegate", () => {

@@ -21,9 +21,10 @@ export abstract class Entity<Value = unknown> implements Delegatable<EntityDeleg
 	private changes = 0;
 	public delegate?: EntityDelegate;
 
-	public static readonly kind: string;
-
-	constructor(key?: string) {
+	constructor(
+		public readonly kind: string,
+		key?: string,
+	) {
 		this.id = key ?? ID.create();
 	}
 

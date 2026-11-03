@@ -10,7 +10,7 @@ export class RGA<Value extends Entity> extends Entity<Value[]> implements Entity
 	private items = new Map<string, Value>();
 
 	constructor(items: Value[] = [], key?: string) {
-		super(key);
+		super("RGA", key);
 
 		for (const item of items) this.insert(item);
 	}
@@ -80,7 +80,7 @@ export class RGA<Value extends Entity> extends Entity<Value[]> implements Entity
 			data.push(item.encode());
 		}
 
-		return { key: this.key, data, metadata: { kind: RGA.kind } };
+		return { key: this.key, data, metadata: { kind: this.kind } };
 	}
 
 	public static decode(encoded: Encoded, decoder: Decoder): RGA<Entity> {

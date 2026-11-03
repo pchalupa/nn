@@ -11,7 +11,7 @@ export class LWWMap<Fields extends Record<string, Entity>> extends Entity<Fields
 		private fields: Fields,
 		key?: string,
 	) {
-		super(key);
+		super("LWWMap", key);
 
 		for (const name in fields) {
 			fields[name].delegate = this;
@@ -64,7 +64,7 @@ export class LWWMap<Fields extends Record<string, Entity>> extends Entity<Fields
 
 		for (const key in this.fields) data[key] = this.fields[key].encode();
 
-		return { key: this.key, data, metadata: { kind: LWWMap.kind } };
+		return { key: this.key, data, metadata: { kind: this.kind } };
 	}
 
 	public static decode(encoded: Encoded, decoder: Decoder): LWWMap<Record<string, Entity>> {

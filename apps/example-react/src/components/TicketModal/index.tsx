@@ -24,10 +24,11 @@ export const TicketModal = ({ id, onClose }: TicketModalProps) => {
 				title: selectedTicket.title,
 				description: selectedTicket.description,
 				status: selectedTicket.status,
-				assignee: { name: selectedTicket.assignee.name, email: selectedTicket.assignee.email },
+				assignee: selectedTicket.assignee,
 			};
 		}
 	});
+	const users = useRead((data) => data.users.map((user) => ({ id: user.id, name: user.name })));
 	const updateStore = useUpdate();
 	const modalRef = useRef<ModalHandle>(null);
 	const form = useForm({ values: ticket, resetOptions: { keepDirtyValues: true } });
@@ -41,7 +42,6 @@ export const TicketModal = ({ id, onClose }: TicketModalProps) => {
 			updateStore((data) => {
 				data.tickets.push({ ...draft, id: crypto.randomUUID(), title });
 			});
-			onClose();
 		} else {
 			updateStore((data) => {
 				const item = data.tickets.find((entry) => entry.id === id);
@@ -50,11 +50,12 @@ export const TicketModal = ({ id, onClose }: TicketModalProps) => {
 					item.title = title;
 					item.description = draft.description;
 					item.status = draft.status;
-					item.assignee.name = draft.assignee.name;
-					item.assignee.email = draft.assignee.email;
+					item.assignee = draft.assignee;
 				}
 			});
 		}
+
+		onClose();
 	});
 
 	return (
@@ -83,8 +84,20 @@ export const TicketModal = ({ id, onClose }: TicketModalProps) => {
 								))}
 							</select>
 						</label>
-						<Input label={t("name")} {...form.register("assignee.name")} />
-						<Input label={t("email")} type="email" {...form.register("assignee.email")} />
+						<label className="flex flex-col gap-y-1 text-xs font-medium text-zinc-400 uppercase">
+							{t("assignee")}
+							<select
+								className="rounded bg-zinc-700 px-2 py-1 text-sm text-zinc-200 normal-case"
+								{...form.register("assignee")}
+							>
+								<option value="">{t("unassigned")}</option>
+								{users.map((user) => (
+									<option key={user.id} value={user.id}>
+										{user.name}
+									</option>
+								))}
+							</select>
+						</label>
 					</div>
 				</div>
 				<div className="flex flex-row justify-end gap-x-2">

@@ -4,7 +4,12 @@ import { Ticket } from "../../components/Ticket";
 import { useRead } from "../../store";
 
 const Backlog = () => {
-	const tickets = useRead((data) => data.tickets);
+	const tickets = useRead((data) =>
+		data.tickets.map((ticket) => ({
+			...ticket,
+			assignee: data.users.find((user) => user.id === ticket.assignee)?.name,
+		})),
+	);
 
 	return (
 		<div className="flex-1 p-2">
@@ -16,7 +21,7 @@ const Backlog = () => {
 						params={{ ticketId: ticket.id }}
 						aria-label={ticket.title}
 					>
-						<Ticket title={ticket.title} description={ticket.description} assignee={ticket.assignee.name} />
+						<Ticket title={ticket.title} description={ticket.description} assignee={ticket.assignee} />
 					</Link>
 				))}
 			</div>

@@ -1,7 +1,7 @@
 import { IndexDbRepository } from "@nn/indexdb-repository";
 import { createStore, use } from "@nn/react";
 import { RepositorySync } from "@nn/repository-sync";
-import { array, enumeration, type InferStateType, object, string } from "@nn/schema";
+import { array, enumeration, type InferStateType, number, object, string } from "@nn/schema";
 
 export type Status = InferStateType<typeof status>;
 
@@ -18,6 +18,22 @@ export const status = enumeration("todo", "in-progress", "done");
 
 export const language = enumeration("en", "cs");
 
+const passkey = object({
+	credentialId: string(),
+	publicKey: string(),
+	algorithm: number(),
+})
+	.entitle("passkey")
+	.describe("Holds the public part of a user's passkey.");
+
+const account = object({
+	id: string(),
+	name: string().describe("User name"),
+	passkeys: array(passkey),
+})
+	.entitle("account")
+	.describe("Holds a registered user and their passkeys.");
+
 const ticket = object({
 	id: string(),
 	title: string().describe("Ticket description."),
@@ -31,7 +47,7 @@ const ticket = object({
 const tags = array(object({ name: string() }));
 
 const schema = object({
-	users: array(user).describe("List of users"),
+	users: array(account).describe("List of users"),
 	tickets: array(ticket).describe("List of tickets"),
 	language,
 	tags,

@@ -8,3 +8,4 @@ dev-dist/
 
 # Playwright
 test-results/
+e2e/.auth/

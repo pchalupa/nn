@@ -1,7 +1,7 @@
 import { createFileRoute, Link, Outlet } from "@tanstack/react-router";
 
-import { Ticket } from "../components/Ticket";
-import { useRead } from "../store";
+import { Ticket } from "../../components/Ticket";
+import { useRead } from "../../store";
 
 const Backlog = () => {
 	const tickets = useRead((data) => data.tickets);
@@ -25,6 +25,6 @@ const Backlog = () => {
 	);
 };
 
-export const Route = createFileRoute("/backlog")({
+export const Route = createFileRoute("/_app/backlog")({
 	component: Backlog,
 });

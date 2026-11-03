@@ -11,7 +11,14 @@ export default defineConfig({
 		baseURL,
 		trace: "on-first-retry",
 	},
-	projects: [{ name: "chromium", use: { ...devices["Desktop Chrome"] } }],
+	projects: [
+		{ name: "setup", testMatch: "auth.setup.ts", use: devices["Desktop Chrome"] },
+		{
+			name: "chromium",
+			use: { ...devices["Desktop Chrome"], storageState: "e2e/.auth/user.json" },
+			dependencies: ["setup"],
+		},
+	],
 	webServer: {
 		reuseExistingServer: true,
 		command: "pnpm dev",

@@ -77,12 +77,18 @@ importers:
       '@nn/schema':
         specifier: 'workspace:'
         version: link:../../packages/schema
+      '@simplewebauthn/browser':
+        specifier: ^14.0.0
+        version: 14.0.0
       '@tanstack/react-router':
         specifier: ~1.170.46
         version: 1.170.46(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
       i18next:
         specifier: ^26.5.11
         version: 26.5.11(typescript@7.0.2)
+      js-cookie:
+        specifier: ^3.0.8
+        version: 3.0.8
       react:
         specifier: 'catalog:'
         version: 19.3.1
@@ -123,6 +129,9 @@ importers:
       '@types/babel__core':
         specifier: ^7.20.5
         version: 7.20.5
+      '@types/js-cookie':
+        specifier: ^3.0.6
+        version: 3.0.6
       '@types/react':
         specifier: 'catalog:'
         version: 19.3.0
@@ -2468,6 +2477,9 @@ packages:
     cpu: [x64]
     os: [win32]
 
+  '@simplewebauthn/browser@14.0.0':
+    resolution: {integrity: sha512-1odWVqeEBTl7lJ9zMKLEsmTlnyrDO5iRcTvfMKKk1WThUnp/i8JJdffdj2icP+tty159s4PgwE3BiMoEW9NFow==}
+
   '@stylistic/eslint-plugin@5.10.0':
     resolution: {integrity: sha512-nPK52ZHvot8Ju/0A4ucSX1dcPV2/1clx0kLcH5wDmrE4naKso7TUC/voUyU1O9OTKTrR6MYip6LP0ogEMQ9jPQ==}
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
@@ -2707,6 +2719,9 @@ packages:
 
   '@types/http-errors@2.0.5':
     resolution: {integrity: sha512-r8Tayk8HJnX0FztbZN7oVqGccWgw98T/0neJphO91KkmOzug1KkofZURD4UaD5uH8AqcFLfdPErnBod0u71/qg==}
+
+  '@types/js-cookie@3.0.6':
+    resolution: {integrity: sha512-wkw9yd1kEXOPnvEeEV1Go1MmxtBJL0RR79aOTAApecWFVu7w0NNXNqhcWgvw2YgZDYadliXkl14pa3WXw5jlCQ==}
 
   '@types/jsesc@2.5.1':
     resolution: {integrity: sha512-9VN+6yxLOPLOav+7PwjZbxiID2bVaeq0ED4qSQmdQTdjnXJSaCVKTR58t15oqH1H5t8Ng2ZX1SabJVoN9Q34bw==}
@@ -3841,6 +3856,9 @@ packages:
   joycon@3.1.1:
     resolution: {integrity: sha512-34wB/Y7MW7bzjKRjUKTa46I2Z7eV62Rkhva+KkopW7Qvv/OSWBqvkSY7vusOPrNuZcUG3tApvdVgNB8POj3SPw==}
     engines: {node: '>=10'}
+
+  js-cookie@3.0.8:
+    resolution: {integrity: sha512-yeJd4aNAdYZQjaon2bpD/Gb0B/omw7HQOsynXXcOiWVCacbBcPlgn8S/d1X6blFSaHao7ozqtW7NZW19xpCtIw==}
 
   js-tokens@10.0.0:
     resolution: {integrity: sha512-lM/UBzQmfJRo9ABXbPWemivdCW8V2G8FHaHdypQaIy523snUjog0W71ayWXTjiR+ixeMyVHN2XcpnTd/liPg/Q==}
@@ -6854,6 +6872,8 @@ snapshots:
   '@rollup/rollup-win32-x64-msvc@4.66.0':
     optional: true
 
+  '@simplewebauthn/browser@14.0.0': {}
+
   '@stylistic/eslint-plugin@5.10.0(eslint@10.13.0(jiti@2.7.0))':
     dependencies:
       '@eslint-community/eslint-utils': 4.10.1(eslint@10.13.0(jiti@2.7.0))
@@ -7113,6 +7133,8 @@ snapshots:
   '@types/gensync@1.0.5': {}
 
   '@types/http-errors@2.0.5': {}
+
+  '@types/js-cookie@3.0.6': {}
 
   '@types/jsesc@2.5.1': {}
 
@@ -8319,6 +8341,8 @@ snapshots:
   jju@1.4.0: {}
 
   joycon@3.1.1: {}
+
+  js-cookie@3.0.8: {}
 
   js-tokens@10.0.0: {}
 

@@ -55,6 +55,31 @@ describe("IndexDbRepository", () => {
 		expect(await repository.getAll("posts")).toStrictEqual([]);
 	});
 
+	it("opens a new database once", async () => {
+		const repository = new IndexDbRepository();
+		const open = vi.spyOn(indexedDB, "open");
+
+		await repository.init({ language: {} });
+
+		expect(open).toHaveBeenCalledOnce();
+	});
+
+	it("reopens an existing database once to add a missing store", async () => {
+		const previous = new IndexDbRepository();
+
+		await previous.init({ language: {} });
+		await previous.init({ language: {}, theme: {} });
+		previous.close();
+
+		const repository = new IndexDbRepository();
+		const open = vi.spyOn(indexedDB, "open");
+
+		await repository.init({ language: {}, theme: {}, posts: {} });
+
+		expect(open).toHaveBeenCalledTimes(2);
+		expect(await repository.getAll("posts")).toStrictEqual([]);
+	});
+
 	it("returns undefined for a name that is not stored", async () => {
 		const repository = new IndexDbRepository();
 

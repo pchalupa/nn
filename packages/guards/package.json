@@ -1,6 +1,6 @@
 {
 	"name": "@nn/guards",
-	"version": "0.1.0",
+	"version": "0.2.0",
 	"description": "Runtime type guards",
 	"keywords": [],
 	"homepage": "https://github.com/pchalupa/nn/packages/guards#readme",

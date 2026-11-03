@@ -1,4 +1,5 @@
 import { BroadcastSync } from "@nn/broadcast-sync";
+import { HttpSync } from "@nn/http-sync";
 import { IndexDbRepository } from "@nn/indexdb-repository";
 import { createStore, use } from "@nn/react";
 import { RepositorySync } from "@nn/repository-sync";
@@ -53,5 +54,6 @@ const repository = new IndexDbRepository();
 
 RepositorySync.attach(store, repository);
 BroadcastSync.attach(store);
+HttpSync.attach(store, import.meta.env.VITE_REMOTE_URL);
 
 export const { useRead, useUpdate } = use(store);

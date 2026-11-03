@@ -16,6 +16,7 @@
 	},
 	"dependencies": {
 		"@nn/broadcast-sync": "workspace:*",
+		"@nn/http-sync": "workspace:*",
 		"@nn/indexdb-repository": "workspace:*",
 		"@nn/react": "workspace:*",
 		"@nn/repository-sync": "workspace:*",

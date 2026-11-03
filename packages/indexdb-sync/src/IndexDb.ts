@@ -1,20 +1,19 @@
-import type { Entry, Repository } from "@nn/repository";
-import { RepositoryNotInitializedError } from "@nn/repository/errors/RepositoryNotInitializedError";
+import type { Encoded } from "@nn/entities/Codable";
 
 enum Mode {
 	ReadOnly = "readonly",
 	ReadWrite = "readwrite",
 }
 
-export class IndexDbRepository implements Repository {
+export class IndexDb {
 	private version = 1;
 	private indexDbDatabase?: IDBDatabase;
 	private transactions = new Map<string, IDBTransaction>();
 
 	constructor(private readonly name = "nn-default") {}
 
-	public async set(name: string, entry: Entry): Promise<void> {
-		IndexDbRepository.assertIndexDB(this.indexDbDatabase);
+	public async set(name: string, entry: Encoded): Promise<void> {
+		IndexDb.assertIndexDB(this.indexDbDatabase);
 
 		this.transactions.get(name)?.abort();
 
@@ -33,24 +32,24 @@ export class IndexDbRepository implements Repository {
 		await this.processRequest(request);
 	}
 
-	public async get(name: string): Promise<Entry | undefined> {
-		IndexDbRepository.assertIndexDB(this.indexDbDatabase);
+	public async get(name: string): Promise<Encoded | undefined> {
+		IndexDb.assertIndexDB(this.indexDbDatabase);
 
 		const transaction = this.indexDbDatabase.transaction(name, Mode.ReadOnly);
 
-		return await this.processRequest<Entry | undefined>(transaction.objectStore(name).get(name));
+		return await this.processRequest<Encoded | undefined>(transaction.objectStore(name).get(name));
 	}
 
 	public async delete(key: string, typeName: string): Promise<void> {
-		IndexDbRepository.assertIndexDB(this.indexDbDatabase);
+		IndexDb.assertIndexDB(this.indexDbDatabase);
 
 		const transaction = this.indexDbDatabase.transaction(typeName, Mode.ReadWrite);
 
 		await this.processRequest(transaction.objectStore(typeName).delete(key));
 	}
 
-	public async getAll(typeName: string): Promise<Entry[]> {
-		IndexDbRepository.assertIndexDB(this.indexDbDatabase);
+	public async getAll(typeName: string): Promise<Encoded[]> {
+		IndexDb.assertIndexDB(this.indexDbDatabase);
 
 		const transaction = this.indexDbDatabase.transaction(typeName, Mode.ReadOnly);
 
@@ -76,7 +75,7 @@ export class IndexDbRepository implements Repository {
 	}
 
 	private static assertIndexDB(database: unknown): asserts database is IDBDatabase {
-		if (!(database instanceof IDBDatabase)) throw new RepositoryNotInitializedError();
+		if (!(database instanceof IDBDatabase)) throw new Error("Index DB is not initialized.");
 	}
 
 	public async init(schema: Record<string, unknown>): Promise<void> {

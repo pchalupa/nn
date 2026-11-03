@@ -1,7 +1,6 @@
 import { BroadcastSync } from "@nn/broadcast-sync";
-import { IndexDbRepository } from "@nn/indexdb-repository";
+import { IndexDbSync } from "@nn/indexdb-sync";
 import { createStore, use } from "@nn/react";
-import { RepositorySync } from "@nn/repository-sync";
 import { array, enumeration, type InferStateType, number, object, string } from "@nn/schema";
 
 export type Status = InferStateType<typeof status>;
@@ -49,9 +48,8 @@ const schema = object({
 
 // TODO: Create store can return hooks useRead and useUpdate too
 const store = createStore(schema);
-const repository = new IndexDbRepository();
 
-RepositorySync.attach(store, repository);
+IndexDbSync.attach(store);
 BroadcastSync.attach(store);
 
 export const { useRead, useUpdate } = use(store);

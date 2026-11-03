@@ -1,19 +1,18 @@
 {
-	"name": "@nn/indexdb-repository",
-	"version": "1.1.1",
-	"description": "IndexDB repository",
+	"name": "@nn/indexdb-sync",
+	"version": "0.0.0",
+	"description": "Sync engine that persists a store to IndexedDB",
 	"keywords": [],
-	"homepage": "https://github.com/pchalupa/nn/packages/index-db-repository#readme",
+	"homepage": "https://github.com/pchalupa/nn/packages/indexdb-sync#readme",
 	"bugs": {
 		"url": "https://github.com/pchalupa/nn/issues"
 	},
 	"license": "MIT",
 	"author": "pchalupa <chalupa.petr93@gmail.com> (https://github.com/pchalupa)",
 	"repository": "https://github.com/pchalupa/nn",
+	"type": "module",
 	"exports": {
-		".": {
-			"import": "./src/IndexDbRepository.ts"
-		}
+		".": "./src/IndexDbSync.ts"
 	},
 	"scripts": {
 		"ts:check": "tsc --noEmit",
@@ -21,9 +20,13 @@
 		"test:watch": "vitest watch"
 	},
 	"dependencies": {
-		"@nn/repository": "workspace:"
+		"@nn/entities": "workspace:",
+		"@nn/store": "workspace:",
+		"@nn/sync-engine": "workspace:"
 	},
 	"devDependencies": {
+		"@nn/schema": "workspace:",
+		"@nn/time": "workspace:",
 		"@nn/typescript-config": "workspace:",
 		"fake-indexeddb": "^6.2.6",
 		"typescript": "catalog:",

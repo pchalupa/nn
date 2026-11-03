@@ -1,5 +1,11 @@
 # @nn/indexdb-repository
 
+## 1.1.1
+
+### Patch Changes
+
+- 9720f17: `IndexDbRepository.init()` no longer closes and reopens the database when every store in the schema already exists. When a store is missing, it reopens once at the next version after the one on disk, so the database version goes up by one per upgrade.
+
 ## 1.1.0
 
 ### Minor Changes

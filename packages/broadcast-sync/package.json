@@ -1,6 +1,6 @@
 {
 	"name": "@nn/broadcast-sync",
-	"version": "0.0.0",
+	"version": "1.0.0",
 	"description": "Sync engine that shares a store between browsing contexts over a broadcast channel",
 	"keywords": [],
 	"homepage": "https://github.com/pchalupa/nn/packages/broadcast-sync#readme",

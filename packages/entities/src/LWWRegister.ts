@@ -9,7 +9,7 @@ export class LWWRegister<Value> extends Entity<Value> {
 		key?: string,
 		public timestamp = Time.now(),
 	) {
-		super(key);
+		super("LWWRegister", key);
 	}
 
 	public get [Symbol.toStringTag](): string {
@@ -44,7 +44,7 @@ export class LWWRegister<Value> extends Entity<Value> {
 		return {
 			key: this.key,
 			data: this.value,
-			metadata: { kind: this.constructor.name, timestamp: this.timestamp.toString() },
+			metadata: { kind: this.kind, timestamp: this.timestamp.toString() },
 		};
 	}
 

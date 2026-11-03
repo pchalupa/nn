@@ -150,7 +150,7 @@ With keys, `prepareRows` can compute moves the same way loro-mirror and React do
 - **Live proxies instead of snapshots.** This conflicts with the frozen-snapshot contract that `@nn/react` relies on through `useSyncExternalStoreWithSelector` ([`packages/react/src/index.ts`][nn-react]), and SyncedStore shows the resulting restrictions: no index assignment and no reinsertion.
 - **Path and index patches (Immer / JSON Patch) as the wire format.** They are fine as a local transport, but they must be resolved to element keys at prepare time, as Automerge does when it creates an operation. They should never be stored or synced in index form.
 
-[nn-state]: ../../../packages/store/src/State.ts
+[nn-state]: ../../../packages/store/src/state.ts
 [nn-view]: ../../../packages/store/src/View.ts
 [nn-rowidentity]: ../../../packages/store/src/RowIdentity.ts
 [nn-reconcile]: ../../../packages/store/src/reconcile.ts

@@ -9,13 +9,13 @@ date: 2026-10-01
 
 This library is local-first. Devices need to create entities independently, including while offline, and retain their identities when data is stored or merged with another replica. ID generation must be fast and require no network requests, central allocator, or worker registration.
 
-An ID identifies an entity. When we need time ordering, we use [`Time`](../../packages/time/src/Time.ts) separately. We therefore don't need the ID to encode a timestamp or sort in creation order. Our earlier entity generator combined a timestamp, a counter, and a short random replica suffix; retaining it would mean maintaining our own uniqueness and clock-handling rules.
+An ID identifies an entity. When we need time ordering, we use [`Time`](../../packages/time/src/time.ts) separately. We therefore don't need the ID to encode a timestamp or sort in creation order. Our earlier entity generator combined a timestamp, a counter, and a short random replica suffix; retaining it would mean maintaining our own uniqueness and clock-handling rules.
 
 ## Decision
 
 We use [UUID v4 as defined in RFC 9562](https://www.rfc-editor.org/rfc/rfc9562.html#section-5.4) for newly generated identities across the library. It provides 122 random bits without incorporating a clock or requiring coordination between generators. We accept probabilistic uniqueness in exchange for independent generation.
 
-[`@nn/id`](../../packages/id/src/ID.ts) exposes `ID.create(): string`, which delegates to the runtime's native [`crypto.randomUUID()`](https://w3c.github.io/webcrypto/#Crypto-method-randomUUID). We use the native cryptographic random source and UUID encoding rather than maintain either ourselves. This adds no runtime package dependency or library-managed generator state.
+[`@nn/id`](../../packages/id/src/id.ts) exposes `ID.create(): string`, which delegates to the runtime's native [`crypto.randomUUID()`](https://w3c.github.io/webcrypto/#Crypto-method-randomUUID). We use the native cryptographic random source and UUID encoding rather than maintain either ourselves. This adds no runtime package dependency or library-managed generator state.
 
 ```ts
 import { ID } from "@nn/id";
@@ -23,7 +23,7 @@ import { ID } from "@nn/id";
 const key = ID.create();
 ```
 
-The result is an opaque string. Consumers compare it for equality and carry it through storage and synchronization. [`Entity.key`](../../packages/entities/src/Entity.ts) generates it lazily on first access and retains it for the entity's lifetime. A supplied key is preserved exactly, including a legacy non-UUID key; this decision governs generation, not validation of existing identities.
+The result is an opaque string. Consumers compare it for equality and carry it through storage and synchronization. [`Entity.key`](../../packages/entities/src/entity.ts) generates it lazily on first access and retains it for the entity's lifetime. A supplied key is preserved exactly, including a legacy non-UUID key; this decision governs generation, not validation of existing identities.
 
 ## Alternatives considered
 

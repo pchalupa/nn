@@ -1,8 +1,8 @@
 import { createFileRoute, Outlet } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 
-import { Column } from "../../components/Column";
-import { Skeleton } from "../../components/Skeleton";
+import { Column } from "../../components/column";
+import { Skeleton } from "../../components/skeleton";
 import { statusLabels } from "../../i18n";
 import { status } from "../../store";
 

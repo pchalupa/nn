@@ -1,12 +1,12 @@
-import { ArraySchema } from "./ArraySchema";
-import { BooleanSchema } from "./BooleanSchema";
-import { EnumerationSchema } from "./EnumerationSchema";
-import { NumberSchema } from "./NumberSchema";
-import { ObjectSchema } from "./ObjectSchema";
-import type { Schema } from "./Schema";
-import { StringSchema } from "./StringSchema";
+import { ArraySchema } from "./array-schema";
+import { BooleanSchema } from "./boolean-schema";
+import { EnumerationSchema } from "./enumeration-schema";
+import { NumberSchema } from "./number-schema";
+import { ObjectSchema } from "./object-schema";
+import type { Schema } from "./schema";
+import { StringSchema } from "./string-schema";
 
-export type { InferStateType, Schema } from "./Schema";
+export type { InferStateType, Schema } from "./schema";
 
 export function string(): StringSchema {
 	return new StringSchema();

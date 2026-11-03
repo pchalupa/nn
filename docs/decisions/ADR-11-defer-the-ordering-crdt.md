@@ -9,7 +9,7 @@ Supersedes the ordering decision in [ADR-03](ADR-03-use-rga-for-collection-row-o
 
 ## Context
 
-This branch built [`RGA`](../../packages/entities/src/RGA.ts) in full: element ids pairing each row key with a `Time` stamp, insertion anchors, tombstones, and a clock that mints stamps above everything the instance has seen. That is what makes collection order converge across replicas, and [ADR-03](ADR-03-use-rga-for-collection-row-order.md) records why we wanted it.
+This branch built [`RGA`](../../packages/entities/src/rga.ts) in full: element ids pairing each row key with a `Time` stamp, insertion anchors, tombstones, and a clock that mints stamps above everything the instance has seen. That is what makes collection order converge across replicas, and [ADR-03](ADR-03-use-rga-for-collection-row-order.md) records why we wanted it.
 
 Nothing that ships with the store exercises it. `Store` accepts a `Remote` but never wires it up, the repository path only persists rows, and `RGA.merge` is called from tests alone. The store writes against `push`, `remove`, `find`, `current`, and `subscribe`. The merge machinery was about two thirds of the class, it accepts unbounded tombstone growth, and its change bookkeeping in `mergeState` — tracking revealed keys, hidden keys, tombstone moves and reorders to pick an emit rule — was the hardest code in `@nn/entities` to check. The sync layer that needs convergence does not exist yet, so the costs are paid now and the benefit arrives with work that has no shape today.
 

@@ -2,8 +2,8 @@ import { createFileRoute, Link, redirect, useNavigate } from "@tanstack/react-ro
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 
-import { classNames } from "../components/Button/index.styles";
-import { Divider } from "../components/Divider";
+import { classNames } from "../components/button/index.styles";
+import { Divider } from "../components/divider";
 import { signIn } from "../modules/authentication/authentication";
 import { authenticated } from "../modules/authentication/session";
 import { useRead } from "../store";

@@ -13,7 +13,7 @@
 	"type": "module",
 	"exports": {
 		".": {
-			"import": "./src/Time.ts"
+			"import": "./src/time.ts"
 		}
 	},
 	"scripts": {

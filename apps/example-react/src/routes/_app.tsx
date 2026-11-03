@@ -2,12 +2,12 @@ import { createFileRoute, Link, Outlet, redirect } from "@tanstack/react-router"
 import { Suspense, useState } from "react";
 import { useTranslation } from "react-i18next";
 
-import { Button } from "../components/Button";
-import { Divider } from "../components/Divider";
-import { LanguageSelector } from "../components/LanguageSelector";
-import { SignOut } from "../components/SignOut";
-import { Skeleton } from "../components/Skeleton";
-import { TicketModal } from "../components/TicketModal";
+import { Button } from "../components/button";
+import { Divider } from "../components/divider";
+import { LanguageSelector } from "../components/language-selector";
+import { SignOut } from "../components/sign-out";
+import { Skeleton } from "../components/skeleton";
+import { TicketModal } from "../components/ticket-modal";
 import { authenticated } from "../modules/authentication/session";
 import { useRead } from "../store";
 

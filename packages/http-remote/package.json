@@ -12,7 +12,7 @@
 	"repository": "https://github.com/pchalupa/nn",
 	"exports": {
 		".": {
-			"import": "./src/HttpRemote.ts"
+			"import": "./src/http-remote.ts"
 		}
 	},
 	"scripts": {

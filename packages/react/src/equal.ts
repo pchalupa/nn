@@ -1,5 +1,5 @@
-import { isArray } from "@nn/guards/isArray";
-import { isPlainObject } from "@nn/guards/isPlainObject";
+import { isArray } from "@nn/guards/is-array";
+import { isPlainObject } from "@nn/guards/is-plain-object";
 
 export function equal(left: unknown, right: unknown): boolean {
 	if (Object.is(left, right)) return true;

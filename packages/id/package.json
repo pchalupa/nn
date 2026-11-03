@@ -13,7 +13,7 @@
 	"type": "module",
 	"exports": {
 		".": {
-			"import": "./src/ID.ts"
+			"import": "./src/id.ts"
 		}
 	},
 	"scripts": {

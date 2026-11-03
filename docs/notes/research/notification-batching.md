@@ -2,7 +2,7 @@
 
 Researched 2026-10-02. This is research for extracting Store notification batching into a small, per-Store `Batch` class. No implementation is included. Local observations refer to the working tree inspected at HEAD `623b119a666db94bc7465b4425849d92c272f648`.
 
-Implementation update, 2026-10-14: the diff/patch references below are historical. `Store.update` wraps `State.write` in `Batch.run`, including the recipe and [reconciliation](../../../packages/store/src/State.ts). Reconciliation validates the result and creates new row entities before executing deferred writes. Preparation failures leave the target unchanged; exceptions during execution still have no rollback guarantee. See the [simplification design](../../superpowers/specs/2026-10-14-simplify-materialized-views-design.md).
+Implementation update, 2026-10-14: the diff/patch references below are historical. `Store.update` wraps `State.write` in `Batch.run`, including the recipe and [reconciliation](../../../packages/store/src/state.ts). Reconciliation validates the result and creates new row entities before executing deferred writes. Preparation failures leave the target unchanged; exceptions during execution still have no rollback guarantee. See the [simplification design](../../superpowers/specs/2026-10-14-simplify-materialized-views-design.md).
 
 ## Recommendation
 
@@ -182,11 +182,11 @@ This was a source review, not runtime execution of these libraries. Error and re
 - [Redux Toolkit enhancer implementation][rtk-source] and [official documentation source][rtk-docs].
 - [ECMAScript finally evaluation][try-finally] and [throw evaluation][throw].
 
-[store]: ../../../packages/store/src/Store.ts
+[store]: ../../../packages/store/src/store.ts
 [patch]: ../../../packages/store/src/applyPatch.ts
 [emitter]: https://github.com/pchalupa/nn/blob/10e9c363ea49d36d2102bbf37755d4924bbd7bd7/packages/event-emitter/src/EventEmitter.ts
-[entity]: ../../../packages/entities/src/Entity.ts
-[register]: ../../../packages/entities/src/LWWRegister.ts
+[entity]: ../../../packages/entities/src/entity.ts
+[register]: ../../../packages/entities/src/lww-register.ts
 [mobx-transaction]: https://github.com/mobxjs/mobx/blob/ed5e082d7392466ee4507756ed71205c7d654d64/packages/mobx/src/api/transaction.ts#L10-L17
 [mobx-batch]: https://github.com/mobxjs/mobx/blob/ed5e082d7392466ee4507756ed71205c7d654d64/packages/mobx/src/core/observable.ts#L107-L124
 [mobx-action]: https://github.com/mobxjs/mobx/blob/ed5e082d7392466ee4507756ed71205c7d654d64/packages/mobx/src/core/action.ts#L61-L158

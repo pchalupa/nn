@@ -886,6 +886,6 @@ Working tree inspected on 2026-10-17. Related notes: [Array-like CRDTs](array-li
 [adr09]: ../../decisions/ADR-09-stamp-times-with-a-replica-identity.md
 [adr11]: ../../decisions/ADR-11-defer-the-ordering-crdt.md
 [adr12]: ../../decisions/ADR-12-store-rows-as-field-entities.md
-[repo-register]: ../../../packages/entities/src/LWWRegister.ts
-[repo-map]: ../../../packages/entities/src/LWWMap.ts
-[repo-rga]: ../../../packages/entities/src/RGA.ts
+[repo-register]: ../../../packages/entities/src/lww-register.ts
+[repo-map]: ../../../packages/entities/src/lww-map.ts
+[repo-rga]: ../../../packages/entities/src/rga.ts

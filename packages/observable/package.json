@@ -12,8 +12,8 @@
 	"repository": "https://github.com/pchalupa/nn",
 	"type": "module",
 	"exports": {
-		".": "./src/Delegatable.ts",
-		"./Observable": "./src/Observable.ts"
+		".": "./src/delegatable.ts",
+		"./observable": "./src/observable.ts"
 	},
 	"scripts": {
 		"ts:check": "tsc --noEmit",

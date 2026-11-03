@@ -116,7 +116,7 @@ collection are unaffected.
 Order still does not survive a reload, because we persist rows and not the sequence. On IndexedDB a
 reloaded collection comes back in primary-key order, which is the order it had before this change
 too. Closing that gap means storing each row's anchor and stamp and keeping tombstones, which
-changes the [`Repository`](../../packages/repository/src/Repository.ts) contract. That is a separate
+changes the [`Repository`](https://github.com/pchalupa/nn/blob/a67280fad54b78ae8c03d6c6608819e166f47ce2/packages/repository/src/Repository.ts) contract. That is a separate
 decision.
 
 The store gains the ordering layer its write path was missing. `applyPatch` can now honour the index

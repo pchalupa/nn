@@ -1,11 +1,11 @@
-import type { Entry, Repository } from "@nn/repository";
-import { RepositoryNotInitializedError } from "@nn/repository/errors/RepositoryNotInitializedError";
+import type { Encoded } from "@nn/entities/Codable";
 import { afterEach, beforeEach, describe, expect, expectTypeOf, it, vi } from "vitest";
 
+import { RepositoryNotInitializedError } from "./errors/RepositoryNotInitializedError";
 import { IndexDbRepository } from "./IndexDbRepository";
 
 describe("IndexDbRepository", () => {
-	const entry: Entry = { key: "language", data: "cs", metadata: { kind: "register" } };
+	const entry: Encoded = { key: "language", data: "cs", metadata: { kind: "register" } };
 
 	beforeEach(() => {
 		globalThis.indexedDB = new IDBFactory();
@@ -91,21 +91,20 @@ describe("IndexDbRepository", () => {
 	it("stores, reads back and overwrites an entry under its name", async () => {
 		const repository = new IndexDbRepository();
 
-		expectTypeOf<Repository["set"]>().parameter(1).toEqualTypeOf<Entry>();
-		expectTypeOf(repository.set).parameter(1).toEqualTypeOf<Entry>();
+		expectTypeOf(repository.set).parameter(1).toEqualTypeOf<Encoded>();
 
 		await repository.init({ language: {} });
 
 		await repository.set("language", entry);
 		const stored = await repository.get("language");
 
-		expectTypeOf(stored).toEqualTypeOf<Entry | undefined>();
+		expectTypeOf(stored).toEqualTypeOf<Encoded | undefined>();
 		expect(stored).toStrictEqual(entry);
 
 		await repository.set("language", { ...entry, data: "en" });
 		const entries = await repository.getAll("language");
 
-		expectTypeOf(entries).toEqualTypeOf<Entry[]>();
+		expectTypeOf(entries).toEqualTypeOf<Encoded[]>();
 		expect(entries).toStrictEqual([{ ...entry, data: "en" }]);
 	});
 

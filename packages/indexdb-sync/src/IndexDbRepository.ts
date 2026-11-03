@@ -1,19 +1,20 @@
-import type { Entry, Repository } from "@nn/repository";
-import { RepositoryNotInitializedError } from "@nn/repository/errors/RepositoryNotInitializedError";
+import type { Encoded } from "@nn/entities/Codable";
+
+import { RepositoryNotInitializedError } from "./errors/RepositoryNotInitializedError";
 
 enum Mode {
 	ReadOnly = "readonly",
 	ReadWrite = "readwrite",
 }
 
-export class IndexDbRepository implements Repository {
+export class IndexDbRepository {
 	private version = 1;
 	private indexDbDatabase?: IDBDatabase;
 	private transactions = new Map<string, IDBTransaction>();
 
 	constructor(private readonly name = "nn-default") {}
 
-	public async set(name: string, entry: Entry): Promise<void> {
+	public async set(name: string, entry: Encoded): Promise<void> {
 		IndexDbRepository.assertIndexDB(this.indexDbDatabase);
 
 		this.transactions.get(name)?.abort();
@@ -33,12 +34,12 @@ export class IndexDbRepository implements Repository {
 		await this.processRequest(request);
 	}
 
-	public async get(name: string): Promise<Entry | undefined> {
+	public async get(name: string): Promise<Encoded | undefined> {
 		IndexDbRepository.assertIndexDB(this.indexDbDatabase);
 
 		const transaction = this.indexDbDatabase.transaction(name, Mode.ReadOnly);
 
-		return await this.processRequest<Entry | undefined>(transaction.objectStore(name).get(name));
+		return await this.processRequest<Encoded | undefined>(transaction.objectStore(name).get(name));
 	}
 
 	public async delete(key: string, typeName: string): Promise<void> {
@@ -49,7 +50,7 @@ export class IndexDbRepository implements Repository {
 		await this.processRequest(transaction.objectStore(typeName).delete(key));
 	}
 
-	public async getAll(typeName: string): Promise<Entry[]> {
+	public async getAll(typeName: string): Promise<Encoded[]> {
 		IndexDbRepository.assertIndexDB(this.indexDbDatabase);
 
 		const transaction = this.indexDbDatabase.transaction(typeName, Mode.ReadOnly);

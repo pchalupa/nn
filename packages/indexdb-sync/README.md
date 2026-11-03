@@ -1,1 +1,1 @@
-# @nn/index-db-repository
+# @nn/indexdb-sync

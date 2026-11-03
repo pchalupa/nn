@@ -23,10 +23,9 @@
 		"@nn/entities": "workspace:",
 		"@nn/repository": "workspace:",
 		"@nn/store": "workspace:",
-		"@nn/sync": "workspace:"
+		"@nn/sync-engine": "workspace:"
 	},
 	"devDependencies": {
-		"@nn/guards": "workspace:",
 		"@nn/id": "workspace:",
 		"@nn/schema": "workspace:",
 		"@nn/time": "workspace:",

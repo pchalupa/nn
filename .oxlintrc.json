@@ -43,6 +43,7 @@
 		"unicorn/throw-new-error": "error",
 		"unicorn/prefer-type-error": "error",
 		"unicorn/prefer-at": "error",
+		"unicorn/filename-case": ["error", { "case": "kebabCase" }],
 
 		"oxc/no-async-endpoint-handlers": "off",
 
@@ -78,6 +79,12 @@
 			{ "enforce": [{ "blankLine": "always", "prev": "*", "next": "method" }] }
 		]
 	},
+	"overrides": [
+		{
+			"files": ["**/apps/example-react/src/routes/**"],
+			"rules": { "unicorn/filename-case": "off" }
+		}
+	],
 	"ignorePatterns": [
 		"**/node_modules",
 		"**/dist",

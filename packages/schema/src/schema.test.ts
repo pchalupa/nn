@@ -1,0 +1,141 @@
+import { describe, expect, expectTypeOf, it } from "vitest";
+
+import { ArraySchema } from "./array-schema";
+import { BooleanSchema } from "./boolean-schema";
+import { array, boolean, number, object, string } from "./index";
+import { NumberSchema } from "./number-schema";
+import { ObjectSchema } from "./object-schema";
+import { type InferStateType, Schema } from "./schema";
+import { StringSchema } from "./string-schema";
+
+describe("Schema", () => {
+	it("creates a schema for each JSON Schema type", () => {
+		expect(string()).toBeInstanceOf(StringSchema);
+		expect(number()).toBeInstanceOf(NumberSchema);
+		expect(boolean()).toBeInstanceOf(BooleanSchema);
+		expect(object({})).toBeInstanceOf(ObjectSchema);
+		expect(array(string())).toBeInstanceOf(ArraySchema);
+	});
+
+	it("names the type after the JSON Schema type", () => {
+		expect(string().type).toBe("string");
+		expect(number().type).toBe("number");
+		expect(boolean().type).toBe("boolean");
+		expect(object({}).type).toBe("object");
+		expect(array(string()).type).toBe("array");
+	});
+
+	it("distinguishes primitives at runtime", () => {
+		expect(string().type).not.toBe(number().type);
+		expect(number().type).not.toBe(boolean().type);
+	});
+
+	it("sets the title", () => {
+		const schema = string().entitle("email");
+
+		expect(schema.title).toBe("email");
+	});
+
+	it("sets the description", () => {
+		const schema = string().describe("An email address");
+
+		expect(schema.description).toBe("An email address");
+	});
+
+	it("chains annotations", () => {
+		const schema = string().entitle("email").describe("An email address");
+
+		expect(schema).toBeInstanceOf(StringSchema);
+		expect(schema).toMatchInlineSnapshot(`
+			StringSchema {
+			  "description": "An email address",
+			  "title": "email",
+			  "type": "string",
+			}
+		`);
+	});
+
+	it("omits annotations that were not set", () => {
+		const schema = string();
+
+		expect(schema.title).toBeUndefined();
+		expect(schema.description).toBeUndefined();
+	});
+
+	it("exposes object properties", () => {
+		const schema = object({ name: string(), age: number() });
+
+		expect(schema.properties).toMatchInlineSnapshot(`
+			{
+			  "age": NumberSchema {
+			    "type": "number",
+			  },
+			  "name": StringSchema {
+			    "type": "string",
+			  },
+			}
+		`);
+	});
+
+	it("exposes array items", () => {
+		const item = object({ name: string() });
+		const schema = array(item);
+
+		expect(schema.items).toBe(item);
+	});
+
+	it("describes a nested schema", () => {
+		const user = object({ name: string().describe("User name") })
+			.entitle("user")
+			.describe("Holds information about a user.");
+
+		expect(object({ users: array(user).describe("List of users") })).toMatchInlineSnapshot(`
+			ObjectSchema {
+			  "properties": {
+			    "users": ArraySchema {
+			      "description": "List of users",
+			      "items": ObjectSchema {
+			        "description": "Holds information about a user.",
+			        "properties": {
+			          "name": StringSchema {
+			            "description": "User name",
+			            "type": "string",
+			          },
+			        },
+			        "title": "user",
+			        "type": "object",
+			      },
+			      "type": "array",
+			    },
+			  },
+			  "type": "object",
+			}
+		`);
+	});
+
+	it("guards any schema type", () => {
+		expect(Schema.is(string())).toBeTruthy();
+		expect(Schema.is(array(object({})))).toBeTruthy();
+		expect(Schema.is({ type: "string" })).toBeFalsy();
+		expect(Schema.is(undefined)).toBeFalsy();
+		expect(Schema.is(null)).toBeFalsy();
+	});
+
+	it("infers the declared data type", () => {
+		expectTypeOf<InferStateType<StringSchema>>().toEqualTypeOf<string>();
+		expectTypeOf<InferStateType<NumberSchema>>().toEqualTypeOf<number>();
+		expectTypeOf<InferStateType<BooleanSchema>>().toEqualTypeOf<boolean>();
+	});
+
+	it("infers nested objects and arrays", () => {
+		const schema = object({
+			tickets: array(object({ title: string(), assignee: object({ name: string() }) })),
+			language: string(),
+		});
+
+		expectTypeOf<InferStateType<typeof schema>>().toEqualTypeOf<{
+			tickets: Array<{ title: string; assignee: { name: string } }>;
+			language: string;
+		}>();
+	});
+});

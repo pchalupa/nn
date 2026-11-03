@@ -1,6 +1,6 @@
 import { createFileRoute, Link, Outlet } from "@tanstack/react-router";
 
-import { Ticket } from "../../components/Ticket";
+import { Ticket } from "../../components/ticket";
 import { useRead } from "../../store";
 
 const Backlog = () => {

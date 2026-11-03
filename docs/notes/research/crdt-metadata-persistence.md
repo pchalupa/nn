@@ -279,18 +279,18 @@ Links below refer to the working tree inspected on 2026-10-04. Related backgroun
 
 [adr06]: ../../decisions/ADR-06-persist-entity-owned-root-records.md
 [guide]: ../../../AGENTS.md
-[entity]: ../../../packages/entities/src/Entity.ts
+[entity]: ../../../packages/entities/src/entity.ts
 [record]: ../../../packages/entities/src/EntityRecord.ts
-[register]: ../../../packages/entities/src/LWWRegister.ts
-[map]: ../../../packages/entities/src/LWWMap.ts
-[rga]: ../../../packages/entities/src/RGA.ts
+[register]: ../../../packages/entities/src/lww-register.ts
+[map]: ../../../packages/entities/src/lww-map.ts
+[rga]: ../../../packages/entities/src/rga.ts
 [clone]: ../../../packages/entities/src/cloneValue.ts
-[time]: ../../../packages/time/src/Time.ts
-[store]: ../../../packages/store/src/Store.ts
-[state]: ../../../packages/store/src/State.ts
+[time]: ../../../packages/time/src/time.ts
+[store]: ../../../packages/store/src/store.ts
+[state]: ../../../packages/store/src/state.ts
 [persistence]: ../../superpowers/plans/2026-10-03-crdt-root-snapshots.md#resume-after-view-materialization
-[repository]: ../../../packages/repository/src/Repository.ts
-[indexeddb]: ../../../packages/index-db-repository/src/IndexDbRepository.ts
+[repository]: https://github.com/pchalupa/nn/blob/a67280fad54b78ae8c03d6c6608819e166f47ce2/packages/repository/src/Repository.ts
+[indexeddb]: ../../../packages/indexdb-sync/src/index-db.ts
 [entity-tests]: ../../../packages/entities/src/fromRecord.test.ts
 [persistence-tests]: ../../superpowers/plans/2026-10-03-crdt-root-snapshots.md#resume-after-view-materialization
 [idb-tests]: ../../../packages/index-db-repository/src/Persistence.test.ts

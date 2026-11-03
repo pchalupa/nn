@@ -1,5 +1,38 @@
 # @nn/entities
 
+## 3.0.0
+
+### Major Changes
+
+- 56346fc: Renames every subpath export to kebab-case, so import paths match the file names. The old paths no longer resolve.
+
+  Update your imports:
+
+  | Before                           | After                             |
+  | -------------------------------- | --------------------------------- |
+  | `@nn/entities/Entity`            | `@nn/entities/entity`             |
+  | `@nn/entities/Codable`           | `@nn/entities/codable`            |
+  | `@nn/entities/Codec`             | `@nn/entities/codec`              |
+  | `@nn/entities/kinds/LWWRegister` | `@nn/entities/kinds/lww-register` |
+  | `@nn/entities/kinds/LWWMap`      | `@nn/entities/kinds/lww-map`      |
+  | `@nn/entities/kinds/RGA`         | `@nn/entities/kinds/rga`          |
+
+  The exported names are unchanged, so only the module path changes:
+
+  ```ts
+  // after
+  import { LWWMap } from "@nn/entities/kinds/lww-map";
+  // before
+  import { LWWMap } from "@nn/entities/kinds/LWWMap";
+  ```
+
+### Patch Changes
+
+- Updated dependencies [56346fc]
+- Updated dependencies [56346fc]
+  - @nn/guards@0.2.0
+  - @nn/observable@3.0.0
+
 ## 2.0.0
 
 ### Major Changes

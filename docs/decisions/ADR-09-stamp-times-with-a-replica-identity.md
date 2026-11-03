@@ -7,13 +7,13 @@ date: 2026-10-04
 
 ## Context
 
-[`Time`](../../packages/time/src/Time.ts) implements a Hybrid Logical Clock as a pair of physical milliseconds and a logical counter. Ordering two of those pairs is a partial order: when two replicas stamp the same instant and the same counter, neither is after the other.
+[`Time`](../../packages/time/src/time.ts) implements a Hybrid Logical Clock as a pair of physical milliseconds and a logical counter. Ordering two of those pairs is a partial order: when two replicas stamp the same instant and the same counter, neither is after the other.
 
 A shared process-wide counter hides this locally. Two entities created in the same millisecond in one process receive counters `0` and `1`, so they never tie. The tie is only reachable across devices, where two replicas independently mint the first write of a millisecond and both get counter `0`.
 
-[`LWWRegister.merge`](../../packages/entities/src/LWWRegister.ts) resolves a conflict by asking which timestamp is after the other. On a tie neither branch runs, the merge returns having changed nothing, and the two replicas keep different values while reporting success. Divergence is silent and permanent.
+[`LWWRegister.merge`](../../packages/entities/src/lww-register.ts) resolves a conflict by asking which timestamp is after the other. On a tie neither branch runs, the merge returns having changed nothing, and the two replicas keep different values while reporting success. Divergence is silent and permanent.
 
-[`RGA`](../../packages/entities/src/RGA.ts) already worked around this by breaking ties on the row key, and recorded why in a comment on `outranks`: `Time` carried no replica of its own. The workaround is local to `RGA`; nothing protected `LWWRegister`.
+[`RGA`](../../packages/entities/src/rga.ts) already worked around this by breaking ties on the row key, and recorded why in a comment on `outranks`: `Time` carried no replica of its own. The workaround is local to `RGA`; nothing protected `LWWRegister`.
 
 The Hybrid Logical Clock as described in [Kulkarni et al. (2014)](../notes/research/hybrid-logical-clocks.md) carries a node identity per clock. Ours did not.
 
@@ -23,7 +23,7 @@ Every `Time` carries the identity of the replica that minted it, and ordering is
 
 `Time.compare` orders by physical time, then logical time, then replica. `isAfter` is defined as `compare(other) > 0`, so for any two distinct timestamps exactly one direction is after. `LWWRegister.merge` needs no change: its existing branches become exhaustive, and the remaining no-op case is the same write arriving twice.
 
-The replica identity is a UUID v4 from [`ID.create()`](../../packages/id/src/ID.ts), under [ADR-02](./ADR-02-use-uuid-v4-for-generated-identities.md). We considered a shorter 64-bit identifier to keep timestamps small and rejected it: a second identity format would mean a second entropy and secure-context story to audit, for a saving that interning addresses better.
+The replica identity is a UUID v4 from [`ID.create()`](../../packages/id/src/id.ts), under [ADR-02](./ADR-02-use-uuid-v4-for-generated-identities.md). We considered a shorter 64-bit identifier to keep timestamps small and rejected it: a second identity format would mean a second entropy and secure-context story to audit, for a saving that interning addresses better.
 
 A timestamp serializes as `<ISO 8601 time>+<hex counter>+<replica>`. All three parts are fixed width, so the string still sorts lexicographically in the order `compare` computes. `fromTimestamp` requires all three and does not default a missing replica, because a defaulted one is indistinguishable from a replica that lost its tiebreak.
 

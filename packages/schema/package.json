@@ -1,6 +1,6 @@
 {
 	"name": "@nn/schema",
-	"version": "1.1.0",
+	"version": "2.0.0",
 	"description": "Schema",
 	"keywords": [],
 	"homepage": "https://github.com/pchalupa/nn/packages/repository#readme",
@@ -13,12 +13,12 @@
 	"type": "module",
 	"exports": {
 		".": "./src/index.ts",
-		"./ArraySchema": "./src/ArraySchema.ts",
-		"./BooleanSchema": "./src/BooleanSchema.ts",
-		"./EnumerationSchema": "./src/EnumerationSchema.ts",
-		"./NumberSchema": "./src/NumberSchema.ts",
-		"./ObjectSchema": "./src/ObjectSchema.ts",
-		"./StringSchema": "./src/StringSchema.ts"
+		"./array-schema": "./src/array-schema.ts",
+		"./boolean-schema": "./src/boolean-schema.ts",
+		"./enumeration-schema": "./src/enumeration-schema.ts",
+		"./number-schema": "./src/number-schema.ts",
+		"./object-schema": "./src/object-schema.ts",
+		"./string-schema": "./src/string-schema.ts"
 	},
 	"scripts": {
 		"ts:check": "tsc --noEmit"

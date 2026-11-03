@@ -2,7 +2,7 @@
 
 ## Context
 
-[ADR-01](../decisions/ADR-01-adopt-json-schema-as-the-schema-format.md) committed `@nn/schema` to JSON Schema 2020-12 as its description format. The vocabulary alignment is done: a schema's `type` is the spec's type name, annotations are `title` and `description`, and composite schemas expose `properties` and `items`. `Store.fromSchema` already reads `propertySchema.type` (`packages/store/src/Store.ts`), so the typed discriminant is in use.
+[ADR-01](../decisions/ADR-01-adopt-json-schema-as-the-schema-format.md) committed `@nn/schema` to JSON Schema 2020-12 as its description format. The vocabulary alignment is done: a schema's `type` is the spec's type name, annotations are `title` and `description`, and composite schemas expose `properties` and `items`. `Store.fromSchema` already reads `propertySchema.type` (`packages/store/src/store.ts`), so the typed discriminant is in use.
 
 What is still missing is the part the ADR was written for. The schema cannot leave the process. It is data in memory, but there is no way to write it to disk, compare it with the version that wrote an existing database, or send it to a server. This step adds that: a `toJSONSchema()` that returns a real 2020-12 document.
 
@@ -108,7 +108,7 @@ For the schema in `apps/example-react/src/store.ts`:
 | File                                     | Change                                                |
 | ---------------------------------------- | ----------------------------------------------------- |
 | `packages/schema/src/JSONSchema.ts`      | new: emitted-subset types, `DIALECT`, `SchemaContext` |
-| `packages/schema/src/Schema.ts`          | `toNode` per class, `toJSONSchema` on the base        |
+| `packages/schema/src/schema.ts`          | `toNode` per class, `toJSONSchema` on the base        |
 | `packages/schema/src/index.ts`           | re-export the new type                                |
 | `packages/schema/src/JSONSchema.test.ts` | new: colocated vitest, matching the sibling packages  |
 | `packages/schema/README.md`              | document `toJSONSchema()` and show a real document    |
@@ -127,7 +127,7 @@ Run `pnpm vitest run packages/schema`. The tests should cover:
 - the root emits inline even when it has a title
 - `$schema` is always there, `$id` only when asked for, `$defs` only when something was hoisted
 
-Assert whole documents with `toMatchInlineSnapshot`, the way `packages/store/src/Store.test.ts` does.
+Assert whole documents with `toMatchInlineSnapshot`, the way `packages/store/src/store.test.ts` does.
 
 Then run `pnpm --filter @nn/schema ts:check` for a clean type signal. The root `pnpm ts:check` already fails on five pre-existing `Observable` errors in `@nn/store`, so it will not tell us much. Finish with `pnpm lint:check`, `pnpm format:check` and `pnpm spell:check`.
 

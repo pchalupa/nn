@@ -15,7 +15,9 @@
 		".": "./src/SyncEngine.ts"
 	},
 	"scripts": {
-		"ts:check": "tsc --noEmit"
+		"ts:check": "tsc --noEmit",
+		"test": "vitest run",
+		"test:watch": "vitest watch"
 	},
 	"dependencies": {
 		"@nn/entities": "workspace:",
@@ -23,7 +25,11 @@
 		"@nn/store": "workspace:"
 	},
 	"devDependencies": {
+		"@nn/id": "workspace:",
+		"@nn/schema": "workspace:",
+		"@nn/time": "workspace:",
 		"@nn/typescript-config": "workspace:",
-		"typescript": "catalog:"
+		"typescript": "catalog:",
+		"vitest": "catalog:"
 	}
 }

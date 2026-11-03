@@ -18,11 +18,15 @@ export interface Decoder {
 }
 
 export interface Decodable<Instance extends Entity = Entity> {
-	readonly name: string;
+	readonly kind: string;
 	decode(encoded: Encoded, decoder: Decoder): Instance;
 }
 
-export const entities: Record<"LWWRegister" | "LWWMap" | "RGA", Decodable> = { LWWRegister, LWWMap, RGA };
+export const entities: Record<typeof LWWRegister.kind | typeof LWWMap.kind | typeof RGA.kind, Decodable> = {
+	[LWWRegister.kind]: LWWRegister,
+	[LWWMap.kind]: LWWMap,
+	[RGA.kind]: RGA,
+};
 
 export function assertEncoded(value: unknown): asserts value is Encoded {
 	if (

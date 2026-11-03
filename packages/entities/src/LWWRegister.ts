@@ -4,6 +4,8 @@ import type { Encoded } from "./Codable";
 import { Entity } from "./Entity";
 
 export class LWWRegister<Value> extends Entity<Value> {
+	public static override readonly kind = "LWWRegister";
+
 	constructor(
 		private value: Value,
 		key?: string,
@@ -44,7 +46,7 @@ export class LWWRegister<Value> extends Entity<Value> {
 		return {
 			key: this.key,
 			data: this.value,
-			metadata: { kind: this.constructor.name, timestamp: this.timestamp.toString() },
+			metadata: { kind: LWWRegister.kind, timestamp: this.timestamp.toString() },
 		};
 	}
 

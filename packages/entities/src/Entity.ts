@@ -17,9 +17,11 @@ export interface EntityDelegate {
 }
 
 export abstract class Entity<Value = unknown> implements Delegatable<EntityDelegate>, Encodable {
-	public delegate?: EntityDelegate;
-	private changes = 0;
 	private id: string;
+	private changes = 0;
+	public delegate?: EntityDelegate;
+
+	public static readonly kind: string;
 
 	constructor(key?: string) {
 		this.id = key ?? ID.create();

@@ -1,94 +1,137 @@
 import { LWWRegister } from "@nn/entities/kinds/LWWRegister";
-import type { Repository } from "@nn/repository";
 import { array, object, string } from "@nn/schema";
 import { Store } from "@nn/store";
 import { Time } from "@nn/time";
-import { describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { RepositorySync } from "./RepositorySync";
+import { IndexDb } from "./IndexDb";
+import { IndexDbSync } from "./IndexDbSync";
 
 const schema = object({ tickets: array(object({ title: string() })), language: string() });
 
-const repositoryMock = (entries: Record<string, unknown> = {}): Repository => ({
-	init: vi.fn().mockResolvedValue(undefined),
-	get: vi.fn().mockImplementation(async (name: string) => entries[name]),
-	set: vi.fn().mockResolvedValue(undefined),
-	close: vi.fn(),
-});
+const read = async (name: string, field: string) => {
+	const repository = new IndexDb(name);
 
-describe("RepositorySync", () => {
-	it("initializes the repository with the store's fields", async () => {
-		const repository = repositoryMock();
-		const store = new Store(schema);
+	await repository.init(schema.properties);
 
-		await RepositorySync.attach(store, repository);
+	const entry = await repository.get(field);
 
-		expect(repository.init).toHaveBeenCalledExactlyOnceWith(schema.properties);
+	repository.close();
+
+	return entry;
+};
+
+describe("IndexDbSync", () => {
+	afterEach(() => vi.restoreAllMocks());
+
+	it("opens a database under the given name with a store for each field", async () => {
+		const name = crypto.randomUUID();
+		const open = vi.spyOn(indexedDB, "open");
+		const indexDbSync = await IndexDbSync.attach(new Store(schema), name);
+
+		indexDbSync.detach();
+
+		expect(open).toHaveBeenCalledExactlyOnceWith(name, 1);
+
+		const database = await new Promise<IDBDatabase>((resolve) => {
+			const request = indexedDB.open(name);
+
+			request.onsuccess = () => resolve(request.result);
+		});
+
+		expect([...database.objectStoreNames]).toStrictEqual(["language", "tickets"]);
+
+		database.close();
 	});
 
-	it("restores each field from the repository by name", async () => {
-		const repository = repositoryMock({ language: new LWWRegister("cs", "language", Time.now()).encode() });
+	it("opens the default database when no name is given", async () => {
+		const indexDbSync = await IndexDbSync.attach(new Store(schema));
+
+		indexDbSync.detach();
+
+		const databases = await indexedDB.databases();
+
+		expect(databases.map((database) => database.name)).toContain("nn-default");
+	});
+
+	it("restores each field from the database by name", async () => {
+		const name = crypto.randomUUID();
+		const repository = new IndexDb(name);
+
+		await repository.init(schema.properties);
+		await repository.set("language", new LWWRegister("cs", "language", Time.now()).encode());
+		repository.close();
+
 		const store = new Store(schema);
+		const indexDbSync = await IndexDbSync.attach(store, name);
 
-		await RepositorySync.attach(store, repository);
-
-		expect(repository.get).toHaveBeenCalledWith("tickets");
-		expect(repository.get).toHaveBeenCalledWith("language");
 		expect(store.state.read().language).toBe("cs");
+
+		indexDbSync.detach();
 	});
 
 	it("persists each changed field under its name", async () => {
-		const repository = repositoryMock();
+		const name = crypto.randomUUID();
 		const store = new Store(schema);
-
-		await RepositorySync.attach(store, repository);
+		const indexDbSync = await IndexDbSync.attach(store, name);
 
 		store.state.update((draft) => {
 			draft.language = "cs";
 		});
 
-		expect(repository.set).toHaveBeenCalledExactlyOnceWith(
-			"language",
-			expect.objectContaining({ key: "language", data: "cs" }),
-		);
+		await vi.waitFor(async () => {
+			expect(await read(name, "language")).toMatchObject({ key: "language", data: "cs" });
+		});
+		expect(await read(name, "tickets")).toBeUndefined();
+
+		indexDbSync.detach();
 	});
 
-	it("reads and writes nothing when the repository cannot be initialized", async () => {
-		const failure = new Error("blocked");
-		const repository = repositoryMock();
+	it("keeps the stored fields for the next attach", async () => {
+		const name = crypto.randomUUID();
+		const first = new Store(schema);
+		const indexDbSync = await IndexDbSync.attach(first, name);
 
-		vi.mocked(repository.init).mockRejectedValue(failure);
+		first.state.update((draft) => {
+			draft.language = "cs";
+		});
 
+		await vi.waitFor(async () => {
+			expect(await read(name, "language")).toMatchObject({ data: "cs" });
+		});
+
+		indexDbSync.detach();
+
+		const second = new Store(schema);
+
+		await IndexDbSync.attach(second, name);
+
+		expect(second.state.read().language).toBe("cs");
+	});
+
+	it("reads and writes nothing when the database cannot be opened", async () => {
+		vi.spyOn(indexedDB, "open").mockImplementation(() => {
+			throw new Error("blocked");
+		});
+
+		const transaction = vi.spyOn(IDBDatabase.prototype, "transaction");
 		const store = new Store(schema);
+		const indexDbSync = await IndexDbSync.attach(store, crypto.randomUUID());
 
 		store.state.update((draft) => {
 			draft.language = "cs";
 		});
 
-		expect(repository.get).not.toHaveBeenCalled();
-		expect(repository.set).not.toHaveBeenCalled();
+		expect(transaction).not.toHaveBeenCalled();
+		expect(() => indexDbSync.detach()).not.toThrow();
 	});
 
-	it("closes the repository on detach", async () => {
-		const repository = repositoryMock();
-		const store = new Store(schema);
-		const repositorySync = await RepositorySync.attach(store, repository);
+	it("closes the database on detach", async () => {
+		const indexDbSync = await IndexDbSync.attach(new Store(schema), crypto.randomUUID());
+		const close = vi.spyOn(IDBDatabase.prototype, "close");
 
-		repositorySync.detach();
+		indexDbSync.detach();
 
-		expect(repository.close).toHaveBeenCalledOnce();
-	});
-
-	it("detaches from a repository that has nothing to close", async () => {
-		const repository: Repository = {
-			init: vi.fn().mockResolvedValue(undefined),
-			get: vi.fn().mockResolvedValue(undefined),
-			set: vi.fn().mockResolvedValue(undefined),
-			close: vi.fn(),
-		};
-		const store = new Store(schema);
-		const repositorySync = await RepositorySync.attach(store, repository);
-
-		expect(() => repositorySync.detach()).not.toThrow();
+		expect(close).toHaveBeenCalledOnce();
 	});
 });

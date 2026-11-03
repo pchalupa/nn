@@ -4,8 +4,6 @@ import type { Encoded } from "./Codable";
 import { Entity } from "./Entity";
 
 export class LWWRegister<Value> extends Entity<Value> {
-	public static override readonly kind = "LWWRegister";
-
 	constructor(
 		private value: Value,
 		key?: string,

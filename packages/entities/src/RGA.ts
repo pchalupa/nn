@@ -5,8 +5,6 @@ import { Entity, type EntityDelegate } from "./Entity";
 
 // TODO!: Implementation of RGA isn't done yet. This is just temporary stub!
 export class RGA<Value extends Entity> extends Entity<Value[]> implements EntityDelegate {
-	public static override readonly kind = "RGA";
-
 	private items = new Map<string, Value>();
 
 	constructor(items: Value[] = [], key?: string) {

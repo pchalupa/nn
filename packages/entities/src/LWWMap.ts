@@ -5,8 +5,6 @@ import type { Decoder, Encoded } from "./Codable";
 import { Entity, type EntityDelegate } from "./Entity";
 
 export class LWWMap<Fields extends Record<string, Entity>> extends Entity<Fields> implements EntityDelegate {
-	public static override readonly kind = "LWWMap";
-
 	constructor(
 		private fields: Fields,
 		key?: string,

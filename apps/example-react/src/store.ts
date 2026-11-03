@@ -1,7 +1,8 @@
-import { HttpRemote } from "@nn/http-remote";
 import { IndexDbRepository } from "@nn/indexdb-repository";
-import { createStore, use } from "@nn/react";
+import { use } from "@nn/react";
 import { array, enumeration, type InferStateType, object, string } from "@nn/schema";
+import { Store } from "@nn/store";
+import { RepositorySync } from "@nn/store/RepositorySync";
 
 export type Status = InferStateType<typeof status>;
 
@@ -36,14 +37,9 @@ const schema = object({
 	language,
 	tags,
 });
-const remote = new HttpRemote(import.meta.env.VITE_REMOTE_URL);
-const repository = new IndexDbRepository();
 
-// TBD: Can you have multiple stores?
-const store = createStore({
-	repository,
-	remote,
-	schema,
-});
+const store = new Store(schema);
+
+RepositorySync.attach(store, new IndexDbRepository());
 
 export const { useRead, useUpdate } = use(store);

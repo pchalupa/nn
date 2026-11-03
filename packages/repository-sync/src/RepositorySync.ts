@@ -1,99 +1,33 @@
-import { Codec } from "@nn/entities/Codec";
-import type { Entity } from "@nn/entities/Entity";
-import type { Unsubscribe } from "@nn/observable/Subject";
+import type { Encoded } from "@nn/entities/Codable";
 import type { Repository } from "@nn/repository";
 import type { Store } from "@nn/store";
-import type { Sync } from "@nn/sync";
+import { Sync } from "@nn/sync";
 
-export class RepositorySync implements Sync {
-	private readonly codec = new Codec();
-	private readonly held = new Map<string, Entity>();
-	private readonly blocked = new Set<string>();
-	private restoring = true;
-	private attached = true;
-	private unsubscribe: Unsubscribe;
-	public readonly restored: Promise<void>;
-
+export class RepositorySync extends Sync {
 	private constructor(
-		private readonly store: Store,
+		store: Store,
 		private readonly repository: Repository,
 	) {
-		this.unsubscribe = store.observe((changed) => {
-			for (const entity of changed) {
-				if (this.restoring) this.held.set(entity.key, entity);
-				else this.write(entity);
-			}
-		});
-		this.restored = this.restore();
-		this.restored.catch(() => {});
+		super(store);
 	}
 
-	public static attach(store: Store, repository: Repository): Sync {
-		return new RepositorySync(store, repository);
+	protected open(): Promise<void> {
+		return this.repository.init(this.store.schema.properties);
 	}
 
-	public detach(): void {
-		this.attached = false;
-		this.unsubscribe();
-		this.held.clear();
+	protected pull(name: string): Promise<unknown> {
+		return this.repository.get(name);
 	}
 
-	private write(entity: Entity): void {
-		if (!this.blocked.has(entity.key)) void this.persist(entity);
+	protected push(name: string, entry: Encoded): Promise<void> {
+		return this.repository.set(name, entry);
 	}
 
-	private async persist(entity: Entity): Promise<void> {
-		try {
-			await this.repository.set(entity.key, this.codec.encode(entity));
-		} catch (error) {
-			console.error("Failed to persist Store record.", error);
-		}
-	}
+	public static attach(store: Store, repository: Repository): RepositorySync {
+		const repositorySync = new RepositorySync(store, repository);
 
-	private async restore(): Promise<void> {
-		try {
-			await this.repository.init(this.store.schema.properties);
-		} catch (error) {
-			this.unsubscribe();
-			this.held.clear();
+		repositorySync.attach();
 
-			if (!this.attached) return;
-
-			console.error("Failed to restore Store record.", error);
-
-			throw error;
-		}
-
-		if (!this.attached) return;
-
-		let failure: { error: unknown } | undefined;
-
-		for (const name of Object.keys(this.store.schema.properties)) {
-			try {
-				const entry = await this.repository.get(name);
-
-				if (!this.attached) return;
-
-				if (entry) this.store.state.merge(name, this.codec.decode(entry));
-			} catch (error) {
-				if (!this.attached) return;
-
-				console.error("Failed to restore Store record.", error);
-				this.blocked.add(name);
-				failure ??= { error };
-			}
-		}
-
-		if (!this.attached) return;
-
-		this.restoring = false;
-
-		const held = [...this.held.values()];
-
-		this.held.clear();
-
-		for (const entity of held) this.write(entity);
-
-		if (failure) throw failure.error;
+		return repositorySync;
 	}
 }

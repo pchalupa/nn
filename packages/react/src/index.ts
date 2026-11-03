@@ -21,7 +21,7 @@ export function createStore<StoreSchema extends ObjectSchema<Record<string, Sche
 export function use<StoreSchema extends ObjectSchema<Record<string, Schema>>>(store: Store<StoreSchema>) {
 	type Data = InferStateType<StoreSchema>;
 	const getSnapshot = () => store.state.read();
-	const subscribe = (observer: () => void) => store.subscribe(observer);
+	const subscribe = (observer: () => void) => store.updates.subscribe(observer);
 	const update: Update<Data> = (recipe) => store.state.update(recipe);
 
 	function useRead<Result>(selector: (data: Snapshot<Data>) => Result): Result {

@@ -72,4 +72,14 @@ describe("Observable", () => {
 
 		expect(second).toHaveBeenCalledOnce();
 	});
+
+	it("passes the notified arguments to every observer", () => {
+		const subject = new Observable<[string, number]>();
+		const observer = vi.fn();
+
+		subject.subscribe(observer);
+		subject.notify("changed", 2);
+
+		expect(observer).toHaveBeenCalledExactlyOnceWith("changed", 2);
+	});
 });

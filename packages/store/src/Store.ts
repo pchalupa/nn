@@ -1,71 +1,23 @@
-import { Codec } from "@nn/entities/Codec";
 import type { Entity } from "@nn/entities/Entity";
-import { Subject, type Observer, type Unsubscribe } from "@nn/observable/Subject";
-import type { Remote } from "@nn/remote";
-import type { Repository } from "@nn/repository";
+import { Observable } from "@nn/observable/Observable";
 import type { Schema } from "@nn/schema";
 import type { ObjectSchema } from "@nn/schema/ObjectSchema";
 
 import { State } from "./State";
 
-export class Store<StateSchema extends ObjectSchema<Record<string, Schema>>> {
-	private codec = new Codec();
-	private changeSubjectObservers = new Subject();
+export class Store<StateSchema extends ObjectSchema<Record<string, Schema>> = ObjectSchema<Record<string, Schema>>> {
+	public readonly changes = new Observable<[ReadonlySet<Entity>]>();
+	public readonly updates = new Observable();
+	public readonly state: State<StateSchema>;
 
-	constructor(
-		public state: State<StateSchema>,
-		private repository?: Repository,
-		_remote?: Remote,
-	) {
-		state.delegate = {
+	constructor(public readonly schema: StateSchema) {
+		// TODO: Consider folding state into Store
+		this.state = new State(schema);
+		this.state.delegate = {
 			stateDidChange: (_state: State, changed: ReadonlySet<Entity>) => {
-				for (const entity of changed) void this.persist(entity);
-
-				this.changeSubjectObservers.notify();
+				this.changes.notify(changed);
+				this.updates.notify();
 			},
 		};
-	}
-
-	private async persist(entity: Entity): Promise<void> {
-		if (this.repository) {
-			try {
-				await this.repository.set(entity.key, this.codec.encode(entity));
-			} catch (error) {
-				// TODO: LOGGER?
-				console.error("Failed to persist Store record.", error);
-			}
-		}
-	}
-
-	// TBD: This method is oddly placed.
-	private async restore(schema: StateSchema): Promise<void> {
-		await this.repository?.init(schema.properties);
-
-		for (const name of Object.keys(schema.properties)) {
-			const entry = await this.repository?.get(name);
-
-			if (entry) this.state.merge(name, this.codec.decode(entry));
-		}
-	}
-
-	public subscribe(observer: Observer): Unsubscribe {
-		return this.changeSubjectObservers.subscribe(observer);
-	}
-
-	// TBD: store creation should be sync. The restore has to happen independently.
-	public static async fromSchema<StateSchema extends ObjectSchema<Record<string, Schema>>>({
-		schema,
-		repository,
-		remote,
-	}: {
-		schema: StateSchema;
-		repository?: Repository;
-		remote?: Remote;
-	}): Promise<Store<StateSchema>> {
-		const store = new Store(new State(schema), repository, remote);
-
-		if (repository) await store.restore(schema);
-
-		return store;
 	}
 }

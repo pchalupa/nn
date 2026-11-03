@@ -214,10 +214,10 @@ describe("@nn/react", () => {
 
 		it("keeps one live subscription through StrictMode and removes it on unmount", async () => {
 			const { store, useRead } = setup();
-			const subscribe = store.subscribe.bind(store);
+			const subscribe = store.updates.subscribe.bind(store.updates);
 			let active = 0;
 
-			vi.spyOn(store, "subscribe").mockImplementation((listener) => {
+			vi.spyOn(store.updates, "subscribe").mockImplementation((listener) => {
 				active++;
 				const unsubscribe = subscribe(listener);
 
@@ -248,7 +248,7 @@ describe("@nn/react", () => {
 	describe("useUpdate", () => {
 		it("keeps its identity and never subscribes or rerenders on store changes", async () => {
 			const { store, useUpdate } = setup();
-			const subscribe = vi.spyOn(store, "subscribe");
+			const subscribe = vi.spyOn(store.updates, "subscribe");
 			const updates: unknown[] = [];
 			const Writer = () => {
 				updates.push(useUpdate());

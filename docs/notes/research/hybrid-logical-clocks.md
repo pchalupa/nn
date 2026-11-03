@@ -30,7 +30,7 @@ The cost is that `c` must be bounded, which is exactly what the two-field split 
 
 And the thing HLC emphatically does **not** give you: the converse. `hlc.e < hlc.f` does **not** imply `e hb f`. The paper states the implication in one direction only and explicitly lists `e hb f ⇐ lc.e < lc.f` among "claims [that] are not true" for logical clocks. HLC inherits that. So HLC can _resolve_ a conflict (pick a winner deterministically) but cannot _detect_ one (tell you two writes were concurrent so you can ask the user). Only a vector clock gives `e hb f ⇔ vc.e < vc.f`, at `O(nodes)` space. This is the single most-misunderstood point about HLC. [Paper §2][paper]
 
-This repo already has an HLC in `packages/time/src/Time.ts`, and §9 below checks it against the paper. The short version: it is a correct _send_ rule with no _receive_ rule and no drift bound. The missing replica tie-break was closed by [ADR-09](../../decisions/ADR-09-stamp-times-with-a-replica-identity.md); §9 records what that changed and what is still open.
+This repo already has an HLC in `packages/time/src/time.ts`, and §9 below checks it against the paper. The short version: it is a correct _send_ rule with no _receive_ rule and no drift bound. The missing replica tie-break was closed by [ADR-09](../../decisions/ADR-09-stamp-times-with-a-replica-identity.md); §9 records what that changed and what is still open.
 
 ---
 
@@ -644,9 +644,9 @@ Three corollaries for a local-first library:
 
 ## 9. This repo's `Time`, measured against the paper
 
-`packages/time/src/Time.ts` says "Represents time using a Hybrid Logical Clock (HLC) model" and implements the send rule correctly:
+`packages/time/src/time.ts` says "Represents time using a Hybrid Logical Clock (HLC) model" and implements the send rule correctly:
 
-`packages/time/src/Time.ts` (working tree, 2026-10-04):
+`packages/time/src/time.ts` (working tree, 2026-10-04):
 
 ```ts
 	protected static tick(): void {
@@ -671,7 +671,7 @@ Three gaps remain against the paper and against every implementation in §5:
 
 **0. No replica, so `isAfter` had a tie (fixed).** As first written, `isAfter` was strict and `LWWRegister.merge` did nothing when neither side was after the other:
 
-`packages/entities/src/LWWRegister.ts`:
+`packages/entities/src/lww-register.ts`:
 
 ```ts
 	merge(remote: LWWRegister<Value>): LWWRegister<Value> {
@@ -689,7 +689,7 @@ Two replicas that each wrote within the same millisecond, each on their first wr
 
 **1. No receive rule.** There is no `Time.receive(local, remote, now)`. `RGA` compensates privately:
 
-`packages/entities/src/RGA.ts`:
+`packages/entities/src/rga.ts`:
 
 ```ts
 	private witness(time: Time): void {

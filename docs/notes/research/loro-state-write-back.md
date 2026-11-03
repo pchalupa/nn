@@ -189,7 +189,7 @@ For comparison, the first-party **`loro-prosemirror` 0.4.4** binding uses origin
 
 ## 7. Relevance to this repository
 
-In the working tree inspected on 2026-10-29, `State.update` clones the projection, runs a synchronous recipe, prepares a snapshot keyed by row identity, and reconciles it into LWW/RGA entities inside a batch. Row identity lives in a `WeakMap` keyed by row object. `prepareRows` throws `unsupported("move")` when the order of existing rows changes. These links describe the uncommitted working tree, not a pinned revision. [State update](../../../packages/store/src/State.ts#L70-L90) · [Row preparation](../../../packages/store/src/reconcile.ts#L71-L102) · [Reconcile](../../../packages/store/src/reconcile.ts#L104-L135) · [Row identity](../../../packages/store/src/RowIdentity.ts#L11-L46)
+In the working tree inspected on 2026-10-29, `State.update` clones the projection, runs a synchronous recipe, prepares a snapshot keyed by row identity, and reconciles it into LWW/RGA entities inside a batch. Row identity lives in a `WeakMap` keyed by row object. `prepareRows` throws `unsupported("move")` when the order of existing rows changes. These links describe the uncommitted working tree, not a pinned revision. [State update](../../../packages/store/src/state.ts#L70-L90) · [Row preparation](../../../packages/store/src/reconcile.ts#L71-L102) · [Reconcile](../../../packages/store/src/reconcile.ts#L104-L135) · [Row identity](../../../packages/store/src/RowIdentity.ts#L11-L46)
 
 Inference: this is the same shape as Mirror's `setState`, which diffs a recipe result against current state and lowers it to container writes. Three Mirror lessons transfer directly:
 

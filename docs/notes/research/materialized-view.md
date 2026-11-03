@@ -129,7 +129,7 @@ Sources: <https://docs.livestore.dev/overview/how-livestore-works/>, <https://el
 | Maintenance strategy | invalidate-and-recompute, deferred to the next read                                |
 | View version         | `Snapshot.id` — `JSON.stringify(this.state)`                                       |
 
-The flow in `packages/store/src/Store.ts:90`: a missed lookup runs the selector, wraps the result in a `Snapshot`, and subscribes to it; any `update` from the selected observable fires `invalidated`, which drops the entry from the `WeakMap` (`SnapshotManager.ts:21`) and emits `update` on the store, so React re-reads and the selector runs again from scratch.
+The flow in `packages/store/src/store.ts:90`: a missed lookup runs the selector, wraps the result in a `Snapshot`, and subscribes to it; any `update` from the selected observable fires `invalidated`, which drops the entry from the `WeakMap` (`SnapshotManager.ts:21`) and emits `update` on the store, so React re-reads and the selector runs again from scratch.
 
 In the taxonomy above that is: **full recomputation, deferred maintenance, no query rewriting, developer-driven view selection.** For the data sizes a local-first client holds, that is a defensible default — §3's incremental machinery buys nothing until recomputation shows up in a frame budget.
 

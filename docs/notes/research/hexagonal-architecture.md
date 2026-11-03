@@ -112,8 +112,8 @@ For a small CRUD endpoint or short-lived script, a full folder-and-interface fra
 The current code already illustrates the contract-and-adapter split:
 
 - [`Repository`](https://github.com/pchalupa/nn/blob/a67280fad54b78ae8c03d6c6608819e166f47ce2/packages/repository/src/Repository.ts) defines a storage contract, and [`IndexDbRepository`](https://github.com/pchalupa/nn/blob/a67280fad54b78ae8c03d6c6608819e166f47ce2/packages/index-db-repository/src/IndexDbRepository.ts) implements it using IndexedDB.
-- [`Store`](../../../packages/store/src/Store.ts) accepts that contract without importing the IndexedDB implementation. Its [tests](../../../packages/store/src/Store.test.ts) supply a replacement repository.
-- [`Remote`](../../../packages/remote/src/Remote.ts) and [`HttpRemote`](../../../packages/http-remote/src/HttpRemote.ts) provide another contract-and-adapter pair. `Store` currently accepts the remote but doesn't use it, so this pair doesn't establish a working synchronization flow.
+- [`Store`](../../../packages/store/src/store.ts) accepts that contract without importing the IndexedDB implementation. Its [tests](../../../packages/store/src/store.test.ts) supply a replacement repository.
+- [`Remote`](../../../packages/remote/src/remote.ts) and [`HttpRemote`](../../../packages/http-remote/src/http-remote.ts) provide another contract-and-adapter pair. `Store` currently accepts the remote but doesn't use it, so this pair doesn't establish a working synchronization flow.
 - The [React example's setup](../../../apps/example-react/src/store.ts) selects concrete adapters and passes them to `createStore`, illustrating assembly outside the core.
 
 **Our assessment:** these are useful existing boundaries, rather than evidence that every part of the repository follows hexagonal architecture. The next useful question is whether each contract captures the behavior its caller needs, including failure and consistency semantics. Adding more folders alone wouldn't strengthen that boundary.

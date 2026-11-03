@@ -12,7 +12,7 @@
 	"repository": "https://github.com/pchalupa/nn",
 	"type": "module",
 	"exports": {
-		".": "./src/IndexDbSync.ts"
+		".": "./src/index-db-sync.ts"
 	},
 	"scripts": {
 		"ts:check": "tsc --noEmit",

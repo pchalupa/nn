@@ -13,7 +13,7 @@
 	"type": "module",
 	"exports": {
 		".": {
-			"import": "./src/Store.ts"
+			"import": "./src/store.ts"
 		}
 	},
 	"scripts": {

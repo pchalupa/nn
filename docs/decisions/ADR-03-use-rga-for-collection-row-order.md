@@ -7,14 +7,14 @@ date: 2026-10-02
 
 Superseded by [ADR-11](ADR-11-defer-the-ordering-crdt.md): the ordering algorithm and tombstone retention are deferred until the sync layer needs them. The in-memory-only persistence clause is superseded by [ADR-06](ADR-06-persist-entity-owned-root-records.md).
 
-Implementation update, 2026-10-14: references below to `diff`, `Patch.ts`, and `applyPatch` describe the earlier store pipeline. [Reconciliation](../../packages/store/src/State.ts) now prepares and applies writes directly. Collection recipes still append additions and ignore reordering of existing rows; the unused insertion indexes were removed. See the [simplification design](../superpowers/specs/2026-10-14-simplify-materialized-views-design.md).
+Implementation update, 2026-10-14: references below to `diff`, `Patch.ts`, and `applyPatch` describe the earlier store pipeline. [Reconciliation](../../packages/store/src/state.ts) now prepares and applies writes directly. Collection recipes still append additions and ignore reordering of existing rows; the unused insertion indexes were removed. See the [simplification design](../superpowers/specs/2026-10-14-simplify-materialized-views-design.md).
 
 ## Context
 
 This library is local-first. Replicas edit independently, including while offline, and merge later.
-Each entity type says how it converges: [`LWWRegister`](../../packages/entities/src/LWWRegister.ts)
-picks the value with the greater [`Time`](../../packages/time/src/Time.ts), and
-[`LWWMap`](../../packages/entities/src/LWWMap.ts) merges each field on its own.
+Each entity type says how it converges: [`LWWRegister`](../../packages/entities/src/lww-register.ts)
+picks the value with the greater [`Time`](../../packages/time/src/time.ts), and
+[`LWWMap`](../../packages/entities/src/lww-map.ts) merges each field on its own.
 
 The ordered row set had no such rule. It kept its rows in a `Map` and handed them out in local
 insertion order, and its merge appended remote-only rows in whatever order the remote iterated.
@@ -36,7 +36,7 @@ recommends implementing [RGA](https://arxiv.org/html/1707.01747v3#S6) first.
 ## Decision
 
 We will order collection rows with a Replicated Growable Array, and rename the type from
-`Collection` to [`RGA`](../../packages/entities/src/RGA.ts) so the name says which rule it follows.
+`Collection` to [`RGA`](../../packages/entities/src/rga.ts) so the name says which rule it follows.
 The type keeps the smallest surface the store actually writes against: `push`, `remove`, `find`,
 `merge`, `subscribe`, and the `current` getter and setter it inherits from `Entity`. We dropped
 `length` and `replace` and the key `push` used to return, because each one restated something the
@@ -58,7 +58,7 @@ keep that clock inside the entity rather than adding a receive step to `@nn/time
 where the requirement is.
 
 On top of the sequence, a key is live at most once, because `find`, path resolution in
-[`State`](../../packages/store/src/State.ts) and the duplicate check in
+[`State`](../../packages/store/src/state.ts) and the duplicate check in
 [`diff`](../../packages/store/src/diff.ts) all treat a collection as a keyed set. The greatest
 insertion of a key wins and the loser is tombstoned, and the surviving row keeps the local object's
 identity while taking the other side's contents. A removal hides the key until an insertion stamped
@@ -94,7 +94,7 @@ and the sync layer on.
 
 Concurrent additions now converge. A merge is commutative and idempotent: merging two replicas in
 either order gives the same sequence, and merging the same replica twice changes nothing. The
-regression tests in [`RGA.test.ts`](../../packages/entities/src/RGA.test.ts) check those properties
+regression tests in [`RGA.test.ts`](../../packages/entities/src/rga.test.ts) check those properties
 directly.
 
 The rename is a breaking change for `@nn/entities`. The `./Collection` subpath export is gone and
@@ -116,7 +116,7 @@ collection are unaffected.
 Order still does not survive a reload, because we persist rows and not the sequence. On IndexedDB a
 reloaded collection comes back in primary-key order, which is the order it had before this change
 too. Closing that gap means storing each row's anchor and stamp and keeping tombstones, which
-changes the [`Repository`](../../packages/repository/src/Repository.ts) contract. That is a separate
+changes the [`Repository`](https://github.com/pchalupa/nn/blob/a67280fad54b78ae8c03d6c6608819e166f47ce2/packages/repository/src/Repository.ts) contract. That is a separate
 decision.
 
 The store gains the ordering layer its write path was missing. `applyPatch` can now honour the index

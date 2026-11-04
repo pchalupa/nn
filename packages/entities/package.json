@@ -1,6 +1,6 @@
 {
 	"name": "@nn/entities",
-	"version": "1.0.0",
+	"version": "3.0.0",
 	"description": "Entities",
 	"keywords": [],
 	"homepage": "https://github.com/pchalupa/nn/packages/repository#readme",
@@ -12,12 +12,12 @@
 	"repository": "https://github.com/pchalupa/nn",
 	"type": "module",
 	"exports": {
-		"./Entity": "./src/Entity.ts",
-		"./Codable": "./src/Codable.ts",
-		"./Codec": "./src/Codec.ts",
-		"./kinds/LWWRegister": "./src/LWWRegister.ts",
-		"./kinds/LWWMap": "./src/LWWMap.ts",
-		"./kinds/RGA": "./src/RGA.ts"
+		"./entity": "./src/entity.ts",
+		"./codable": "./src/codable.ts",
+		"./codec": "./src/codec.ts",
+		"./kinds/lww-register": "./src/lww-register.ts",
+		"./kinds/lww-map": "./src/lww-map.ts",
+		"./kinds/rga": "./src/rga.ts"
 	},
 	"scripts": {
 		"ts:check": "tsc --noEmit",

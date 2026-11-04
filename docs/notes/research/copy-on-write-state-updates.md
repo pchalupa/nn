@@ -166,7 +166,7 @@ Source: <https://github.com/GiuseppeRaso/structura.js/tree/0c1af36ead5d9285dc260
 
 ### The pipeline
 
-`State.update(recipe)` (`packages/store/src/State.ts:70`):
+`State.update(recipe)` (`packages/store/src/state.ts:70`):
 
 1. **`this.read()`** (`State.ts:63`). If a field changed since the last read, each invalidated `View` re-materializes its whole field from entities (`View.ts:27`): `Object.fromEntries` per `LWWMap`, `entity.current.map` per `RGA`, and `identities.remember(row, rga, key)` per row object (`View.ts:36`). The root object is rebuilt with `Object.freeze` (`State.ts:65`).
 2. **`identities.clone(projection)`** (`RowIdentity.ts:30`). This is `structuredClone` of the **entire** projection, all fields (`plain.ts:4`). `transfer` then walks the source and the clone in parallel and copies each row's `{owner, key}` into the `WeakMap` for the cloned row (`RowIdentity.ts:38`).
@@ -193,7 +193,7 @@ Reading the code, for a state of _n_ plain nodes, one `update` that changes one 
 - one full `reconcile` walk with an `Array.from` per `RGA` (`RGA.ts:39`)
 - on the next `read()`, a full re-materialization of the changed top-level field.
 
-That is roughly five O(_n_) passes, at least three of which allocate O(_n_), whatever the size of the edit. A CoW draft does O(depth) proxy allocations, plus one shallow copy per container on the written path. For an array that copy is O(width), and no CoW library avoids it. This note did not benchmark either approach. `packages/store/src/Store.bench.ts` exists and was not run.
+That is roughly five O(_n_) passes, at least three of which allocate O(_n_), whatever the size of the edit. A CoW draft does O(depth) proxy allocations, plus one shallow copy per container on the written path. For an array that copy is O(width), and no CoW library avoids it. This note did not benchmark either approach. `packages/store/src/store.bench.ts` exists and was not run.
 
 ### Change detection
 

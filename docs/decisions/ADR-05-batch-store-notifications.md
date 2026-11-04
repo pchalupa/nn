@@ -9,7 +9,7 @@ Implementation update, 2026-10-31: [ADR-12](ADR-12-report-changes-to-a-single-de
 
 ## Context
 
-One [`Store.update`](../../packages/store/src/Store.ts) recipe can produce several entity changes and entities report each change immediately. Store subscribers need to read the resulting state, while entity listeners and persistence callbacks receive individual changes.
+One [`Store.update`](../../packages/store/src/store.ts) recipe can produce several entity changes and entities report each change immediately. Store subscribers need to read the resulting state, while entity listeners and persistence callbacks receive individual changes.
 
 ## Decision
 

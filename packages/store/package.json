@@ -1,6 +1,6 @@
 {
 	"name": "@nn/store",
-	"version": "1.1.0",
+	"version": "2.0.0",
 	"description": "State management library",
 	"keywords": [],
 	"homepage": "https://github.com/pchalupa/nn/packages/store#readme",
@@ -13,7 +13,7 @@
 	"type": "module",
 	"exports": {
 		".": {
-			"import": "./src/Store.ts"
+			"import": "./src/store.ts"
 		}
 	},
 	"scripts": {

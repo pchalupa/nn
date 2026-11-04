@@ -17,7 +17,7 @@ The schema format is a big part of this library's public surface. Everything sto
 
 We will use [JSON Schema 2020-12](https://json-schema.org/draft/2020-12/schema) as the format `@nn/schema` describes data in. We pick an industry standard rather than inventing one, so the schemas we write are readable by tools we did not build.
 
-`packages/schema/src/Schema.ts` speaks the spec's vocabulary: a schema's `type` is the JSON Schema type name (`"string"`, `"number"`, `"boolean"`, `"object"`, `"array"`), each type has its own class so a schema carries its type as data, and the annotations are the spec's `title` and `description`, set by `entitle()` and `describe()`. Composite schemas expose `properties` and `items`, which are spec keywords too.
+`packages/schema/src/schema.ts` speaks the spec's vocabulary: a schema's `type` is the JSON Schema type name (`"string"`, `"number"`, `"boolean"`, `"object"`, `"array"`), each type has its own class so a schema carries its type as data, and the annotations are the spec's `title` and `description`, set by `entitle()` and `describe()`. Composite schemas expose `properties` and `items`, which are spec keywords too.
 
 We will not validate data. `@nn/schema` describes structure, it does not assert it.
 

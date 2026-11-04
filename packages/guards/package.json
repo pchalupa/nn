@@ -1,6 +1,6 @@
 {
 	"name": "@nn/guards",
-	"version": "0.1.0",
+	"version": "0.2.0",
 	"description": "Runtime type guards",
 	"keywords": [],
 	"homepage": "https://github.com/pchalupa/nn/packages/guards#readme",
@@ -12,11 +12,11 @@
 	"repository": "https://github.com/pchalupa/nn",
 	"type": "module",
 	"exports": {
-		"./isArray": "./src/isArray.ts",
-		"./isObject": "./src/isObject.ts",
-		"./isPlainObject": "./src/isPlainObject.ts",
-		"./assertArray": "./src/assertArray.ts",
-		"./assertObject": "./src/assertObject.ts"
+		"./is-array": "./src/is-array.ts",
+		"./is-object": "./src/is-object.ts",
+		"./is-plain-object": "./src/is-plain-object.ts",
+		"./assert-array": "./src/assert-array.ts",
+		"./assert-object": "./src/assert-object.ts"
 	},
 	"scripts": {
 		"ts:check": "tsc --noEmit",

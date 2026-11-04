@@ -2,7 +2,7 @@
 "@nn/sync-engine": major
 ---
 
-A failed connection attempt is reported through `syncEngineDidFail`. After a failed attempt or a lost connection, the engine stays disconnected until `detach()` is called. A failed attempt no longer detaches the engine silently.
+A failed connection attempt is reported through `syncEngineDidFail`. After a failed attempt or a lost connection, the engine stays disconnected until `session.detach()` is called. A failed attempt no longer detaches the engine silently.
 
 `syncEngineDidFailToPush` is replaced by `syncEngineDidFail`, which reports a failed connection attempt and a rejected push. Rename the method on your delegate:
 
@@ -46,7 +46,17 @@ public static attach(store: Store): MySync {
 }
 ```
 
-`detach()` is final. Calling `session.connect()` after `detach()` does nothing, so create a new engine to sync again. `close()` is called once after each `open()`, when the connection attempt fails or the connection ends, and is no longer called when `detach()` runs on an engine that never opened.
+`detach()` moves to the now public `session`. Call `sync.session.detach()` instead of `sync.detach()`.
+
+```ts
+// before
+sync.detach();
+
+// after
+sync.session.detach();
+```
+
+`session.detach()` is final. Calling `session.connect()` after `session.detach()` does nothing, so create a new engine to sync again. `close()` is called once after each `open()`, when the connection attempt fails or the connection ends, and is no longer called when `session.detach()` runs on an engine that never opened.
 
 `open(signal)` receives an `AbortSignal` that aborts when the connection ends, so a subclass can cancel a pending open. A subclass that implements `open()` without the signal still compiles. An `open()` that finishes after the signal aborts should release what it opened.
 

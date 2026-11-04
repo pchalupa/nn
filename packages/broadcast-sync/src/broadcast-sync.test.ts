@@ -21,7 +21,7 @@ const attach = (name: string) => {
 
 describe("BroadcastSync", () => {
 	afterEach(() => {
-		for (const engine of engines.splice(0)) engine.detach();
+		for (const engine of engines.splice(0)) engine.session.detach();
 	});
 
 	it("shares changes with stores on the same channel", async () => {
@@ -92,7 +92,7 @@ describe("BroadcastSync", () => {
 		const first = attach(name);
 		const second = attach(name);
 
-		second.sync.detach();
+		second.sync.session.detach();
 		first.store.state.update((draft) => {
 			draft.language = "cs";
 		});

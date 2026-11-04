@@ -15,3 +15,5 @@ const sync = IndexDbSync.attach(store, "settings");
 ```
 
 A failure to open or read the database is reported through `syncEngineDidFail` on `sync.delegate`.
+
+Stop syncing with `sync.session.detach()` instead of `sync.detach()`.

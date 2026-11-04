@@ -15,3 +15,5 @@ const sync = BroadcastSync.attach(store, "settings");
 ```
 
 The delegate follows `@nn/sync-engine`: rename `syncEngineDidFailToPush` to `syncEngineDidFail`, as described in the `@nn/sync-engine` release notes.
+
+Stop syncing with `sync.session.detach()` instead of `sync.detach()`.

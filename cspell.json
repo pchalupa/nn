@@ -20,7 +20,8 @@
 		"ctap",
 		"simplewebauthn",
 		"unstub",
-		"Menlo"
+		"Menlo",
+		"mattpocock"
 	],
 	"ignorePaths": ["docs/{notes,plans,research}"],
 	"useGitignore": true

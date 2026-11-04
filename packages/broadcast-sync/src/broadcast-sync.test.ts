@@ -39,6 +39,24 @@ describe("BroadcastSync", () => {
 		});
 	});
 
+	it("shares a newly attached store's fields with stores already on the channel", async () => {
+		const name = crypto.randomUUID();
+		const first = await attach(name);
+		const second = new Store(schema);
+
+		second.state.update((draft) => {
+			draft.language = "cs";
+		});
+
+		const sync = await BroadcastSync.attach(second, name);
+
+		engines.push(sync);
+
+		await vi.waitFor(() => {
+			expect(first.store.state.read().language).toBe("cs");
+		});
+	});
+
 	it("keeps stores on other channels apart", async () => {
 		const first = await attach(crypto.randomUUID());
 		const second = await attach(crypto.randomUUID());

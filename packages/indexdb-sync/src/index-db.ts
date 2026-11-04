@@ -1,11 +1,17 @@
 import type { Encoded } from "@nn/entities/codable";
+import type { Delegatable } from "@nn/observable";
 
 enum Mode {
 	ReadOnly = "readonly",
 	ReadWrite = "readwrite",
 }
 
-export class IndexDb {
+export interface IndexDbDelegate {
+	indexDbDidChangeVersion(): void;
+}
+
+export class IndexDb implements Delegatable<IndexDbDelegate> {
+	public delegate?: IndexDbDelegate;
 	private version = 1;
 	private indexDbDatabase?: IDBDatabase;
 	private transactions = new Map<string, IDBTransaction>();
@@ -113,7 +119,10 @@ export class IndexDb {
 			return await this.init(schema);
 		}
 
-		indexDbDatabase.onversionchange = () => indexDbDatabase.close();
+		indexDbDatabase.onversionchange = () => {
+			this.close();
+			this.delegate?.indexDbDidChangeVersion();
+		};
 
 		this.indexDbDatabase = indexDbDatabase;
 	}

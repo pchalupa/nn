@@ -19,6 +19,34 @@ describe("IndexDb", () => {
 		await expect(indexDb.set("language", entry)).rejects.toThrow("Index DB is not initialized.");
 	});
 
+	it("tells its delegate when the database version changes", async () => {
+		const indexDb = new IndexDb("shared");
+		const newer = new IndexDb("shared");
+		const indexDbDidChangeVersion = vi.fn();
+
+		indexDb.delegate = { indexDbDidChangeVersion };
+
+		await indexDb.init({ language: {} });
+		await newer.init({ language: {}, posts: {} });
+
+		newer.close();
+
+		expect(indexDbDidChangeVersion).toHaveBeenCalledExactlyOnceWith();
+		await expect(indexDb.get("language")).rejects.toThrow("Index DB is not initialized.");
+	});
+
+	it("does not report a version change when explicitly closed", async () => {
+		const indexDb = new IndexDb();
+		const indexDbDidChangeVersion = vi.fn();
+
+		indexDb.delegate = { indexDbDidChangeVersion };
+
+		await indexDb.init({ language: {} });
+		indexDb.close();
+
+		expect(indexDbDidChangeVersion).not.toHaveBeenCalled();
+	});
+
 	it("creates a store for every key in the schema", async () => {
 		const indexDb = new IndexDb();
 

@@ -14,6 +14,6 @@ Render it once with your app's `Store`:
 
 It adds a small ⚙️ button in the bottom-right corner that opens a drawer along the bottom of the page. Close it with the Close button or Escape. It starts closed on every page load. The drawer isn't modal, so you can keep using the app while you watch values change, but it sits behind the app's own `showModal()` dialogs while one is open. It renders nothing under browser automation, so Playwright runs don't see it.
 
-`name` labels the drawer and the button's accessible name. The devtools use a dark theme.
+The devtools use a dark theme.
 
 `Devtools` renders only when `NODE_ENV` is `development`, and production builds leave it out. To opt in elsewhere, import it from the production entry point instead: `import { Devtools } from "@nn/react-devtools/production"`.

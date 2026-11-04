@@ -1,3 +1,4 @@
+import type { Encoded } from "@nn/entities/codable";
 import type { Entity } from "@nn/entities/entity";
 import type { Delegatable } from "@nn/observable";
 import type { InferStateType, Schema } from "@nn/schema";
@@ -61,6 +62,10 @@ export class State<
 
 			if (entity !== undefined && remote.key === entity.key) entity.merge(remote);
 		});
+	}
+
+	public encode(): Encoded<Record<string, Encoded>> {
+		return this.root.encode();
 	}
 
 	private commit(work: () => void): void {

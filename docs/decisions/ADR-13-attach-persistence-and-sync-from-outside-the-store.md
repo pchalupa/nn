@@ -7,6 +7,8 @@ date: 2026-11-02
 
 Amended by [ADR-14](ADR-14-ship-indexeddb-persistence-as-one-sync-engine.md): IndexedDB persistence ships as one package, [`@nn/indexdb-sync`](../../packages/indexdb-sync/src/index-db-sync.ts), and `@nn/repository`, `@nn/indexdb-repository` and `@nn/repository-sync` are removed.
 
+Amended by [ADR-16](ADR-16-give-sync-engines-a-connection-lifecycle.md): sync engines have a connection lifecycle. A failed connection retries, every connection pushes every field, and failures go to the delegate instead of being dropped.
+
 ## Context
 
 [`Store`](../../packages/store/src/store.ts) used to receive a [`Repository`](https://github.com/pchalupa/nn/blob/a67280fad54b78ae8c03d6c6608819e166f47ce2/packages/repository/src/Repository.ts) and a [`Remote`](../../packages/remote/src/remote.ts) in its constructor. It encoded every changed entity into the repository, and the static `Store.fromSchema` restored the stored fields before it returned. That made creation async. [`@nn/react`](../../packages/react/src/index.ts) re-exported it as `createStore`, so `use()` had to take a `Promise<Store>` and suspend on it. The `remote` parameter was never used.

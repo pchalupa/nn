@@ -47,7 +47,7 @@ const schema = object({
 });
 
 // TODO: Create store can return hooks useRead and useUpdate too
-const store = createStore(schema);
+export const store = createStore(schema);
 
 IndexDbSync.attach(store);
 BroadcastSync.attach(store);

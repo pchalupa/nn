@@ -1,0 +1,19 @@
+---
+"@nn/react-devtools": major
+---
+
+Adds `@nn/react-devtools`, read-only devtools for nn stores.
+
+The panel shows a tree of the store's values and highlights a row while it changes. Select a value to see its kind, key, revision, value, merge rule with an explanation, write time, and the replica that wrote it: the current replica, another replica, or none when the value is still the schema default. Lists also show their item count. The panel never writes to the store.
+
+Render it once with your app's `Store`:
+
+```tsx
+<NnStoreDevtools store={store} />
+```
+
+It adds a small ⚙️ button in the bottom-right corner that opens a drawer along the bottom of the page. Close it with the Close button or Escape. It remembers whether you left it open. The drawer isn't modal, so you can keep using the app while you watch values change, but it sits behind the app's own `showModal()` dialogs while one is open. It renders nothing under browser automation, so Playwright runs don't see it.
+
+`name` labels the drawer and the button's accessible name. The devtools use a dark theme.
+
+`NnStoreDevtools` renders only when `NODE_ENV` is `development`, and production builds leave it out. To opt in elsewhere, import it from the production entry point instead: `import { NnStoreDevtools } from "@nn/react-devtools/production"`.

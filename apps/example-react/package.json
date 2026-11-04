@@ -18,6 +18,7 @@
 		"@nn/broadcast-sync": "workspace:*",
 		"@nn/indexdb-sync": "workspace:*",
 		"@nn/react": "workspace:*",
+		"@nn/react-devtools": "workspace:*",
 		"@nn/schema": "workspace:",
 		"@simplewebauthn/browser": "^14.0.0",
 		"@tanstack/react-router": "~1.170.46",

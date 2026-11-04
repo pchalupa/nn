@@ -593,3 +593,19 @@ describe("State schema", () => {
 		});
 	});
 });
+
+describe("State encoding", () => {
+	it("encodes every top-level field", () => {
+		const state = new State(schema);
+
+		state.update((draft) => {
+			draft.language = "cs";
+		});
+
+		const { key, data } = state.encode();
+
+		expect(key).toBe("state");
+		expect(Object.keys(data)).toStrictEqual(["tickets", "language"]);
+		expect(data.language).toMatchObject({ key: "language", data: "cs", metadata: { kind: "LWWRegister" } });
+	});
+});

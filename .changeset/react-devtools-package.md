@@ -4,7 +4,7 @@
 
 Adds `@nn/react-devtools`, read-only devtools for nn stores.
 
-The panel shows a tree of the store's values and briefly flashes a row when its value changes. Click a map or list to expand it. Lists show their item count. The panel never writes to the store.
+The panel shows a tree of the store's values and briefly flashes a row when its value changes. Click a map or list to expand it. Lists show their item count. Selecting a row shows its CRDT metadata in a side pane: the kind and merge rule, when it was written with its counter and replica, and the entity key. Values that were never written are labelled as schema defaults. The panel never writes to the store.
 
 Render it once with your app's `Store`:
 

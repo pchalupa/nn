@@ -18,7 +18,9 @@
 		"Delegatable",
 		"webauthn",
 		"ctap",
-		"simplewebauthn"
+		"simplewebauthn",
+		"unstub",
+		"Menlo"
 	],
 	"ignorePaths": ["docs/{notes,plans,research}"],
 	"useGitignore": true

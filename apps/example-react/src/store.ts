@@ -1,8 +1,8 @@
 import { BroadcastSync } from "@nn/broadcast-sync";
-import { HttpSync } from "@nn/http-sync";
 import { IndexDbSync } from "@nn/indexdb-sync";
 import { createStore, use } from "@nn/react";
 import { array, enumeration, type InferStateType, number, object, string } from "@nn/schema";
+import { SseSync } from "@nn/sse-sync";
 
 export type Status = InferStateType<typeof status>;
 
@@ -52,6 +52,6 @@ const store = createStore(schema);
 
 IndexDbSync.attach(store);
 BroadcastSync.attach(store);
-HttpSync.attach(store, import.meta.env.VITE_REMOTE_URL);
+SseSync.attach(store, import.meta.env.VITE_REMOTE_URL);
 
 export const { useRead, useUpdate } = use(store);

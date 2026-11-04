@@ -8,10 +8,9 @@ Attach it with `HttpSync.attach(store, url)`. The engine opens the event stream,
 
 ```ts
 import { HttpSync } from "@nn/http-sync";
-import { IndexDbRepository } from "@nn/indexdb-repository";
-import { RepositorySync } from "@nn/repository-sync";
+import { IndexDbSync } from "@nn/indexdb-sync";
 
-RepositorySync.attach(store, new IndexDbRepository("settings"));
+IndexDbSync.attach(store);
 HttpSync.attach(store, "https://example.com/api");
 ```
 

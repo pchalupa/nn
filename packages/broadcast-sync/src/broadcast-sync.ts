@@ -34,10 +34,10 @@ export class BroadcastSync extends SyncEngine {
 		this.channel?.postMessage({ type: "entries", entries: { [name]: entry } });
 	}
 
-	public static async attach(store: Store, name = "nn-default"): Promise<BroadcastSync> {
+	public static attach(store: Store, name = "nn-default"): BroadcastSync {
 		const broadcastSync = new BroadcastSync(store, name);
 
-		await broadcastSync.attach();
+		broadcastSync.session.connect();
 
 		return broadcastSync;
 	}

@@ -1,12 +1,18 @@
 import type { Encoded } from "@nn/entities/codable";
+import type { Delegatable } from "@nn/observable";
 
 enum Mode {
 	ReadOnly = "readonly",
 	ReadWrite = "readwrite",
 }
 
-export class IndexDb {
-	private version = 1;
+export interface IndexDbDelegate {
+	indexDbDidChangeVersion(): void;
+	indexDbDidDelete(): void;
+}
+
+export class IndexDb implements Delegatable<IndexDbDelegate> {
+	public delegate?: IndexDbDelegate;
 	private indexDbDatabase?: IDBDatabase;
 	private transactions = new Map<string, IDBTransaction>();
 
@@ -80,12 +86,27 @@ export class IndexDb {
 
 	public async init(schema: Record<string, unknown>): Promise<void> {
 		const typeNames = Object.keys(schema);
+		let indexDbDatabase = await this.open(typeNames);
 
-		const existingDatabases = await indexedDB.databases();
-		const existingDatabase = existingDatabases.find((db) => db.name === this.name);
-		const version = Math.max(existingDatabase?.version ?? 0, this.version);
+		while (typeNames.some((typeName) => !indexDbDatabase.objectStoreNames.contains(typeName))) {
+			indexDbDatabase.close();
+			indexDbDatabase = await this.open(typeNames, indexDbDatabase.version + 1);
+		}
+
+		indexDbDatabase.onversionchange = (event) => {
+			this.close();
+
+			if (event.newVersion === null) this.delegate?.indexDbDidDelete();
+			else this.delegate?.indexDbDidChangeVersion();
+		};
+
+		this.indexDbDatabase = indexDbDatabase;
+	}
+
+	private open(typeNames: string[], version?: number): Promise<IDBDatabase> {
 		const openRequest = indexedDB.open(this.name, version);
-		const indexDbDatabase = await new Promise<IDBDatabase>((resolve, reject) => {
+
+		return new Promise<IDBDatabase>((resolve, reject) => {
 			openRequest.onsuccess = () => resolve(openRequest.result);
 			openRequest.onupgradeneeded = () => {
 				const transaction = openRequest.transaction;
@@ -104,17 +125,5 @@ export class IndexDb {
 
 			openRequest.onerror = () => reject(openRequest.error);
 		});
-		const needsUpgrade = typeNames.some((typeName) => !indexDbDatabase.objectStoreNames.contains(typeName));
-
-		if (needsUpgrade) {
-			indexDbDatabase.close();
-			this.version = indexDbDatabase.version + 1;
-
-			return await this.init(schema);
-		}
-
-		indexDbDatabase.onversionchange = () => indexDbDatabase.close();
-
-		this.indexDbDatabase = indexDbDatabase;
 	}
 }

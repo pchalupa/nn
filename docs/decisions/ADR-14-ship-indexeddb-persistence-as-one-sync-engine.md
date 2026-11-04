@@ -7,6 +7,8 @@ date: 2026-11-03
 
 Amends [ADR-13](ADR-13-attach-persistence-and-sync-from-outside-the-store.md).
 
+Amended by [ADR-16](ADR-16-give-sync-engines-a-connection-lifecycle.md): `IndexDbSync` reconnects when the database closes or fails to open, and `IndexDb` reports a closed database to its delegate.
+
 ## Context
 
 [ADR-13](ADR-13-attach-persistence-and-sync-from-outside-the-store.md) moved persistence out of `Store` into sync engines that extend [`SyncEngine`](../../packages/sync-engine/src/sync-engine.ts). It kept persistence in three packages, to mirror the existing split of abstraction and adapter packages. [`@nn/repository`](https://github.com/pchalupa/nn/blob/a67280fad54b78ae8c03d6c6608819e166f47ce2/packages/repository/src/Repository.ts) held the `Repository` interface, its `Entry` type and two error classes. `@nn/indexdb-repository` held `IndexDbRepository`, the [IndexedDB](https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API) implementation. [`@nn/repository-sync`](https://github.com/pchalupa/nn/blob/a67280fad54b78ae8c03d6c6608819e166f47ce2/packages/repository-sync/src/RepositorySync.ts) held `RepositorySync`, the engine.

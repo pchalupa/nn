@@ -21,13 +21,25 @@ const read = async (name: string, field: string) => {
 	return entry;
 };
 
+const attach = async (store: Store, name?: string) => {
+	const set = vi.spyOn(IndexDb.prototype, "set");
+	const indexDbSync = IndexDbSync.attach(store, name);
+
+	await vi.waitFor(() => {
+		expect(set).toHaveBeenCalled();
+	});
+	set.mockRestore();
+
+	return indexDbSync;
+};
+
 describe("IndexDbSync", () => {
 	afterEach(() => vi.restoreAllMocks());
 
 	it("opens a database under the given name with a store for each field", async () => {
 		const name = crypto.randomUUID();
 		const open = vi.spyOn(indexedDB, "open");
-		const indexDbSync = await IndexDbSync.attach(new Store(schema), name);
+		const indexDbSync = await attach(new Store(schema), name);
 
 		indexDbSync.detach();
 
@@ -45,7 +57,7 @@ describe("IndexDbSync", () => {
 	});
 
 	it("opens the default database when no name is given", async () => {
-		const indexDbSync = await IndexDbSync.attach(new Store(schema));
+		const indexDbSync = await attach(new Store(schema));
 
 		indexDbSync.detach();
 
@@ -63,17 +75,17 @@ describe("IndexDbSync", () => {
 		repository.close();
 
 		const store = new Store(schema);
-		const indexDbSync = await IndexDbSync.attach(store, name);
+		const indexDbSync = await attach(store, name);
 
 		expect(store.state.read().language).toBe("cs");
 
 		indexDbSync.detach();
 	});
 
-	it("persists each changed field under its name", async () => {
+	it("stores every field on connecting and each later change", async () => {
 		const name = crypto.randomUUID();
 		const store = new Store(schema);
-		const indexDbSync = await IndexDbSync.attach(store, name);
+		const indexDbSync = await attach(store, name);
 
 		store.state.update((draft) => {
 			draft.language = "cs";
@@ -82,7 +94,7 @@ describe("IndexDbSync", () => {
 		await vi.waitFor(async () => {
 			expect(await read(name, "language")).toMatchObject({ key: "language", data: "cs" });
 		});
-		expect(await read(name, "tickets")).toBeUndefined();
+		expect(await read(name, "tickets")).toMatchObject({ key: "tickets" });
 
 		indexDbSync.detach();
 	});
@@ -90,7 +102,7 @@ describe("IndexDbSync", () => {
 	it("keeps the stored fields for the next attach", async () => {
 		const name = crypto.randomUUID();
 		const first = new Store(schema);
-		const indexDbSync = await IndexDbSync.attach(first, name);
+		const indexDbSync = await attach(first, name);
 
 		first.state.update((draft) => {
 			draft.language = "cs";
@@ -104,7 +116,7 @@ describe("IndexDbSync", () => {
 
 		const second = new Store(schema);
 
-		await IndexDbSync.attach(second, name);
+		await attach(second, name);
 
 		expect(second.state.read().language).toBe("cs");
 	});
@@ -116,7 +128,14 @@ describe("IndexDbSync", () => {
 
 		const transaction = vi.spyOn(IDBDatabase.prototype, "transaction");
 		const store = new Store(schema);
-		const indexDbSync = await IndexDbSync.attach(store, crypto.randomUUID());
+		const indexDbSync = IndexDbSync.attach(store, crypto.randomUUID());
+		const delegate = { syncEngineDidFail: vi.fn() };
+
+		indexDbSync.delegate = delegate;
+
+		await vi.waitFor(() => {
+			expect(delegate.syncEngineDidFail).toHaveBeenCalledOnce();
+		});
 
 		store.state.update((draft) => {
 			draft.language = "cs";
@@ -127,10 +146,25 @@ describe("IndexDbSync", () => {
 	});
 
 	it("closes the database on detach", async () => {
-		const indexDbSync = await IndexDbSync.attach(new Store(schema), crypto.randomUUID());
+		const indexDbSync = await attach(new Store(schema), crypto.randomUUID());
 		const close = vi.spyOn(IDBDatabase.prototype, "close");
 
 		indexDbSync.detach();
+
+		expect(close).toHaveBeenCalledOnce();
+	});
+
+	it("closes a database that finishes opening after detach", async () => {
+		const close = vi.spyOn(IDBDatabase.prototype, "close");
+		const indexDbSync = IndexDbSync.attach(new Store(schema), crypto.randomUUID());
+
+		indexDbSync.detach();
+
+		await vi.waitFor(() => {
+			expect(close).toHaveBeenCalledOnce();
+		});
+
+		await new Promise((resolve) => setTimeout(resolve));
 
 		expect(close).toHaveBeenCalledOnce();
 	});

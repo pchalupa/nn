@@ -11,10 +11,15 @@ export class IndexDbSync extends SyncEngine {
 		super(store);
 
 		this.repository = new IndexDb(name);
+		this.repository.delegate = {
+			indexDbDidChangeVersion: () => this.connection.lost(),
+		};
 	}
 
-	protected async open(): Promise<void> {
+	protected async open(signal: AbortSignal): Promise<void> {
 		await this.repository.init(this.store.schema.properties);
+
+		if (signal.aborted) this.repository.close();
 	}
 
 	protected close(): void {
@@ -29,10 +34,10 @@ export class IndexDbSync extends SyncEngine {
 		return this.repository.set(name, entry);
 	}
 
-	public static async attach(store: Store, name = "nn-default"): Promise<IndexDbSync> {
+	public static attach(store: Store, name = "nn-default"): IndexDbSync {
 		const indexDbSync = new IndexDbSync(store, name);
 
-		await indexDbSync.attach();
+		indexDbSync.attach();
 
 		return indexDbSync;
 	}

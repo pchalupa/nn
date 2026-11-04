@@ -10,9 +10,9 @@ const flush = () => new Promise((resolve) => setTimeout(resolve, 20));
 
 const engines: BroadcastSync[] = [];
 
-const attach = async (name: string) => {
+const attach = (name: string) => {
 	const store = new Store(schema);
-	const sync = await BroadcastSync.attach(store, name);
+	const sync = BroadcastSync.attach(store, name);
 
 	engines.push(sync);
 
@@ -26,8 +26,8 @@ describe("BroadcastSync", () => {
 
 	it("shares changes with stores on the same channel", async () => {
 		const name = crypto.randomUUID();
-		const first = await attach(name);
-		const second = await attach(name);
+		const first = attach(name);
+		const second = attach(name);
 
 		first.store.state.update((draft) => {
 			draft.language = "cs";
@@ -41,14 +41,14 @@ describe("BroadcastSync", () => {
 
 	it("shares a newly attached store's fields with stores already on the channel", async () => {
 		const name = crypto.randomUUID();
-		const first = await attach(name);
+		const first = attach(name);
 		const second = new Store(schema);
 
 		second.state.update((draft) => {
 			draft.language = "cs";
 		});
 
-		const sync = await BroadcastSync.attach(second, name);
+		const sync = BroadcastSync.attach(second, name);
 
 		engines.push(sync);
 
@@ -58,8 +58,8 @@ describe("BroadcastSync", () => {
 	});
 
 	it("keeps stores on other channels apart", async () => {
-		const first = await attach(crypto.randomUUID());
-		const second = await attach(crypto.randomUUID());
+		const first = attach(crypto.randomUUID());
+		const second = attach(crypto.randomUUID());
 
 		first.store.state.update((draft) => {
 			draft.language = "cs";
@@ -71,8 +71,8 @@ describe("BroadcastSync", () => {
 
 	it("settles concurrent edits on the latest one", async () => {
 		const name = crypto.randomUUID();
-		const first = await attach(name);
-		const second = await attach(name);
+		const first = attach(name);
+		const second = attach(name);
 
 		first.store.state.update((draft) => {
 			draft.language = "cs";
@@ -89,8 +89,8 @@ describe("BroadcastSync", () => {
 
 	it("stops sharing changes on detach", async () => {
 		const name = crypto.randomUUID();
-		const first = await attach(name);
-		const second = await attach(name);
+		const first = attach(name);
+		const second = attach(name);
 
 		second.sync.detach();
 		first.store.state.update((draft) => {
@@ -103,7 +103,7 @@ describe("BroadcastSync", () => {
 
 	it("ignores messages it does not recognize", async () => {
 		const name = crypto.randomUUID();
-		const { store } = await attach(name);
+		const { store } = attach(name);
 		const channel = new BroadcastChannel(name);
 
 		for (const message of ["hello", { type: "unknown" }, { type: "entries", entries: null }]) {

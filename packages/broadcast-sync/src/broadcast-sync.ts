@@ -37,7 +37,7 @@ export class BroadcastSync extends SyncEngine {
 	public static attach(store: Store, name = "nn-default"): BroadcastSync {
 		const broadcastSync = new BroadcastSync(store, name);
 
-		broadcastSync.attach();
+		broadcastSync.session.connect();
 
 		return broadcastSync;
 	}

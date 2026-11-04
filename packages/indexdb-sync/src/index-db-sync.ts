@@ -12,7 +12,8 @@ export class IndexDbSync extends SyncEngine {
 
 		this.repository = new IndexDb(name);
 		this.repository.delegate = {
-			indexDbDidChangeVersion: () => this.connection.lost(),
+			indexDbDidChangeVersion: () => this.session.reconnect(),
+			indexDbDidDelete: () => this.session.drop(),
 		};
 	}
 
@@ -37,7 +38,7 @@ export class IndexDbSync extends SyncEngine {
 	public static attach(store: Store, name = "nn-default"): IndexDbSync {
 		const indexDbSync = new IndexDbSync(store, name);
 
-		indexDbSync.attach();
+		indexDbSync.session.connect();
 
 		return indexDbSync;
 	}

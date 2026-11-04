@@ -43,7 +43,7 @@ describe("IndexDbSync", () => {
 
 		indexDbSync.detach();
 
-		expect(open).toHaveBeenCalledExactlyOnceWith(name, 1);
+		expect(open).toHaveBeenCalledExactlyOnceWith(name, undefined);
 
 		const database = await new Promise<IDBDatabase>((resolve) => {
 			const request = indexedDB.open(name);
@@ -143,6 +143,51 @@ describe("IndexDbSync", () => {
 
 		expect(transaction).not.toHaveBeenCalled();
 		expect(() => indexDbSync.detach()).not.toThrow();
+	});
+
+	it("reopens the database and keeps storing changes when another connection upgrades it", async () => {
+		const name = crypto.randomUUID();
+		const store = new Store(schema);
+		const indexDbSync = await attach(store, name);
+		const newer = new IndexDb(name);
+
+		await newer.init({ ...schema.properties, posts: {} });
+		newer.close();
+
+		store.state.update((draft) => {
+			draft.language = "cs";
+		});
+
+		await vi.waitFor(async () => {
+			expect(await read(name, "language")).toMatchObject({ data: "cs" });
+		});
+
+		indexDbSync.detach();
+	});
+
+	it("stops syncing without recreating the database when another connection deletes it", async () => {
+		const name = crypto.randomUUID();
+		const store = new Store(schema);
+		const indexDbSync = await attach(store, name);
+		const open = vi.spyOn(indexedDB, "open");
+		const set = vi.spyOn(IndexDb.prototype, "set");
+
+		await new Promise((resolve, reject) => {
+			const request = indexedDB.deleteDatabase(name);
+
+			request.onsuccess = resolve;
+			request.onerror = reject;
+		});
+
+		store.state.update((draft) => {
+			draft.language = "cs";
+		});
+
+		expect((await indexedDB.databases()).map((database) => database.name)).not.toContain(name);
+		expect(set).not.toHaveBeenCalled();
+		expect(open).not.toHaveBeenCalled();
+
+		indexDbSync.detach();
 	});
 
 	it("closes the database on detach", async () => {

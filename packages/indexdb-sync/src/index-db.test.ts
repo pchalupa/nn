@@ -1,7 +1,7 @@
 import type { Encoded } from "@nn/entities/codable";
 import { afterEach, beforeEach, describe, expect, expectTypeOf, it, vi } from "vitest";
 
-import { IndexDb } from "./index-db";
+import { IndexDb, type IndexDbDelegate } from "./index-db";
 
 describe("IndexDb", () => {
 	const entry: Encoded = { key: "language", data: "cs", metadata: { kind: "register" } };
@@ -19,32 +19,77 @@ describe("IndexDb", () => {
 		await expect(indexDb.set("language", entry)).rejects.toThrow("Index DB is not initialized.");
 	});
 
+	const delegateMock = () => ({
+		indexDbDidChangeVersion: vi.fn<IndexDbDelegate["indexDbDidChangeVersion"]>(),
+		indexDbDidDelete: vi.fn<IndexDbDelegate["indexDbDidDelete"]>(),
+	});
+
 	it("tells its delegate when the database version changes", async () => {
 		const indexDb = new IndexDb("shared");
 		const newer = new IndexDb("shared");
-		const indexDbDidChangeVersion = vi.fn();
+		const delegate = delegateMock();
 
-		indexDb.delegate = { indexDbDidChangeVersion };
+		indexDb.delegate = delegate;
 
 		await indexDb.init({ language: {} });
 		await newer.init({ language: {}, posts: {} });
 
 		newer.close();
 
-		expect(indexDbDidChangeVersion).toHaveBeenCalledExactlyOnceWith();
+		expect(delegate.indexDbDidChangeVersion).toHaveBeenCalledExactlyOnceWith();
+		expect(delegate.indexDbDidDelete).not.toHaveBeenCalled();
+		await expect(indexDb.get("language")).rejects.toThrow("Index DB is not initialized.");
+	});
+
+	it("tells its delegate when the database is deleted", async () => {
+		const indexDb = new IndexDb("shared");
+		const delegate = delegateMock();
+
+		indexDb.delegate = delegate;
+
+		await indexDb.init({ language: {} });
+		await new Promise((resolve, reject) => {
+			const request = indexedDB.deleteDatabase("shared");
+
+			request.onsuccess = resolve;
+			request.onerror = reject;
+		});
+
+		expect(delegate.indexDbDidDelete).toHaveBeenCalledExactlyOnceWith();
+		expect(delegate.indexDbDidChangeVersion).not.toHaveBeenCalled();
 		await expect(indexDb.get("language")).rejects.toThrow("Index DB is not initialized.");
 	});
 
 	it("does not report a version change when explicitly closed", async () => {
 		const indexDb = new IndexDb();
-		const indexDbDidChangeVersion = vi.fn();
+		const delegate = delegateMock();
 
-		indexDb.delegate = { indexDbDidChangeVersion };
+		indexDb.delegate = delegate;
 
 		await indexDb.init({ language: {} });
 		indexDb.close();
 
-		expect(indexDbDidChangeVersion).not.toHaveBeenCalled();
+		expect(delegate.indexDbDidChangeVersion).not.toHaveBeenCalled();
+		expect(delegate.indexDbDidDelete).not.toHaveBeenCalled();
+	});
+
+	it("opens at the version another connection is upgrading to", async () => {
+		const indexDb = new IndexDb("shared");
+		const newer = new IndexDb("shared");
+
+		await indexDb.init({ language: {} });
+
+		indexDb.delegate = {
+			indexDbDidChangeVersion: () => void indexDb.init({ language: {} }),
+			indexDbDidDelete: vi.fn(),
+		};
+
+		await newer.init({ language: {}, posts: {} });
+		newer.close();
+
+		await vi.waitFor(async () => {
+			expect(await indexDb.get("language")).toBeUndefined();
+		});
 	});
 
 	it("creates a store for every key in the schema", async () => {

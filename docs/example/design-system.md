@@ -79,25 +79,25 @@ Put this in `apps/example-react/src/main.css`, after `@import "tailwindcss";`. I
 
 Each token works with `bg-*`, `text-*` and `border-*`, and takes `/opacity` modifiers.
 
-| Role       | Tokens                                  | Use                                                                                 |
-| ---------- | --------------------------------------- | ----------------------------------------------------------------------------------- |
-| Surfaces   | `canvas`                                | Page background.                                                                    |
-|            | `panel`                                 | Sidebar, board header, columns, sign-in card.                                       |
-|            | `card`, `card-hover`                    | Ticket cards, link rows, filter chips, secondary buttons. `card-hover` on hover and drag. |
-|            | `field`                                 | Inputs and textareas, one step darker than cards.                                   |
-|            | `overlay`                               | Menus, toasts, dialogs, the ticket modal.                                           |
-|            | `selected`                              | Active nav item, highlighted menu item.                                             |
-| Lines      | `line-subtle`                           | Card and panel borders, section dividers.                                           |
-|            | `line`                                  | Control borders: inputs, buttons, chips, menus.                                     |
-|            | `line-strong`                           | Emphasis: dragged card, unassigned avatar ring.                                     |
-| Text       | `fg`                                    | Primary text.                                                                       |
-|            | `fg-muted`                              | Body copy, secondary text, default icons.                                           |
-|            | `fg-subtle`                             | Meta, counts, placeholders, captions, keys.                                         |
-|            | `fg-inverse`                            | Text on `bg-fg` and `bg-accent`.                                                    |
-| Accent     | `accent`, `accent-fg`, `accent-soft`    | Focus borders, brand mark, agent avatar; `accent-fg` for links and merge notes; `accent-soft` for drop targets. |
-| Status     | `status-todo`, `-progress`, `-done`     | Status icons only. Column chrome stays neutral.                                     |
-| Feedback   | `success`, `warning`, `danger`, `info`, each with `-soft` | Sync state, toasts, destructive actions. Pair the hue as text or dot on its `-soft` background. |
-| Labels     | `label-{violet,orange,cyan,green,red,pink,gray}`, each with `-soft` | Labels and person avatars. Always pair them: `bg-label-red-soft text-label-red`. |
+| Role     | Tokens                                                              | Use                                                                                                             |
+| -------- | ------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------- |
+| Surfaces | `canvas`                                                            | Page background.                                                                                                |
+|          | `panel`                                                             | Sidebar, board header, columns, sign-in card.                                                                   |
+|          | `card`, `card-hover`                                                | Ticket cards, link rows, filter chips, secondary buttons. `card-hover` on hover and drag.                       |
+|          | `field`                                                             | Inputs and textareas, one step darker than cards.                                                               |
+|          | `overlay`                                                           | Menus, toasts, dialogs, the ticket modal.                                                                       |
+|          | `selected`                                                          | Active nav item, highlighted menu item.                                                                         |
+| Lines    | `line-subtle`                                                       | Card and panel borders, section dividers.                                                                       |
+|          | `line`                                                              | Control borders: inputs, buttons, chips, menus.                                                                 |
+|          | `line-strong`                                                       | Emphasis: dragged card, unassigned avatar ring.                                                                 |
+| Text     | `fg`                                                                | Primary text.                                                                                                   |
+|          | `fg-muted`                                                          | Body copy, secondary text, default icons.                                                                       |
+|          | `fg-subtle`                                                         | Meta, counts, placeholders, captions, keys.                                                                     |
+|          | `fg-inverse`                                                        | Text on `bg-fg` and `bg-accent`.                                                                                |
+| Accent   | `accent`, `accent-fg`, `accent-soft`                                | Focus borders, brand mark, agent avatar; `accent-fg` for links and merge notes; `accent-soft` for drop targets. |
+| Status   | `status-todo`, `-progress`, `-done`                                 | Status icons only. Column chrome stays neutral.                                                                 |
+| Feedback | `success`, `warning`, `danger`, `info`, each with `-soft`           | Sync state, toasts, destructive actions. Pair the hue as text or dot on its `-soft` background.                 |
+| Labels   | `label-{violet,orange,cyan,green,red,pink,gray}`, each with `-soft` | Labels and person avatars. Always pair them: `bg-label-red-soft text-label-red`.                                |
 
 For a one-off tint, use an opacity modifier (`bg-accent/10`) instead of a new token.
 
@@ -105,16 +105,16 @@ For a one-off tint, use an opacity modifier (`bg-accent/10`) instead of a new to
 
 Inter is `font-sans` (the default), JetBrains Mono is `font-mono`. Each `text-*` size carries its own line height.
 
-| Style      | Classes                                         | Use                                         |
-| ---------- | ----------------------------------------------- | ------------------------------------------- |
-| Display    | `text-2xl font-semibold tracking-tight`         | Page titles.                                |
-| Title      | `text-lg font-semibold`                         | Card and dialog titles, modal ticket title. |
-| Heading    | `text-sm font-semibold`                         | Section headings, wordmark.                 |
-| Card title | `text-sm font-medium`                           | Ticket titles, button labels, names.        |
-| Body       | `text-sm/normal text-fg-muted`                  | Descriptions, comments, helper paragraphs.  |
-| Small      | `text-xs text-fg-muted`                         | Assignee names, toast text, hints.          |
-| Caption    | `text-xs font-medium uppercase tracking-wider text-fg-subtle` | Field labels in the modal, sidebar section titles. |
-| Mono       | `font-mono text-xs text-fg-subtle`              | Ticket keys (`#142`), counts, timestamps, commit hashes, keyboard shortcuts. |
+| Style      | Classes                                                       | Use                                                                          |
+| ---------- | ------------------------------------------------------------- | ---------------------------------------------------------------------------- |
+| Display    | `text-2xl font-semibold tracking-tight`                       | Page titles.                                                                 |
+| Title      | `text-lg font-semibold`                                       | Card and dialog titles, modal ticket title.                                  |
+| Heading    | `text-sm font-semibold`                                       | Section headings, wordmark.                                                  |
+| Card title | `text-sm font-medium`                                         | Ticket titles, button labels, names.                                         |
+| Body       | `text-sm/normal text-fg-muted`                                | Descriptions, comments, helper paragraphs.                                   |
+| Small      | `text-xs text-fg-muted`                                       | Assignee names, toast text, hints.                                           |
+| Caption    | `text-xs font-medium uppercase tracking-wider text-fg-subtle` | Field labels in the modal, sidebar section titles.                           |
+| Mono       | `font-mono text-xs text-fg-subtle`                            | Ticket keys (`#142`), counts, timestamps, commit hashes, keyboard shortcuts. |
 
 ## Shape and icons
 
@@ -122,16 +122,16 @@ Radius: `rounded-sm` (4px) for labels, kbd and menu items; `rounded-md` (6px) fo
 
 Icons are [Phosphor](https://phosphoricons.com), regular weight. Sizes: `size-3` in card footers and labels, `size-3.5` in buttons, inputs and status, `size-4` in nav items, icon buttons and toasts. Icons default to `text-fg-muted`, or `text-fg-subtle` when decorative. Names used in the design:
 
-| Meaning                              | Icon                                                  |
-| ------------------------------------ | ----------------------------------------------------- |
-| Status to do / in progress / done    | `circle-dashed` / `radio-button` / `check-circle`     |
-| Board, brand mark                    | `kanban`                                              |
-| New, add                             | `plus`                                                |
-| More, close, search                  | `dots-three`, `x`, `magnifying-glass`                 |
-| Comments, links, PR, merge           | `chat-circle`, `link`, `git-pull-request`, `git-merge` |
-| Agent, person, unassigned            | `robot`, `user`, `user` on an outlined circle         |
-| Synced, other device, other tab      | `cloud-check`, `desktop`, `app-window`                |
-| Inbox, sort, check, expand           | `tray`, `arrows-down-up`, `check`, `caret-right`, `caret-down` |
+| Meaning                           | Icon                                                           |
+| --------------------------------- | -------------------------------------------------------------- |
+| Status to do / in progress / done | `circle-dashed` / `radio-button` / `check-circle`              |
+| Board, brand mark                 | `kanban`                                                       |
+| New, add                          | `plus`                                                         |
+| More, close, search               | `dots-three`, `x`, `magnifying-glass`                          |
+| Comments, links, PR, merge        | `chat-circle`, `link`, `git-pull-request`, `git-merge`         |
+| Agent, person, unassigned         | `robot`, `user`, `user` on an outlined circle                  |
+| Synced, other device, other tab   | `cloud-check`, `desktop`, `app-window`                         |
+| Inbox, sort, check, expand        | `tray`, `arrows-down-up`, `check`, `caret-right`, `caret-down` |
 
 ## Components
 
@@ -141,25 +141,25 @@ Each entry names the `.pen` component, then the classes that reproduce it. Hover
 
 All buttons: `inline-flex h-7.5 items-center gap-1.5 rounded-md px-3 text-sm font-medium`, icon `size-3.5`. Use one primary button per view.
 
-| Variant        | Classes                                         |
-| -------------- | ----------------------------------------------- |
-| `Button/Primary`   | `bg-fg text-fg-inverse`. With a trailing shortcut: `pr-1.5`, the kbd on `bg-fg-inverse/10`. |
-| `Button/Secondary` | `border border-line bg-card text-fg`        |
-| `Button/Ghost`     | `text-fg-muted hover:bg-selected`. Compact form (`h-6.5 px-2`) for "Add filter", toast actions and "Copy link". |
-| `Button/Danger`    | `bg-danger-soft text-danger`                |
+| Variant            | Classes                                                                                                                                                                               |
+| ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `Button/Primary`   | `bg-fg text-fg-inverse`. With a trailing shortcut: `pr-1.5`, the kbd on `bg-fg-inverse/10`.                                                                                           |
+| `Button/Secondary` | `border border-line bg-card text-fg`                                                                                                                                                  |
+| `Button/Ghost`     | `text-fg-muted hover:bg-selected`. Compact form (`h-6.5 px-2`) for "Add filter", toast actions and "Copy link".                                                                       |
+| `Button/Danger`    | `bg-danger-soft text-danger`                                                                                                                                                          |
 | `IconButton`       | `inline-flex size-7 items-center justify-center rounded-md text-fg-muted hover:bg-selected`, icon `size-4`. Shrinks to `size-6` in column headers and `size-4.5` inside filter chips. |
-| `Kbd`              | `rounded-sm border border-line bg-selected px-1 py-px font-mono text-xs text-fg-muted` |
+| `Kbd`              | `rounded-sm border border-line bg-selected px-1 py-px font-mono text-xs text-fg-muted`                                                                                                |
 
 Full-width form buttons (sign-in) are `h-9 w-full justify-center`.
 
 ### Inputs
 
-| Component   | Classes                                                                                                   |
-| ----------- | --------------------------------------------------------------------------------------------------------- |
-| `Input`     | `flex h-8 items-center gap-2 rounded-md border border-line bg-field px-2.5 text-sm text-fg placeholder:text-fg-subtle focus-within:border-accent`. Optional leading icon `size-3.5 text-fg-subtle` and trailing `Kbd`. |
-| `Field`     | `flex flex-col gap-1.5`: label `text-xs font-medium text-fg-muted`, an `Input`, hint `text-xs text-fg-subtle`. |
-| `Textarea`  | `rounded-md border border-line bg-field px-2.5 py-2 text-sm text-fg placeholder:text-fg-subtle focus:border-accent` |
-| Segmented   | Status picker in the edit modal: `flex h-8 gap-0.5 rounded-md border border-line bg-field p-0.5`, active segment `bg-selected`. |
+| Component  | Classes                                                                                                                                                                                                                |
+| ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `Input`    | `flex h-8 items-center gap-2 rounded-md border border-line bg-field px-2.5 text-sm text-fg placeholder:text-fg-subtle focus-within:border-accent`. Optional leading icon `size-3.5 text-fg-subtle` and trailing `Kbd`. |
+| `Field`    | `flex flex-col gap-1.5`: label `text-xs font-medium text-fg-muted`, an `Input`, hint `text-xs text-fg-subtle`.                                                                                                         |
+| `Textarea` | `rounded-md border border-line bg-field px-2.5 py-2 text-sm text-fg placeholder:text-fg-subtle focus:border-accent`                                                                                                    |
+| Segmented  | Status picker in the edit modal: `flex h-8 gap-0.5 rounded-md border border-line bg-field p-0.5`, active segment `bg-selected`.                                                                                        |
 
 ### Labels, tags and status
 
@@ -169,12 +169,12 @@ Full-width form buttons (sign-in) are `h-9 w-full justify-center`.
 
 ### Avatars
 
-| Component            | Classes                                                                                                 |
-| -------------------- | ------------------------------------------------------------------------------------------------------- |
-| `Avatar`             | `flex size-5 items-center justify-center rounded-full text-[10px] font-semibold` plus a label hue pair picked by name, e.g. `bg-label-violet-soft text-label-violet`. Shows initials. |
-| `Avatar/Agent`       | `flex size-5 items-center justify-center rounded-sm bg-accent text-fg-inverse`, `robot` icon `size-3`. Agents are always square so their changes read differently from people's. |
-| `Avatar/Unassigned`  | `flex size-5 items-center justify-center rounded-full border border-line-strong text-fg-subtle`, `user` icon `size-3`. |
-| `Assignee`           | `inline-flex items-center gap-1.5`: avatar plus name in `text-xs text-fg-muted`.                         |
+| Component           | Classes                                                                                                                                                                               |
+| ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `Avatar`            | `flex size-5 items-center justify-center rounded-full text-[10px] font-semibold` plus a label hue pair picked by name, e.g. `bg-label-violet-soft text-label-violet`. Shows initials. |
+| `Avatar/Agent`      | `flex size-5 items-center justify-center rounded-sm bg-accent text-fg-inverse`, `robot` icon `size-3`. Agents are always square so their changes read differently from people's.      |
+| `Avatar/Unassigned` | `flex size-5 items-center justify-center rounded-full border border-line-strong text-fg-subtle`, `user` icon `size-3`.                                                                |
+| `Assignee`          | `inline-flex items-center gap-1.5`: avatar plus name in `text-xs text-fg-muted`.                                                                                                      |
 
 Larger sizes: `size-6` in comments, `size-7` in the sidebar account and account menu, `size-8` standalone (agent avatar becomes `rounded-md`).
 
@@ -189,11 +189,11 @@ Larger sizes: `size-6` in comments, `size-7` in the sidebar account and account 
   - Sync note, only right after a remote change: `flex items-center gap-1.5 border-t border-line-subtle pt-2 text-xs text-accent-fg` with a `git-merge` icon, e.g. "Merged from MacBook · just now".
 - **Card states**:
 
-  | State                       | Change from default                                         |
-  | --------------------------- | ----------------------------------------------------------- |
-  | Hover                       | `bg-card-hover border-line`                                 |
-  | Synced from another device  | `border-accent`, plus the sync note                         |
-  | Dragging                    | `bg-card-hover border-line-strong shadow-overlay`           |
+  | State                            | Change from default                                                     |
+  | -------------------------------- | ----------------------------------------------------------------------- |
+  | Hover                            | `bg-card-hover border-line`                                             |
+  | Synced from another device       | `border-accent`, plus the sync note                                     |
+  | Dragging                         | `bg-card-hover border-line-strong shadow-overlay`                       |
   | Drop target (`Drop Placeholder`) | Empty `h-18 rounded-lg border border-accent bg-accent-soft` in the slot |
 
 - **`Add Ticket`**: `flex h-9 items-center gap-2 rounded-lg border border-line px-3 text-sm text-fg-subtle`, `plus` icon, text "New ticket". Sits at the bottom of each column.
@@ -204,11 +204,11 @@ Larger sizes: `size-6` in comments, `size-7` in the sidebar account and account 
 - **`Nav Section`**: `px-2 pt-4 pb-1.5` with a Caption-style title, e.g. "LABELS".
 - **`Sync Status`**: pill `inline-flex h-6 items-center gap-1.5 rounded-full px-2 text-xs`, dot `size-1.5 rounded-full`, state text `font-medium`, optional detail in `text-fg-subtle`.
 
-  | State    | Background          | Dot and text    | Detail example            |
-  | -------- | ------------------- | --------------- | ------------------------- |
-  | Synced   | `bg-success-soft`   | `success`       | none                      |
-  | Syncing  | `bg-info-soft`      | `info`          | "3 → server"              |
-  | Offline  | `bg-warning-soft`   | `warning`       | "3 changes saved locally" |
+  | State   | Background        | Dot and text | Detail example            |
+  | ------- | ----------------- | ------------ | ------------------------- |
+  | Synced  | `bg-success-soft` | `success`    | none                      |
+  | Syncing | `bg-info-soft`    | `info`       | "3 → server"              |
+  | Offline | `bg-warning-soft` | `warning`    | "3 changes saved locally" |
 
 - **`Presence`**: `inline-flex h-6 items-center gap-2 rounded-full border border-line px-2 text-xs text-fg-muted`, `desktop` icon `size-3.5`, text like "2 tabs · 3 devices".
 - **`Filter Chip`**: `inline-flex h-6.5 items-center gap-1.5 rounded-md border border-line bg-card pr-1 pl-2 text-xs`: icon `text-fg-subtle`, key `text-fg-subtle`, value `font-medium text-fg`, clear `IconButton` `size-4.5`.

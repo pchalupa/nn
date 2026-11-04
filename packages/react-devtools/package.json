@@ -13,8 +13,7 @@
 	"type": "module",
 	"sideEffects": false,
 	"exports": {
-		".": "./src/index.ts",
-		"./production": "./src/production.ts"
+		".": "./src/index.ts"
 	},
 	"scripts": {
 		"ts:check": "tsc --noEmit",

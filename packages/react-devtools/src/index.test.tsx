@@ -41,12 +41,4 @@ describe("Devtools", () => {
 
 		Reflect.deleteProperty(navigator, "webdriver");
 	});
-
-	it("always renders the devtools from the production entry", async () => {
-		const { Devtools } = await import("./production");
-
-		render(<Devtools store={new Store(schema)} />);
-
-		expect(screen.getByRole("button", { name: "Open nn devtools" })).toBeDefined();
-	});
 });

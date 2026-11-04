@@ -16,4 +16,4 @@ It adds a small ⚙️ button in the bottom-right corner that opens a drawer alo
 
 The devtools use a dark theme.
 
-`Devtools` renders only when `NODE_ENV` is `development`, and production builds leave it out. To opt in elsewhere, import it from the production entry point instead: `import { Devtools } from "@nn/react-devtools/production"`.
+`Devtools` renders only when `NODE_ENV` is `development`, and production builds leave it out.

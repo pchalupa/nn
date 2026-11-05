@@ -47,7 +47,9 @@ async function load(database: string): Promise<Record<string, unknown>> {
 	try {
 		const db: unknown = JSON.parse(await readFile(database, "utf-8"));
 
-		if (!db || typeof db !== "object" || Array.isArray(db)) throw new Error(`Unexpected database content in ${database}`);
+		if (!db || typeof db !== "object" || Array.isArray(db)) {
+			throw new Error(`Unexpected database content in ${database}`);
+		}
 
 		return { ...db };
 	} catch (error) {

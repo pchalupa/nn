@@ -383,6 +383,9 @@ importers:
       '@nn/guards':
         specifier: 'workspace:'
         version: link:../guards
+      '@nn/observable':
+        specifier: 'workspace:'
+        version: link:../observable
       '@nn/store':
         specifier: 'workspace:'
         version: link:../store

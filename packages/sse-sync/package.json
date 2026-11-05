@@ -22,6 +22,7 @@
 	"dependencies": {
 		"@nn/entities": "workspace:",
 		"@nn/guards": "workspace:",
+		"@nn/observable": "workspace:",
 		"@nn/store": "workspace:",
 		"@nn/sync-engine": "workspace:"
 	},

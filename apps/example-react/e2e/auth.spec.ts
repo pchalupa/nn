@@ -1,29 +1,6 @@
-import { expect, type Page, test } from "@playwright/test";
+import { expect, signUp, test } from "./fixtures";
 
-const signUp = async (page: Page) => {
-	await page.goto("/sign-up");
-	await page.getByLabel("Name").fill("Jan Novak");
-	await page.getByRole("button", { name: "Sign up" }).click();
-	await page.waitForURL("/");
-};
-
-test.use({ storageState: { cookies: [], origins: [] } });
-
-test.beforeEach(async ({ page }) => {
-	const client = await page.context().newCDPSession(page);
-
-	await client.send("WebAuthn.enable");
-	await client.send("WebAuthn.addVirtualAuthenticator", {
-		options: {
-			protocol: "ctap2",
-			transport: "internal",
-			hasResidentKey: true,
-			hasUserVerification: true,
-			isUserVerified: true,
-			automaticPresenceSimulation: true,
-		},
-	});
-});
+test.use({ signedIn: false });
 
 test.describe("Authentication", () => {
 	test("signing up lands on the board", async ({ page }) => {

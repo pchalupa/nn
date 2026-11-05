@@ -21,7 +21,8 @@
 		"simplewebauthn",
 		"unstub",
 		"Menlo",
-		"mattpocock"
+		"mattpocock",
+		"ENOENT"
 	],
 	"ignorePaths": ["docs/{notes,plans,research}"],
 	"useGitignore": true

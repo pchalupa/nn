@@ -1,6 +1,8 @@
 import { defineConfig, devices } from "@playwright/test";
 
-const baseURL = "http://localhost:3000";
+const baseURL = "http://localhost:3100";
+
+process.env.LOG_LEVEL ??= "silent";
 
 export default defineConfig({
 	testDir: "./e2e",
@@ -11,17 +13,10 @@ export default defineConfig({
 		baseURL,
 		trace: "on-first-retry",
 	},
-	projects: [
-		{ name: "setup", testMatch: "auth.setup.ts", use: devices["Desktop Chrome"] },
-		{
-			name: "chromium",
-			use: { ...devices["Desktop Chrome"], storageState: "e2e/.auth/user.json" },
-			dependencies: ["setup"],
-		},
-	],
+	projects: [{ name: "chromium", use: devices["Desktop Chrome"] }],
 	webServer: {
 		reuseExistingServer: true,
-		command: "pnpm dev",
+		command: "pnpm exec vite --mode test --port 3100",
 		url: baseURL,
 	},
 });

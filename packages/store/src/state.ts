@@ -42,6 +42,7 @@ export class State<
 		};
 	}
 
+	//TODO: Avoid overloading to cast the type
 	public read(): ReadonlyData<InferStateType<StoreSchema>>;
 	public read(): unknown {
 		return this.view.value;

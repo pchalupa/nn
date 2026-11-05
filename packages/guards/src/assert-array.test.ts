@@ -11,4 +11,8 @@ describe("assertArray", () => {
 	it.each([{ length: 0 }, "abc", null])("rejects %o", (value) => {
 		expect(() => assertArray(value)).toThrow("Expected an array.");
 	});
+
+	it("throws the given message", () => {
+		expect(() => assertArray(undefined, "Custom message.")).toThrow("Custom message.");
+	});
 });

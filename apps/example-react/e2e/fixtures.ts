@@ -1,0 +1,60 @@
+import { once } from "node:events";
+
+import { test as base, type Page } from "@playwright/test";
+import { createMemoryDatabase } from "example-server/db";
+import { createServer } from "example-server/server";
+
+export { expect, type Page } from "@playwright/test";
+
+export const test = base.extend<{ signedIn: boolean }>({
+	signedIn: [true, { option: true }],
+	context: async ({ context }, use) => {
+		const server = createServer(createMemoryDatabase()).listen(0, "127.0.0.1");
+
+		await once(server, "listening");
+
+		const address = server.address();
+
+		if (!address || typeof address === "string") throw new Error("Remote server has no port");
+
+		await context.route("http://localhost:3002/**", (route) => {
+			const url = new URL(route.request().url());
+
+			url.port = String(address.port);
+			url.hostname = "127.0.0.1";
+
+			return route.continue({ url: url.href });
+		});
+
+		await use(context);
+
+		server.closeAllConnections();
+		await new Promise((resolve) => server.close(resolve));
+	},
+	page: async ({ page, signedIn }, use) => {
+		const client = await page.context().newCDPSession(page);
+
+		await client.send("WebAuthn.enable");
+		await client.send("WebAuthn.addVirtualAuthenticator", {
+			options: {
+				protocol: "ctap2",
+				transport: "internal",
+				hasResidentKey: true,
+				hasUserVerification: true,
+				isUserVerified: true,
+				automaticPresenceSimulation: true,
+			},
+		});
+
+		if (signedIn) await signUp(page);
+
+		await use(page);
+	},
+});
+
+export async function signUp(page: Page) {
+	await page.goto("/sign-up");
+	await page.getByLabel("Name").fill("Jan Novak");
+	await page.getByRole("button", { name: "Sign up" }).click();
+	await page.waitForURL("/");
+}

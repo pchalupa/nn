@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { expect, test } from "./fixtures";
 
 test.describe("Column", () => {
 	test("should keep a created ticket after a reload", async ({ page }) => {

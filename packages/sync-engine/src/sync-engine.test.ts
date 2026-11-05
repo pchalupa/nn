@@ -52,6 +52,26 @@ class TestEngine extends SyncEngine {
 	}
 }
 
+class StreamEngine extends SyncEngine {
+	constructor(private readonly transport: ReturnType<typeof transportMock>) {
+		super(new Store(schema));
+		engines.push(this);
+		this.session.connect();
+	}
+
+	protected open(signal: AbortSignal): Promise<void> {
+		return this.transport.open(signal);
+	}
+
+	protected close(): void {
+		this.transport.close();
+	}
+
+	protected push(name: string, entry: Encoded): Promise<void> {
+		return this.transport.push(name, entry);
+	}
+}
+
 const flush = () => new Promise((resolve) => setTimeout(resolve));
 
 const deferred = <T>() => {
@@ -82,6 +102,16 @@ describe("SyncEngine", () => {
 		expect(transport.open).toHaveBeenCalledOnce();
 		expect(transport.pull.mock.calls).toStrictEqual([["tickets"], ["language"]]);
 		expect(store.state.read().language).toBe("cs");
+	});
+
+	it("connects and pushes every field without pulling when the engine has no pull", async () => {
+		const transport = transportMock();
+		const sync = new StreamEngine(transport);
+
+		await flush();
+
+		expect(sync.session.state).toBe(SessionState.Connected);
+		expect(transport.push.mock.calls.map(([name]) => name)).toStrictEqual(["tickets", "language"]);
 	});
 
 	it("keeps defaults for fields without a stored entry", async () => {

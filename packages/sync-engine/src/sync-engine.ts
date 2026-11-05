@@ -21,7 +21,7 @@ export abstract class SyncEngine implements Delegatable<SyncEngineDelegate> {
 				try {
 					await this.open(signal);
 
-					if (!signal.aborted) {
+					if (!signal.aborted && this.pull) {
 						for (const key in this.store.schema.properties) {
 							const value = await this.pull(key);
 
@@ -59,7 +59,7 @@ export abstract class SyncEngine implements Delegatable<SyncEngineDelegate> {
 
 	protected abstract open(signal: AbortSignal): Promise<void>;
 	protected abstract close(): void;
-	protected abstract pull(name: string): Promise<unknown>;
+	protected pull?(name: string): Promise<unknown>;
 	protected abstract push(name: string, entry: Encoded): Promise<void>;
 
 	protected receive(entries: Record<string, unknown>): void {

@@ -52,6 +52,6 @@ const store = createStore(schema);
 
 IndexDbSync.attach(store);
 BroadcastSync.attach(store);
-SseSync.attach(store, import.meta.env.VITE_REMOTE_URL);
+SseSync.attach(store, new URL(import.meta.env.VITE_REMOTE_URL));
 
 export const { useRead, useUpdate } = use(store);

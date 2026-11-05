@@ -13,5 +13,3 @@ export function createMemoryDatabase(): Database {
 		},
 	};
 }
-
-export { createRedisDatabase, type RedisHashClient } from "./redis-database";

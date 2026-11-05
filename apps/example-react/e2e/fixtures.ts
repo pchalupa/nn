@@ -1,8 +1,9 @@
 import { once } from "node:events";
 
 import { test as base, type Page } from "@playwright/test";
-import { createMemoryDatabase } from "example-server/db";
-import { createServer } from "example-server/server";
+
+import { createServer } from "../api/_server/server.js";
+import { createMemoryDatabase } from "../api/_server/services/memory-database.js";
 
 export { expect, type Page } from "@playwright/test";
 

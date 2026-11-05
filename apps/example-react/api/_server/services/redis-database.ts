@@ -1,4 +1,4 @@
-import type { Database } from "./db";
+import type { Database } from "../memory-database.js";
 
 export interface RedisHashClient {
 	hset(key: string, fields: Record<string, string>): Promise<unknown>;

@@ -1,1 +1,1 @@
-# @nn/http-sync
+# @nn/sse-sync

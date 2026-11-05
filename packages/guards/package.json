@@ -15,8 +15,10 @@
 		"./is-array": "./src/is-array.ts",
 		"./is-object": "./src/is-object.ts",
 		"./is-plain-object": "./src/is-plain-object.ts",
+		"./is-string": "./src/is-string.ts",
 		"./assert-array": "./src/assert-array.ts",
-		"./assert-object": "./src/assert-object.ts"
+		"./assert-object": "./src/assert-object.ts",
+		"./assert-string": "./src/assert-string.ts"
 	},
 	"scripts": {
 		"ts:check": "tsc --noEmit",

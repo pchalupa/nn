@@ -11,4 +11,8 @@ describe("assertString", () => {
 	it.each([new String("abc"), 1, null, undefined])("rejects %o", (value) => {
 		expect(() => assertString(value)).toThrow("Expected a string.");
 	});
+
+	it("throws the given message", () => {
+		expect(() => assertString(undefined, "Custom message.")).toThrow("Custom message.");
+	});
 });

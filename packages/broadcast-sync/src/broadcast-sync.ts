@@ -27,8 +27,6 @@ export class BroadcastSync extends SyncEngine {
 		this.channel?.close();
 	}
 
-	protected async pull(): Promise<void> {}
-
 	protected async push(name: string, entry: Encoded): Promise<void> {
 		this.entries[name] = entry;
 		this.channel?.postMessage({ type: "entries", entries: { [name]: entry } });

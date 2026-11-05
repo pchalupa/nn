@@ -1,4 +1,10 @@
-import { test as setup } from "@playwright/test";
+import { expect, test as setup } from "@playwright/test";
+
+setup.beforeEach(async ({ request }) => {
+	const response = await request.post("http://localhost:3002/reset");
+
+	expect(response.status()).toBe(204);
+});
 
 setup("sign up", async ({ page }) => {
 	const client = await page.context().newCDPSession(page);

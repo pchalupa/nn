@@ -1,5 +1,11 @@
 import { expect, type Page, test } from "@playwright/test";
 
+test.beforeEach(async ({ request }) => {
+	const response = await request.post("http://localhost:3002/reset");
+
+	expect(response.status()).toBe(204);
+});
+
 const columnCards = (page: Page, column: string) =>
 	page.locator("section", { has: page.locator("h3", { hasText: column }) }).locator("article");
 

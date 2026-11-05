@@ -1,5 +1,11 @@
 import { expect, type Page, test } from "@playwright/test";
 
+test.beforeEach(async ({ request }) => {
+	const response = await request.post("http://localhost:3002/reset");
+
+	expect(response.status()).toBe(204);
+});
+
 const signUp = async (page: Page) => {
 	await page.goto("/sign-up");
 	await page.getByLabel("Name").fill("Jan Novak");

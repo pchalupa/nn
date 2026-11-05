@@ -1,5 +1,11 @@
 import { expect, test } from "@playwright/test";
 
+test.beforeEach(async ({ request }) => {
+	const response = await request.post("http://localhost:3002/reset");
+
+	expect(response.status()).toBe(204);
+});
+
 test.describe("LanguageSelector", () => {
 	test("should translate the interface", async ({ page }) => {
 		await page.goto("/");

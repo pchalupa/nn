@@ -1,6 +1,8 @@
 import { defineConfig, devices } from "@playwright/test";
 
-const baseURL = "http://localhost:3000";
+const baseURL = "http://localhost:3100";
+
+process.env.LOG_LEVEL ??= "silent";
 
 export default defineConfig({
 	testDir: "./e2e",
@@ -21,7 +23,7 @@ export default defineConfig({
 	],
 	webServer: {
 		reuseExistingServer: true,
-		command: "pnpm dev",
+		command: "pnpm exec vite --mode test --port 3100",
 		url: baseURL,
 	},
 });

@@ -147,6 +147,9 @@ importers:
       babel-plugin-react-compiler:
         specifier: 1.0.0
         version: 1.0.0
+      example-server:
+        specifier: workspace:*
+        version: link:../example-server
       fake-indexeddb:
         specifier: ^6.2.6
         version: 6.2.6

@@ -5,6 +5,8 @@ date: 2026-11-04
 
 # ADR-15: Stream remote changes over server-sent events
 
+Amended by [ADR-17](ADR-17-retry-disconnected-engines-on-wake-signals.md): when the browser closes the stream for good, `SseSync` disconnects and waits for the app to call `session.retry()`, instead of reopening after three seconds.
+
 ## Context
 
 [ADR-13](ADR-13-attach-persistence-and-sync-from-outside-the-store.md) moved persistence and sync out of `Store` into engines that extend [`SyncEngine`](../../packages/sync-engine/src/sync-engine.ts), and said a remote engine would follow. It also kept `Repository` and `Remote` as separate interfaces, and expected the remote engine to sit on `Remote` the way `RepositorySync` sat on `Repository`. [ADR-14](ADR-14-ship-indexeddb-persistence-as-one-sync-engine.md) has since folded `Repository` into `@nn/indexdb-sync`.

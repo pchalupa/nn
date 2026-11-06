@@ -66,6 +66,11 @@ const attach = async ({ url = "http://remote.test", snapshot = "{}" } = {}) => {
 	return { store, sync, syncEngineDidFail };
 };
 
+const editTickets = (store: Store<typeof schema>) =>
+	store.state.update((draft) => {
+		draft.tickets.push({ title: "Offline" });
+	});
+
 describe("SseSync", () => {
 	beforeEach(() => {
 		sources = [];
@@ -78,7 +83,6 @@ describe("SseSync", () => {
 		for (const engine of engines.splice(0)) engine.session.detach();
 
 		vi.unstubAllGlobals();
-		vi.useRealTimers();
 	});
 
 	it.each(["http://remote.test/api", "http://remote.test/api/"])(
@@ -157,27 +161,109 @@ describe("SseSync", () => {
 		expect(sources[0]?.closed).toBe(true);
 	});
 
-	it("reopens the stream after the browser closes it for good", async () => {
-		const { store } = await attach();
+	it("waits disconnected after the browser closes the stream for good", async () => {
+		const { sync } = await attach();
 
-		vi.useFakeTimers();
 		sources[0]?.shutDown();
-		await vi.advanceTimersByTimeAsync(3_000);
-		sources[1]?.emit(language("cs"));
+
+		expect(sync.session.disconnected).toBe(true);
+		expect(sources).toHaveLength(1);
+		expect(sources[0]?.closed).toBe(true);
+	});
+
+	it("stays disconnected when the store changes", async () => {
+		const { store, sync } = await attach();
+
+		sources[0]?.shutDown();
+		editTickets(store);
+		await Promise.resolve();
+
+		expect(sync.session.disconnected).toBe(true);
+		expect(sources).toHaveLength(1);
+	});
+
+	it("reopens the stream when the app retries", async () => {
+		const { store, sync } = await attach();
+
+		sources[0]?.shutDown();
+		sync.session.retry();
 
 		expect(sources).toHaveLength(2);
+
+		sources[1]?.emit(language("cs"));
+
+		await vi.waitFor(() => {
+			expect(sync.session.connected).toBe(true);
+		});
 		expect(store.state.read().language).toBe("cs");
 	});
 
-	it("does not reopen the stream after detach", async () => {
+	it("opens one stream for several retries", async () => {
 		const { sync } = await attach();
 
-		vi.useFakeTimers();
 		sources[0]?.shutDown();
-		sync.session.detach();
-		await vi.advanceTimersByTimeAsync(3_000);
+		sync.session.retry();
+		sync.session.retry();
+
+		expect(sources).toHaveLength(2);
+	});
+
+	it("ignores retries while connected", async () => {
+		const { sync } = await attach();
+
+		sync.session.retry();
 
 		expect(sources).toHaveLength(1);
+	});
+
+	it("retries after a first event it cannot read", async () => {
+		const { sync } = await attach({ snapshot: "[]" });
+
+		sync.session.retry();
+
+		expect(sources).toHaveLength(2);
+	});
+
+	it("retries again after a failed retry", async () => {
+		const { sync, syncEngineDidFail } = await attach();
+
+		sources[0]?.shutDown();
+		sync.session.retry();
+		sources[1]?.shutDown();
+
+		await vi.waitFor(() => {
+			expect(sync.session.disconnected).toBe(true);
+		});
+		expect(syncEngineDidFail).toHaveBeenCalledWith(sync, expect.any(Error));
+
+		sync.session.retry();
+
+		expect(sources).toHaveLength(3);
+	});
+
+	it("pushes an edit made while disconnected once the retry connects", async () => {
+		const { store, sync } = await attach();
+
+		sources[0]?.shutDown();
+		store.state.update((draft) => {
+			draft.language = "en";
+		});
+		sync.session.retry();
+
+		const edit = {
+			url: "http://remote.test/push",
+			method: "POST",
+			body: { language: expect.objectContaining({ data: "en" }) },
+		};
+
+		expect(sources).toHaveLength(2);
+		expect(pushes()).not.toContainEqual(edit);
+
+		sources[1]?.emit("{}");
+
+		await vi.waitFor(() => {
+			expect(pushes()).toContainEqual(edit);
+		});
 	});
 
 	it("closes the event stream on detach", async () => {

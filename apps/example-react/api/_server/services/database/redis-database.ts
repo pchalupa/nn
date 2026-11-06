@@ -2,20 +2,25 @@ import type { Database } from "./database";
 
 export interface RedisHashClient {
 	hset(key: string, fields: Record<string, string>): Promise<unknown>;
-	hgetall(key: string): Promise<Record<string, unknown> | null>;
+	hgetall(key: string): Promise<unknown>;
 }
 
 export function createRedisDatabase(client: RedisHashClient, key = "nn-example"): Database {
 	return {
 		get: async () => {
-			const fields = (await client.hgetall(key)) ?? {};
+			const fields = (await client.hgetall(key)) ?? [];
+
+			if (!Array.isArray(fields)) throw new TypeError(`Unexpected fields in "${key}"`);
 
 			const decoded: Record<string, unknown> = {};
 
-			for (const field in fields) {
-				const value = fields[field];
+			for (let index = 0; index < fields.length; index += 2) {
+				const field: unknown = fields[index];
+				const value: unknown = fields[index + 1];
 
-				if (typeof value !== "string") throw new TypeError(`Unexpected value of field "${field}" in "${key}"`);
+				if (typeof field !== "string" || typeof value !== "string") {
+					throw new TypeError(`Unexpected field at ${index} in "${key}"`);
+				}
 
 				decoded[field] = JSON.parse(value);
 			}

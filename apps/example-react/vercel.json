@@ -1,9 +1,0 @@
-{
-	"functions": {
-		"api/sync.ts": { "maxDuration": 60 }
-	},
-	"rewrites": [
-		{ "source": "/sync/:path*", "destination": "/api/sync" },
-		{ "source": "/(.*)", "destination": "/index.html" }
-	]
-}

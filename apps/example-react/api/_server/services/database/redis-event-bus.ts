@@ -1,12 +1,12 @@
 import type { EventBus } from "./memory-event-bus";
 
-export interface RedisSubscriberEvents {
+interface RedisSubscriberEvents {
 	message: { message: unknown };
 	subscribe: number;
 	error: Error;
 }
 
-export interface RedisSubscriber {
+interface RedisSubscriber {
 	on<T extends keyof RedisSubscriberEvents>(type: T, listener: (event: RedisSubscriberEvents[T]) => void): void;
 	unsubscribe(): Promise<void>;
 }

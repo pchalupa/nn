@@ -4,7 +4,7 @@
 	"ignoreFiles": ["apps/example-react/e2e/fixtures.ts"],
 	"workspaces": {
 		"apps/example-react": {
-			"entry": ["src/main.{tsx,css}!", "api/*.ts!"]
+			"entry": ["src/main.{tsx,css}!", "api/*.ts!", "api/_server/index.ts!"]
 		}
 	}
 }

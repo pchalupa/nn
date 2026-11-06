@@ -1,60 +1,69 @@
-import EventEmitter from "events";
+import { Hono } from "hono";
+import { streamSSE } from "hono/streaming";
 
-import express from "express";
+import logger from "../services/logger.js";
+import type { Database } from "../services/memory-database.js";
+import type { EventBus } from "../services/memory-event-bus.js";
 
-import type { Database } from "../services/db/db";
-import logger from "../services/logger";
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+	typeof value === "object" && value !== null && !Array.isArray(value);
 
-export default function createSync(db: Database): express.Router {
-	const events = new EventEmitter();
+export default function createSync(db: Database, bus: EventBus, streamDuration?: number): Hono {
+	const sync = new Hono();
 
-	const sync = express.Router();
+	sync.post("/push", async (c) => {
+		const data: unknown = await c.req.json().catch(() => undefined);
 
-	sync.post("/push", async (req, res) => {
+		if (!isRecord(data)) return c.json({ error: "No data provided" }, 400);
+
 		try {
-			const data = req.body;
+			await db.update(data);
+			logger.info({ data }, "Data updated");
 
-			if (!data || typeof data !== "object") res.status(400).json({ error: "No data provided" });
-			else {
-				await db.update(data);
-				logger.info("Data updated:", data);
+			await bus.publish(data);
 
-				res.json(data);
-				events.emit("update", data);
-			}
+			return c.json(data);
 		} catch (error) {
 			logger.error({ err: error }, "Error pushing data");
-			res.status(500).json({ error: "Failed to update data" });
+
+			return c.json({ error: "Failed to update data" }, 500);
 		}
 	});
 
-	sync.get("/subscribe", async (req, res) => {
-		res.setHeader("Content-Type", "text/event-stream");
-		res.setHeader("Cache-Control", "no-cache");
-		res.setHeader("Connection", "keep-alive");
+	sync.get("/subscribe", (c) =>
+		streamSSE(c, async (stream) => {
+			logger.info("Client connected");
 
-		logger.info("Client connected");
+			const send = (fields: Record<string, unknown>) => void stream.writeSSE({ data: JSON.stringify(fields) });
 
-		const send = (fields: Record<string, unknown>) => {
-			res.write(`data: ${JSON.stringify(fields)}\n\n`);
-		};
+			let expiry: ReturnType<typeof setTimeout> | undefined;
+			let end = () => {};
+			const ended = new Promise<void>((resolve) => {
+				end = resolve;
+				stream.onAbort(resolve);
+				if (streamDuration !== undefined) expiry = setTimeout(resolve, streamDuration);
+			});
 
-		events.addListener("update", send);
+			try {
+				const unsubscribe = await bus.subscribe(send, (error) => {
+					logger.error({ err: error }, "Subscription failed");
+					end();
+				});
 
-		req.once("close", () => {
-			logger.info("Client disconnected");
-			events.removeListener("update", send);
-			res.end();
-		});
-
-		try {
-			send(await db.get());
-		} catch (error) {
-			logger.error({ err: error }, "Error sending snapshot");
-			events.removeListener("update", send);
-			res.end();
-		}
-	});
+				try {
+					if (!stream.aborted) send(await db.get());
+					await ended;
+				} finally {
+					unsubscribe();
+				}
+			} catch (error) {
+				logger.error({ err: error }, "Error sending snapshot");
+			} finally {
+				clearTimeout(expiry);
+				logger.info("Client disconnected");
+			}
+		}),
+	);
 
 	return sync;
 }

@@ -1,5 +1,6 @@
 import { once } from "node:events";
 
+import { serve } from "@hono/node-server";
 import { test as base, type Page } from "@playwright/test";
 
 import { createServer } from "../api/_server/server.js";
@@ -11,7 +12,11 @@ export { expect, type Page } from "@playwright/test";
 export const test = base.extend<{ signedIn: boolean }>({
 	signedIn: [true, { option: true }],
 	context: async ({ context }, use) => {
-		const server = createServer(createMemoryDatabase(), createMemoryEventBus()).listen(0, "127.0.0.1");
+		const server = serve({
+			fetch: createServer(createMemoryDatabase(), createMemoryEventBus()).fetch,
+			port: 0,
+			hostname: "127.0.0.1",
+		});
 
 		await once(server, "listening");
 
@@ -30,7 +35,7 @@ export const test = base.extend<{ signedIn: boolean }>({
 
 		await use(context);
 
-		server.closeAllConnections();
+		if ("closeAllConnections" in server) server.closeAllConnections();
 		await new Promise((resolve) => server.close(resolve));
 	},
 	page: async ({ page, signedIn }, use) => {

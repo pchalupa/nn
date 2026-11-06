@@ -1,6 +1,6 @@
 import { BroadcastSync } from "@nn/broadcast-sync";
 import { IndexDbSync } from "@nn/indexdb-sync";
-import { createStore, use } from "@nn/react";
+import { createStore } from "@nn/react";
 import { array, enumeration, type InferStateType, number, object, string } from "@nn/schema";
 import { SseSync } from "@nn/sse-sync";
 
@@ -47,8 +47,7 @@ const schema = object({
 	tags,
 });
 
-// TODO: Create store can return hooks useRead and useUpdate too
-const store = createStore(schema);
+export const { store, useRead, useUpdate } = createStore(schema);
 
 IndexDbSync.attach(store);
 BroadcastSync.attach(store);
@@ -59,5 +58,3 @@ addEventListener("online", () => sseSync.session.retry());
 document.addEventListener("visibilitychange", () => {
 	if (document.visibilityState === "visible") sseSync.session.retry();
 });
-
-export const { useRead, useUpdate } = use(store);

@@ -5,7 +5,7 @@ import { startTransition, StrictMode, Suspense, useState, type ReactNode } from 
 import { renderToString } from "react-dom/server";
 import { afterEach, describe, expect, expectTypeOf, it, vi } from "vitest";
 
-import { createStore, use } from "./index";
+import { createStore } from "./index";
 
 const schema = object({
 	tickets: array(object({ id: string(), title: string(), status: string() })),
@@ -15,9 +15,9 @@ const schema = object({
 type Data = InferStateType<typeof schema>;
 
 const setup = () => {
-	const store = createStore(schema);
+	const created = createStore(schema);
 
-	store.state.update((draft) => {
+	created.store.state.update((draft) => {
 		draft.tickets.push(
 			{ id: "1", title: "First", status: "todo" },
 			{ id: "2", title: "Second", status: "done" },
@@ -26,7 +26,7 @@ const setup = () => {
 		draft.language = "en";
 	});
 
-	return { store, ...use(store) };
+	return created;
 };
 
 const mount = async (ui: ReactNode) => {
@@ -45,7 +45,7 @@ describe("@nn/react", () => {
 
 	describe("createStore", () => {
 		it("creates a store with the schema defaults", () => {
-			const store = createStore(schema);
+			const { store } = createStore(schema);
 
 			expect(store.state.read()).toStrictEqual({ tickets: [], language: "" });
 			expectTypeOf(store.state.read().language).toEqualTypeOf<string>();
@@ -362,8 +362,7 @@ describe("@nn/react", () => {
 		});
 
 		it("reads and writes a store without a suspense boundary", async () => {
-			const store = createStore(schema);
-			const { useRead, useUpdate } = use(store);
+			const { store, useRead, useUpdate } = createStore(schema);
 			const Editor = () => {
 				const update = useUpdate();
 				const language = useRead((data) => data.language);

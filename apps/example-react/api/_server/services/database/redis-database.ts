@@ -1,5 +1,3 @@
-import { assertString } from "@nn/guards/assert-string";
-
 import type { Database } from "./database";
 
 export interface RedisHashClient {
@@ -17,7 +15,7 @@ export function createRedisDatabase(client: RedisHashClient, key = "nn-example")
 			for (const field in fields) {
 				const value = fields[field];
 
-				assertString(value, `Unexpected value of field "${field}" in "${key}"`);
+				if (typeof value !== "string") throw new TypeError(`Unexpected value of field "${field}" in "${key}"`);
 
 				decoded[field] = JSON.parse(value);
 			}

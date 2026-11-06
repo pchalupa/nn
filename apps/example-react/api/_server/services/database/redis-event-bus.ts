@@ -1,6 +1,3 @@
-import { isPlainObject } from "@nn/guards/is-plain-object";
-import { isString } from "@nn/guards/is-string";
-
 import type { EventBus } from "./memory-event-bus";
 
 export interface RedisSubscriberEvents {
@@ -29,9 +26,9 @@ export function createRedisEventBus(client: RedisPubSubClient, channel = "nn-exa
 				const subscriber = client.subscribe(channel);
 
 				subscriber.on("message", ({ message }) => {
-					const data: unknown = isString(message) ? JSON.parse(message) : message;
+					const data: unknown = typeof message === "string" ? JSON.parse(message) : message;
 
-					if (isPlainObject(data)) listener(data);
+					if (typeof data === "object" && data !== null && !Array.isArray(data)) listener({ ...data });
 					else onError(new TypeError(`Unexpected message on "${channel}"`));
 				});
 				subscriber.on("error", reject);

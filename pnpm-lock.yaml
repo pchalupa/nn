@@ -63,6 +63,40 @@ importers:
         specifier: 'catalog:'
         version: 5.0.5(@types/node@26.6.6)(@vitest/coverage-v8@5.0.5)(jsdom@30.1.3)(vite@8.3.5(@types/node@26.6.6)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(tsx@4.23.15)(yaml@2.9.1))
 
+  apps/example-agent:
+    dependencies:
+      '@nn/node':
+        specifier: 'workspace:'
+        version: link:../../packages/node
+      '@nn/sse-sync':
+        specifier: 'workspace:'
+        version: link:../../packages/sse-sync
+      '@nn/sync-engine':
+        specifier: 'workspace:'
+        version: link:../../packages/sync-engine
+      example-schema:
+        specifier: 'workspace:'
+        version: link:../example-schema
+    devDependencies:
+      '@nn/typescript-config':
+        specifier: 'workspace:'
+        version: link:../../packages/typescript-config
+      '@types/node':
+        specifier: ^26.6.6
+        version: 26.6.6
+      example-server:
+        specifier: 'workspace:'
+        version: link:../example-server
+      tsx:
+        specifier: ^4.23.15
+        version: 4.23.15
+      typescript:
+        specifier: 'catalog:'
+        version: 7.0.2
+      vitest:
+        specifier: 'catalog:'
+        version: 5.0.5(@types/node@26.6.6)(@vitest/coverage-v8@5.0.5)(jsdom@30.1.3)(vite@8.3.5(@types/node@26.6.6)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(tsx@4.23.15)(yaml@2.9.1))
+
   apps/example-react:
     dependencies:
       '@nn/broadcast-sync':
@@ -74,9 +108,6 @@ importers:
       '@nn/react':
         specifier: workspace:*
         version: link:../../packages/react
-      '@nn/schema':
-        specifier: 'workspace:'
-        version: link:../../packages/schema
       '@nn/sse-sync':
         specifier: workspace:*
         version: link:../../packages/sse-sync
@@ -86,6 +117,9 @@ importers:
       '@tanstack/react-router':
         specifier: ~1.170.46
         version: 1.170.46(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
+      example-schema:
+        specifier: 'workspace:'
+        version: link:../example-schema
       i18next:
         specifier: ^26.5.11
         version: 26.5.11(typescript@7.0.2)
@@ -171,6 +205,19 @@ importers:
       vitest:
         specifier: 'catalog:'
         version: 5.0.5(@types/node@26.6.6)(@vitest/coverage-v8@5.0.5)(jsdom@30.1.3)(vite@8.3.5(@types/node@26.6.6)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(tsx@4.23.15)(yaml@2.9.1))
+
+  apps/example-schema:
+    dependencies:
+      '@nn/schema':
+        specifier: 'workspace:'
+        version: link:../../packages/schema
+    devDependencies:
+      '@nn/typescript-config':
+        specifier: 'workspace:'
+        version: link:../../packages/typescript-config
+      typescript:
+        specifier: 'catalog:'
+        version: 7.0.2
 
   apps/example-server:
     dependencies:
@@ -304,6 +351,31 @@ importers:
       fake-indexeddb:
         specifier: ^6.2.6
         version: 6.2.6
+      typescript:
+        specifier: 'catalog:'
+        version: 7.0.2
+      vitest:
+        specifier: 'catalog:'
+        version: 5.0.5(@types/node@26.6.6)(@vitest/coverage-v8@5.0.5)(jsdom@30.1.3)(vite@8.3.5(@types/node@26.6.6)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(tsx@4.23.15)(yaml@2.9.1))
+
+  packages/node:
+    dependencies:
+      '@nn/guards':
+        specifier: 'workspace:'
+        version: link:../guards
+      '@nn/schema':
+        specifier: 'workspace:'
+        version: link:../schema
+      '@nn/store':
+        specifier: 'workspace:'
+        version: link:../store
+    devDependencies:
+      '@nn/sync-engine':
+        specifier: 'workspace:'
+        version: link:../sync-engine
+      '@nn/typescript-config':
+        specifier: 'workspace:'
+        version: link:../typescript-config
       typescript:
         specifier: 'catalog:'
         version: 7.0.2

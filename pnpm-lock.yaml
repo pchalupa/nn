@@ -71,15 +71,21 @@ importers:
       '@nn/store':
         specifier: 'workspace:'
         version: link:../../packages/store
-      '@nn/sync-engine':
-        specifier: 'workspace:'
-        version: link:../../packages/sync-engine
+      '@openrouter/ai-sdk-provider':
+        specifier: ^3.1.0
+        version: 3.1.0(ai@7.0.162(zod@4.6.7))(zod@4.6.7)
       ai:
         specifier: ^7.0.162
         version: 7.0.162(zod@4.6.7)
       example-schema:
         specifier: 'workspace:'
         version: link:../example-schema
+      pino:
+        specifier: ^10.4.0
+        version: 10.4.0
+      pino-pretty:
+        specifier: ^13.2.0
+        version: 13.2.0
     devDependencies:
       '@nn/typescript-config':
         specifier: 'workspace:'
@@ -126,6 +132,9 @@ importers:
       '@upstash/redis':
         specifier: ^1.41.0
         version: 1.41.0
+      example-schema:
+        specifier: workspace:*
+        version: link:../example-schema
       hono:
         specifier: ^4.13.16
         version: 4.13.16
@@ -1765,6 +1774,13 @@ packages:
     peerDependencies:
       '@emnapi/core': ^1.7.1 || 2.0.0-beta.2
       '@emnapi/runtime': ^1.7.1 || 2.0.0-beta.2
+
+  '@openrouter/ai-sdk-provider@3.1.0':
+    resolution: {integrity: sha512-BQy1TA9fKrh47s9ivsO6FY5QimN7GUF0i8Qon3pkxQclEgShso0dClpcWn8OIyPLEZZPFaFKgI8TW4S/O0p0Dw==}
+    engines: {node: '>=22'}
+    peerDependencies:
+      ai: ^7.0.0
+      zod: ^3.25.76 || ^4.1.8
 
   '@oxc-parser/binding-android-arm-eabi@0.155.0':
     resolution: {integrity: sha512-A6xv7hDtnTm+xlZ7utn6rRQpRMJHRhVr3gjRGqlx0RUX84mNk0pAsy6YN/wWhuOTkaZhRrrzaLxf0NfbH77j2w==}
@@ -6395,6 +6411,11 @@ snapshots:
       '@emnapi/runtime': 1.11.2
       '@tybys/wasm-util': 0.10.4
     optional: true
+
+  '@openrouter/ai-sdk-provider@3.1.0(ai@7.0.162(zod@4.6.7))(zod@4.6.7)':
+    dependencies:
+      ai: 7.0.162(zod@4.6.7)
+      zod: 4.6.7
 
   '@oxc-parser/binding-android-arm-eabi@0.155.0':
     optional: true

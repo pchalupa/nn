@@ -1,5 +1,37 @@
 # @nn/indexdb-sync
 
+## 2.0.0
+
+### Major Changes
+
+- a36eeaf: `IndexDbSync.attach(store, name)` returns the engine right away and loads the stored state in the background, so the app doesn't wait for IndexedDB before it renders. The store shows its default values until the stored state merges in. Edits made in the meantime merge with it and are written once the database opens.
+
+  Remove the `await` in front of the call. Code that keeps it still compiles, but it no longer waits for the stored state.
+
+  ```ts
+  // before
+  const sync = await IndexDbSync.attach(store, "settings");
+
+  // after
+  const sync = IndexDbSync.attach(store, "settings");
+  ```
+
+  A failure to open or read the database is reported through `syncEngineDidFail` on `sync.delegate`.
+
+  Stop syncing with `sync.session.detach()` instead of `sync.detach()`.
+
+### Patch Changes
+
+- a36eeaf: When another tab upgrades the IndexedDB database, for example after a deploy adds a field to the schema, the engine reopens the database, pulls the stored state and pushes every field, instead of failing on every later write. When another tab deletes the database, the engine stops syncing and doesn't create the database again. Closing the database explicitly reports neither.
+
+  Reopening no longer fails with `VersionError` while the other tab's upgrade is still running.
+
+- Updated dependencies [a36eeaf]
+- Updated dependencies [a36eeaf]
+- Updated dependencies [dbd5b8a]
+  - @nn/store@2.1.0
+  - @nn/sync-engine@2.0.0
+
 ## 1.0.0
 
 ### Major Changes

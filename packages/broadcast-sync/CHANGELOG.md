@@ -1,5 +1,37 @@
 # @nn/broadcast-sync
 
+## 2.0.0
+
+### Major Changes
+
+- a36eeaf: `BroadcastSync` announces a newly attached store's state to the stores already on its channel. Every field is sent when the store attaches, so a store that was edited before it attached (for example a language set before `BroadcastSync.attach(store, name)`) reaches the other tabs on the channel, not only the changes made afterwards.
+
+  `BroadcastSync.attach(store, name)` returns the engine right away instead of a promise and opens the channel in the background. Remove the `await` in front of the call:
+
+  ```ts
+  // before
+  const sync = await BroadcastSync.attach(store, "settings");
+
+  // after
+  const sync = BroadcastSync.attach(store, "settings");
+  ```
+
+  The delegate follows `@nn/sync-engine`: rename `syncEngineDidFailToPush` to `syncEngineDidFail`, as described in the `@nn/sync-engine` release notes.
+
+  Stop syncing with `sync.session.detach()` instead of `sync.detach()`.
+
+### Patch Changes
+
+- Updated dependencies [dbd5b8a]
+- Updated dependencies [dbd5b8a]
+- Updated dependencies [dbd5b8a]
+- Updated dependencies [a36eeaf]
+- Updated dependencies [a36eeaf]
+- Updated dependencies [dbd5b8a]
+  - @nn/guards@0.3.0
+  - @nn/store@2.1.0
+  - @nn/sync-engine@2.0.0
+
 ## 1.0.0
 
 ### Major Changes

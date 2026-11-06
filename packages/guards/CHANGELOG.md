@@ -1,5 +1,28 @@
 # @nn/guards
 
+## 0.3.0
+
+### Minor Changes
+
+- dbd5b8a: Adds an optional `message` argument to `assertArray`, `assertObject`, `assertPlainObject`, and `assertString`. When given, it replaces the default `TypeError` message.
+
+  ```ts
+  assertPlainObject(value, "Expected a settings object.");
+  ```
+
+- dbd5b8a: Adds `assertPlainObject`, which throws a `TypeError` when the value isn't a plain object.
+
+  ```ts
+  import { assertPlainObject } from "@nn/guards/assert-plain-object";
+  ```
+
+- dbd5b8a: Adds `isString` and `assertString`. `isString` narrows a value to `string`, and `assertString` throws a `TypeError` when the value isn't one. Boxed `String` objects are rejected.
+
+  ```ts
+  import { assertString } from "@nn/guards/assert-string";
+  import { isString } from "@nn/guards/is-string";
+  ```
+
 ## 0.2.0
 
 ### Minor Changes

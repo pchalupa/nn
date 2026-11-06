@@ -4,13 +4,14 @@ import { test as base, type Page } from "@playwright/test";
 
 import { createServer } from "../api/_server/server.js";
 import { createMemoryDatabase } from "../api/_server/services/memory-database.js";
+import { createMemoryEventBus } from "../api/_server/services/memory-event-bus.js";
 
 export { expect, type Page } from "@playwright/test";
 
 export const test = base.extend<{ signedIn: boolean }>({
 	signedIn: [true, { option: true }],
 	context: async ({ context }, use) => {
-		const server = createServer(createMemoryDatabase()).listen(0, "127.0.0.1");
+		const server = createServer(createMemoryDatabase(), createMemoryEventBus()).listen(0, "127.0.0.1");
 
 		await once(server, "listening");
 

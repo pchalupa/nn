@@ -1,4 +1,5 @@
-import { createServer } from "./server";
-import { createMemoryDatabase } from "./services/db/db";
+import { createServer } from "./server.js";
+import { createMemoryDatabase } from "./services/memory-database.js";
+import { createMemoryEventBus } from "./services/memory-event-bus.js";
 
-createServer(createMemoryDatabase()).listen(process.env.PORT);
+createServer(createMemoryDatabase(), createMemoryEventBus()).listen(process.env.PORT);

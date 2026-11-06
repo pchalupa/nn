@@ -36,6 +36,7 @@ export const test = base.extend<{ signedIn: boolean }>({
 		await use(context);
 
 		if ("closeAllConnections" in server) server.closeAllConnections();
+
 		await new Promise((resolve) => server.close(resolve));
 	},
 	page: async ({ page, signedIn }, use) => {

@@ -41,6 +41,7 @@ export default function createSync(db: Database, bus: EventBus, streamDuration?:
 			const ended = new Promise<void>((resolve) => {
 				end = resolve;
 				stream.onAbort(resolve);
+
 				if (streamDuration !== undefined) expiry = setTimeout(resolve, streamDuration);
 			});
 
@@ -52,6 +53,7 @@ export default function createSync(db: Database, bus: EventBus, streamDuration?:
 
 				try {
 					if (!stream.aborted) send(await db.get());
+
 					await ended;
 				} finally {
 					unsubscribe();

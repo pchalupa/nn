@@ -1,5 +1,18 @@
 # @nn/store
 
+## 2.1.0
+
+### Minor Changes
+
+- a36eeaf: `State` can encode its whole tree with `state.encode()`. The result is a snapshot keyed by top-level field, so tooling like devtools can read the state without holding live entities.
+
+### Patch Changes
+
+- Updated dependencies [dbd5b8a]
+- Updated dependencies [dbd5b8a]
+- Updated dependencies [dbd5b8a]
+  - @nn/guards@0.3.0
+
 ## 2.0.0
 
 ### Major Changes

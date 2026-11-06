@@ -1,4 +1,5 @@
 import type { Delegatable } from "@nn/observable";
+import { Observable } from "@nn/observable/observable";
 
 export enum SessionState {
 	Idle = "idle",
@@ -14,6 +15,7 @@ export enum SessionEvent {
 	Fail = "fail",
 	Drop = "drop",
 	Reconnect = "reconnect",
+	Retry = "retry",
 	Detach = "detach",
 }
 
@@ -24,6 +26,7 @@ export interface SessionDelegate {
 }
 
 export class Session implements Delegatable<SessionDelegate> {
+	public readonly changes = new Observable<[SessionState]>();
 	public delegate?: SessionDelegate;
 	private queue: SessionEvent[] = [];
 	private currentState = SessionState.Idle;
@@ -54,22 +57,26 @@ export class Session implements Delegatable<SessionDelegate> {
 	}
 
 	public connect(): void {
-		this.send(SessionEvent.Connect);
+		this.dispatch(SessionEvent.Connect);
 	}
 
 	public detach(): void {
-		this.send(SessionEvent.Detach);
+		this.dispatch(SessionEvent.Detach);
 	}
 
 	public drop(): void {
-		this.send(SessionEvent.Drop);
+		this.dispatch(SessionEvent.Drop);
 	}
 
 	public reconnect(): void {
-		this.send(SessionEvent.Reconnect);
+		this.dispatch(SessionEvent.Reconnect);
 	}
 
-	private send(event: SessionEvent): void {
+	public retry(): void {
+		this.dispatch(SessionEvent.Retry);
+	}
+
+	private dispatch(event: SessionEvent): void {
 		this.queue.push(event);
 
 		if (this.queue.length <= 1) {
@@ -92,6 +99,8 @@ export class Session implements Delegatable<SessionDelegate> {
 							default:
 								this.close();
 						}
+
+						this.changes.notify(to);
 					}
 				}
 			} finally {
@@ -106,8 +115,8 @@ export class Session implements Delegatable<SessionDelegate> {
 		this.controller = controller;
 
 		Promise.resolve(this.delegate?.sessionOpen(this, controller.signal))
-			.then(() => controller.signal.aborted || this.send(SessionEvent.Succeed))
-			.catch(() => controller.signal.aborted || this.send(SessionEvent.Fail));
+			.then(() => controller.signal.aborted || this.dispatch(SessionEvent.Succeed))
+			.catch(() => controller.signal.aborted || this.dispatch(SessionEvent.Fail));
 	}
 
 	private close(): void {
@@ -139,7 +148,7 @@ export class Session implements Delegatable<SessionDelegate> {
 
 				return state;
 			case SessionState.Disconnected:
-				return state;
+				return event === SessionEvent.Retry ? SessionState.Connecting : state;
 		}
 	}
 }

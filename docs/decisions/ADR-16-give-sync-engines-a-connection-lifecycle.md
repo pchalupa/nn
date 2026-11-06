@@ -5,6 +5,8 @@ date: 2026-11-04
 
 # ADR-16: Give sync engines a connection lifecycle
 
+Amended by [ADR-17](ADR-17-retry-disconnected-engines-on-wake-signals.md): `retry` leaves `disconnected` for a new attempt, `session.changes` notifies observers of every transition, and `session` is public.
+
 Amends [ADR-13](ADR-13-attach-persistence-and-sync-from-outside-the-store.md) and [ADR-14](ADR-14-ship-indexeddb-persistence-as-one-sync-engine.md).
 
 ## Context

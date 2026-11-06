@@ -5,6 +5,8 @@ import type { Store } from "@nn/store";
 
 import { Session } from "./session";
 
+export { SessionState } from "./session";
+
 export interface SyncEngineDelegate {
 	syncEngineDidFail(syncEngine: SyncEngine, error: unknown): void;
 }

@@ -1,0 +1,23 @@
+{
+	"name": "example-schema",
+	"version": "0.0.0",
+	"private": true,
+	"type": "module",
+	"exports": {
+		".": "./src/index.ts"
+	},
+	"scripts": {
+		"ts:check": "tsc --noEmit",
+		"test": "vitest run"
+	},
+	"dependencies": {
+		"@nn/schema": "workspace:"
+	},
+	"devDependencies": {
+		"@nn/entities": "workspace:",
+		"@nn/store": "workspace:",
+		"@nn/typescript-config": "workspace:",
+		"typescript": "catalog:",
+		"vitest": "catalog:"
+	}
+}

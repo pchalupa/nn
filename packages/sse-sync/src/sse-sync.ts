@@ -6,11 +6,8 @@ import { SyncEngine } from "@nn/sync-engine";
 
 import { EventStream } from "./event-stream";
 
-const reopenDelay = 3_000;
-
 export class SseSync extends SyncEngine {
 	private stream: EventStream;
-	private reopening?: ReturnType<typeof setTimeout>;
 
 	private constructor(
 		store: Store,
@@ -30,7 +27,7 @@ export class SseSync extends SyncEngine {
 				this.receive(entries);
 			},
 			eventStreamDidFail: (error) => this.delegate?.syncEngineDidFail(this, error),
-			eventStreamDidClose: () => (this.reopening = setTimeout(() => this.session.reconnect(), reopenDelay)),
+			eventStreamDidClose: () => this.session.drop(),
 		};
 	}
 
@@ -39,7 +36,6 @@ export class SseSync extends SyncEngine {
 	}
 
 	protected close(): void {
-		clearTimeout(this.reopening);
 		this.stream.close();
 	}
 

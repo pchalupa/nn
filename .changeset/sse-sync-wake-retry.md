@@ -2,13 +2,14 @@
 "@nn/sse-sync": minor
 ---
 
-When the browser closes the event stream for good, for example after a proxy answers with a 502, the engine disconnects instead of reopening after three seconds. It connects again when the store changes, or when the app calls `session.retry()`. A server that is down no longer receives a retry from every client on a fixed schedule.
+When the browser closes the event stream for good, for example after a proxy answers with a 502, the engine disconnects instead of reopening after three seconds, and stays disconnected until the app calls `session.retry()`. A server that is down no longer receives a retry from every client on a fixed schedule.
 
-The engine doesn't listen for browser events, so it runs unchanged in Node. To also recover when the network or the user comes back, call `session.retry()` from the signals your runtime has:
+The engine doesn't listen for the store or browser events, so it runs unchanged in Node. To recover, call `session.retry()` from the signals your runtime has, such as an edit, the network coming back, or the user returning:
 
 ```ts
 const sync = SseSync.attach(store, url);
 
+store.changes.subscribe(() => sync.session.retry());
 addEventListener("online", () => sync.session.retry());
 document.addEventListener("visibilitychange", () => {
 	if (document.visibilityState === "visible") sync.session.retry();

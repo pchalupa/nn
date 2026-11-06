@@ -1,7 +1,7 @@
 import { Hono } from "hono";
 import { streamSSE } from "hono/streaming";
 
-import type { Database } from "../services/database/memory-database.js";
+import type { Database } from "../services/database/database.js";
 import type { EventBus } from "../services/database/memory-event-bus.js";
 import logger from "../services/logger.js";
 

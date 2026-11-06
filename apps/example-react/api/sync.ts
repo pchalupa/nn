@@ -3,7 +3,7 @@ import { Redis } from "@upstash/redis";
 
 import { createServer } from "./_server/server.js";
 import { createRedisDatabase } from "./_server/services/database/redis-database.js";
-import { createRedisEventBus } from "./_server/services/redis-event-bus.js";
+import { createRedisEventBus } from "./_server/services/database/redis-event-bus.js";
 
 const redis = Redis.fromEnv({ automaticDeserialization: false });
 

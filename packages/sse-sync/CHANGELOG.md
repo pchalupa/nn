@@ -1,5 +1,30 @@
 # @nn/sse-sync
 
+## 1.1.0
+
+### Minor Changes
+
+- 00486d7: When the browser closes the event stream for good, for example after a proxy answers with a 502, the engine disconnects instead of reopening after three seconds, and stays disconnected until the app calls `session.retry()`. A server that is down no longer receives a retry from every client on a fixed schedule.
+
+  The engine doesn't listen for the store or browser events, so it runs unchanged in Node. To recover, call `session.retry()` from the signals your runtime has, such as an edit, the network coming back, or the user returning:
+
+  ```ts
+  const sync = SseSync.attach(store, url);
+
+  store.changes.subscribe(() => sync.session.retry());
+  addEventListener("online", () => sync.session.retry());
+  document.addEventListener("visibilitychange", () => {
+  	if (document.visibilityState === "visible") sync.session.retry();
+  });
+  ```
+
+  `session.retry()` does nothing unless the engine is disconnected. A failed first connection, such as a stream refused before its first event or a first event that can't be read, is retried the same way. Every retry merges a fresh snapshot and pushes every field, so edits made while disconnected reach the server.
+
+### Patch Changes
+
+- Updated dependencies [00486d7]
+  - @nn/sync-engine@2.1.0
+
 ## 1.0.0
 
 ### Major Changes

@@ -74,6 +74,9 @@ importers:
       '@nn/broadcast-sync':
         specifier: workspace:*
         version: link:../../packages/broadcast-sync
+      '@nn/guards':
+        specifier: 'workspace:'
+        version: link:../../packages/guards
       '@nn/indexdb-sync':
         specifier: workspace:*
         version: link:../../packages/indexdb-sync

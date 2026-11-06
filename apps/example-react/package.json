@@ -20,6 +20,7 @@
 		"@hono/node-server": "^2.1.6",
 		"@hono/vercel": "^1.0.1",
 		"@nn/broadcast-sync": "workspace:*",
+		"@nn/guards": "workspace:",
 		"@nn/indexdb-sync": "workspace:*",
 		"@nn/react": "workspace:*",
 		"@nn/schema": "workspace:",

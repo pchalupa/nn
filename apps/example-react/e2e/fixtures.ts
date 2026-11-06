@@ -4,8 +4,8 @@ import { serve } from "@hono/node-server";
 import { test as base, type Page } from "@playwright/test";
 
 import { createServer } from "../api/_server/server.js";
-import { createMemoryDatabase } from "../api/_server/services/memory-database.js";
-import { createMemoryEventBus } from "../api/_server/services/memory-event-bus.js";
+import { createMemoryDatabase } from "../api/_server/services/database/memory-database.js";
+import { createMemoryEventBus } from "../api/_server/services/database/memory-event-bus.js";
 
 export { expect, type Page } from "@playwright/test";
 

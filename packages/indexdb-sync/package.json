@@ -1,6 +1,6 @@
 {
 	"name": "@nn/indexdb-sync",
-	"version": "1.0.0",
+	"version": "2.0.0",
 	"description": "Sync engine that persists a store to IndexedDB",
 	"keywords": [],
 	"homepage": "https://github.com/pchalupa/nn/packages/indexdb-sync#readme",

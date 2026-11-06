@@ -7,17 +7,13 @@
 		".": "./src/index.ts"
 	},
 	"scripts": {
-		"ts:check": "tsc --noEmit",
-		"test": "vitest run"
+		"ts:check": "tsc --noEmit"
 	},
 	"dependencies": {
 		"@nn/schema": "workspace:"
 	},
 	"devDependencies": {
-		"@nn/entities": "workspace:",
-		"@nn/store": "workspace:",
 		"@nn/typescript-config": "workspace:",
-		"typescript": "catalog:",
-		"vitest": "catalog:"
+		"typescript": "catalog:"
 	}
 }

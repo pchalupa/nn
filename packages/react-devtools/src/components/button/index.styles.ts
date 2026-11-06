@@ -1,22 +1,35 @@
-export const styles = `
-.button {
-	padding: 2px 8px;
-	border: 1px solid var(--border);
-	border-radius: 4px;
-	color: inherit;
-	background: transparent;
-	font: inherit;
-	cursor: pointer;
-}
-.button[data-variant="floating"] {
-	position: fixed;
-	right: 12px;
-	bottom: 12px;
-	z-index: 2147483646;
-	padding: 6px 12px;
-	border-radius: 999px;
-	color: var(--fg);
-	background: var(--bg);
-	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
-}
+import { css } from "../../css";
+
+export const styles = css`
+	.button {
+		padding: var(--space-1) var(--space-3);
+		border: 1px solid var(--border);
+		border-radius: var(--radius);
+		color: inherit;
+		background: transparent;
+		font: inherit;
+		cursor: pointer;
+	}
+	.button:hover {
+		background: var(--hover);
+	}
+	.button:focus-visible {
+		outline: 1px solid var(--focus);
+		outline-offset: 1px;
+	}
+	.button[data-variant="floating"] {
+		position: fixed;
+		right: var(--space-4);
+		bottom: var(--space-4);
+		z-index: var(--z);
+		padding: var(--space-3) var(--space-4);
+		border-radius: 999px;
+		color: var(--accent);
+		background: var(--bg);
+		font-weight: bold;
+		box-shadow: 0 2px 8px var(--shadow);
+	}
+	.button[data-variant="floating"]:hover {
+		background: var(--bg-raised);
+	}
 `;

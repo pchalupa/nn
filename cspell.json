@@ -6,6 +6,7 @@
 	"dictionaries": ["softwareTerms"],
 	"words": [
 		"indexeddb",
+		"visibilitychange",
 		"noninteractive",
 		"CRDT",
 		"Logoot",

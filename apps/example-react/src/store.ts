@@ -52,6 +52,12 @@ export const store = createStore(schema);
 
 IndexDbSync.attach(store);
 BroadcastSync.attach(store);
-SseSync.attach(store, new URL(import.meta.env.VITE_REMOTE_URL, location.origin));
+
+const sseSync = SseSync.attach(store, new URL(import.meta.env.VITE_REMOTE_URL, location.origin));
+
+addEventListener("online", () => sseSync.session.retry());
+document.addEventListener("visibilitychange", () => {
+	if (document.visibilityState === "visible") sseSync.session.retry();
+});
 
 export const { useRead, useUpdate } = use(store);

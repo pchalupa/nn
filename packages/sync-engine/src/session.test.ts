@@ -9,6 +9,7 @@ const transitions: Array<[SessionState, SessionEvent, SessionState]> = [
 	[SessionState.Connecting, SessionEvent.Drop, SessionState.Disconnected],
 	[SessionState.Connected, SessionEvent.Drop, SessionState.Disconnected],
 	[SessionState.Connected, SessionEvent.Reconnect, SessionState.Connecting],
+	[SessionState.Disconnected, SessionEvent.Retry, SessionState.Connecting],
 	[SessionState.Idle, SessionEvent.Detach, SessionState.Detached],
 	[SessionState.Connecting, SessionEvent.Detach, SessionState.Detached],
 	[SessionState.Connected, SessionEvent.Detach, SessionState.Detached],
@@ -278,5 +279,125 @@ describe("Session", () => {
 
 		expect(delegate.sessionDidOpen).not.toHaveBeenCalled();
 		expect(session.detached).toBe(true);
+	});
+
+	it("opens a new attempt on retry after a failed attempt", async () => {
+		const session = new Session();
+		const delegate = {
+			sessionOpen: vi.fn<SessionDelegate["sessionOpen"]>(),
+			sessionDidOpen: vi.fn(),
+			sessionDidClose: vi.fn(),
+		};
+
+		delegate.sessionOpen.mockRejectedValueOnce(new Error("failure"));
+		session.delegate = delegate;
+		session.connect();
+		await flush();
+		session.retry();
+		await flush();
+
+		expect(session.connected).toBe(true);
+		expect(delegate.sessionOpen).toHaveBeenCalledTimes(2);
+		expect(delegate.sessionOpen.mock.lastCall?.[1].aborted).toBe(false);
+		expect(delegate.sessionDidClose).toHaveBeenCalledOnce();
+	});
+
+	it("ignores retry while connected", async () => {
+		const session = new Session();
+		const delegate = {
+			sessionOpen: vi.fn<SessionDelegate["sessionOpen"]>(),
+			sessionDidOpen: vi.fn(),
+			sessionDidClose: vi.fn(),
+		};
+
+		session.delegate = delegate;
+		session.connect();
+		await flush();
+		session.retry();
+		await flush();
+
+		expect(delegate.sessionOpen).toHaveBeenCalledOnce();
+		expect(session.connected).toBe(true);
+	});
+
+	it("notifies changes after each transition's effects", async () => {
+		const session = new Session();
+		const delegate = {
+			sessionOpen: vi.fn<SessionDelegate["sessionOpen"]>(),
+			sessionDidOpen: vi.fn(),
+			sessionDidClose: vi.fn(),
+		};
+		const records: Array<[SessionState, SessionState, number]> = [];
+
+		session.delegate = delegate;
+		session.changes.subscribe((state) => {
+			records.push([state, session.state, delegate.sessionDidOpen.mock.calls.length]);
+		});
+		session.connect();
+		await flush();
+		session.drop();
+		session.retry();
+		await flush();
+		session.detach();
+
+		expect(records).toStrictEqual([
+			[SessionState.Connecting, SessionState.Connecting, 0],
+			[SessionState.Connected, SessionState.Connected, 1],
+			[SessionState.Disconnected, SessionState.Disconnected, 1],
+			[SessionState.Connecting, SessionState.Connecting, 1],
+			[SessionState.Connected, SessionState.Connected, 2],
+			[SessionState.Detached, SessionState.Detached, 2],
+		]);
+	});
+
+	it("does not notify ignored events", () => {
+		const session = new Session();
+		const observer = vi.fn();
+
+		session.changes.subscribe(observer);
+		session.drop();
+		session.retry();
+		session.reconnect();
+
+		expect(observer).not.toHaveBeenCalled();
+	});
+
+	it("stops notifying after unsubscribe", () => {
+		const session = new Session();
+		const observer = vi.fn();
+
+		session.changes.subscribe(observer)();
+		session.connect();
+
+		expect(observer).not.toHaveBeenCalled();
+	});
+
+	it("queues an event sent from a changes observer", () => {
+		const session = new Session();
+		const delegate = {
+			sessionOpen: vi.fn<SessionDelegate["sessionOpen"]>(),
+			sessionDidOpen: vi.fn(),
+			sessionDidClose: vi.fn(),
+		};
+		const statesAfterDetach: SessionState[] = [];
+		const observer = vi.fn((state: SessionState) => {
+			if (state === SessionState.Connecting) {
+				session.detach();
+				statesAfterDetach.push(session.state);
+			}
+		});
+		const laterObserver = vi.fn();
+
+		session.delegate = delegate;
+		session.changes.subscribe(observer);
+		session.changes.subscribe(laterObserver);
+		session.connect();
+
+		expect(statesAfterDetach).toStrictEqual([SessionState.Connecting]);
+		expect(observer.mock.calls).toStrictEqual([[SessionState.Connecting], [SessionState.Detached]]);
+		expect(laterObserver.mock.calls).toStrictEqual([[SessionState.Connecting], [SessionState.Detached]]);
+		expect(delegate.sessionOpen).toHaveBeenCalledOnce();
+		expect(delegate.sessionOpen.mock.lastCall?.[1].aborted).toBe(true);
+		expect(delegate.sessionDidClose).toHaveBeenCalledOnce();
 	});
 });

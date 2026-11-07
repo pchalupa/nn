@@ -20,7 +20,7 @@ export class Store<StateSchema extends ObjectSchema<Record<string, Schema>> = Ob
 		// TODO: Consider folding state into Store
 		this.state = new State(schema);
 		this.state.delegate = {
-			stateDidChange: (_state: State, changed: ReadonlySet<Entity>) => {
+			stateDidChange: (changed: ReadonlySet<Entity>) => {
 				const changes: Record<string, Encoded> = {};
 
 				for (const entity of changed) {

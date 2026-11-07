@@ -15,7 +15,7 @@ type ReadonlyData<Value> = {
 };
 
 export interface StateDelegate {
-	stateDidChange(state: State, changed: ReadonlySet<Entity>): void;
+	stateDidChange(changed: ReadonlySet<Entity>): void;
 }
 
 export class State<
@@ -77,7 +77,7 @@ export class State<
 
 			this.changed = new Set();
 
-			if (changed.size > 0) this.delegate?.stateDidChange(this, changed);
+			if (changed.size > 0) this.delegate?.stateDidChange(changed);
 		}
 	}
 }

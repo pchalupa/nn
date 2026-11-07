@@ -4,8 +4,8 @@
 	"private": true,
 	"type": "module",
 	"scripts": {
-		"dev": "tsx watch --clear-screen=false --experimental-eventsource --disable-warning=UNDICI-ES src/index.ts",
-		"start": "tsx --experimental-eventsource --disable-warning=UNDICI-ES src/index.ts",
+		"dev": "tsx watch --clear-screen=false --env-file=.env.development --experimental-eventsource src/index.ts",
+		"start": "tsx --experimental-eventsource src/index.ts",
 		"ts:check": "tsc --noEmit"
 	},
 	"dependencies": {

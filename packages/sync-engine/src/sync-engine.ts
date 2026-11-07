@@ -1,20 +1,14 @@
 import type { Encoded } from "@nn/entities/codable";
-import { Codec } from "@nn/entities/codec";
-import type { Delegatable } from "@nn/observable";
+import { Observable, type Unsubscribe } from "@nn/observable/observable";
 import type { Store } from "@nn/store";
 
-import { Session } from "./session";
+import { Session, type SessionState } from "./session";
 
-export { SessionState } from "./session";
+export { SessionState as SyncState } from "./session";
 
-export interface SyncEngineDelegate {
-	syncEngineDidFail(syncEngine: SyncEngine, error: unknown): void;
-}
-
-export abstract class SyncEngine implements Delegatable<SyncEngineDelegate> {
-	private codec = new Codec();
-	public delegate?: SyncEngineDelegate;
-	public readonly session = new Session();
+export abstract class SyncEngine {
+	protected readonly session = new Session();
+	protected readonly errors = new Observable<[unknown]>();
 
 	constructor(protected readonly store: Store) {
 		let unsubscribeFromStoreChanges: () => void | undefined;
@@ -30,31 +24,69 @@ export abstract class SyncEngine implements Delegatable<SyncEngineDelegate> {
 
 							if (signal.aborted) break;
 
-							if (value) this.store.state.merge(key, this.codec.decode(value));
+							if (value) this.store.merge(key, value);
 						}
 					}
 				} catch (error) {
 					if (!signal.aborted) {
-						this.delegate?.syncEngineDidFail(this, error);
+						this.errors.notify(error);
 						this.session.drop();
 					}
 				}
 			},
 			sessionDidOpen: () => {
-				const { data } = this.store.state.encode();
+				const { data } = this.store.encode();
 				const entries = Object.values(data);
 
 				void this.send(entries);
 
-				unsubscribeFromStoreChanges = this.store.changes.subscribe((changed) => {
-					void this.send(Array.from(changed, (entity) => this.codec.encode(entity)));
-				});
+				unsubscribeFromStoreChanges = this.store.onChange((changes) => void this.send(Object.values(changes)));
 			},
 			sessionDidClose: () => {
 				unsubscribeFromStoreChanges?.();
 				this.close();
 			},
 		};
+	}
+
+	public get state(): SessionState {
+		return this.session.state;
+	}
+
+	public get idle(): boolean {
+		return this.session.idle;
+	}
+
+	public get connecting(): boolean {
+		return this.session.connecting;
+	}
+
+	public get connected(): boolean {
+		return this.session.connected;
+	}
+
+	public get disconnected(): boolean {
+		return this.session.disconnected;
+	}
+
+	public get detached(): boolean {
+		return this.session.detached;
+	}
+
+	public retry(): void {
+		this.session.retry();
+	}
+
+	public detach(): void {
+		this.session.detach();
+	}
+
+	public onStateChange(listener: (state: SessionState) => void): Unsubscribe {
+		return this.session.changes.subscribe(listener);
+	}
+
+	public onError(listener: (error: unknown) => void): Unsubscribe {
+		return this.errors.subscribe(listener);
 	}
 
 	protected abstract open(signal: AbortSignal): Promise<void>;
@@ -65,7 +97,7 @@ export abstract class SyncEngine implements Delegatable<SyncEngineDelegate> {
 	protected receive(entries: Record<string, unknown>): void {
 		for (const name in this.store.schema.properties) {
 			if (Object.hasOwn(entries, name)) {
-				this.store.state.merge(name, this.codec.decode(entries[name]));
+				this.store.merge(name, entries[name]);
 			}
 		}
 	}
@@ -76,7 +108,7 @@ export abstract class SyncEngine implements Delegatable<SyncEngineDelegate> {
 				try {
 					await this.push(entry.key, entry);
 				} catch (error) {
-					this.delegate?.syncEngineDidFail(this, error);
+					this.errors.notify(error);
 				}
 			}),
 		);

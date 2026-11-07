@@ -26,7 +26,7 @@ export class SseSync extends SyncEngine {
 
 				this.receive(entries);
 			},
-			eventStreamDidFail: (error) => this.delegate?.syncEngineDidFail(this, error),
+			eventStreamDidFail: (error) => this.errors.notify(error),
 			eventStreamDidClose: () => this.session.drop(),
 		};
 	}
@@ -46,7 +46,7 @@ export class SseSync extends SyncEngine {
 			body: JSON.stringify({ [name]: entry }),
 		});
 
-		if (!response.ok) this.delegate?.syncEngineDidFail(this, new Error(`Failed to push ${name} to ${this.url}`));
+		if (!response.ok) this.errors.notify(new Error(`Failed to push ${name} to ${this.url}`));
 	}
 
 	public static attach(store: Store, url: URL): SseSync {

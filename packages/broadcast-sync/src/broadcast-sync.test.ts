@@ -21,7 +21,7 @@ const attach = (name: string) => {
 
 describe("BroadcastSync", () => {
 	afterEach(() => {
-		for (const engine of engines.splice(0)) engine.session.detach();
+		for (const engine of engines.splice(0)) engine.detach();
 	});
 
 	it("shares changes with stores on the same channel", async () => {
@@ -29,13 +29,13 @@ describe("BroadcastSync", () => {
 		const first = attach(name);
 		const second = attach(name);
 
-		first.store.state.update((draft) => {
+		first.store.update((draft) => {
 			draft.language = "cs";
 			draft.tickets.push({ title: "First" });
 		});
 
 		await vi.waitFor(() => {
-			expect(second.store.state.read()).toStrictEqual({ tickets: [{ title: "First" }], language: "cs" });
+			expect(second.store.read()).toStrictEqual({ tickets: [{ title: "First" }], language: "cs" });
 		});
 	});
 
@@ -44,7 +44,7 @@ describe("BroadcastSync", () => {
 		const first = attach(name);
 		const second = new Store(schema);
 
-		second.state.update((draft) => {
+		second.update((draft) => {
 			draft.language = "cs";
 		});
 
@@ -53,7 +53,7 @@ describe("BroadcastSync", () => {
 		engines.push(sync);
 
 		await vi.waitFor(() => {
-			expect(first.store.state.read().language).toBe("cs");
+			expect(first.store.read().language).toBe("cs");
 		});
 	});
 
@@ -61,12 +61,12 @@ describe("BroadcastSync", () => {
 		const first = attach(crypto.randomUUID());
 		const second = attach(crypto.randomUUID());
 
-		first.store.state.update((draft) => {
+		first.store.update((draft) => {
 			draft.language = "cs";
 		});
 		await flush();
 
-		expect(second.store.state.read().language).toBe("");
+		expect(second.store.read().language).toBe("");
 	});
 
 	it("settles concurrent edits on the latest one", async () => {
@@ -74,16 +74,16 @@ describe("BroadcastSync", () => {
 		const first = attach(name);
 		const second = attach(name);
 
-		first.store.state.update((draft) => {
+		first.store.update((draft) => {
 			draft.language = "cs";
 		});
-		second.store.state.update((draft) => {
+		second.store.update((draft) => {
 			draft.language = "en";
 		});
 
 		await vi.waitFor(() => {
-			expect(first.store.state.read().language).toBe("en");
-			expect(second.store.state.read().language).toBe("en");
+			expect(first.store.read().language).toBe("en");
+			expect(second.store.read().language).toBe("en");
 		});
 	});
 
@@ -92,13 +92,13 @@ describe("BroadcastSync", () => {
 		const first = attach(name);
 		const second = attach(name);
 
-		second.sync.session.detach();
-		first.store.state.update((draft) => {
+		second.sync.detach();
+		first.store.update((draft) => {
 			draft.language = "cs";
 		});
 		await flush();
 
-		expect(second.store.state.read().language).toBe("");
+		expect(second.store.read().language).toBe("");
 	});
 
 	it("ignores messages it does not recognize", async () => {
@@ -114,6 +114,6 @@ describe("BroadcastSync", () => {
 		await flush();
 		channel.close();
 
-		expect(store.state.read()).toStrictEqual({ tickets: [], language: "" });
+		expect(store.read()).toStrictEqual({ tickets: [], language: "" });
 	});
 });

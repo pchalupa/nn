@@ -41,7 +41,7 @@ describe("IndexDbSync", () => {
 		const open = vi.spyOn(indexedDB, "open");
 		const indexDbSync = await attach(new Store(schema), name);
 
-		indexDbSync.session.detach();
+		indexDbSync.detach();
 
 		expect(open).toHaveBeenCalledExactlyOnceWith(name, undefined);
 
@@ -59,7 +59,7 @@ describe("IndexDbSync", () => {
 	it("opens the default database when no name is given", async () => {
 		const indexDbSync = await attach(new Store(schema));
 
-		indexDbSync.session.detach();
+		indexDbSync.detach();
 
 		const databases = await indexedDB.databases();
 
@@ -77,9 +77,9 @@ describe("IndexDbSync", () => {
 		const store = new Store(schema);
 		const indexDbSync = await attach(store, name);
 
-		expect(store.state.read().language).toBe("cs");
+		expect(store.read().language).toBe("cs");
 
-		indexDbSync.session.detach();
+		indexDbSync.detach();
 	});
 
 	it("stores every field on connecting and each later change", async () => {
@@ -87,7 +87,7 @@ describe("IndexDbSync", () => {
 		const store = new Store(schema);
 		const indexDbSync = await attach(store, name);
 
-		store.state.update((draft) => {
+		store.update((draft) => {
 			draft.language = "cs";
 		});
 
@@ -96,7 +96,7 @@ describe("IndexDbSync", () => {
 		});
 		expect(await read(name, "tickets")).toMatchObject({ key: "tickets" });
 
-		indexDbSync.session.detach();
+		indexDbSync.detach();
 	});
 
 	it("keeps the stored fields for the next attach", async () => {
@@ -104,7 +104,7 @@ describe("IndexDbSync", () => {
 		const first = new Store(schema);
 		const indexDbSync = await attach(first, name);
 
-		first.state.update((draft) => {
+		first.update((draft) => {
 			draft.language = "cs";
 		});
 
@@ -112,13 +112,13 @@ describe("IndexDbSync", () => {
 			expect(await read(name, "language")).toMatchObject({ data: "cs" });
 		});
 
-		indexDbSync.session.detach();
+		indexDbSync.detach();
 
 		const second = new Store(schema);
 
 		await attach(second, name);
 
-		expect(second.state.read().language).toBe("cs");
+		expect(second.read().language).toBe("cs");
 	});
 
 	it("reads and writes nothing when the database cannot be opened", async () => {
@@ -129,20 +129,20 @@ describe("IndexDbSync", () => {
 		const transaction = vi.spyOn(IDBDatabase.prototype, "transaction");
 		const store = new Store(schema);
 		const indexDbSync = IndexDbSync.attach(store, crypto.randomUUID());
-		const delegate = { syncEngineDidFail: vi.fn() };
+		const onError = vi.fn();
 
-		indexDbSync.delegate = delegate;
+		indexDbSync.onError(onError);
 
 		await vi.waitFor(() => {
-			expect(delegate.syncEngineDidFail).toHaveBeenCalledOnce();
+			expect(onError).toHaveBeenCalledOnce();
 		});
 
-		store.state.update((draft) => {
+		store.update((draft) => {
 			draft.language = "cs";
 		});
 
 		expect(transaction).not.toHaveBeenCalled();
-		expect(() => indexDbSync.session.detach()).not.toThrow();
+		expect(() => indexDbSync.detach()).not.toThrow();
 	});
 
 	it("reopens the database and keeps storing changes when another connection upgrades it", async () => {
@@ -154,7 +154,7 @@ describe("IndexDbSync", () => {
 		await newer.init({ ...schema.properties, posts: {} });
 		newer.close();
 
-		store.state.update((draft) => {
+		store.update((draft) => {
 			draft.language = "cs";
 		});
 
@@ -162,7 +162,7 @@ describe("IndexDbSync", () => {
 			expect(await read(name, "language")).toMatchObject({ data: "cs" });
 		});
 
-		indexDbSync.session.detach();
+		indexDbSync.detach();
 	});
 
 	it("stops syncing without recreating the database when another connection deletes it", async () => {
@@ -179,7 +179,7 @@ describe("IndexDbSync", () => {
 			request.onerror = reject;
 		});
 
-		store.state.update((draft) => {
+		store.update((draft) => {
 			draft.language = "cs";
 		});
 
@@ -187,14 +187,14 @@ describe("IndexDbSync", () => {
 		expect(set).not.toHaveBeenCalled();
 		expect(open).not.toHaveBeenCalled();
 
-		indexDbSync.session.detach();
+		indexDbSync.detach();
 	});
 
 	it("closes the database on detach", async () => {
 		const indexDbSync = await attach(new Store(schema), crypto.randomUUID());
 		const close = vi.spyOn(IDBDatabase.prototype, "close");
 
-		indexDbSync.session.detach();
+		indexDbSync.detach();
 
 		expect(close).toHaveBeenCalledOnce();
 	});
@@ -203,7 +203,7 @@ describe("IndexDbSync", () => {
 		const close = vi.spyOn(IDBDatabase.prototype, "close");
 		const indexDbSync = IndexDbSync.attach(new Store(schema), crypto.randomUUID());
 
-		indexDbSync.session.detach();
+		indexDbSync.detach();
 
 		await vi.waitFor(() => {
 			expect(close).toHaveBeenCalledOnce();

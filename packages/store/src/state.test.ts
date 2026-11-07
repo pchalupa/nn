@@ -475,7 +475,7 @@ describe("State notifications", () => {
 		const observed: string[][] = [];
 
 		state.delegate = {
-			stateDidChange: (_state, changed) => {
+			stateDidChange: (changed) => {
 				const keys = [...changed].map((entity) => entity.key);
 
 				observed.push(keys);

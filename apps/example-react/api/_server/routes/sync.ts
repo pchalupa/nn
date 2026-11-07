@@ -3,7 +3,7 @@ import { streamSSE } from "hono/streaming";
 
 import type { Database } from "../services/database/database.js";
 import type { EventBus } from "../services/database/memory-event-bus.js";
-import logger from "../services/logger.js";
+import { logger } from "../services/logger.js";
 
 const isRecord = (value: unknown): value is Record<string, unknown> =>
 	typeof value === "object" && value !== null && !Array.isArray(value);

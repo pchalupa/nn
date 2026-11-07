@@ -41,15 +41,12 @@ export abstract class SyncEngine implements Delegatable<SyncEngineDelegate> {
 			},
 			sessionDidOpen: () => {
 				const { data } = this.store.state.encode();
+				const entries = Object.values(data);
 
-				for (const name in data) {
-					void this.send(data[name]);
-				}
+				void this.send(entries);
 
 				this.unsubscribeFromStoreChanges = this.store.changes.subscribe((changed) => {
-					for (const entity of changed) {
-						void this.send(this.codec.encode(entity));
-					}
+					void this.send(Array.from(changed, (entity) => this.codec.encode(entity)));
 				});
 			},
 			sessionDidClose: () => {
@@ -65,18 +62,22 @@ export abstract class SyncEngine implements Delegatable<SyncEngineDelegate> {
 	protected abstract push(name: string, entry: Encoded): Promise<void>;
 
 	protected receive(entries: Record<string, unknown>): void {
-		for (const name of Object.keys(this.store.schema.properties)) {
+		for (const name in this.store.schema.properties) {
 			if (Object.hasOwn(entries, name)) {
 				this.store.state.merge(name, this.codec.decode(entries[name]));
 			}
 		}
 	}
 
-	private async send(entry: Encoded): Promise<void> {
-		try {
-			await this.push(entry.key, entry);
-		} catch (error) {
-			this.delegate?.syncEngineDidFail(this, error);
-		}
+	private async send(entries: Encoded[]): Promise<void> {
+		await Promise.all(
+			entries.map(async (entry) => {
+				try {
+					await this.push(entry.key, entry);
+				} catch (error) {
+					this.delegate?.syncEngineDidFail(this, error);
+				}
+			}),
+		);
 	}
 }

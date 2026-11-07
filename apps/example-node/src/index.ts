@@ -1,5 +1,6 @@
+import { createHash } from "node:crypto";
 import { readFileSync, watch } from "node:fs";
-import { join, sep } from "node:path";
+import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 
 import { SseSync } from "@nn/sse-sync";
@@ -20,7 +21,7 @@ sseSync.connect();
 
 try {
 	watch(root, { recursive: true }, (_event, file) => {
-		if (sseSync.connected && file && file.split(sep).some((name) => name === "node_modules" || name.startsWith("."))) {
+		if (file && sseSync.connected) {
 			try {
 				const lines = readFileSync(join(root, file), "utf8").split("\n");
 
@@ -31,7 +32,7 @@ try {
 						const title = /\/\/ TODO: (.+)/.exec(line)?.[1]?.trim();
 
 						if (title) {
-							const id = `todo:${file}:${title}`;
+							const id = createHash("md5").update(`todo:${file}:${title}`).digest("hex");
 
 							if (!ids.has(id)) {
 								draft.tickets.push({ id, title, description: `${file}:${index + 1}`, status: "todo", assignee: "" });

@@ -1,5 +1,22 @@
 # @nn/store
 
+## 3.0.0
+
+### Major Changes
+
+- 5d1e50e: `Store` now has a single listener method, `onChange`, and no longer exposes its `State` or any `Entity`.
+
+  - Read and write on the store directly: `store.state.read()` becomes `store.read()`, and `store.state.update(fn)` becomes `store.update(fn)`.
+  - Listen with `store.onChange(listener)`, which returns its unsubscribe function. It replaces `store.updates.subscribe` and `store.changes.subscribe`. The listener receives the changed top-level fields, keyed by name and encoded the first time it reads them, and can ignore them.
+  - `store.merge(name, value)` takes encoded data, the shape `store.encode().data[name]` returns, and throws when it can't be decoded.
+
+  `createStore` from `@nn/react` returns this `Store`, and `useRead` and `useUpdate` are unchanged.
+
+### Patch Changes
+
+- Updated dependencies [5d1e50e]
+  - @nn/observable@3.0.1
+
 ## 2.1.0
 
 ### Minor Changes

@@ -65,12 +65,24 @@ importers:
 
   apps/example-node:
     dependencies:
+      '@nn/schema':
+        specifier: 'workspace:'
+        version: link:../../packages/schema
+      '@nn/sse-sync':
+        specifier: 'workspace:'
+        version: link:../../packages/sse-sync
       '@nn/store':
         specifier: 'workspace:'
         version: link:../../packages/store
       example-schema:
         specifier: 'workspace:'
         version: link:../example-schema
+      pino:
+        specifier: ^10.4.0
+        version: 10.4.0
+      pino-pretty:
+        specifier: ^13.2.0
+        version: 13.2.0
     devDependencies:
       '@nn/typescript-config':
         specifier: 'workspace:'

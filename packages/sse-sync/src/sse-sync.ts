@@ -9,7 +9,7 @@ import { EventStream } from "./event-stream";
 export class SseSync extends SyncEngine {
 	private stream: EventStream;
 
-	private constructor(
+	constructor(
 		store: Store,
 		private readonly url: URL,
 	) {
@@ -47,13 +47,5 @@ export class SseSync extends SyncEngine {
 		});
 
 		if (!response.ok) this.errors.notify(new Error(`Failed to push ${name} to ${this.url}`));
-	}
-
-	public static attach(store: Store, url: URL): SseSync {
-		const sseSync = new SseSync(store, url);
-
-		sseSync.session.connect();
-
-		return sseSync;
 	}
 }

@@ -10,11 +10,12 @@ const flush = () => new Promise((resolve) => setTimeout(resolve, 20));
 
 const engines: BroadcastSync[] = [];
 
-const attach = (name: string) => {
+const connect = (name?: string) => {
 	const store = new Store(schema);
-	const sync = BroadcastSync.attach(store, name);
+	const sync = new BroadcastSync(store, name);
 
 	engines.push(sync);
+	sync.connect();
 
 	return { store, sync };
 };
@@ -22,12 +23,38 @@ const attach = (name: string) => {
 describe("BroadcastSync", () => {
 	afterEach(() => {
 		for (const engine of engines.splice(0)) engine.detach();
+
+		vi.restoreAllMocks();
+	});
+
+	it("shares existing edits only after an explicitly constructed engine connects", async () => {
+		const name = crypto.randomUUID();
+		const first = connect(name);
+		const store = new Store(schema);
+		const channel = vi.spyOn(globalThis, "BroadcastChannel");
+		const sync = new BroadcastSync(store, name);
+
+		engines.push(sync);
+		store.update((draft) => {
+			draft.language = "cs";
+		});
+		await flush();
+
+		expect(sync.idle).toBe(true);
+		expect(channel).not.toHaveBeenCalled();
+		expect(first.store.read().language).toBe("");
+
+		sync.connect();
+
+		await vi.waitFor(() => {
+			expect(first.store.read().language).toBe("cs");
+		});
 	});
 
 	it("shares changes with stores on the same channel", async () => {
 		const name = crypto.randomUUID();
-		const first = attach(name);
-		const second = attach(name);
+		const first = connect(name);
+		const second = connect(name);
 
 		first.store.update((draft) => {
 			draft.language = "cs";
@@ -39,18 +66,32 @@ describe("BroadcastSync", () => {
 		});
 	});
 
-	it("shares a newly attached store's fields with stores already on the channel", async () => {
+	it("uses the default channel when no name is given", async () => {
+		const first = connect();
+		const second = connect("nn-default");
+
+		first.store.update((draft) => {
+			draft.language = "cs";
+		});
+
+		await vi.waitFor(() => {
+			expect(second.store.read().language).toBe("cs");
+		});
+	});
+
+	it("shares a newly connected store's fields with stores already on the channel", async () => {
 		const name = crypto.randomUUID();
-		const first = attach(name);
+		const first = connect(name);
 		const second = new Store(schema);
 
 		second.update((draft) => {
 			draft.language = "cs";
 		});
 
-		const sync = BroadcastSync.attach(second, name);
+		const sync = new BroadcastSync(second, name);
 
 		engines.push(sync);
+		sync.connect();
 
 		await vi.waitFor(() => {
 			expect(first.store.read().language).toBe("cs");
@@ -58,8 +99,8 @@ describe("BroadcastSync", () => {
 	});
 
 	it("keeps stores on other channels apart", async () => {
-		const first = attach(crypto.randomUUID());
-		const second = attach(crypto.randomUUID());
+		const first = connect(crypto.randomUUID());
+		const second = connect(crypto.randomUUID());
 
 		first.store.update((draft) => {
 			draft.language = "cs";
@@ -71,8 +112,8 @@ describe("BroadcastSync", () => {
 
 	it("settles concurrent edits on the latest one", async () => {
 		const name = crypto.randomUUID();
-		const first = attach(name);
-		const second = attach(name);
+		const first = connect(name);
+		const second = connect(name);
 
 		first.store.update((draft) => {
 			draft.language = "cs";
@@ -89,8 +130,8 @@ describe("BroadcastSync", () => {
 
 	it("stops sharing changes on detach", async () => {
 		const name = crypto.randomUUID();
-		const first = attach(name);
-		const second = attach(name);
+		const first = connect(name);
+		const second = connect(name);
 
 		second.sync.detach();
 		first.store.update((draft) => {
@@ -103,7 +144,7 @@ describe("BroadcastSync", () => {
 
 	it("ignores messages it does not recognize", async () => {
 		const name = crypto.randomUUID();
-		const { store } = attach(name);
+		const { store } = connect(name);
 		const channel = new BroadcastChannel(name);
 
 		for (const message of ["hello", { type: "unknown" }, { type: "entries", entries: null }]) {

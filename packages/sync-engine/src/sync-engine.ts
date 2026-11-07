@@ -73,6 +73,10 @@ export abstract class SyncEngine {
 		return this.session.detached;
 	}
 
+	public connect(): void {
+		this.session.connect();
+	}
+
 	public retry(): void {
 		this.session.retry();
 	}

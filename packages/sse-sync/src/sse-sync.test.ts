@@ -50,13 +50,14 @@ const language = (value: string) => JSON.stringify({ language: new LWWRegister(v
 
 const engines: SseSync[] = [];
 
-const attach = async ({ url = "http://remote.test", snapshot = "{}" } = {}) => {
+const connect = async ({ url = "http://remote.test", snapshot = "{}" } = {}) => {
 	const store = new Store(schema);
-	const sync = SseSync.attach(store, new URL(url));
+	const sync = new SseSync(store, new URL(url));
 	const syncEngineDidFail = vi.fn();
 
 	sync.onError(syncEngineDidFail);
 	engines.push(sync);
+	sync.connect();
 	sources.at(-1)?.emit(snapshot);
 
 	await vi.waitFor(() => {
@@ -85,10 +86,38 @@ describe("SseSync", () => {
 		vi.unstubAllGlobals();
 	});
 
+	it("opens the stream and pushes existing edits only after connect", async () => {
+		const store = new Store(schema);
+		const sync = new SseSync(store, new URL("http://remote.test"));
+
+		engines.push(sync);
+		store.update((draft) => {
+			draft.language = "cs";
+		});
+		await Promise.resolve();
+
+		expect(sync.idle).toBe(true);
+		expect(sources).toHaveLength(0);
+		expect(pushes()).toStrictEqual([]);
+
+		sync.connect();
+
+		expect(sources).toHaveLength(1);
+		sources[0]?.emit("{}");
+
+		await vi.waitFor(() => {
+			expect(pushes()).toContainEqual({
+				url: "http://remote.test/push",
+				method: "POST",
+				body: { language: expect.objectContaining({ data: "cs" }) },
+			});
+		});
+	});
+
 	it.each(["http://remote.test/api", "http://remote.test/api/"])(
 		"resolves endpoints under the base URL path %s",
 		async (url) => {
-			await attach({ url });
+			await connect({ url });
 
 			expect(sources[0]?.url).toBe("http://remote.test/api/subscribe");
 			await vi.waitFor(() => {
@@ -98,13 +127,13 @@ describe("SseSync", () => {
 	);
 
 	it("bootstraps the store from the first event", async () => {
-		const { store } = await attach({ snapshot: language("cs") });
+		const { store } = await connect({ snapshot: language("cs") });
 
 		expect(store.read().language).toBe("cs");
 	});
 
 	it("merges fields carried by later events", async () => {
-		const { store } = await attach();
+		const { store } = await connect();
 
 		sources[0]?.emit(language("cs"));
 
@@ -112,7 +141,7 @@ describe("SseSync", () => {
 	});
 
 	it("posts each changed field on its own", async () => {
-		const { store } = await attach();
+		const { store } = await connect();
 
 		store.update((draft) => {
 			draft.language = "cs";
@@ -130,7 +159,7 @@ describe("SseSync", () => {
 	it("reports a failed push to error listeners", async () => {
 		fetchMock.mockImplementation(async () => new Response(null, { status: 500 }));
 
-		const { syncEngineDidFail } = await attach();
+		const { syncEngineDidFail } = await connect();
 
 		await vi.waitFor(() => {
 			expect(syncEngineDidFail).toHaveBeenCalledWith(expect.any(Error));
@@ -138,7 +167,7 @@ describe("SseSync", () => {
 	});
 
 	it("reports an event it cannot parse or decode and keeps listening", async () => {
-		const { store, syncEngineDidFail } = await attach();
+		const { store, syncEngineDidFail } = await connect();
 
 		sources[0]?.emit("update");
 		sources[0]?.emit("[]");
@@ -154,7 +183,7 @@ describe("SseSync", () => {
 		["is not an object", "[]"],
 		["carries a field that is not an encoded entity", JSON.stringify({ tickets: [] })],
 	])("disconnects and reports the failure when the first event %s", async (_reason, snapshot) => {
-		const { sync, syncEngineDidFail } = await attach({ snapshot });
+		const { sync, syncEngineDidFail } = await connect({ snapshot });
 
 		expect(sync.disconnected).toBe(true);
 		expect(syncEngineDidFail).toHaveBeenCalledExactlyOnceWith(expect.any(Error));
@@ -162,7 +191,7 @@ describe("SseSync", () => {
 	});
 
 	it("waits disconnected after the browser closes the stream for good", async () => {
-		const { sync } = await attach();
+		const { sync } = await connect();
 
 		sources[0]?.shutDown();
 
@@ -172,7 +201,7 @@ describe("SseSync", () => {
 	});
 
 	it("stays disconnected when the store changes", async () => {
-		const { store, sync } = await attach();
+		const { store, sync } = await connect();
 
 		sources[0]?.shutDown();
 		editTickets(store);
@@ -183,7 +212,7 @@ describe("SseSync", () => {
 	});
 
 	it("reopens the stream when the app retries", async () => {
-		const { store, sync } = await attach();
+		const { store, sync } = await connect();
 
 		sources[0]?.shutDown();
 		sync.retry();
@@ -199,7 +228,7 @@ describe("SseSync", () => {
 	});
 
 	it("opens one stream for several retries", async () => {
-		const { sync } = await attach();
+		const { sync } = await connect();
 
 		sources[0]?.shutDown();
 		sync.retry();
@@ -209,7 +238,7 @@ describe("SseSync", () => {
 	});
 
 	it("ignores retries while connected", async () => {
-		const { sync } = await attach();
+		const { sync } = await connect();
 
 		sync.retry();
 
@@ -217,7 +246,7 @@ describe("SseSync", () => {
 	});
 
 	it("retries after a first event it cannot read", async () => {
-		const { sync } = await attach({ snapshot: "[]" });
+		const { sync } = await connect({ snapshot: "[]" });
 
 		sync.retry();
 
@@ -225,7 +254,7 @@ describe("SseSync", () => {
 	});
 
 	it("retries again after a failed retry", async () => {
-		const { sync, syncEngineDidFail } = await attach();
+		const { sync, syncEngineDidFail } = await connect();
 
 		sources[0]?.shutDown();
 		sync.retry();
@@ -242,7 +271,7 @@ describe("SseSync", () => {
 	});
 
 	it("pushes an edit made while disconnected once the retry connects", async () => {
-		const { store, sync } = await attach();
+		const { store, sync } = await connect();
 
 		sources[0]?.shutDown();
 		store.update((draft) => {
@@ -267,7 +296,7 @@ describe("SseSync", () => {
 	});
 
 	it("closes the event stream on detach", async () => {
-		const { sync } = await attach();
+		const { sync } = await connect();
 
 		sync.detach();
 

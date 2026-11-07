@@ -24,18 +24,16 @@ class TestEngine extends SyncEngine {
 	constructor(
 		private readonly transport: ReturnType<typeof transportMock>,
 		store = new Store(schema),
+		connect = true,
 	) {
 		super(store);
 		engines.push(this);
-		this.session.connect();
+
+		if (connect) this.session.connect();
 	}
 
 	public deliver(entries: Record<string, unknown>): void {
 		this.receive(entries);
-	}
-
-	public connectAgain(): void {
-		this.session.connect();
 	}
 
 	public reopen(): void {
@@ -101,6 +99,83 @@ describe("SyncEngine", () => {
 		for (const engine of engines.splice(0)) {
 			engine.detach();
 		}
+	});
+
+	it("waits for connect before restoring and pushing fields", async () => {
+		const transport = transportMock({ language: new LWWRegister("cs", "language", Time.now()).encode() });
+		const store = new Store(schema);
+		const sync = new TestEngine(transport, store, false);
+		const listener = vi.fn();
+
+		sync.onStateChange(listener);
+		await flush();
+
+		expect(sync.idle).toBe(true);
+		expect(store.read().language).toBe("");
+		expect(transport.open).not.toHaveBeenCalled();
+		expect(transport.pull).not.toHaveBeenCalled();
+		expect(transport.push).not.toHaveBeenCalled();
+
+		sync.connect();
+
+		expect(sync.connecting).toBe(true);
+		expect(listener.mock.calls).toStrictEqual([[SyncState.Connecting]]);
+
+		await flush();
+
+		expect(store.read().language).toBe("cs");
+		expect(transport.push).toHaveBeenCalledWith("language", expect.objectContaining({ data: "cs" }));
+		expect(listener.mock.calls).toStrictEqual([[SyncState.Connecting], [SyncState.Connected]]);
+	});
+
+	it("pushes edits made before connect", async () => {
+		const transport = transportMock();
+		const store = new Store(schema);
+		const sync = new TestEngine(transport, store, false);
+
+		store.update((draft) => {
+			draft.language = "cs";
+		});
+		await flush();
+
+		expect(transport.push).not.toHaveBeenCalled();
+
+		sync.connect();
+		await flush();
+
+		expect(transport.push).toHaveBeenCalledWith("language", expect.objectContaining({ data: "cs" }));
+	});
+
+	it("reports startup failures to listeners registered before connect", async () => {
+		const transport = transportMock();
+		const error = new Error("blocked");
+		const sync = new TestEngine(transport, new Store(schema), false);
+		const onError = vi.fn();
+		const onStateChange = vi.fn();
+
+		transport.open.mockRejectedValue(error);
+		sync.onError(onError);
+		sync.onStateChange(onStateChange);
+		sync.connect();
+		await flush();
+
+		expect(onError).toHaveBeenCalledExactlyOnceWith(error);
+		expect(onStateChange.mock.calls).toStrictEqual([[SyncState.Connecting], [SyncState.Disconnected]]);
+	});
+
+	it("never connects an engine detached before startup", async () => {
+		const transport = transportMock();
+		const sync = new TestEngine(transport, new Store(schema), false);
+
+		sync.detach();
+		sync.connect();
+		await flush();
+
+		expect(sync.detached).toBe(true);
+		expect(transport.open).not.toHaveBeenCalled();
+		expect(transport.pull).not.toHaveBeenCalled();
+		expect(transport.push).not.toHaveBeenCalled();
+		expect(transport.close).not.toHaveBeenCalled();
 	});
 
 	it("reads connecting right after the connection starts", () => {
@@ -438,14 +513,15 @@ describe("SyncEngine", () => {
 		expect(transport.open.mock.lastCall?.[0].aborted).toBe(true);
 	});
 
-	it("a second attach doesn't connect again", async () => {
+	it("connecting again does not reopen the transport or duplicate subscriptions", async () => {
 		const transport = transportMock();
 		const store = new Store(schema);
 		const sync = new TestEngine(transport, store);
 
+		sync.connect();
 		await flush();
 		transport.push.mockClear();
-		sync.connectAgain();
+		sync.connect();
 		await flush();
 
 		expect(transport.open).toHaveBeenCalledOnce();

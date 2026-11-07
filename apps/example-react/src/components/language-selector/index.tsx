@@ -1,8 +1,9 @@
+import { language } from "example-schema";
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 
 import { languageNames } from "../../i18n";
-import { language, useRead, useUpdate } from "../../store";
+import { useRead, useUpdate } from "../../store";
 
 export const LanguageSelector = () => {
 	const { i18n, t } = useTranslation();

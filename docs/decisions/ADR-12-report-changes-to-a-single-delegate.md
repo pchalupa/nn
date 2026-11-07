@@ -5,6 +5,8 @@ date: 2026-10-31
 
 # ADR-12: Report changes to a single delegate
 
+Amended by [ADR-18](ADR-18-expose-store-and-sync-engines-through-listener-methods.md): `Store` has one listener channel, `onChange`, which passes the changed fields encoded. Engines report failures through `onError` instead of a public delegate.
+
 Amended by [ADR-13](ADR-13-attach-persistence-and-sync-from-outside-the-store.md): `Store` no longer persists. Persistence moved to [`RepositorySync`](https://github.com/pchalupa/nn/blob/a67280fad54b78ae8c03d6c6608819e166f47ce2/packages/repository-sync/src/RepositorySync.ts), which observes changes through `store.changes`.
 
 ## Context

@@ -63,6 +63,37 @@ importers:
         specifier: 'catalog:'
         version: 5.0.5(@types/node@26.6.6)(@vitest/coverage-v8@5.0.5)(jsdom@30.1.3)(vite@8.3.5(@types/node@26.6.6)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(tsx@4.23.15)(yaml@2.9.1))
 
+  apps/example-node:
+    dependencies:
+      '@nn/sse-sync':
+        specifier: 'workspace:'
+        version: link:../../packages/sse-sync
+      '@nn/store':
+        specifier: 'workspace:'
+        version: link:../../packages/store
+      example-schema:
+        specifier: 'workspace:'
+        version: link:../example-schema
+      pino:
+        specifier: ^10.4.0
+        version: 10.4.0
+      pino-pretty:
+        specifier: ^13.2.0
+        version: 13.2.0
+    devDependencies:
+      '@nn/typescript-config':
+        specifier: 'workspace:'
+        version: link:../../packages/typescript-config
+      '@types/node':
+        specifier: ^26.6.6
+        version: 26.6.6
+      tsx:
+        specifier: ^4.23.15
+        version: 4.23.15
+      typescript:
+        specifier: 'catalog:'
+        version: 7.0.2
+
   apps/example-react:
     dependencies:
       '@hono/node-server':
@@ -80,9 +111,6 @@ importers:
       '@nn/react':
         specifier: workspace:*
         version: link:../../packages/react
-      '@nn/schema':
-        specifier: 'workspace:'
-        version: link:../../packages/schema
       '@nn/sse-sync':
         specifier: workspace:*
         version: link:../../packages/sse-sync
@@ -95,6 +123,9 @@ importers:
       '@upstash/redis':
         specifier: ^1.41.0
         version: 1.41.0
+      example-schema:
+        specifier: 'workspace:'
+        version: link:../example-schema
       hono:
         specifier: ^4.13.16
         version: 4.13.16
@@ -189,6 +220,19 @@ importers:
       vitest:
         specifier: 'catalog:'
         version: 5.0.5(@types/node@26.6.6)(@vitest/coverage-v8@5.0.5)(jsdom@30.1.3)(vite@8.3.5(@types/node@26.6.6)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(tsx@4.23.15)(yaml@2.9.1))
+
+  apps/example-schema:
+    dependencies:
+      '@nn/schema':
+        specifier: 'workspace:'
+        version: link:../../packages/schema
+    devDependencies:
+      '@nn/typescript-config':
+        specifier: 'workspace:'
+        version: link:../../packages/typescript-config
+      typescript:
+        specifier: 'catalog:'
+        version: 7.0.2
 
   packages/broadcast-sync:
     dependencies:
@@ -6952,7 +6996,6 @@ snapshots:
   '@types/node@26.6.6':
     dependencies:
       undici-types: 8.9.0
-    optional: true
 
   '@types/react-dom@19.3.0(@types/react@19.3.0)':
     dependencies:
@@ -8967,8 +9010,7 @@ snapshots:
 
   uncrypto@0.1.3: {}
 
-  undici-types@8.9.0:
-    optional: true
+  undici-types@8.9.0: {}
 
   undici@8.12.3: {}
 

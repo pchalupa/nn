@@ -15,7 +15,7 @@ type ReadonlyData<Value> = {
 };
 
 export interface StateDelegate {
-	stateDidChange(state: State, changed: ReadonlySet<Entity>): void;
+	stateDidChange(changed: ReadonlySet<Entity>): void;
 }
 
 export class State<
@@ -42,7 +42,7 @@ export class State<
 		};
 	}
 
-	//TODO: Avoid overloading to cast the type
+	// TODO: Avoid overloading to cast the type
 	public read(): ReadonlyData<InferStateType<StoreSchema>>;
 	public read(): unknown {
 		return this.view.value;
@@ -77,7 +77,7 @@ export class State<
 
 			this.changed = new Set();
 
-			if (changed.size > 0) this.delegate?.stateDidChange(this, changed);
+			if (changed.size > 0) this.delegate?.stateDidChange(changed);
 		}
 	}
 }

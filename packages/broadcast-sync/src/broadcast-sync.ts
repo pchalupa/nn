@@ -7,9 +7,9 @@ export class BroadcastSync extends SyncEngine {
 	private channel?: BroadcastChannel;
 	private entries: Record<string, Encoded> = {};
 
-	private constructor(
+	constructor(
 		store: Store,
-		private readonly name: string,
+		private readonly name = "nn-default",
 	) {
 		super(store);
 	}
@@ -30,13 +30,5 @@ export class BroadcastSync extends SyncEngine {
 	protected async push(name: string, entry: Encoded): Promise<void> {
 		this.entries[name] = entry;
 		this.channel?.postMessage({ type: "entries", entries: { [name]: entry } });
-	}
-
-	public static attach(store: Store, name = "nn-default"): BroadcastSync {
-		const broadcastSync = new BroadcastSync(store, name);
-
-		broadcastSync.session.connect();
-
-		return broadcastSync;
 	}
 }

@@ -12,9 +12,9 @@ BroadcastSync.attach(store);
 
 const sseSync = SseSync.attach(store, new URL(import.meta.env.VITE_REMOTE_URL, location.origin));
 
-addEventListener("online", () => sseSync.session.retry());
+addEventListener("online", () => sseSync.retry());
 document.addEventListener("visibilitychange", () => {
-	if (document.visibilityState === "visible") sseSync.session.retry();
+	if (document.visibilityState === "visible") sseSync.retry();
 });
 
 export const { useRead, useUpdate } = use(store);

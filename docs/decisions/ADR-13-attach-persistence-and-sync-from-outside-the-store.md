@@ -5,6 +5,8 @@ date: 2026-11-02
 
 # ADR-13: Attach persistence and sync from outside the store
 
+Amended by [ADR-18](ADR-18-expose-store-and-sync-engines-through-listener-methods.md): `store.changes` and `store.updates` are replaced by `store.onChange`, `merge` takes encoded data, and engines have no public delegate.
+
 Amended by [ADR-14](ADR-14-ship-indexeddb-persistence-as-one-sync-engine.md): IndexedDB persistence ships as one package, [`@nn/indexdb-sync`](../../packages/indexdb-sync/src/index-db-sync.ts), and `@nn/repository`, `@nn/indexdb-repository` and `@nn/repository-sync` are removed.
 
 Amended by [ADR-16](ADR-16-give-sync-engines-a-connection-lifecycle.md): sync engines have a connection lifecycle. A failed connection retries, every connection pushes every field, and failures go to the delegate instead of being dropped.

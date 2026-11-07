@@ -55,19 +55,19 @@ const attach = async ({ url = "http://remote.test", snapshot = "{}" } = {}) => {
 	const sync = SseSync.attach(store, new URL(url));
 	const syncEngineDidFail = vi.fn();
 
-	sync.delegate = { syncEngineDidFail };
+	sync.onError(syncEngineDidFail);
 	engines.push(sync);
 	sources.at(-1)?.emit(snapshot);
 
 	await vi.waitFor(() => {
-		expect(sync.session.connecting).toBe(false);
+		expect(sync.connecting).toBe(false);
 	});
 
 	return { store, sync, syncEngineDidFail };
 };
 
 const editTickets = (store: Store<typeof schema>) =>
-	store.state.update((draft) => {
+	store.update((draft) => {
 		draft.tickets.push({ title: "Offline" });
 	});
 
@@ -80,7 +80,7 @@ describe("SseSync", () => {
 	});
 
 	afterEach(() => {
-		for (const engine of engines.splice(0)) engine.session.detach();
+		for (const engine of engines.splice(0)) engine.detach();
 
 		vi.unstubAllGlobals();
 	});
@@ -100,7 +100,7 @@ describe("SseSync", () => {
 	it("bootstraps the store from the first event", async () => {
 		const { store } = await attach({ snapshot: language("cs") });
 
-		expect(store.state.read().language).toBe("cs");
+		expect(store.read().language).toBe("cs");
 	});
 
 	it("merges fields carried by later events", async () => {
@@ -108,13 +108,13 @@ describe("SseSync", () => {
 
 		sources[0]?.emit(language("cs"));
 
-		expect(store.state.read().language).toBe("cs");
+		expect(store.read().language).toBe("cs");
 	});
 
 	it("posts each changed field on its own", async () => {
 		const { store } = await attach();
 
-		store.state.update((draft) => {
+		store.update((draft) => {
 			draft.language = "cs";
 		});
 
@@ -127,13 +127,13 @@ describe("SseSync", () => {
 		});
 	});
 
-	it("reports a failed push to the delegate", async () => {
+	it("reports a failed push to error listeners", async () => {
 		fetchMock.mockImplementation(async () => new Response(null, { status: 500 }));
 
-		const { sync, syncEngineDidFail } = await attach();
+		const { syncEngineDidFail } = await attach();
 
 		await vi.waitFor(() => {
-			expect(syncEngineDidFail).toHaveBeenCalledWith(sync, expect.any(Error));
+			expect(syncEngineDidFail).toHaveBeenCalledWith(expect.any(Error));
 		});
 	});
 
@@ -146,7 +146,7 @@ describe("SseSync", () => {
 		sources[0]?.emit(language("cs"));
 
 		expect(syncEngineDidFail).toHaveBeenCalledTimes(3);
-		expect(store.state.read().language).toBe("cs");
+		expect(store.read().language).toBe("cs");
 	});
 
 	it.each([
@@ -156,8 +156,8 @@ describe("SseSync", () => {
 	])("disconnects and reports the failure when the first event %s", async (_reason, snapshot) => {
 		const { sync, syncEngineDidFail } = await attach({ snapshot });
 
-		expect(sync.session.disconnected).toBe(true);
-		expect(syncEngineDidFail).toHaveBeenCalledExactlyOnceWith(sync, expect.any(Error));
+		expect(sync.disconnected).toBe(true);
+		expect(syncEngineDidFail).toHaveBeenCalledExactlyOnceWith(expect.any(Error));
 		expect(sources[0]?.closed).toBe(true);
 	});
 
@@ -166,7 +166,7 @@ describe("SseSync", () => {
 
 		sources[0]?.shutDown();
 
-		expect(sync.session.disconnected).toBe(true);
+		expect(sync.disconnected).toBe(true);
 		expect(sources).toHaveLength(1);
 		expect(sources[0]?.closed).toBe(true);
 	});
@@ -178,7 +178,7 @@ describe("SseSync", () => {
 		editTickets(store);
 		await Promise.resolve();
 
-		expect(sync.session.disconnected).toBe(true);
+		expect(sync.disconnected).toBe(true);
 		expect(sources).toHaveLength(1);
 	});
 
@@ -186,24 +186,24 @@ describe("SseSync", () => {
 		const { store, sync } = await attach();
 
 		sources[0]?.shutDown();
-		sync.session.retry();
+		sync.retry();
 
 		expect(sources).toHaveLength(2);
 
 		sources[1]?.emit(language("cs"));
 
 		await vi.waitFor(() => {
-			expect(sync.session.connected).toBe(true);
+			expect(sync.connected).toBe(true);
 		});
-		expect(store.state.read().language).toBe("cs");
+		expect(store.read().language).toBe("cs");
 	});
 
 	it("opens one stream for several retries", async () => {
 		const { sync } = await attach();
 
 		sources[0]?.shutDown();
-		sync.session.retry();
-		sync.session.retry();
+		sync.retry();
+		sync.retry();
 
 		expect(sources).toHaveLength(2);
 	});
@@ -211,7 +211,7 @@ describe("SseSync", () => {
 	it("ignores retries while connected", async () => {
 		const { sync } = await attach();
 
-		sync.session.retry();
+		sync.retry();
 
 		expect(sources).toHaveLength(1);
 	});
@@ -219,7 +219,7 @@ describe("SseSync", () => {
 	it("retries after a first event it cannot read", async () => {
 		const { sync } = await attach({ snapshot: "[]" });
 
-		sync.session.retry();
+		sync.retry();
 
 		expect(sources).toHaveLength(2);
 	});
@@ -228,15 +228,15 @@ describe("SseSync", () => {
 		const { sync, syncEngineDidFail } = await attach();
 
 		sources[0]?.shutDown();
-		sync.session.retry();
+		sync.retry();
 		sources[1]?.shutDown();
 
 		await vi.waitFor(() => {
-			expect(sync.session.disconnected).toBe(true);
+			expect(sync.disconnected).toBe(true);
 		});
-		expect(syncEngineDidFail).toHaveBeenCalledWith(sync, expect.any(Error));
+		expect(syncEngineDidFail).toHaveBeenCalledWith(expect.any(Error));
 
-		sync.session.retry();
+		sync.retry();
 
 		expect(sources).toHaveLength(3);
 	});
@@ -245,10 +245,10 @@ describe("SseSync", () => {
 		const { store, sync } = await attach();
 
 		sources[0]?.shutDown();
-		store.state.update((draft) => {
+		store.update((draft) => {
 			draft.language = "en";
 		});
-		sync.session.retry();
+		sync.retry();
 
 		const edit = {
 			url: "http://remote.test/push",
@@ -269,7 +269,7 @@ describe("SseSync", () => {
 	it("closes the event stream on detach", async () => {
 		const { sync } = await attach();
 
-		sync.session.detach();
+		sync.detach();
 
 		expect(sources[0]?.closed).toBe(true);
 	});

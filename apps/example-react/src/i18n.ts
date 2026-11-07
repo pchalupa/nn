@@ -1,6 +1,5 @@
+import type { Language, Status } from "example-schema";
 import { createInstance } from "i18next";
-
-import type { Language, Status } from "./store";
 
 export const languageNames: Record<Language, string> = {
 	en: "English",

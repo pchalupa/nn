@@ -1,10 +1,10 @@
 import { createFileRoute, Outlet } from "@tanstack/react-router";
+import { status } from "example-schema";
 import { useTranslation } from "react-i18next";
 
 import { Column } from "../../components/column";
 import { Skeleton } from "../../components/skeleton";
 import { statusLabels } from "../../i18n";
-import { status } from "../../store";
 
 const Board = () => {
 	const { t } = useTranslation();

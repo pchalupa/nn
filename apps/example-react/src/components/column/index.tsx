@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
+import type { Status } from "example-schema";
 
-import { type Status, useRead } from "../../store";
+import { useRead } from "../../store";
 import { Divider } from "../divider";
 import { Ticket } from "../ticket";
 import { Header } from "./parts/header";

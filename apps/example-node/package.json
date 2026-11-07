@@ -1,0 +1,24 @@
+{
+	"name": "example-node",
+	"version": "0.0.0",
+	"private": true,
+	"type": "module",
+	"scripts": {
+		"dev": "tsx watch --clear-screen=false src/index.ts",
+		"start": "tsx src/index.ts",
+		"ts:check": "tsc --noEmit"
+	},
+	"dependencies": {
+		"@nn/store": "workspace:",
+		"example-schema": "workspace:"
+	},
+	"devDependencies": {
+		"@nn/typescript-config": "workspace:",
+		"@types/node": "^26.6.6",
+		"tsx": "^4.23.15",
+		"typescript": "catalog:"
+	},
+	"engines": {
+		"node": ">=24"
+	}
+}

@@ -12,14 +12,9 @@ type Snapshot<Value> = {
 
 type Update<Data> = (recipe: (draft: Data) => void) => void;
 
-export function createStore<StoreSchema extends ObjectSchema<Record<string, Schema>>>(
-	schema: StoreSchema,
-): Store<StoreSchema> {
-	return new Store(schema);
-}
-
-export function use<StoreSchema extends ObjectSchema<Record<string, Schema>>>(store: Store<StoreSchema>) {
+export function createStore<StoreSchema extends ObjectSchema<Record<string, Schema>>>(schema: StoreSchema) {
 	type Data = InferStateType<StoreSchema>;
+	const store = new Store(schema);
 	const getSnapshot = () => store.read();
 	const subscribe = (listener: () => void) => store.onChange(listener);
 	const update: Update<Data> = (recipe) => store.update(recipe);
@@ -36,5 +31,5 @@ export function use<StoreSchema extends ObjectSchema<Record<string, Schema>>>(st
 		return update;
 	}
 
-	return { useRead, useUpdate };
+	return { store, useRead, useUpdate };
 }

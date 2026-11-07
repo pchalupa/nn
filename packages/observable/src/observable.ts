@@ -16,6 +16,16 @@ export class Observable<Arguments extends unknown[] = []> {
 	}
 
 	public notify(...args: Arguments): void {
-		for (const observer of this.observers) observer(...args);
+		const errors: unknown[] = [];
+
+		for (const observer of this.observers) {
+			try {
+				observer(...args);
+			} catch (error) {
+				errors.push(error);
+			}
+		}
+
+		if (errors.length > 0) throw errors[0];
 	}
 }

@@ -15,9 +15,10 @@ const schema = object({
 type Data = InferStateType<typeof schema>;
 
 const setup = () => {
-	const created = createStore(schema);
+	const result = createStore(schema);
+	const { store } = result;
 
-	created.store.state.update((draft) => {
+	store.update((draft) => {
 		draft.tickets.push(
 			{ id: "1", title: "First", status: "todo" },
 			{ id: "2", title: "Second", status: "done" },
@@ -26,7 +27,7 @@ const setup = () => {
 		draft.language = "en";
 	});
 
-	return created;
+	return result;
 };
 
 const mount = async (ui: ReactNode) => {
@@ -47,8 +48,8 @@ describe("@nn/react", () => {
 		it("creates a store with the schema defaults", () => {
 			const { store } = createStore(schema);
 
-			expect(store.state.read()).toStrictEqual({ tickets: [], language: "" });
-			expectTypeOf(store.state.read().language).toEqualTypeOf<string>();
+			expect(store.read()).toStrictEqual({ tickets: [], language: "" });
+			expectTypeOf(store.read().language).toEqualTypeOf<string>();
 		});
 	});
 
@@ -74,7 +75,7 @@ describe("@nn/react", () => {
 			const renders = rendered.mock.calls.length;
 
 			await act(async () =>
-				store.state.update((draft) => {
+				store.update((draft) => {
 					draft.tickets[1].title = "Elsewhere";
 					draft.language = "cs";
 				}),
@@ -83,7 +84,7 @@ describe("@nn/react", () => {
 			expect(screen.getAllByRole("listitem")).toHaveLength(1);
 
 			await act(async () =>
-				store.state.update((draft) => {
+				store.update((draft) => {
 					draft.tickets[0].title = "Changed";
 				}),
 			);
@@ -106,7 +107,7 @@ describe("@nn/react", () => {
 
 			await mount(<Summary />);
 			await act(async () =>
-				store.state.update((draft) => {
+				store.update((draft) => {
 					draft.tickets[0].title = "Changed";
 				}),
 			);
@@ -114,7 +115,7 @@ describe("@nn/react", () => {
 			const renders = rendered.mock.calls.length;
 
 			await act(async () =>
-				store.state.update((draft) => {
+				store.update((draft) => {
 					draft.tickets[1].title = "Elsewhere";
 				}),
 			);
@@ -170,7 +171,7 @@ describe("@nn/react", () => {
 			evaluated.length = 0;
 
 			await act(async () =>
-				store.state.update((draft) => {
+				store.update((draft) => {
 					draft.tickets[0].title = "Changed";
 				}),
 			);
@@ -214,12 +215,12 @@ describe("@nn/react", () => {
 
 		it("keeps one live subscription through StrictMode and removes it on unmount", async () => {
 			const { store, useRead } = setup();
-			const subscribe = store.updates.subscribe.bind(store.updates);
+			const onChange = store.onChange.bind(store);
 			let active = 0;
 
-			vi.spyOn(store.updates, "subscribe").mockImplementation((listener) => {
+			vi.spyOn(store, "onChange").mockImplementation((listener) => {
 				active++;
-				const unsubscribe = subscribe(listener);
+				const unsubscribe = onChange(listener);
 
 				return () => {
 					active--;
@@ -248,7 +249,7 @@ describe("@nn/react", () => {
 	describe("useUpdate", () => {
 		it("keeps its identity and never subscribes or rerenders on store changes", async () => {
 			const { store, useUpdate } = setup();
-			const subscribe = vi.spyOn(store.updates, "subscribe");
+			const subscribe = vi.spyOn(store, "onChange");
 			const updates: unknown[] = [];
 			const Writer = () => {
 				updates.push(useUpdate());
@@ -263,7 +264,7 @@ describe("@nn/react", () => {
 			const renders = updates.length;
 
 			await act(async () =>
-				store.state.update((draft) => {
+				store.update((draft) => {
 					draft.language = "cs";
 				}),
 			);
@@ -338,7 +339,7 @@ describe("@nn/react", () => {
 			expect(screen.getByRole("button").textContent).toBe("en");
 			await act(async () => screen.getByRole("button").click());
 			expect(screen.getByRole("button").textContent).toBe("cs");
-			expect(store.state.read().language).toBe("cs");
+			expect(store.read().language).toBe("cs");
 		});
 
 		it("writes against current state after its component unmounts", async () => {
@@ -352,13 +353,13 @@ describe("@nn/react", () => {
 			const { unmount } = await mount(<Writer />);
 
 			await unmount();
-			store.state.update((draft) => {
+			store.update((draft) => {
 				draft.tickets.splice(0, draft.tickets.length, { id: "4", title: "Fresh", status: "todo" });
 			});
 			updates[0]((draft) => {
 				draft.tickets[0].title += " updated";
 			});
-			expect(store.state.read().tickets).toStrictEqual([{ id: "4", title: "Fresh updated", status: "todo" }]);
+			expect(store.read().tickets).toStrictEqual([{ id: "4", title: "Fresh updated", status: "todo" }]);
 		});
 
 		it("reads and writes a store without a suspense boundary", async () => {
@@ -384,7 +385,7 @@ describe("@nn/react", () => {
 			render(<Editor />);
 			expect(screen.getByRole("button").textContent).toBe("empty");
 			await act(async () => screen.getByRole("button").click());
-			expect(store.state.read().language).toBe("cs");
+			expect(store.read().language).toBe("cs");
 			expect(screen.getByRole("button").textContent).toBe("cs");
 		});
 	});

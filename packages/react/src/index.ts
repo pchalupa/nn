@@ -17,9 +17,9 @@ export function createStore<StoreSchema extends ObjectSchema<Record<string, Sche
 
 	const store = new Store(schema);
 
-	const getSnapshot = () => store.state.read();
-	const subscribe = (observer: () => void) => store.updates.subscribe(observer);
-	const update: Update<Data> = (recipe) => store.state.update(recipe);
+	const getSnapshot = () => store.read();
+	const subscribe = (listener: () => void) => store.onChange(listener);
+	const update: Update<Data> = (recipe) => store.update(recipe);
 
 	function useRead<Result>(selector: (data: Snapshot<Data>) => Result): Result {
 		const value = useSyncExternalStoreWithSelector(subscribe, getSnapshot, getSnapshot, selector, equal);

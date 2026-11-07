@@ -450,7 +450,7 @@ describe("State notifications", () => {
 
 			return { language: "ignored", tickets: [] };
 		});
-		expect(listener).toHaveBeenCalledExactlyOnceWith(state, new Set([expect.any(RGA), expect.any(LWWRegister)]));
+		expect(listener).toHaveBeenCalledExactlyOnceWith(new Set([expect.any(RGA), expect.any(LWWRegister)]));
 		expect(observed).toStrictEqual([state.read()]);
 		expect(state.read().language).toBe("cs");
 		expect(state.read().tickets[0].title).toBe("Changed");
@@ -503,7 +503,7 @@ describe("State merges", () => {
 
 		state.merge("language", new LWWRegister("cs", "language", Time.now()));
 		expect(state.read().language).toBe("cs");
-		expect(listener).toHaveBeenCalledExactlyOnceWith(state, new Set([expect.any(LWWRegister)]));
+		expect(listener).toHaveBeenCalledExactlyOnceWith(new Set([expect.any(LWWRegister)]));
 	});
 
 	it("notifies once when a merge changes several fields of one entry", () => {

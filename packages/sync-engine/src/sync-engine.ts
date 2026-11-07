@@ -12,12 +12,13 @@ export interface SyncEngineDelegate {
 }
 
 export abstract class SyncEngine implements Delegatable<SyncEngineDelegate> {
+	private codec = new Codec();
 	public delegate?: SyncEngineDelegate;
 	public readonly session = new Session();
-	private unsubscribeFromStoreChanges?: () => void;
-	private codec = new Codec();
 
 	constructor(protected readonly store: Store) {
+		let unsubscribeFromStoreChanges: () => void | undefined;
+
 		this.session.delegate = {
 			sessionOpen: async (_session, signal) => {
 				try {
@@ -45,12 +46,12 @@ export abstract class SyncEngine implements Delegatable<SyncEngineDelegate> {
 
 				void this.send(entries);
 
-				this.unsubscribeFromStoreChanges = this.store.changes.subscribe((changed) => {
+				unsubscribeFromStoreChanges = this.store.changes.subscribe((changed) => {
 					void this.send(Array.from(changed, (entity) => this.codec.encode(entity)));
 				});
 			},
 			sessionDidClose: () => {
-				this.unsubscribeFromStoreChanges?.();
+				unsubscribeFromStoreChanges?.();
 				this.close();
 			},
 		};

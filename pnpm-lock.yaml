@@ -65,9 +65,6 @@ importers:
 
   apps/example-node:
     dependencies:
-      '@nn/schema':
-        specifier: 'workspace:'
-        version: link:../../packages/schema
       '@nn/sse-sync':
         specifier: 'workspace:'
         version: link:../../packages/sse-sync

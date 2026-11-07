@@ -9,7 +9,6 @@
 		"ts:check": "tsc --noEmit"
 	},
 	"dependencies": {
-		"@nn/schema": "workspace:",
 		"@nn/sse-sync": "workspace:",
 		"@nn/store": "workspace:",
 		"example-schema": "workspace:",

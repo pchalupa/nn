@@ -1,3 +1,7 @@
 {
-	"extends": "@nn/typescript-config/library.json"
+	"extends": "@nn/typescript-config/library.json",
+	"compilerOptions": {
+		"lib": ["ES2022"],
+		"types": ["node"]
+	}
 }

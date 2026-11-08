@@ -4,8 +4,7 @@
 	"private": true,
 	"type": "module",
 	"scripts": {
-		"dev": "tsx --experimental-eventsource --env-file=.env.development --env-file-if-exists=.env.local src/index.ts",
-		"test": "vitest run",
+		"dev": "tsx --experimental-eventsource --env-file=.env.development src/index.ts",
 		"ts:check": "tsc --noEmit"
 	},
 	"dependencies": {
@@ -21,7 +20,6 @@
 		"@nn/typescript-config": "workspace:",
 		"@types/node": "^26.6.6",
 		"tsx": "^4.23.15",
-		"typescript": "catalog:",
-		"vitest": "catalog:"
+		"typescript": "catalog:"
 	}
 }

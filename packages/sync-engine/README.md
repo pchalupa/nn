@@ -63,4 +63,4 @@ sync.onStateChange((state) => {
 sync.onError((error) => console.error(error));
 ```
 
-`detach()` stops the engine for good.
+`dispose()` stops the engine for good.

@@ -81,7 +81,7 @@ describe("SseSync", () => {
 	});
 
 	afterEach(() => {
-		for (const engine of engines.splice(0)) engine.detach();
+		for (const engine of engines.splice(0)) engine.dispose();
 
 		vi.unstubAllGlobals();
 	});
@@ -295,10 +295,10 @@ describe("SseSync", () => {
 		});
 	});
 
-	it("closes the event stream on detach", async () => {
+	it("closes the event stream on dispose", async () => {
 		const { sync } = await connect();
 
-		sync.detach();
+		sync.dispose();
 
 		expect(sources[0]?.closed).toBe(true);
 	});

@@ -34,7 +34,7 @@ export abstract class SyncEngine {
 					}
 				}
 			},
-			sessionDidOpen: () => {
+			sessionDidConnect: () => {
 				const { data } = this.store.encode();
 				const entries = Object.values(data);
 
@@ -42,7 +42,7 @@ export abstract class SyncEngine {
 
 				unsubscribeFromStoreChanges = this.store.onChange((changes) => void this.send(Object.values(changes)));
 			},
-			sessionDidClose: () => {
+			sessionClose: () => {
 				unsubscribeFromStoreChanges?.();
 				this.close();
 			},
@@ -69,8 +69,8 @@ export abstract class SyncEngine {
 		return this.session.disconnected;
 	}
 
-	public get detached(): boolean {
-		return this.session.detached;
+	public get disposed(): boolean {
+		return this.session.disposed;
 	}
 
 	public connect(): void {
@@ -81,8 +81,8 @@ export abstract class SyncEngine {
 		this.session.retry();
 	}
 
-	public detach(): void {
-		this.session.detach();
+	public dispose(): void {
+		this.session.dispose();
 	}
 
 	public onStateChange(listener: (state: SessionState) => void): Unsubscribe {

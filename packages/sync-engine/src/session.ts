@@ -6,7 +6,7 @@ export enum SessionState {
 	Connecting = "connecting",
 	Connected = "connected",
 	Disconnected = "disconnected",
-	Detached = "detached",
+	Disposed = "disposed",
 }
 
 export enum SessionEvent {
@@ -14,15 +14,15 @@ export enum SessionEvent {
 	Succeed = "succeed",
 	Fail = "fail",
 	Drop = "drop",
-	Reconnect = "reconnect",
+	Reopen = "reopen",
 	Retry = "retry",
-	Detach = "detach",
+	Dispose = "dispose",
 }
 
 export interface SessionDelegate {
 	sessionOpen(session: Session, signal: AbortSignal): Promise<void>;
-	sessionDidOpen(session: Session): void;
-	sessionDidClose(session: Session): void;
+	sessionClose(session: Session): void;
+	sessionDidConnect(session: Session): void;
 }
 
 export class Session implements Delegatable<SessionDelegate> {
@@ -52,28 +52,46 @@ export class Session implements Delegatable<SessionDelegate> {
 		return this.currentState === SessionState.Disconnected;
 	}
 
-	public get detached(): boolean {
-		return this.currentState === SessionState.Detached;
+	public get disposed(): boolean {
+		return this.currentState === SessionState.Disposed;
 	}
 
 	public connect(): void {
 		this.dispatch(SessionEvent.Connect);
 	}
 
-	public detach(): void {
-		this.dispatch(SessionEvent.Detach);
+	public dispose(): void {
+		this.dispatch(SessionEvent.Dispose);
 	}
 
 	public drop(): void {
 		this.dispatch(SessionEvent.Drop);
 	}
 
-	public reconnect(): void {
-		this.dispatch(SessionEvent.Reconnect);
+	public reopen(): void {
+		this.dispatch(SessionEvent.Reopen);
 	}
 
 	public retry(): void {
 		this.dispatch(SessionEvent.Retry);
+	}
+
+	private open(): void {
+		const controller = new AbortController();
+
+		this.controller = controller;
+
+		Promise.resolve(this.delegate?.sessionOpen(this, controller.signal))
+			.then(() => controller.signal.aborted || this.dispatch(SessionEvent.Succeed))
+			.catch(() => controller.signal.aborted || this.dispatch(SessionEvent.Fail));
+	}
+
+	private close(): void {
+		if (this.controller) {
+			this.controller.abort();
+			this.controller = undefined;
+			this.delegate?.sessionClose(this);
+		}
 	}
 
 	private dispatch(event: SessionEvent): void {
@@ -94,7 +112,7 @@ export class Session implements Delegatable<SessionDelegate> {
 								this.open();
 								break;
 							case SessionState.Connected:
-								this.delegate?.sessionDidOpen(this);
+								this.delegate?.sessionDidConnect(this);
 								break;
 							default:
 								this.close();
@@ -109,28 +127,10 @@ export class Session implements Delegatable<SessionDelegate> {
 		}
 	}
 
-	private open(): void {
-		const controller = new AbortController();
-
-		this.controller = controller;
-
-		Promise.resolve(this.delegate?.sessionOpen(this, controller.signal))
-			.then(() => controller.signal.aborted || this.dispatch(SessionEvent.Succeed))
-			.catch(() => controller.signal.aborted || this.dispatch(SessionEvent.Fail));
-	}
-
-	private close(): void {
-		if (this.controller) {
-			this.controller.abort();
-			this.controller = undefined;
-			this.delegate?.sessionDidClose(this);
-		}
-	}
-
 	public static transition(state: SessionState, event: SessionEvent): SessionState {
-		if (state === SessionState.Detached) return state;
+		if (state === SessionState.Disposed) return state;
 
-		if (event === SessionEvent.Detach) return SessionState.Detached;
+		if (event === SessionEvent.Dispose) return SessionState.Disposed;
 
 		switch (state) {
 			case SessionState.Idle:
@@ -144,7 +144,7 @@ export class Session implements Delegatable<SessionDelegate> {
 			case SessionState.Connected:
 				if (event === SessionEvent.Drop) return SessionState.Disconnected;
 
-				if (event === SessionEvent.Reconnect) return SessionState.Connecting;
+				if (event === SessionEvent.Reopen) return SessionState.Connecting;
 
 				return state;
 			case SessionState.Disconnected:

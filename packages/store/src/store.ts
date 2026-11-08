@@ -23,6 +23,7 @@ export class Store<StateSchema extends ObjectSchema<Record<string, Schema>> = Ob
 			stateDidChange: (changed: ReadonlySet<Entity>) => {
 				const changes: Record<string, Encoded> = {};
 
+				// TODO: Refactor this block to avoid up front loop and turn the changes to array of encoded entities.
 				for (const entity of changed) {
 					let encoded: Encoded | undefined;
 

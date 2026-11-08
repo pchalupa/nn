@@ -1,5 +1,12 @@
 # @nn/guards
 
+## 0.3.1
+
+### Patch Changes
+
+- 8abc710: Point `homepage` and `repository` to each package's own directory, so npm links open the right README and source.
+- 8abc710: Document installation, requirements, and usage in the package README.
+
 ## 0.3.0
 
 ### Minor Changes

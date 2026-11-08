@@ -1,15 +1,24 @@
 {
 	"name": "@nn/observable",
-	"version": "3.0.0",
-	"description": "Delegate-based observation types",
-	"keywords": [],
-	"homepage": "https://github.com/pchalupa/nn/packages/observable#readme",
+	"version": "3.0.2",
+	"description": "Observer and delegate primitives for change notification",
+	"keywords": [
+		"delegate",
+		"observable",
+		"observer",
+		"pub-sub"
+	],
+	"homepage": "https://github.com/pchalupa/nn/tree/main/packages/observable#readme",
 	"bugs": {
 		"url": "https://github.com/pchalupa/nn/issues"
 	},
 	"license": "MIT",
 	"author": "pchalupa <chalupa.petr93@gmail.com> (https://github.com/pchalupa)",
-	"repository": "https://github.com/pchalupa/nn",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/pchalupa/nn.git",
+		"directory": "packages/observable"
+	},
 	"type": "module",
 	"exports": {
 		".": "./src/delegatable.ts",

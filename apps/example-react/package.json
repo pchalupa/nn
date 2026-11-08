@@ -19,9 +19,9 @@
 	"dependencies": {
 		"@hono/node-server": "^2.1.6",
 		"@hono/vercel": "^1.0.1",
-		"@nn/broadcast-sync": "workspace:*",
-		"@nn/indexdb-sync": "workspace:*",
-		"@nn/react": "workspace:*",
+		"@nn/broadcast-sync": "workspace:",
+		"@nn/indexdb-sync": "workspace:",
+		"@nn/react": "workspace:",
 		"@nn/react-devtools": "workspace:*",
 		"@nn/sse-sync": "workspace:*",
 		"@simplewebauthn/browser": "^14.0.0",

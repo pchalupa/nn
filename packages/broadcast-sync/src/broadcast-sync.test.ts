@@ -22,7 +22,7 @@ const connect = (name?: string) => {
 
 describe("BroadcastSync", () => {
 	afterEach(() => {
-		for (const engine of engines.splice(0)) engine.detach();
+		for (const engine of engines.splice(0)) engine.dispose();
 
 		vi.restoreAllMocks();
 	});
@@ -128,12 +128,12 @@ describe("BroadcastSync", () => {
 		});
 	});
 
-	it("stops sharing changes on detach", async () => {
+	it("stops sharing changes on dispose", async () => {
 		const name = crypto.randomUUID();
 		const first = connect(name);
 		const second = connect(name);
 
-		second.sync.detach();
+		second.sync.dispose();
 		first.store.update((draft) => {
 			draft.language = "cs";
 		});

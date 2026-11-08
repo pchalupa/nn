@@ -37,7 +37,7 @@ class TestEngine extends SyncEngine {
 	}
 
 	public reopen(): void {
-		this.session.reconnect();
+		this.session.reopen();
 	}
 
 	public lose(): void {
@@ -97,7 +97,7 @@ const deferred = <T>() => {
 describe("SyncEngine", () => {
 	afterEach(() => {
 		for (const engine of engines.splice(0)) {
-			engine.detach();
+			engine.dispose();
 		}
 	});
 
@@ -163,15 +163,15 @@ describe("SyncEngine", () => {
 		expect(onStateChange.mock.calls).toStrictEqual([[SyncState.Connecting], [SyncState.Disconnected]]);
 	});
 
-	it("never connects an engine detached before startup", async () => {
+	it("never connects an engine disposed before startup", async () => {
 		const transport = transportMock();
 		const sync = new TestEngine(transport, new Store(schema), false);
 
-		sync.detach();
+		sync.dispose();
 		sync.connect();
 		await flush();
 
-		expect(sync.detached).toBe(true);
+		expect(sync.disposed).toBe(true);
 		expect(transport.open).not.toHaveBeenCalled();
 		expect(transport.pull).not.toHaveBeenCalled();
 		expect(transport.push).not.toHaveBeenCalled();
@@ -189,7 +189,7 @@ describe("SyncEngine", () => {
 
 		await flush();
 		off();
-		sync.detach();
+		sync.dispose();
 
 		expect(listener.mock.calls).toStrictEqual([[SyncState.Connected]]);
 	});
@@ -427,7 +427,7 @@ describe("SyncEngine", () => {
 		expect(transport.pull).not.toHaveBeenCalled();
 	});
 
-	it("detaching while the transport opens never pulls or pushes", async () => {
+	it("disposing while the transport opens never pulls or pushes", async () => {
 		const opening = deferred<void>();
 		const transport = transportMock();
 
@@ -435,7 +435,7 @@ describe("SyncEngine", () => {
 
 		const sync = new TestEngine(transport);
 
-		sync.detach();
+		sync.dispose();
 		opening.resolve();
 		await flush();
 
@@ -444,7 +444,7 @@ describe("SyncEngine", () => {
 		expect(transport.close).toHaveBeenCalledOnce();
 	});
 
-	it("detaching while pulling doesn't merge the pulled value", async () => {
+	it("disposing while pulling doesn't merge the pulled value", async () => {
 		const pulling = deferred<unknown>();
 		const transport = transportMock({ language: new LWWRegister("cs", "language", Time.now()).encode() });
 		const store = new Store(schema);
@@ -457,7 +457,7 @@ describe("SyncEngine", () => {
 
 		expect(transport.pull).toHaveBeenCalledExactlyOnceWith("tickets");
 
-		sync.detach();
+		sync.dispose();
 		pulling.resolve(new RGA([new LWWMap({ title: new LWWRegister("First", "title") }, "first")], "tickets").encode());
 		await flush();
 
@@ -476,14 +476,14 @@ describe("SyncEngine", () => {
 		expect(transport.push).toHaveBeenCalledWith("language", expect.objectContaining({ data: "cs" }));
 	});
 
-	it("stops pushing and closes the transport on detach", async () => {
+	it("stops pushing and closes the transport on dispose", async () => {
 		const transport = transportMock();
 		const store = new Store(schema);
 		const sync = new TestEngine(transport, store);
 
 		await flush();
 		transport.push.mockClear();
-		sync.detach();
+		sync.dispose();
 		store.update((draft) => {
 			draft.language = "cs";
 		});
@@ -492,23 +492,23 @@ describe("SyncEngine", () => {
 		expect(transport.close).toHaveBeenCalledOnce();
 	});
 
-	it("detaching twice closes the transport once", async () => {
+	it("disposing twice closes the transport once", async () => {
 		const transport = transportMock();
 		const sync = new TestEngine(transport);
 
 		await flush();
-		sync.detach();
-		sync.detach();
+		sync.dispose();
+		sync.dispose();
 
 		expect(transport.close).toHaveBeenCalledOnce();
 	});
 
-	it("aborts the signal given to open on detach", async () => {
+	it("aborts the signal given to open on dispose", async () => {
 		const transport = transportMock();
 		const sync = new TestEngine(transport);
 
 		await flush();
-		sync.detach();
+		sync.dispose();
 
 		expect(transport.open.mock.lastCall?.[0].aborted).toBe(true);
 	});
@@ -534,7 +534,7 @@ describe("SyncEngine", () => {
 		expect(transport.push).toHaveBeenCalledExactlyOnceWith("language", expect.objectContaining({ data: "cs" }));
 	});
 
-	it("reconnecting closes and reopens the transport, then pulls and pushes every field", async () => {
+	it("reopening closes and reopens the transport, then pulls and pushes every field", async () => {
 		const transport = transportMock();
 		const store = new Store(schema);
 		const sync = new TestEngine(transport, store);
@@ -556,7 +556,7 @@ describe("SyncEngine", () => {
 		expect(sync.state).toBe(SyncState.Connected);
 	});
 
-	it("pushes each change once after reconnecting", async () => {
+	it("pushes each change once after reopening", async () => {
 		const transport = transportMock();
 		const store = new Store(schema);
 		const sync = new TestEngine(transport, store);

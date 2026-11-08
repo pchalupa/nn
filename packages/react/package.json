@@ -1,19 +1,28 @@
 {
 	"name": "@nn/react",
-	"version": "2.0.0",
-	"description": "React state management library",
-	"keywords": [],
-	"homepage": "https://github.com/pchalupa/nn/packages/time#readme",
+	"version": "3.0.1",
+	"description": "React hooks for reading and updating a store",
+	"keywords": [
+		"crdt",
+		"hooks",
+		"local-first",
+		"react",
+		"state-management"
+	],
+	"homepage": "https://github.com/pchalupa/nn/tree/main/packages/react#readme",
 	"bugs": {
 		"url": "https://github.com/pchalupa/nn/issues"
 	},
 	"license": "MIT",
 	"author": "pchalupa <chalupa.petr93@gmail.com> (https://github.com/pchalupa)",
-	"repository": "https://github.com/pchalupa/nn",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/pchalupa/nn.git",
+		"directory": "packages/react"
+	},
+	"type": "module",
 	"exports": {
-		".": {
-			"import": "./src/index.ts"
-		}
+		".": "./src/index.ts"
 	},
 	"scripts": {
 		"ts:check": "tsc --noEmit",

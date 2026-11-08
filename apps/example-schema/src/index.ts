@@ -28,31 +28,29 @@ const user = object({
 	.entitle("user")
 	.describe("Holds a registered user and their passkeys.");
 
+const comment = object({
+	id: string(),
+	author: string().describe("User id of the author."),
+	createdAt: string(),
+	body: string(),
+})
+	.entitle("comment")
+	.describe("A ticket comment.");
+
 const ticket = object({
 	id: string(),
 	title: string().describe("Ticket description."),
 	description: string(),
 	status,
 	assignee: string().describe("User id of the assignee."),
+	comments: array(comment),
 })
 	.entitle("ticket")
 	.describe("Holds information about a ticket.");
-
-const comment = object({
-	id: string(),
-	ticketId: string(),
-	authorId: string(),
-	createdAt: string(),
-	body: string(),
-	reviewedDescription: string(),
-})
-	.entitle("comment")
-	.describe("A ticket comment and the description its author reviewed.");
 
 export const schema = object({
 	users: array(user).describe("List of users"),
 	tickets: array(ticket).describe("List of tickets"),
 	language,
 	tags: array(object({ name: string() })),
-	comments: array(comment),
 });

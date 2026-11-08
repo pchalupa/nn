@@ -41,7 +41,7 @@ export const TicketModal = ({ id, onClose }: TicketModalProps) => {
 
 		if (!ticket) {
 			updateStore((data) => {
-				data.tickets.push({ ...draft, id: crypto.randomUUID(), title });
+				data.tickets.push({ ...draft, id: crypto.randomUUID(), title, comments: [] });
 			});
 		} else {
 			updateStore((data) => {

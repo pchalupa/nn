@@ -35,7 +35,14 @@ try {
 							const id = createHash("md5").update(`todo:${file}:${title}`).digest("hex");
 
 							if (!ids.has(id)) {
-								draft.tickets.push({ id, title, description: `${file}:${index + 1}`, status: "todo", assignee: "" });
+								draft.tickets.push({
+									id,
+									title,
+									description: `${file}:${index + 1}`,
+									status: "todo",
+									assignee: "",
+									comments: [],
+								});
 							}
 						}
 					}

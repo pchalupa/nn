@@ -8,7 +8,7 @@ export type Ticket = InferStateType<typeof ticket>;
 
 export type Comment = InferStateType<typeof comment>;
 
-export const status = enumeration("todo", "in-progress", "review", "done");
+export const status = enumeration("todo", "in-progress", "done");
 
 export const language = enumeration("en", "cs");
 

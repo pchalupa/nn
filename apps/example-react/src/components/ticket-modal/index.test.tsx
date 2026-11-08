@@ -1,4 +1,4 @@
-import { act, render, screen } from "@testing-library/react";
+import { act, render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { type ReactNode, Suspense, useEffect } from "react";
 import { I18nextProvider } from "react-i18next";
@@ -32,6 +32,25 @@ const AddUser = () => {
 	return null;
 };
 
+const AddCommentedTicket = () => {
+	const updateStore = useUpdate();
+
+	useEffect(() => {
+		updateStore((data) => {
+			data.tickets.push({
+				id: "commented",
+				title: "Commented",
+				description: "",
+				status: "todo",
+				assignee: "",
+				comments: [{ id: "first", author: "bob", createdAt: "2026-01-01T00:00:00.000Z", body: "Looks good" }],
+			});
+		});
+	}, [updateStore]);
+
+	return null;
+};
+
 describe("TicketModal", () => {
 	const user = userEvent.setup();
 
@@ -45,14 +64,14 @@ describe("TicketModal", () => {
 		};
 	});
 
-	const setup = async (children?: ReactNode) => {
+	const setup = async (children?: ReactNode, id?: string) => {
 		const onClose = vi.fn();
 
 		await act(async () =>
 			render(
 				<I18nextProvider i18n={i18n}>
 					<Suspense fallback="fallback">
-						<TicketModal onClose={onClose} />
+						<TicketModal id={id} onClose={onClose} />
 						<Titles />
 						{children}
 					</Suspense>
@@ -107,5 +126,19 @@ describe("TicketModal", () => {
 		expect(screen.getByRole("status", { name: "titles" }).textContent).toBe(before);
 		expect(dialog).toHaveProperty("open", true);
 		expect(onClose).not.toHaveBeenCalled();
+	});
+
+	it("does not show comments for a new ticket", async () => {
+		await setup();
+
+		expect(screen.queryByRole("region", { name: "Comments" })).toBeNull();
+	});
+
+	it("shows comments of an existing ticket", async () => {
+		await setup(<AddCommentedTicket />, "commented");
+
+		const comments = await screen.findByRole("region", { name: "Comments" });
+
+		expect(await within(comments).findByText("Looks good")).toBeDefined();
 	});
 });

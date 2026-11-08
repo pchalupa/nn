@@ -1,5 +1,29 @@
 # @nn/sse-sync
 
+## 3.0.0
+
+### Major Changes
+
+- bd887fa: Sync engines stop with `dispose()` instead of `detach()`, since nothing attaches them anymore.
+
+  - `sync.detach()` becomes `sync.dispose()`, and `sync.detached` becomes `sync.disposed`.
+  - `SyncState.Detached` becomes `SyncState.Disposed`, and its value changes from `"detached"` to `"disposed"`.
+
+  Custom engines that extend `SyncEngine` call `this.session.reopen()` instead of `this.session.reconnect()` to close and open a connected transport again. It still does nothing unless the engine is connected.
+
+### Patch Changes
+
+- 8abc710: Point `homepage` and `repository` to each package's own directory, so npm links open the right README and source.
+- 8abc710: Document installation, requirements, and usage in the package README.
+- Updated dependencies [bd887fa]
+- Updated dependencies [8abc710]
+- Updated dependencies [8abc710]
+  - @nn/sync-engine@4.0.0
+  - @nn/entities@3.0.1
+  - @nn/guards@0.3.1
+  - @nn/observable@3.0.2
+  - @nn/store@3.0.1
+
 ## 2.0.0
 
 ### Major Changes

@@ -1,20 +1,27 @@
 {
 	"name": "@nn/store",
-	"version": "3.0.0",
-	"description": "State management library",
-	"keywords": [],
-	"homepage": "https://github.com/pchalupa/nn/packages/store#readme",
+	"version": "3.0.1",
+	"description": "Schema-typed state container that merges concurrent changes without conflicts",
+	"keywords": [
+		"crdt",
+		"local-first",
+		"state-management",
+		"store"
+	],
+	"homepage": "https://github.com/pchalupa/nn/tree/main/packages/store#readme",
 	"bugs": {
 		"url": "https://github.com/pchalupa/nn/issues"
 	},
 	"license": "MIT",
 	"author": "pchalupa <chalupa.petr93@gmail.com> (https://github.com/pchalupa)",
-	"repository": "https://github.com/pchalupa/nn",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/pchalupa/nn.git",
+		"directory": "packages/store"
+	},
 	"type": "module",
 	"exports": {
-		".": {
-			"import": "./src/store.ts"
-		}
+		".": "./src/store.ts"
 	},
 	"scripts": {
 		"ts:check": "tsc --noEmit",

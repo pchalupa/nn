@@ -8,8 +8,6 @@ Sync engine that shares a store between browsing contexts over a broadcast chann
 npm install @nn/broadcast-sync @nn/store
 ```
 
-> Ships TypeScript source. Your bundler or runtime must compile `.ts` files from `node_modules`.
-
 **Requires:** [`BroadcastChannel`](https://developer.mozilla.org/en-US/docs/Web/API/BroadcastChannel).
 
 ## Usage

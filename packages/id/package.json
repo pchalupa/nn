@@ -2,19 +2,25 @@
 	"name": "@nn/id",
 	"version": "0.1.0",
 	"description": "Local ID generation",
-	"keywords": [],
-	"homepage": "https://github.com/pchalupa/nn/tree/main/packages/id",
+	"keywords": [
+		"id",
+		"uuid",
+		"uuid-v4"
+	],
+	"homepage": "https://github.com/pchalupa/nn/tree/main/packages/id#readme",
 	"bugs": {
 		"url": "https://github.com/pchalupa/nn/issues"
 	},
 	"license": "MIT",
 	"author": "pchalupa <chalupa.petr93@gmail.com> (https://github.com/pchalupa)",
-	"repository": "https://github.com/pchalupa/nn",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/pchalupa/nn.git",
+		"directory": "packages/id"
+	},
 	"type": "module",
 	"exports": {
-		".": {
-			"import": "./src/id.ts"
-		}
+		".": "./src/id.ts"
 	},
 	"scripts": {
 		"ts:check": "tsc --noEmit",

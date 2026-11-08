@@ -2,14 +2,25 @@
 	"name": "@nn/sse-sync",
 	"version": "2.0.0",
 	"description": "Sync engine that keeps a store in sync with a server over server-sent events",
-	"keywords": [],
-	"homepage": "https://github.com/pchalupa/nn/packages/sse-sync#readme",
+	"keywords": [
+		"eventsource",
+		"local-first",
+		"realtime",
+		"server-sent-events",
+		"sse",
+		"sync"
+	],
+	"homepage": "https://github.com/pchalupa/nn/tree/main/packages/sse-sync#readme",
 	"bugs": {
 		"url": "https://github.com/pchalupa/nn/issues"
 	},
 	"license": "MIT",
 	"author": "pchalupa <chalupa.petr93@gmail.com> (https://github.com/pchalupa)",
-	"repository": "https://github.com/pchalupa/nn",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/pchalupa/nn.git",
+		"directory": "packages/sse-sync"
+	},
 	"type": "module",
 	"exports": {
 		".": "./src/sse-sync.ts"

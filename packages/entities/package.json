@@ -1,15 +1,25 @@
 {
 	"name": "@nn/entities",
 	"version": "3.0.0",
-	"description": "Entities",
-	"keywords": [],
-	"homepage": "https://github.com/pchalupa/nn/packages/repository#readme",
+	"description": "Conflict-free replicated data types that a store keeps its state in",
+	"keywords": [
+		"crdt",
+		"local-first",
+		"lww-map",
+		"lww-register",
+		"rga"
+	],
+	"homepage": "https://github.com/pchalupa/nn/tree/main/packages/entities#readme",
 	"bugs": {
 		"url": "https://github.com/pchalupa/nn/issues"
 	},
 	"license": "MIT",
 	"author": "pchalupa <chalupa.petr93@gmail.com> (https://github.com/pchalupa)",
-	"repository": "https://github.com/pchalupa/nn",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/pchalupa/nn.git",
+		"directory": "packages/entities"
+	},
 	"type": "module",
 	"exports": {
 		"./entity": "./src/entity.ts",

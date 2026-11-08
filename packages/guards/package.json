@@ -1,6 +1,6 @@
 {
 	"name": "@nn/guards",
-	"version": "0.3.0",
+	"version": "0.3.1",
 	"description": "Runtime type guards",
 	"keywords": [
 		"assertion",

@@ -1,5 +1,12 @@
 # @nn/observable
 
+## 3.0.2
+
+### Patch Changes
+
+- 8abc710: Point `homepage` and `repository` to each package's own directory, so npm links open the right README and source.
+- 8abc710: Document installation, requirements, and usage in the package README.
+
 ## 3.0.1
 
 ### Patch Changes

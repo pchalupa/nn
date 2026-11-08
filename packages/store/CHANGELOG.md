@@ -1,5 +1,20 @@
 # @nn/store
 
+## 3.0.1
+
+### Patch Changes
+
+- 8abc710: Point `homepage` and `repository` to each package's own directory, so npm links open the right README and source.
+- 8abc710: Document installation, requirements, and usage in the package README.
+- Updated dependencies [8abc710]
+- Updated dependencies [8abc710]
+  - @nn/entities@3.0.1
+  - @nn/guards@0.3.1
+  - @nn/id@0.1.1
+  - @nn/observable@3.0.2
+  - @nn/schema@2.0.1
+  - @nn/time@1.0.1
+
 ## 3.0.0
 
 ### Major Changes

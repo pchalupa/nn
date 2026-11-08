@@ -14,9 +14,7 @@ npm install @nn/store @nn/schema
 import { array, object, string } from "@nn/schema";
 import { Store } from "@nn/store";
 
-const store = new Store(
-	object({ todos: array(object({ id: string(), title: string() })) }),
-);
+const store = new Store(object({ todos: array(object({ id: string(), title: string() })) }));
 
 store.update((draft) => {
 	draft.todos.push({ id: "1", title: "Write README" });

@@ -1,6 +1,6 @@
 # @nn/typescript-config
 
-Shared TypeScript configuration.
+Shared [TypeScript configuration](https://www.typescriptlang.org/tsconfig/).
 
 ## Installation
 

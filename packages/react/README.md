@@ -1,14 +1,12 @@
 # @nn/react
 
-React hooks for reading and updating a store.
+[React](https://react.dev/) hooks for reading and updating a store.
 
 ## Installation
 
 ```sh
 npm install @nn/react @nn/schema
 ```
-
-**Requires:** [React](https://react.dev/) 19.
 
 ## Usage
 

@@ -8,8 +8,6 @@ Local ID generation.
 npm install @nn/id
 ```
 
-**Requires:** [`crypto.randomUUID`](https://developer.mozilla.org/en-US/docs/Web/API/Crypto/randomUUID), available in Node.js and in browsers on [secure (HTTPS) pages](https://developer.mozilla.org/en-US/docs/Web/Security/Secure_Contexts).
-
 ## Usage
 
 ```ts

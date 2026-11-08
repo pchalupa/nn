@@ -11,15 +11,7 @@ npm install @nn/schema
 ## Usage
 
 ```ts
-import {
-	array,
-	boolean,
-	enumeration,
-	type InferStateType,
-	number,
-	object,
-	string,
-} from "@nn/schema";
+import { array, boolean, enumeration, type InferStateType, number, object, string } from "@nn/schema";
 
 const todo = object({
 	id: string(),

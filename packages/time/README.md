@@ -1,6 +1,6 @@
 # @nn/time
 
-Hybrid logical clock.
+[Hybrid logical clock](https://cse.buffalo.edu/tech-reports/2014-04.pdf).
 
 ## Installation
 
@@ -10,7 +10,7 @@ npm install @nn/time
 
 ## Usage
 
-A [hybrid logical clock](https://cse.buffalo.edu/tech-reports/2014-04.pdf) combines the wall clock time with a counter and a replica identity. Times keep a consistent order across replicas even when events happen in the same millisecond.
+A hybrid logical clock combines the wall clock time with a counter and a replica identity. Times keep a consistent order across replicas even when events happen in the same millisecond.
 
 ```ts
 import { Time } from "@nn/time";

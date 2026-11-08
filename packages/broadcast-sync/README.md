@@ -1,14 +1,12 @@
 # @nn/broadcast-sync
 
-Sync engine that shares a store between browsing contexts over a broadcast channel.
+Sync engine that shares a store between browsing contexts over a [broadcast channel](https://developer.mozilla.org/en-US/docs/Web/API/BroadcastChannel).
 
 ## Installation
 
 ```sh
 npm install @nn/broadcast-sync @nn/store
 ```
-
-**Requires:** [`BroadcastChannel`](https://developer.mozilla.org/en-US/docs/Web/API/BroadcastChannel).
 
 ## Usage
 

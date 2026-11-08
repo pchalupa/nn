@@ -5,6 +5,8 @@ date: 2026-11-06
 
 # ADR-17: Retry disconnected engines on wake signals
 
+Amended by [ADR-18](ADR-18-expose-store-and-sync-engines-through-listener-methods.md): apps call `sync.retry()` and `sync.onStateChange(...)` instead of going through `session`.
+
 Amends [ADR-15](ADR-15-stream-remote-changes-over-server-sent-events.md) and [ADR-16](ADR-16-give-sync-engines-a-connection-lifecycle.md).
 
 ## Context

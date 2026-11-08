@@ -1,5 +1,63 @@
 # @nn/sse-sync
 
+## 2.0.0
+
+### Major Changes
+
+- 5d1e50e: Replace static `attach()` factories with public constructors and explicit `connect()` calls. Engines stay idle after construction, so listeners can be registered before synchronization starts. IndexedDB and Broadcast constructors keep `"nn-default"` as the default database or channel name.
+
+  Replace `const sync = Engine.attach(store, options)` with:
+
+  ```ts
+  const sync = new Engine(store, options);
+
+  sync.connect();
+  ```
+
+- 5d1e50e: Sync engines expose their connection lifecycle and failures directly, through `onStateChange` and `onError`, instead of `session` and `delegate`.
+
+  - `sync.session.retry()` and `sync.session.detach()` become `sync.retry()` and `sync.detach()`. `sync.session.state`, `connected`, `disconnected` and the other state flags become `sync.state`, `sync.connected` and so on.
+  - `sync.session.changes.subscribe(listener)` becomes `sync.onStateChange(listener)`.
+  - `sync.delegate = { syncEngineDidFail: (engine, error) => … }` becomes `sync.onError((error) => …)`. Any number of listeners can subscribe, at any time. With none, failures are dropped.
+  - `SessionState` is exported as `SyncState`, and `SyncEngineDelegate` is removed.
+
+  Custom engines that extend `SyncEngine` still drive `this.session`, which is now protected. They report failures with `this.errors.notify(error)` instead of `this.delegate?.syncEngineDidFail(this, error)`.
+
+### Patch Changes
+
+- Updated dependencies [5d1e50e]
+- Updated dependencies [5d1e50e]
+- Updated dependencies [5d1e50e]
+- Updated dependencies [5d1e50e]
+  - @nn/sync-engine@3.0.0
+  - @nn/observable@3.0.1
+  - @nn/store@3.0.0
+
+## 1.1.0
+
+### Minor Changes
+
+- 00486d7: When the browser closes the event stream for good, for example after a proxy answers with a 502, the engine disconnects instead of reopening after three seconds, and stays disconnected until the app calls `session.retry()`. A server that is down no longer receives a retry from every client on a fixed schedule.
+
+  The engine doesn't listen for the store or browser events, so it runs unchanged in Node. To recover, call `session.retry()` from the signals your runtime has, such as an edit, the network coming back, or the user returning:
+
+  ```ts
+  const sync = SseSync.attach(store, url);
+
+  store.changes.subscribe(() => sync.session.retry());
+  addEventListener("online", () => sync.session.retry());
+  document.addEventListener("visibilitychange", () => {
+  	if (document.visibilityState === "visible") sync.session.retry();
+  });
+  ```
+
+  `session.retry()` does nothing unless the engine is disconnected. A failed first connection, such as a stream refused before its first event or a first event that can't be read, is retried the same way. Every retry merges a fresh snapshot and pushes every field, so edits made while disconnected reach the server.
+
+### Patch Changes
+
+- Updated dependencies [00486d7]
+  - @nn/sync-engine@2.1.0
+
 ## 1.0.0
 
 ### Major Changes

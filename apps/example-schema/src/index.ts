@@ -12,11 +12,19 @@ export const status = enumeration("todo", "in-progress", "review", "done");
 
 export const language = enumeration("en", "cs");
 
-const passkey = object({ credentialId: string(), publicKey: string(), algorithm: number() })
+const passkey = object({
+	credentialId: string(),
+	publicKey: string(),
+	algorithm: number(),
+})
 	.entitle("passkey")
 	.describe("Holds the public part of a user's passkey.");
 
-const user = object({ id: string(), name: string().describe("User name"), passkeys: array(passkey) })
+const user = object({
+	id: string(),
+	name: string().describe("User name"),
+	passkeys: array(passkey),
+})
 	.entitle("user")
 	.describe("Holds a registered user and their passkeys.");
 

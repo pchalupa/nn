@@ -22,7 +22,8 @@
 		"simplewebauthn",
 		"unstub",
 		"mattpocock",
-		"ENOENT"
+		"ENOENT",
+		"eventsource"
 	],
 	"ignorePaths": ["docs/{notes,plans,research}"],
 	"useGitignore": true

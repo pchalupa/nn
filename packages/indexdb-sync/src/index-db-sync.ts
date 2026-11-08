@@ -7,7 +7,7 @@ import { IndexDb } from "./index-db";
 export class IndexDbSync extends SyncEngine {
 	private readonly repository: IndexDb;
 
-	constructor(store: Store, name: string) {
+	constructor(store: Store, name = "nn-default") {
 		super(store);
 
 		this.repository = new IndexDb(name);
@@ -33,13 +33,5 @@ export class IndexDbSync extends SyncEngine {
 
 	protected push(name: string, entry: Encoded): Promise<void> {
 		return this.repository.set(name, entry);
-	}
-
-	public static attach(store: Store, name = "nn-default"): IndexDbSync {
-		const indexDbSync = new IndexDbSync(store, name);
-
-		indexDbSync.session.connect();
-
-		return indexDbSync;
 	}
 }

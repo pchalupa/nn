@@ -1,5 +1,37 @@
 # @nn/sync-engine
 
+## 3.0.0
+
+### Major Changes
+
+- 5d1e50e: Sync engines expose their connection lifecycle and failures directly, through `onStateChange` and `onError`, instead of `session` and `delegate`.
+
+  - `sync.session.retry()` and `sync.session.detach()` become `sync.retry()` and `sync.detach()`. `sync.session.state`, `connected`, `disconnected` and the other state flags become `sync.state`, `sync.connected` and so on.
+  - `sync.session.changes.subscribe(listener)` becomes `sync.onStateChange(listener)`.
+  - `sync.delegate = { syncEngineDidFail: (engine, error) => … }` becomes `sync.onError((error) => …)`. Any number of listeners can subscribe, at any time. With none, failures are dropped.
+  - `SessionState` is exported as `SyncState`, and `SyncEngineDelegate` is removed.
+
+  Custom engines that extend `SyncEngine` still drive `this.session`, which is now protected. They report failures with `this.errors.notify(error)` instead of `this.delegate?.syncEngineDidFail(this, error)`.
+
+### Minor Changes
+
+- 5d1e50e: Add public `connect()` so engines can be configured and observed before starting synchronization. It starts an idle engine without exposing its session. Retry and detachment behavior stays unchanged.
+
+### Patch Changes
+
+- Updated dependencies [5d1e50e]
+- Updated dependencies [5d1e50e]
+  - @nn/observable@3.0.1
+  - @nn/store@3.0.0
+
+## 2.1.0
+
+### Minor Changes
+
+- 00486d7: A disconnected engine can try again: `session.retry()` starts a new connection attempt from `disconnected` and does nothing in any other state. The attempt opens, pulls and pushes every field as the first connection does.
+
+  `session.changes` notifies observers with the new state after each transition, once its effects have run, so an engine can react when it disconnects or connects. It doesn't deliver the current state on subscribe; read `session.state` for that. Observers must not throw. `SessionState` is now exported from `@nn/sync-engine`.
+
 ## 2.0.0
 
 ### Major Changes

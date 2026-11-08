@@ -1,6 +1,9 @@
 # Node
 node_modules
 
+# Environment
+*.local
+
 # LaTex
 *.aux
 *.fdb_latexmk

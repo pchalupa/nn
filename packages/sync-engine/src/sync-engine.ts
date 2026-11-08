@@ -40,7 +40,7 @@ export abstract class SyncEngine {
 
 				void this.send(entries);
 
-				unsubscribeFromStoreChanges = this.store.onEntitiesChange((entities) => void this.send(entities));
+				unsubscribeFromStoreChanges = this.store.onChange((changes) => void this.send(Object.values(changes)));
 			},
 			sessionClose: () => {
 				unsubscribeFromStoreChanges?.();

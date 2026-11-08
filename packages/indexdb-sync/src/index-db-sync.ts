@@ -12,7 +12,7 @@ export class IndexDbSync extends SyncEngine {
 
 		this.repository = new IndexDb(name);
 		this.repository.delegate = {
-			indexDbDidChangeVersion: () => this.session.reconnect(),
+			indexDbDidChangeVersion: () => this.session.reopen(),
 			indexDbDidDelete: () => this.session.drop(),
 		};
 	}

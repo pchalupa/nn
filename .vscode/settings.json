@@ -32,7 +32,7 @@
 	"latex-workshop.latex.outDir": "%DIR%/build",
 	"latex-workshop.formatting.latex": "latexindent",
 	"latex-workshop.formatting.latexindent.path": "/opt/homebrew/bin/latexindent",
-	"latex-workshop.formatting.latexindent.args": ["-m", "-l=%DIR%/latexindent.yaml", "-g=/dev/null", "%TMPFILE%"],
+	"latex-workshop.formatting.latexindent.args": ["-l=%DIR%/latexindent.yaml", "-g=/dev/null", "%TMPFILE%"],
 	"files.exclude": {
 		"**/*.aux": true,
 		"**/*.bbl": true,

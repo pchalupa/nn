@@ -21,7 +21,7 @@ node_modules
 *.nav
 *.snm
 *.vrb
-docs/thesis/build
+docs/*/build
 
 # Logs
 *.log

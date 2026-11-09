@@ -8,8 +8,8 @@ In a local-first application, the copy on the user's device is primary: the user
 Servers can still store additional copies and help devices exchange changes, but the user's ability to work does not depend on them.
 \parencite{local-first-software}
 
-\textcite{local-first-software} describe seven ideals for this approach: responsiveness, access across devices, offline operation, collaboration, longevity, privacy and security, and user ownership and control.
-These ideals concern both software architecture and the user's relationship with their data.
+\textcite{local-first-software} describe seven principles for this approach: responsiveness, access across devices, offline operation, collaboration, longevity, privacy and security, and user ownership and control.
+These principles concern both software architecture and the user's relationship with their data.
 They serve as criteria for evaluating an application, and adding local storage or a synchronization library does not satisfy them automatically.
 
 \subsection{Responsiveness through local operations}
@@ -37,7 +37,7 @@ A server can act as an additional replica, keeping data available for synchroniz
 Synchronization introduces requirements beyond copying files.
 If a user edits the same document on two disconnected devices, both copies may change before either device receives the other's updates.
 The application must account for these concurrent changes when the devices reconnect.
-An application that stores data locally but cannot synchronize it across devices does not meet this ideal.
+An application that stores data locally but cannot synchronize it across devices does not meet this principle.
 
 \subsection{Independence from network availability}
 
@@ -61,7 +61,7 @@ This requires a way to reconcile concurrent changes without making a central ser
 
 Collaboration also extends beyond simultaneous editing of a single shared version.
 Users may need to prepare changes privately, propose them for review, and selectively accept another person's contributions.
-The original ideals include both immediate collaboration and workflows similar to suggested edits or pull requests.
+The original principles include both immediate collaboration and workflows similar to suggested edits or pull requests.
 A collaborative system therefore has to help people review and understand changes, in addition to delivering those changes to other devices.
 \parencite{local-first-software}
 
@@ -75,7 +75,7 @@ It also lets users keep a working version instead of being forced to accept ever
 
 Longevity is broader than surviving a short network outage.
 An application might support several days of offline editing yet still depend on a provider to restore access or continue operating in the longer term.
-Meeting this ideal requires considering what remains usable after the provider's infrastructure disappears.
+Meeting this principle requires considering what remains usable after the provider's infrastructure disappears.
 A local copy offers limited independence if the user cannot interpret or modify it without that infrastructure.
 
 \subsection{Security and privacy by default}
@@ -83,7 +83,7 @@ A local copy offers limited independence if the user cannot interpret or modify 
 The sixth principle aims to reduce the trust users must place in service providers.
 Storing data on users' devices can reduce the need for a central database where the provider can read everyone's data.
 Where servers are used for synchronization or backup, end-to-end encryption can allow them to store and relay encrypted data without being able to read its contents.
-In this arrangement, the devices of authorized participants perform encryption and decryption.
+End-to-end encryption means that only the participants' devices hold the keys, so a server cannot decrypt the data it relays.
 \parencite{local-first-software}
 
 These properties require explicit design choices.
@@ -100,7 +100,7 @@ Users should be able to copy, modify, back up, and manage their data without dep
 Possession of a local copy is part of this control, but the application must also avoid artificial restrictions on what users can do with it.
 \parencite{local-first-software}
 
-The authors do not make open-source licensing a requirement: commercial, closed-source software can satisfy the ideals if it preserves this freedom.
+The authors do not make open-source licensing a requirement: commercial, closed-source software can satisfy the principles if it preserves this freedom.
 Control also brings responsibility.
 Users need ways to protect their data against device loss, accidental deletion, and ransomware, including maintaining backups.
 \parencite{local-first-software}

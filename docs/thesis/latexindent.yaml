@@ -1,0 +1,16 @@
+defaultIndent: "\t"
+
+noAdditionalIndent:
+  document: 1
+  center: 1
+  otherlanguage: 1
+
+modifyLineBreaks:
+  oneSentencePerLine:
+    manipulateSentences: 1
+    removeSentenceLineBreaks: 1
+    textWrapSentences: 0
+
+fineTuning:
+  modifyLineBreaks:
+    betterFullStop: '(?<!e\.g)(?<!i\.e)(?<!etc)(?<!seq)(?<!\bal)(?<!\bvs)(?<!\bcf)(?<!\bNo)(?<!\b\w)\.(?=\s|$)'

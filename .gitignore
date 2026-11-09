@@ -11,6 +11,17 @@ node_modules
 *.bcf
 *.blg
 *.run.xml
+*.toc
+*.lof
+*.lot
+*.lob
+*.out
+*.xdv
+*.synctex(busy)
+*.nav
+*.snm
+*.vrb
+docs/thesis/build
 
 # Logs
 *.log

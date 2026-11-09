@@ -27,9 +27,10 @@ export const TicketModal = ({ id, onClose }: TicketModalProps) => {
 				description: selectedTicket.description,
 				status: selectedTicket.status,
 				assignee: selectedTicket.assignee,
-				comments: selectedTicket.comments.map((comment) => {
-					return Object.assign(comment, { createdAt: new Date(comment.createdAt).toLocaleDateString() });
-				}),
+				comments: selectedTicket.comments.map((comment) => ({
+					...comment,
+					createdAt: new Date(comment.createdAt).toLocaleDateString(),
+				})),
 			};
 		}
 	});

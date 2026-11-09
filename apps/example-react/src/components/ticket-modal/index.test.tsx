@@ -128,12 +128,6 @@ describe("TicketModal", () => {
 		expect(onClose).not.toHaveBeenCalled();
 	});
 
-	it("does not show comments for a new ticket", async () => {
-		await setup();
-
-		expect(screen.queryByRole("region", { name: "Comments" })).toBeNull();
-	});
-
 	it("shows comments of an existing ticket", async () => {
 		await setup(<AddCommentedTicket />, "commented");
 

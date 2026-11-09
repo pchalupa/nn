@@ -23,7 +23,9 @@
 		"unstub",
 		"mattpocock",
 		"ENOENT",
-		"eventsource"
+		"eventsource",
+		"hset",
+		"hgetall"
 	],
 	"ignorePaths": ["docs/{notes,plans,research}"],
 	"useGitignore": true

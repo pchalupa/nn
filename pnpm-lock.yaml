@@ -133,12 +133,6 @@ importers:
 
   apps/example-react:
     dependencies:
-      '@hono/node-server':
-        specifier: ^2.1.6
-        version: 2.1.6(hono@4.13.16)
-      '@hono/vercel':
-        specifier: ^1.0.1
-        version: 1.0.1(hono@4.13.16)
       '@nn/broadcast-sync':
         specifier: 'workspace:'
         version: link:../../packages/broadcast-sync
@@ -157,27 +151,15 @@ importers:
       '@tanstack/react-router':
         specifier: ~1.170.46
         version: 1.170.46(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
-      '@upstash/redis':
-        specifier: ^1.41.0
-        version: 1.41.0
       example-schema:
         specifier: 'workspace:'
         version: link:../example-schema
-      hono:
-        specifier: ^4.13.16
-        version: 4.13.16
       i18next:
         specifier: ^26.5.11
         version: 26.5.11(typescript@7.0.2)
       js-cookie:
         specifier: ^3.0.8
         version: 3.0.8
-      pino:
-        specifier: ^10.4.0
-        version: 10.4.0
-      pino-pretty:
-        specifier: ^13.2.0
-        version: 13.2.0
       react:
         specifier: 'catalog:'
         version: 19.3.1
@@ -197,6 +179,9 @@ importers:
       '@babel/core':
         specifier: ^8.0.10
         version: 8.0.10
+      '@hono/node-server':
+        specifier: ^2.1.6
+        version: 2.1.6(hono@4.13.16)
       '@playwright/test':
         specifier: ^1.64.1
         version: 1.64.1
@@ -227,12 +212,18 @@ importers:
       '@types/react-dom':
         specifier: 'catalog:'
         version: 19.3.0(@types/react@19.3.0)
+      '@vercel/related-projects':
+        specifier: ^1.1.1
+        version: 1.1.1
       '@vitejs/plugin-react':
         specifier: ^6.1.2
         version: 6.1.2(@rolldown/plugin-babel@0.2.4(@babel/core@8.0.10)(@babel/runtime@7.29.10)(rolldown@1.2.16)(vite@8.3.5(@types/node@26.6.6)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(tsx@4.23.15)(yaml@2.9.1)))(babel-plugin-react-compiler@1.0.0)(vite@8.3.5(@types/node@26.6.6)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(tsx@4.23.15)(yaml@2.9.1))
       babel-plugin-react-compiler:
         specifier: 1.0.0
         version: 1.0.0
+      example-server:
+        specifier: 'workspace:'
+        version: link:../example-server
       fake-indexeddb:
         specifier: ^6.2.6
         version: 6.2.6
@@ -242,9 +233,6 @@ importers:
       tailwindcss:
         specifier: ~4.3.3
         version: 4.3.3
-      tsx:
-        specifier: ^4.23.15
-        version: 4.23.15
       typescript:
         specifier: 'catalog:'
         version: 7.0.2
@@ -270,6 +258,43 @@ importers:
       typescript:
         specifier: 'catalog:'
         version: 7.0.2
+
+  apps/example-server:
+    dependencies:
+      '@hono/node-server':
+        specifier: ^2.1.6
+        version: 2.1.6(hono@4.13.16)
+      '@hono/vercel':
+        specifier: ^1.0.1
+        version: 1.0.1(hono@4.13.16)
+      '@upstash/redis':
+        specifier: ^1.41.0
+        version: 1.41.0
+      hono:
+        specifier: ^4.13.16
+        version: 4.13.16
+      pino:
+        specifier: ^10.4.0
+        version: 10.4.0
+      pino-pretty:
+        specifier: ^13.2.0
+        version: 13.2.0
+    devDependencies:
+      '@nn/typescript-config':
+        specifier: 'workspace:'
+        version: link:../../packages/typescript-config
+      '@types/node':
+        specifier: ^26.6.6
+        version: 26.6.6
+      tsx:
+        specifier: ^4.23.15
+        version: 4.23.15
+      typescript:
+        specifier: 'catalog:'
+        version: 7.0.2
+      vitest:
+        specifier: 'catalog:'
+        version: 5.0.5(@types/node@26.6.6)(@vitest/coverage-v8@5.0.5)(jsdom@30.1.3)(vite@8.3.5(@types/node@26.6.6)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(tsx@4.23.15)(yaml@2.9.1))
 
   packages/broadcast-sync:
     dependencies:
@@ -526,9 +551,6 @@ importers:
         specifier: 'workspace:'
         version: link:../store
     devDependencies:
-      '@nn/id':
-        specifier: 'workspace:'
-        version: link:../id
       '@nn/schema':
         specifier: 'workspace:'
         version: link:../schema
@@ -2992,6 +3014,9 @@ packages:
   '@vercel/oidc@3.2.0':
     resolution: {integrity: sha512-UycprH3T6n3jH0k44NHMa7pnFHGu/N05MjojYr+Mc6I7obkoLIJujSWwin1pCvdy/eOxrI/l3uDLQsmcrOb4ug==}
     engines: {node: '>= 20'}
+
+  '@vercel/related-projects@1.1.1':
+    resolution: {integrity: sha512-Lr56tbvVXPMsBuHwAa2NEPCCLWwk+/IDMeZjrZSG1kDEztJg+bI7YPzguyPvaJrDSCEi6SEZe4U8EnxM5XdIZw==}
 
   '@vitejs/plugin-react@6.1.2':
     resolution: {integrity: sha512-fhJNGUdscQa4HkI0xFxwonWyhnVReCPDbXI7FH7jmzpnVCrFQI7PRrhWecO263610vOrs9tr2Y4xcf8uAdFxbw==}
@@ -7195,6 +7220,10 @@ snapshots:
       uncrypto: 0.1.3
 
   '@vercel/oidc@3.2.0': {}
+
+  '@vercel/related-projects@1.1.1':
+    optionalDependencies:
+      ajv: 6.15.0
 
   '@vitejs/plugin-react@6.1.2(@rolldown/plugin-babel@0.2.4(@babel/core@8.0.10)(@babel/runtime@7.29.10)(rolldown@1.2.16)(vite@8.3.5(@types/node@26.6.6)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(tsx@4.23.15)(yaml@2.9.1)))(babel-plugin-react-compiler@1.0.0)(vite@8.3.5(@types/node@26.6.6)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(tsx@4.23.15)(yaml@2.9.1))':
     dependencies:

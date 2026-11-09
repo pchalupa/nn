@@ -1,1 +1,128 @@
-\section{Key Principles of Local First Software}
+\section{Key Principles of Local-First Software}
+\label{sec:key-principles-of-local-first-software}
+
+Local-first software combines the independence of applications that store data locally with the synchronization and collaboration offered by cloud applications.
+The key architectural difference is which copy of the data is treated as authoritative.
+In a cloud application, the server usually holds the authoritative copy, while data stored on a client is a cache.
+In a local-first application, the copy on the user's device is primary: the user can read and modify it without waiting for a server.
+Servers can still store additional copies and help devices exchange changes, but the user's ability to work does not depend on them.
+\parencite{local-first-software}
+
+\textcite{local-first-software} describe seven ideals for this approach: responsiveness, access across devices, offline operation, collaboration, longevity, privacy and security, and user ownership and control.
+These ideals concern both software architecture and the user's relationship with their data.
+They serve as criteria for evaluating an application, and adding local storage or a synchronization library does not satisfy them automatically.
+
+\subsection{Responsiveness through local operations}
+
+The first principle is that users should not have to wait for a network request before continuing their work.
+Reading and writing local data removes network latency from the immediate interaction, while synchronization can take place in the background.
+For example, editing a locally available document should update and save the local copy even when the synchronization server is slow or unreachable.
+\parencite{local-first-software}
+
+This differs from an optimistic user interface, which displays an expected result before a server confirms the operation.
+Such an interface can hide network latency, but the apparent success may need to be reversed if the request fails.
+In a local-first application, a locally saved edit does not depend on a successful server request.
+Local execution still does not guarantee good performance, since processing, storage access, and rendering take time.
+The principle removes a remote dependency from ordinary interactions, which makes near-instant responses possible.
+\parencite{local-first-software}
+
+\subsection{Access across multiple devices}
+
+Local storage should not limit a user's work to one computer.
+The second principle requires synchronization across the devices on which the user works, such as a laptop, tablet, and phone.
+Each device should be able to maintain a local copy of the relevant data and exchange changes with the others.
+A server can act as an additional replica, keeping data available for synchronization when other devices are offline.
+\parencite{local-first-software}
+
+Synchronization introduces requirements beyond copying files.
+If a user edits the same document on two disconnected devices, both copies may change before either device receives the other's updates.
+The application must account for these concurrent changes when the devices reconnect.
+An application that stores data locally but cannot synchronize it across devices does not meet this ideal.
+
+\subsection{Independence from network availability}
+
+The third principle makes the network optional for working with data already available on the device.
+Users should be able to both read and write while offline, with changes synchronized when a connection becomes available.
+Offline operation is treated as a normal mode of use in which editing remains possible.
+Devices can also synchronize without an Internet connection, for example over a local network or Bluetooth.
+\parencite{local-first-software}
+
+Network independence also requires access to the software needed to interpret and modify the data.
+For a web application, the corresponding requirement is to make the application itself, as well as its data, available without fetching essential resources from a remote server.
+Disconnected users still receive other people's changes only after they reconnect, but the missing changes do not stop them from continuing their own work.
+
+\subsection{Collaboration across independent copies}
+
+Local-first software aims to offer collaboration comparable to that of cloud applications while allowing participants to work independently.
+When connected, users should be able to see one another's changes in real time.
+When disconnected, they should be able to continue editing and combine their work later.
+This requires a way to reconcile concurrent changes without making a central server a prerequisite for every edit.
+\parencite{local-first-software}
+
+Collaboration also extends beyond simultaneous editing of a single shared version.
+Users may need to prepare changes privately, propose them for review, and selectively accept another person's contributions.
+The original ideals include both immediate collaboration and workflows similar to suggested edits or pull requests.
+A collaborative system therefore has to help people review and understand changes, in addition to delivering those changes to other devices.
+\parencite{local-first-software}
+
+\subsection{Long-term access to data}
+
+The fifth principle is that users should retain access to their data even after the service provider ceases to operate.
+A user's work should remain accessible if the company that developed the application closes or stops maintaining its servers.
+Storing both the data and the software needed to read and modify it locally reduces this dependency.
+It also lets users keep a working version instead of being forced to accept every service-side upgrade.
+\parencite{local-first-software}
+
+Longevity is broader than surviving a short network outage.
+An application might support several days of offline editing yet still depend on a provider to restore access or continue operating in the longer term.
+Meeting this ideal requires considering what remains usable after the provider's infrastructure disappears.
+A local copy offers limited independence if the user cannot interpret or modify it without that infrastructure.
+
+\subsection{Security and privacy by default}
+
+The sixth principle aims to reduce the trust users must place in service providers.
+Storing data on users' devices can reduce the need for a central database where the provider can read everyone's data.
+Where servers are used for synchronization or backup, end-to-end encryption can allow them to store and relay encrypted data without being able to read its contents.
+In this arrangement, the devices of authorized participants perform encryption and decryption.
+\parencite{local-first-software}
+
+These properties require explicit design choices.
+Local storage alone does not encrypt data, and using a synchronization server does not imply that the server is unable to inspect it.
+Access control is also more difficult when collaborators possess independent copies.
+Preventing future access cannot by itself remove information that another participant has already received.
+The original essay leaves the meaning of revoking access in this setting as an open question.
+\parencite{local-first-software}
+
+\subsection{User ownership and control}
+
+The final principle defines ownership in terms of practical agency rather than intellectual property law.
+Users should be able to copy, modify, back up, and manage their data without depending on a provider's permission.
+Possession of a local copy is part of this control, but the application must also avoid artificial restrictions on what users can do with it.
+\parencite{local-first-software}
+
+The authors do not make open-source licensing a requirement: commercial, closed-source software can satisfy the ideals if it preserves this freedom.
+Control also brings responsibility.
+Users need ways to protect their data against device loss, accidental deletion, and ransomware, including maintaining backups.
+\parencite{local-first-software}
+
+\subsection{Architectural implications and limits}
+
+Taken together, the principles require local persistence, synchronization between independently editable copies, and continued access beyond a particular service.
+Servers remain useful for discovery, backup, and exchanging changes between devices that are not online at the same time.
+What distinguishes the architecture is that losing contact with a server does not prevent users from working with their local data.
+\parencite{local-first-software}
+
+Conflict-free replicated data types (CRDTs) provide one way to reconcile independently edited copies.
+They define data structures and merge rules that allow replicas receiving the same updates to converge to the same state.
+For example, the JSON CRDT described by \textcite{json-crdt} supports nested maps and lists and performs merging on the clients without depending on network message ordering.
+Such mechanisms support offline editing and collaboration, but do not by themselves provide transport, access control, or long-term usability.
+
+Convergence also does not guarantee that a merged document expresses its authors' intentions.
+The Upwelling research prototype shows this with concurrent replacements of a word: a text merge can preserve both replacements as a combined string that still requires human correction.
+Review workflows and understandable change history therefore remain important even when replicas converge automatically.
+\parencite{upwelling}
+
+An application is best assessed against all seven principles at once.
+Offline support alone says little about privacy or long-term control, and local file ownership alone does not provide seamless collaboration.
+Local-first software aims to provide networked collaboration while keeping users independent of the service that supports it.
+\parencite{local-first-software}

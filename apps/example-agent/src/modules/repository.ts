@@ -11,7 +11,11 @@ export async function getRepositoryRoot() {
 }
 
 export async function getRepositoryFiles() {
-	const { stdout } = await run("git", ["ls-files", "--cached", "--others", "--exclude-standard", "--full-name", ":/"], options);
+	const { stdout } = await run(
+		"git",
+		["ls-files", "--cached", "--others", "--exclude-standard", "--full-name", ":/"],
+		options,
+	);
 
 	return stdout.split("\n").filter(Boolean);
 }

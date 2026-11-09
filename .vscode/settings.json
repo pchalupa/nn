@@ -15,5 +15,24 @@
 		"editor.defaultFormatter": "oxc.oxc-vscode"
 	},
 	"editor.formatOnSave": true,
-	"typescript.tsdk": "node_modules/typescript/lib"
+	"typescript.tsdk": "node_modules/typescript/lib",
+	"files.exclude": {
+		"**/*.aux": true,
+		"**/*.bbl": true,
+		"**/*.bcf": true,
+		"**/*.blg": true,
+		"**/*.fdb_latexmk": true,
+		"**/*.fls": true,
+		"**/*.lof": true,
+		"**/*.lot": true,
+		"**/*.nav": true,
+		"**/*.out": true,
+		"**/*.run.xml": true,
+		"**/*.snm": true,
+		"**/*.synctex.gz": true,
+		"**/*.toc": true,
+		"**/*.xdv": true,
+		"**/main.log": true,
+		"**/missfont.log": true
+	}
 }

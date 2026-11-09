@@ -1,0 +1,39 @@
+\documentclass[11pt,a4paper]{article}
+
+\newcommand{\thesistype}{Bachelor}
+\newcommand{\thesistitle}{Local-First Architecture in the Context of Web Applications}
+\newcommand{\thesisprogramme}{Software Development}
+\newcommand{\thesisauthor}{Petr Chalupa}
+\newcommand{\thesissupervisor}{Ing. Michal Kökörčený, Ph.D.}
+
+\input{preamble.tex}
+
+\begin{document}
+% Front matter pages are counted but not numbered.
+\pagestyle{empty}
+
+\input{frontmatter/title-page.tex}
+
+\clearpage
+\input{frontmatter/declaration.tex}
+
+\clearpage
+\input{frontmatter/acknowledgements.tex}
+
+\clearpage
+\input{frontmatter/abstract.tex}
+
+\clearpage
+\input{frontmatter/abstract-cs.tex}
+
+\tableofcontents
+
+\clearpage
+\pagestyle{plain}
+
+\input{chapters/introduction.tex}
+\input{chapters/conclusion.tex}
+
+\printbibliography[title={Sources},heading=bibintoc]
+
+\end{document}

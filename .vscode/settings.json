@@ -14,6 +14,42 @@
 	"[typescriptreact]": {
 		"editor.defaultFormatter": "oxc.oxc-vscode"
 	},
+	"[latex]": {
+		"editor.defaultFormatter": "James-Yu.latex-workshop"
+	},
 	"editor.formatOnSave": true,
-	"typescript.tsdk": "node_modules/typescript/lib"
+	"typescript.tsdk": "node_modules/typescript/lib",
+	"latex-workshop.latex.external.build.command": "latexmk",
+	"latex-workshop.latex.external.build.args": [
+		"-r",
+		"%DIR%/.latexmkrc",
+		"-cd",
+		"-synctex=1",
+		"-interaction=nonstopmode",
+		"-file-line-error",
+		"%DOC%"
+	],
+	"latex-workshop.latex.outDir": "%DIR%/build",
+	"latex-workshop.formatting.latex": "latexindent",
+	"latex-workshop.formatting.latexindent.path": "/opt/homebrew/bin/latexindent",
+	"latex-workshop.formatting.latexindent.args": ["-l=%DIR%/latexindent.yaml", "-g=/dev/null", "%TMPFILE%"],
+	"files.exclude": {
+		"**/*.aux": true,
+		"**/*.bbl": true,
+		"**/*.bcf": true,
+		"**/*.blg": true,
+		"**/*.fdb_latexmk": true,
+		"**/*.fls": true,
+		"**/*.lof": true,
+		"**/*.lot": true,
+		"**/*.nav": true,
+		"**/*.out": true,
+		"**/*.run.xml": true,
+		"**/*.snm": true,
+		"**/*.synctex.gz": true,
+		"**/*.toc": true,
+		"**/*.xdv": true,
+		"**/main.log": true,
+		"**/missfont.log": true
+	}
 }

@@ -1,0 +1,25 @@
+{
+	"name": "example-agent",
+	"version": "0.0.0",
+	"private": true,
+	"type": "module",
+	"scripts": {
+		"dev": "tsx --experimental-eventsource --env-file=.env.development --env-file-if-exists=.env.development.local src/index.ts",
+		"ts:check": "tsc --noEmit"
+	},
+	"dependencies": {
+		"@nn/sse-sync": "workspace:",
+		"@nn/store": "workspace:",
+		"@openrouter/ai-sdk-provider": "^3.1.0",
+		"ai": "^7.0.162",
+		"example-schema": "workspace:",
+		"pino": "^10.4.0",
+		"pino-pretty": "^13.2.0"
+	},
+	"devDependencies": {
+		"@nn/typescript-config": "workspace:",
+		"@types/node": "^26.6.6",
+		"tsx": "^4.23.15",
+		"typescript": "catalog:"
+	}
+}

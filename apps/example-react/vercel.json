@@ -1,9 +1,4 @@
 {
-	"functions": {
-		"api/sync.ts": { "maxDuration": 60 }
-	},
-	"rewrites": [
-		{ "source": "/sync/:path*", "destination": "/api/sync" },
-		{ "source": "/(.*)", "destination": "/index.html" }
-	]
+	"relatedProjects": ["prj_W5OmFNYWntPVsm83ep3dwMBjSJt6"],
+	"rewrites": [{ "source": "/(.*)", "destination": "/index.html" }]
 }

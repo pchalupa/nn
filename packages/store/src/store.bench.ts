@@ -8,7 +8,7 @@ import { Store } from "./store";
 function call(target: unknown, method: string, ...args: unknown[]): unknown {
 	const fn: unknown = isObject(target) ? target[method] : undefined;
 
-	if (typeof fn !== "function") throw new Error(`Benchmarks need Node.js to provide ${method}.`);
+	if (typeof fn !== "function") throw new TypeError(`Benchmarks need Node.js to provide ${method}.`);
 
 	return Reflect.apply(fn, target, args);
 }
@@ -17,7 +17,7 @@ function measure(target: unknown, method: string, field: string): number {
 	const result = call(target, method);
 	const value = isObject(result) ? result[field] : undefined;
 
-	if (typeof value !== "number") throw new Error(`Benchmarks need Node.js to report ${field}.`);
+	if (typeof value !== "number") throw new TypeError(`Benchmarks need Node.js to report ${field}.`);
 
 	return value;
 }

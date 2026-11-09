@@ -1,10 +1,8 @@
 {
 	"$schema": "https://unpkg.com/knip@6/schema.json",
-	"ignoreBinaries": ["vite", "tsx"],
-	"ignoreFiles": ["apps/example-react/e2e/fixtures.ts"],
 	"workspaces": {
-		"apps/example-react": {
-			"entry": ["src/main.{tsx,css}!", "api/*.ts!", "api/_server/index.ts!"]
+		"apps/example-server": {
+			"entry": ["api/*.ts!"]
 		}
 	}
 }

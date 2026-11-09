@@ -16,19 +16,15 @@
 	},
 	"editor.formatOnSave": true,
 	"typescript.tsdk": "node_modules/typescript/lib",
-	"latex-workshop.latex.tools": [
-		{
-			"name": "latexmk",
-			"command": "latexmk",
-			"args": ["-synctex=1", "-interaction=nonstopmode", "-file-line-error", "%DOC%"],
-			"cwd": "%DIR%"
-		}
-	],
-	"latex-workshop.latex.recipes": [
-		{
-			"name": "latexmk",
-			"tools": ["latexmk"]
-		}
+	"latex-workshop.latex.external.build.command": "latexmk",
+	"latex-workshop.latex.external.build.args": [
+		"-r",
+		"%DIR%/.latexmkrc",
+		"-cd",
+		"-synctex=1",
+		"-interaction=nonstopmode",
+		"-file-line-error",
+		"%DOC%"
 	],
 	"latex-workshop.latex.outDir": "%DIR%/build",
 	"files.exclude": {

@@ -22,8 +22,7 @@
 		"bench:watch": "vitest bench",
 		"changeset:add": "changeset ",
 		"changeset:version": "changeset version",
-		"changeset:publish": "changeset publish",
-		"thesis:build": "cd docs/thesis && latexmk"
+		"changeset:publish": "changeset publish"
 	},
 	"devDependencies": {
 		"@changesets/cli": "^3.0.3",

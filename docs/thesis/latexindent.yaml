@@ -1,0 +1,43 @@
+switchesViaYaml:
+  mSwitch: 1
+
+defaultIndent: "\t"
+
+verbatimEnvironments:
+  minted: 1
+
+noAdditionalIndent:
+  document: 1
+  center: 1
+  otherlanguage: 1
+
+modifyLineBreaks:
+  oneSentencePerLine:
+    manipulateSentences: 1
+    removeSentenceLineBreaks: 1
+    textWrapSentences: 0
+  environments:
+    figure:
+      BeginStartsOnOwnLine: 1
+      BodyStartsOnOwnLine: 1
+      EndStartsOnOwnLine: 1
+      EndFinishesWithLineBreak: 1
+    figure*:
+      BeginStartsOnOwnLine: 1
+      BodyStartsOnOwnLine: 1
+      EndStartsOnOwnLine: 1
+      EndFinishesWithLineBreak: 1
+    table:
+      BeginStartsOnOwnLine: 1
+      BodyStartsOnOwnLine: 1
+      EndStartsOnOwnLine: 1
+      EndFinishesWithLineBreak: 1
+    table*:
+      BeginStartsOnOwnLine: 1
+      BodyStartsOnOwnLine: 1
+      EndStartsOnOwnLine: 1
+      EndFinishesWithLineBreak: 1
+
+fineTuning:
+  modifyLineBreaks:
+    betterFullStop: '(?<!e\.g)(?<!i\.e)(?<!etc)(?<!seq)(?<!\bal)(?<!\bvs)(?<!\bcf)(?<!\bNo)(?<!\b\w)\.(?=\s|$)'

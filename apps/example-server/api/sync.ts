@@ -1,13 +1,15 @@
 import { handle } from "@hono/vercel";
 import { Redis } from "@upstash/redis";
 
-import { createServer } from "./_server/server.js";
-import { createRedisDatabase } from "./_server/services/database/redis-database.js";
-import { createRedisEventBus } from "./_server/services/database/redis-event-bus.js";
+import { createServer } from "../src/server.js";
+import { createRedisDatabase } from "../src/services/database/redis-database.js";
+import { createRedisEventBus } from "../src/services/database/redis-event-bus.js";
+
+const namespace = process.env.VERCEL_ENV === "preview" ? "nn-example-preview" : "nn-example";
 
 const redis = Redis.fromEnv({ automaticDeserialization: false });
 
-const server = createServer(createRedisDatabase(redis), createRedisEventBus(redis), {
+const server = createServer(createRedisDatabase(redis, namespace), createRedisEventBus(redis, namespace), {
 	streamDuration: 55_000,
 });
 

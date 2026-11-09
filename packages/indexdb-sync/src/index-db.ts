@@ -81,7 +81,7 @@ export class IndexDb implements Delegatable<IndexDbDelegate> {
 	}
 
 	private static assertIndexDB(database: unknown): asserts database is IDBDatabase {
-		if (!(database instanceof IDBDatabase)) throw new Error("Index DB is not initialized.");
+		if (!(database instanceof IDBDatabase)) throw new TypeError("Index DB is not initialized.");
 	}
 
 	public async init(schema: Record<string, unknown>): Promise<void> {

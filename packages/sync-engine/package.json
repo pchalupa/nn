@@ -35,7 +35,6 @@
 		"@nn/store": "workspace:"
 	},
 	"devDependencies": {
-		"@nn/id": "workspace:",
 		"@nn/schema": "workspace:",
 		"@nn/time": "workspace:",
 		"@nn/typescript-config": "workspace:",

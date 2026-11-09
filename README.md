@@ -32,5 +32,6 @@ remote.connect();
 ## Examples
 
 - [`apps/example-react`](apps/example-react) is a kanban board that works offline, syncs between tabs, and merges edits from other devices through a server.
+- [`apps/example-server`](apps/example-server) is the sync server the board and the Node examples connect to.
 - [`apps/example-node`](apps/example-node) watches this repository for `TODO` comments and adds them to the board as tickets over server-sent events.
 - [`apps/example-schema`](apps/example-schema) holds the schema both apps share.

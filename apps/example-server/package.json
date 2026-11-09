@@ -4,7 +4,9 @@
 	"private": true,
 	"type": "module",
 	"exports": {
-		".": "./src/index.ts"
+		"./server": "./src/server.ts",
+		"./memory-database": "./src/services/database/memory-database.ts",
+		"./memory-event-bus": "./src/services/database/memory-event-bus.ts"
 	},
 	"scripts": {
 		"dev": "tsx watch --clear-screen=false --env-file=.env.development src/index.ts",

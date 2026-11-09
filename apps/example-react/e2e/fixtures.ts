@@ -2,7 +2,9 @@ import { once } from "node:events";
 
 import { serve } from "@hono/node-server";
 import { test as base, type Page } from "@playwright/test";
-import { createMemoryDatabase, createMemoryEventBus, createServer } from "example-server";
+import { createMemoryDatabase } from "example-server/memory-database";
+import { createMemoryEventBus } from "example-server/memory-event-bus";
+import { createServer } from "example-server/server";
 
 export { expect, type Page } from "@playwright/test";
 

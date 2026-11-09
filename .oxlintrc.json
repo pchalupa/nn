@@ -11,6 +11,8 @@
 		"style": "off"
 	},
 	"rules": {
+		"oxc/no-map-spread": "off",
+
 		"default-param-last": "error",
 		"no-else-return": "error",
 		"no-param-reassign": "error",

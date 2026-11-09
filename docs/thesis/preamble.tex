@@ -1,0 +1,90 @@
+% Engine and fonts
+\usepackage{iftex}
+\RequireXeTeX
+\usepackage{amsmath}
+\usepackage{fontspec}
+\usepackage{unicode-math}
+\setmainfont{Calibri}
+\setsansfont{Calibri}
+
+% Page layout
+\usepackage[a4paper,top=2.5cm,bottom=2.5cm,left=3.5cm,right=2.5cm]{geometry}
+\usepackage{setspace}
+\onehalfspacing
+
+% Paragraphs
+\usepackage{indentfirst}
+\setlength{\parindent}{1.25cm}
+\setlength{\parskip}{0pt}
+\usepackage{ragged2e}
+\AtBeginDocument{\justifying}
+\usepackage{microtype}
+\setlength{\emergencystretch}{3em}
+\usepackage{enumitem}
+\widowpenalty=10000
+\clubpenalty=10000
+\displaywidowpenalty=10000
+
+% Headings
+\usepackage{titlesec}
+\titleformat{\section}[block]{\normalfont\bfseries\fontsize{16}{19.2}\selectfont}{\thesection\space}{0pt}{}
+\titleformat{\subsection}[block]{\normalfont\bfseries\fontsize{14}{16.8}\selectfont}{\thesubsection\space}{0pt}{}
+\titleformat{\subsubsection}[block]{\normalfont\bfseries\fontsize{12}{14.4}\selectfont}{\thesubsubsection\space}{0pt}{}
+\newcommand{\sectionbreak}{\clearpage}
+\setcounter{secnumdepth}{3}
+\setcounter{tocdepth}{3}
+
+% Figures, tables and code
+\usepackage{graphicx}
+\graphicspath{{figures/}}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+\usepackage{float}
+\floatplacement{figure}{htbp}
+% Charts use figure, captioned "Chart"; illustrations use illustration, captioned "Figure".
+\floatstyle{plaintop}
+\newfloat{illustration}{htbp}{lob}
+\floatstyle{plain}
+\floatname{illustration}{Figure}
+\usepackage{caption}
+\captionsetup{font={small,stretch=1},labelfont=bf,justification=centering,singlelinecheck=false}
+\newcommand{\figuresource}[1]{%
+	\par
+	\begingroup
+	\setstretch{1}\small\raggedright
+	Source: #1
+	\par
+	\endgroup
+}
+\usepackage{longtable,booktabs,array}
+\renewcommand{\arraystretch}{1.3}
+\usepackage{footnotehyper}
+\makesavenoteenv{longtable}
+\usepackage{upquote}
+\usepackage{fvextra}
+
+% Language
+% csquotes must come after fvextra.
+\usepackage{csquotes}
+\usepackage[czech,english]{babel}
+% Babel resets caption names at \begin{document}.
+\addto\captionsenglish{%
+	\renewcommand{\contentsname}{Table of Contents}%
+	\renewcommand{\figurename}{Chart}%
+	\renewcommand{\listfigurename}{List of Charts}%
+	\renewcommand{\tablename}{Table}%
+	\renewcommand{\listtablename}{List of Tables}%
+}
+
+% Bibliography
+\usepackage[style=iso-authoryear,backend=biber,uniquelist=minyear]{biblatex}
+\addbibresource{bibliography.bib}
+
+% Links
+\usepackage{bookmark}
+\usepackage{xurl}
+\urlstyle{same}
+\hypersetup{hidelinks,pdftitle={\thesistitle},pdfauthor={\thesisauthor}}

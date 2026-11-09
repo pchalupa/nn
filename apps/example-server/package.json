@@ -7,7 +7,7 @@
 		".": "./src/index.ts"
 	},
 	"scripts": {
-		"dev": "tsx watch --clear-screen=false --env-file=.env.development src/main.ts",
+		"dev": "tsx watch --clear-screen=false --env-file=.env.development src/index.ts",
 		"test": "vitest run",
 		"test:watch": "vitest watch",
 		"ts:check": "tsc --noEmit"

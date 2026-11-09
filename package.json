@@ -14,7 +14,7 @@
 		"format:check": "oxfmt --check .",
 		"format:write": "oxfmt .",
 		"spell:check": "cspell --no-progress **/*.{ts,tsx,json,md,tex}",
-		"clutter:check": "knip --production",
+		"clutter:check": "knip",
 		"test": "vitest --run",
 		"test:watch": "vitest watch",
 		"test:coverage": "vitest test --coverage",

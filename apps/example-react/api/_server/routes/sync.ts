@@ -18,7 +18,7 @@ export default function createSync(db: Database, bus: EventBus, streamDuration?:
 
 		try {
 			await db.update(data);
-			logger.info("Data updated");
+			logger.debug(data, "Data updated");
 
 			await bus.publish(data);
 

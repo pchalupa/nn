@@ -200,9 +200,6 @@ importers:
 
   .:
     devDependencies:
-      '@arethetypeswrong/core':
-        specifier: ^0.18.5
-        version: 0.18.5
       '@changesets/cli':
         specifier: ^3.0.3
         version: 3.0.3
@@ -227,18 +224,9 @@ importers:
       oxlint:
         specifier: ^1.92.0
         version: 1.92.0
-      publint:
-        specifier: ^0.3.25
-        version: 0.3.25
-      tsdown:
-        specifier: 'catalog:'
-        version: 0.23.7(@arethetypeswrong/core@0.18.5)(oxc-resolver@11.24.2)(publint@0.3.25)(tsx@4.23.15)(typescript@7.0.2)
       typescript:
         specifier: 'catalog:'
         version: 7.0.2
-      vite:
-        specifier: 'catalog:'
-        version: 8.3.5(@types/node@26.6.6)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(tsx@4.23.15)(yaml@2.9.1)
       vitest:
         specifier: 'catalog:'
         version: 5.1.0(@types/node@26.6.6)(@vitest/coverage-v8@5.1.0)(jsdom@30.1.3)(vite@8.3.5(@types/node@26.6.6)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(tsx@4.23.15)(yaml@2.9.1))
@@ -362,6 +350,9 @@ importers:
       '@hono/node-server':
         specifier: ^2.1.6
         version: 2.1.6(hono@4.13.16)
+      '@nn/build-config':
+        specifier: workspace:^
+        version: link:../../packages/build-config
       '@playwright/test':
         specifier: ^1.64.1
         version: 1.64.1
@@ -491,6 +482,9 @@ importers:
         specifier: workspace:^
         version: link:../sync-engine
     devDependencies:
+      '@nn/build-config':
+        specifier: workspace:^
+        version: link:../build-config
       '@nn/schema':
         specifier: workspace:^
         version: link:../schema
@@ -507,6 +501,28 @@ importers:
         specifier: 'catalog:'
         version: 5.1.0(@types/node@26.6.6)(@vitest/coverage-v8@5.1.0)(jsdom@30.1.3)(vite@8.3.5(@types/node@26.6.6)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(tsx@4.23.15)(yaml@2.9.1))
 
+  packages/build-config:
+    dependencies:
+      '@arethetypeswrong/core':
+        specifier: ^0.18.5
+        version: 0.18.5
+      publint:
+        specifier: ^0.3.25
+        version: 0.3.25
+      tsdown:
+        specifier: 'catalog:'
+        version: 0.23.7(@arethetypeswrong/core@0.18.5)(oxc-resolver@11.24.2)(publint@0.3.25)(tsx@4.23.15)(typescript@7.0.2)
+      vite:
+        specifier: 'catalog:'
+        version: 8.3.5(@types/node@26.6.6)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(tsx@4.23.15)(yaml@2.9.1)
+    devDependencies:
+      '@nn/typescript-config':
+        specifier: workspace:^
+        version: link:../typescript-config
+      typescript:
+        specifier: 'catalog:'
+        version: 7.0.2
+
   packages/entities:
     dependencies:
       '@nn/guards':
@@ -522,6 +538,9 @@ importers:
         specifier: workspace:^
         version: link:../time
     devDependencies:
+      '@nn/build-config':
+        specifier: workspace:^
+        version: link:../build-config
       '@nn/typescript-config':
         specifier: workspace:^
         version: link:../typescript-config
@@ -537,6 +556,9 @@ importers:
 
   packages/guards:
     devDependencies:
+      '@nn/build-config':
+        specifier: workspace:^
+        version: link:../build-config
       '@nn/typescript-config':
         specifier: workspace:^
         version: link:../typescript-config
@@ -552,6 +574,9 @@ importers:
 
   packages/id:
     devDependencies:
+      '@nn/build-config':
+        specifier: workspace:^
+        version: link:../build-config
       '@nn/typescript-config':
         specifier: workspace:^
         version: link:../typescript-config
@@ -580,6 +605,9 @@ importers:
         specifier: workspace:^
         version: link:../sync-engine
     devDependencies:
+      '@nn/build-config':
+        specifier: workspace:^
+        version: link:../build-config
       '@nn/schema':
         specifier: workspace:^
         version: link:../schema
@@ -604,6 +632,9 @@ importers:
 
   packages/observable:
     devDependencies:
+      '@nn/build-config':
+        specifier: workspace:^
+        version: link:../build-config
       '@nn/typescript-config':
         specifier: workspace:^
         version: link:../typescript-config
@@ -632,6 +663,9 @@ importers:
         specifier: ^1.7.0
         version: 1.7.0(react@19.3.1)
     devDependencies:
+      '@nn/build-config':
+        specifier: workspace:^
+        version: link:../build-config
       '@nn/typescript-config':
         specifier: workspace:^
         version: link:../typescript-config
@@ -668,6 +702,9 @@ importers:
 
   packages/schema:
     devDependencies:
+      '@nn/build-config':
+        specifier: workspace:^
+        version: link:../build-config
       '@nn/typescript-config':
         specifier: workspace:^
         version: link:../typescript-config
@@ -699,6 +736,9 @@ importers:
         specifier: workspace:^
         version: link:../sync-engine
     devDependencies:
+      '@nn/build-config':
+        specifier: workspace:^
+        version: link:../build-config
       '@nn/schema':
         specifier: workspace:^
         version: link:../schema
@@ -736,6 +776,9 @@ importers:
         specifier: workspace:^
         version: link:../time
     devDependencies:
+      '@nn/build-config':
+        specifier: workspace:^
+        version: link:../build-config
       '@nn/typescript-config':
         specifier: workspace:^
         version: link:../typescript-config
@@ -761,6 +804,9 @@ importers:
         specifier: workspace:^
         version: link:../store
     devDependencies:
+      '@nn/build-config':
+        specifier: workspace:^
+        version: link:../build-config
       '@nn/schema':
         specifier: workspace:^
         version: link:../schema
@@ -786,6 +832,9 @@ importers:
         specifier: workspace:^
         version: link:../id
     devDependencies:
+      '@nn/build-config':
+        specifier: workspace:^
+        version: link:../build-config
       '@nn/typescript-config':
         specifier: workspace:^
         version: link:../typescript-config

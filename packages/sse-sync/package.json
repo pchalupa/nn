@@ -52,6 +52,7 @@
 		"@nn/sync-engine": "workspace:^"
 	},
 	"devDependencies": {
+		"@nn/build-config": "workspace:^",
 		"@nn/schema": "workspace:^",
 		"@nn/typescript-config": "workspace:^",
 		"tsdown": "catalog:",

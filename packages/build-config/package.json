@@ -1,0 +1,25 @@
+{
+	"name": "@nn/build-config",
+	"version": "0.0.0",
+	"private": true,
+	"description": "Shared tsdown and Vite configuration for @nn packages",
+	"license": "MIT",
+	"type": "module",
+	"exports": {
+		"./tsdown": "./src/tsdown.ts",
+		"./vite": "./src/vite.ts"
+	},
+	"scripts": {
+		"ts:check": "tsc --noEmit"
+	},
+	"dependencies": {
+		"@arethetypeswrong/core": "^0.18.5",
+		"publint": "^0.3.25",
+		"tsdown": "catalog:",
+		"vite": "catalog:"
+	},
+	"devDependencies": {
+		"@nn/typescript-config": "workspace:^",
+		"typescript": "catalog:"
+	}
+}

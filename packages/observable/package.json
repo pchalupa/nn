@@ -48,6 +48,7 @@
 		"test:watch": "vitest watch"
 	},
 	"devDependencies": {
+		"@nn/build-config": "workspace:^",
 		"@nn/typescript-config": "workspace:^",
 		"tsdown": "catalog:",
 		"typescript": "catalog:",

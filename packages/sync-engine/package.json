@@ -49,6 +49,7 @@
 		"@nn/store": "workspace:^"
 	},
 	"devDependencies": {
+		"@nn/build-config": "workspace:^",
 		"@nn/schema": "workspace:^",
 		"@nn/time": "workspace:^",
 		"@nn/typescript-config": "workspace:^",

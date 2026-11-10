@@ -1,5 +1,13 @@
 # @nn/id
 
+## 0.2.0
+
+### Minor Changes
+
+- 23da839: Ship compiled ES modules with type declarations and source maps from `dist`, so the package works without compiling TypeScript from `node_modules`.
+
+  Import paths stay the same.
+
 ## 0.1.1
 
 ### Patch Changes

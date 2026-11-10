@@ -1,6 +1,6 @@
 {
 	"name": "@nn/observable",
-	"version": "3.0.2",
+	"version": "3.1.0",
 	"description": "Observer and delegate primitives for change notification",
 	"keywords": [
 		"delegate",

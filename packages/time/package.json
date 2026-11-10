@@ -1,6 +1,6 @@
 {
 	"name": "@nn/time",
-	"version": "1.0.1",
+	"version": "1.1.0",
 	"description": "Hybrid logical clock",
 	"keywords": [
 		"clock",

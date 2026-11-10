@@ -10,10 +10,10 @@
 		"ts:check": "tsc --noEmit"
 	},
 	"dependencies": {
-		"@nn/schema": "workspace:"
+		"@nn/schema": "workspace:^"
 	},
 	"devDependencies": {
-		"@nn/typescript-config": "workspace:",
+		"@nn/typescript-config": "workspace:^",
 		"typescript": "catalog:"
 	}
 }

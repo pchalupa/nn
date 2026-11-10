@@ -20,26 +20,41 @@
 		"url": "git+https://github.com/pchalupa/nn.git",
 		"directory": "packages/indexdb-sync"
 	},
+	"files": [
+		"dist"
+	],
 	"type": "module",
 	"exports": {
-		".": "./src/index-db-sync.ts"
+		".": {
+			"@nn/source": "./src/index-db-sync.ts",
+			"default": "./dist/index.js"
+		},
+		"./package.json": "./package.json"
+	},
+	"publishConfig": {
+		"exports": {
+			".": "./dist/index.js",
+			"./package.json": "./package.json"
+		}
 	},
 	"scripts": {
+		"build": "tsdown",
 		"ts:check": "tsc --noEmit",
 		"test": "vitest run",
 		"test:watch": "vitest watch"
 	},
 	"dependencies": {
-		"@nn/entities": "workspace:",
-		"@nn/observable": "workspace:",
-		"@nn/store": "workspace:",
-		"@nn/sync-engine": "workspace:"
+		"@nn/entities": "workspace:^",
+		"@nn/observable": "workspace:^",
+		"@nn/store": "workspace:^",
+		"@nn/sync-engine": "workspace:^"
 	},
 	"devDependencies": {
-		"@nn/schema": "workspace:",
-		"@nn/time": "workspace:",
-		"@nn/typescript-config": "workspace:",
+		"@nn/schema": "workspace:^",
+		"@nn/time": "workspace:^",
+		"@nn/typescript-config": "workspace:^",
 		"fake-indexeddb": "^6.2.6",
+		"tsdown": "catalog:",
 		"typescript": "catalog:",
 		"vitest": "catalog:"
 	}

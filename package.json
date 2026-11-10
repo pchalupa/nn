@@ -1,12 +1,15 @@
 {
 	"name": "nn",
 	"version": "1.0.0",
+	"private": true,
 	"description": "",
 	"keywords": [],
 	"license": "MIT",
 	"author": "",
+	"type": "module",
 	"scripts": {
 		"dev": "pnpm -r --parallel run dev",
+		"build": "pnpm -r --parallel build",
 		"ts:check": "pnpm -r --parallel ts:check",
 		"ts:watch": "pnpm -r --parallel ts:check --watch",
 		"lint:check": "oxlint",
@@ -25,6 +28,7 @@
 		"changeset:publish": "changeset publish"
 	},
 	"devDependencies": {
+		"@arethetypeswrong/core": "^0.18.5",
 		"@changesets/cli": "^3.0.3",
 		"@cspell/dict-cs-cz": "^3.0.10",
 		"@stylistic/eslint-plugin": "^5.10.0",
@@ -33,11 +37,14 @@
 		"knip": "^6.44.1",
 		"oxfmt": "^0.75.0",
 		"oxlint": "^1.92.0",
+		"publint": "^0.3.25",
+		"tsdown": "catalog:",
 		"typescript": "catalog:",
+		"vite": "catalog:",
 		"vitest": "catalog:"
 	},
 	"engines": {
 		"node": ">=24"
 	},
-	"packageManager": "pnpm@11.28.10"
+	"packageManager": "pnpm@12.18.0"
 }

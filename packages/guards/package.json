@@ -19,24 +19,67 @@
 		"url": "git+https://github.com/pchalupa/nn.git",
 		"directory": "packages/guards"
 	},
+	"files": [
+		"dist"
+	],
 	"type": "module",
 	"exports": {
-		"./is-array": "./src/is-array.ts",
-		"./is-object": "./src/is-object.ts",
-		"./is-plain-object": "./src/is-plain-object.ts",
-		"./is-string": "./src/is-string.ts",
-		"./assert-array": "./src/assert-array.ts",
-		"./assert-object": "./src/assert-object.ts",
-		"./assert-plain-object": "./src/assert-plain-object.ts",
-		"./assert-string": "./src/assert-string.ts"
+		"./assert-array": {
+			"@nn/source": "./src/assert-array.ts",
+			"default": "./dist/assert-array.js"
+		},
+		"./assert-object": {
+			"@nn/source": "./src/assert-object.ts",
+			"default": "./dist/assert-object.js"
+		},
+		"./assert-plain-object": {
+			"@nn/source": "./src/assert-plain-object.ts",
+			"default": "./dist/assert-plain-object.js"
+		},
+		"./assert-string": {
+			"@nn/source": "./src/assert-string.ts",
+			"default": "./dist/assert-string.js"
+		},
+		"./is-array": {
+			"@nn/source": "./src/is-array.ts",
+			"default": "./dist/is-array.js"
+		},
+		"./is-object": {
+			"@nn/source": "./src/is-object.ts",
+			"default": "./dist/is-object.js"
+		},
+		"./is-plain-object": {
+			"@nn/source": "./src/is-plain-object.ts",
+			"default": "./dist/is-plain-object.js"
+		},
+		"./is-string": {
+			"@nn/source": "./src/is-string.ts",
+			"default": "./dist/is-string.js"
+		},
+		"./package.json": "./package.json"
+	},
+	"publishConfig": {
+		"exports": {
+			"./assert-array": "./dist/assert-array.js",
+			"./assert-object": "./dist/assert-object.js",
+			"./assert-plain-object": "./dist/assert-plain-object.js",
+			"./assert-string": "./dist/assert-string.js",
+			"./is-array": "./dist/is-array.js",
+			"./is-object": "./dist/is-object.js",
+			"./is-plain-object": "./dist/is-plain-object.js",
+			"./is-string": "./dist/is-string.js",
+			"./package.json": "./package.json"
+		}
 	},
 	"scripts": {
+		"build": "tsdown",
 		"ts:check": "tsc --noEmit",
 		"test": "vitest run",
 		"test:watch": "vitest watch"
 	},
 	"devDependencies": {
-		"@nn/typescript-config": "workspace:",
+		"@nn/typescript-config": "workspace:^",
+		"tsdown": "catalog:",
 		"typescript": "catalog:",
 		"vitest": "catalog:"
 	}

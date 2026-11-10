@@ -1,4 +1,4 @@
-import { css } from "../../css";
+import { css } from "../styles/css";
 
 export interface ButtonProps {
 	text: string;

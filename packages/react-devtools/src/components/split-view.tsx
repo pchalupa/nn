@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 
-import { css } from "../../css";
+import { css } from "../styles/css";
 
 export interface SplitViewProps {
 	children: ReactNode;

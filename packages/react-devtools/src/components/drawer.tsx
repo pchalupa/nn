@@ -1,16 +1,16 @@
 import type { ReactNode } from "react";
 
-import { css } from "../../css";
-import { Button } from "../button";
+import { css } from "../styles/css";
+import { Button } from "./button";
 
 export interface DrawerProps {
 	title: string;
 	label: string;
-	onClose: () => void;
 	children: ReactNode;
+	onClose: () => void;
 }
 
-export function Drawer({ title, label, onClose, children }: DrawerProps) {
+export function Drawer({ title, label, children, onClose }: DrawerProps) {
 	return (
 		<aside className="drawer" aria-label={label}>
 			<header className="drawer-bar">

@@ -1,16 +1,15 @@
 import type { ReactNode } from "react";
 
-import { css } from "../../css";
+import { css } from "../styles/css";
 
 export interface PaneProps {
 	label: string;
-	role?: "tree";
 	children: ReactNode;
 }
 
-export function Pane({ label, role, children }: PaneProps) {
+export function Pane({ label, children }: PaneProps) {
 	return (
-		<section className="pane" role={role} aria-label={label}>
+		<section className="pane" aria-label={label}>
 			{children}
 		</section>
 	);

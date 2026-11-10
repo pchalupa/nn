@@ -19,25 +19,40 @@
 		"url": "git+https://github.com/pchalupa/nn.git",
 		"directory": "packages/store"
 	},
+	"files": [
+		"dist"
+	],
 	"type": "module",
 	"exports": {
-		".": "./src/store.ts"
+		".": {
+			"@nn/source": "./src/store.ts",
+			"default": "./dist/index.js"
+		},
+		"./package.json": "./package.json"
+	},
+	"publishConfig": {
+		"exports": {
+			".": "./dist/index.js",
+			"./package.json": "./package.json"
+		}
 	},
 	"scripts": {
+		"build": "tsdown",
 		"ts:check": "tsc --noEmit",
 		"test": "vitest run",
 		"test:watch": "vitest watch"
 	},
 	"dependencies": {
-		"@nn/entities": "workspace:",
-		"@nn/guards": "workspace:",
-		"@nn/id": "workspace:",
-		"@nn/observable": "workspace:",
-		"@nn/schema": "workspace:",
-		"@nn/time": "workspace:"
+		"@nn/entities": "workspace:^",
+		"@nn/guards": "workspace:^",
+		"@nn/id": "workspace:^",
+		"@nn/observable": "workspace:^",
+		"@nn/schema": "workspace:^",
+		"@nn/time": "workspace:^"
 	},
 	"devDependencies": {
-		"@nn/typescript-config": "workspace:",
+		"@nn/typescript-config": "workspace:^",
+		"tsdown": "catalog:",
 		"typescript": "catalog:",
 		"vitest": "catalog:"
 	}

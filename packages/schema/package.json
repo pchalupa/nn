@@ -19,23 +19,62 @@
 		"url": "git+https://github.com/pchalupa/nn.git",
 		"directory": "packages/schema"
 	},
+	"files": [
+		"dist"
+	],
 	"type": "module",
 	"exports": {
-		".": "./src/index.ts",
-		"./array-schema": "./src/array-schema.ts",
-		"./boolean-schema": "./src/boolean-schema.ts",
-		"./enumeration-schema": "./src/enumeration-schema.ts",
-		"./number-schema": "./src/number-schema.ts",
-		"./object-schema": "./src/object-schema.ts",
-		"./string-schema": "./src/string-schema.ts"
+		".": {
+			"@nn/source": "./src/index.ts",
+			"default": "./dist/index.js"
+		},
+		"./array-schema": {
+			"@nn/source": "./src/array-schema.ts",
+			"default": "./dist/array-schema.js"
+		},
+		"./boolean-schema": {
+			"@nn/source": "./src/boolean-schema.ts",
+			"default": "./dist/boolean-schema.js"
+		},
+		"./enumeration-schema": {
+			"@nn/source": "./src/enumeration-schema.ts",
+			"default": "./dist/enumeration-schema.js"
+		},
+		"./number-schema": {
+			"@nn/source": "./src/number-schema.ts",
+			"default": "./dist/number-schema.js"
+		},
+		"./object-schema": {
+			"@nn/source": "./src/object-schema.ts",
+			"default": "./dist/object-schema.js"
+		},
+		"./string-schema": {
+			"@nn/source": "./src/string-schema.ts",
+			"default": "./dist/string-schema.js"
+		},
+		"./package.json": "./package.json"
+	},
+	"publishConfig": {
+		"exports": {
+			".": "./dist/index.js",
+			"./array-schema": "./dist/array-schema.js",
+			"./boolean-schema": "./dist/boolean-schema.js",
+			"./enumeration-schema": "./dist/enumeration-schema.js",
+			"./number-schema": "./dist/number-schema.js",
+			"./object-schema": "./dist/object-schema.js",
+			"./string-schema": "./dist/string-schema.js",
+			"./package.json": "./package.json"
+		}
 	},
 	"scripts": {
+		"build": "tsdown",
 		"ts:check": "tsc --noEmit",
 		"test": "vitest run",
 		"test:watch": "vitest watch"
 	},
 	"devDependencies": {
-		"@nn/typescript-config": "workspace:",
+		"@nn/typescript-config": "workspace:^",
+		"tsdown": "catalog:",
 		"typescript": "catalog:",
 		"vitest": "catalog:"
 	}

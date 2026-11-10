@@ -47,6 +47,7 @@
 		"@nn/id": "workspace:^"
 	},
 	"devDependencies": {
+		"@nn/build-config": "workspace:^",
 		"@nn/typescript-config": "workspace:^",
 		"tsdown": "catalog:",
 		"typescript": "catalog:",

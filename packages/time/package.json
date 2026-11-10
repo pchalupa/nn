@@ -20,20 +20,33 @@
 		"url": "git+https://github.com/pchalupa/nn.git",
 		"directory": "packages/time"
 	},
+	"files": [
+		"dist"
+	],
 	"type": "module",
 	"exports": {
-		".": "./src/time.ts"
+		".": "./src/time.ts",
+		"./package.json": "./package.json"
+	},
+	"publishConfig": {
+		"exports": {
+			".": "./dist/index.js",
+			"./package.json": "./package.json"
+		}
 	},
 	"scripts": {
+		"build": "tsdown",
 		"ts:check": "tsc --noEmit",
 		"test": "vitest run",
 		"test:watch": "vitest watch"
 	},
 	"dependencies": {
-		"@nn/id": "workspace:"
+		"@nn/id": "workspace:^"
 	},
 	"devDependencies": {
-		"@nn/typescript-config": "workspace:",
+		"@nn/build-config": "workspace:^",
+		"@nn/typescript-config": "workspace:^",
+		"tsdown": "catalog:",
 		"typescript": "catalog:",
 		"vitest": "catalog:"
 	}

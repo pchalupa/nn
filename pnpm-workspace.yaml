@@ -3,6 +3,10 @@ packages:
   - packages/*
 
 minimumReleaseAge: 4320
+trustPolicy: no-downgrade
+disallowWorkspaceCycles: true
+catalogMode: strict
+catalogPrune: true
 
 catalog:
   "@types/react": ^19.3.0
@@ -10,8 +14,14 @@ catalog:
   "@vitest/coverage-v8": ^5.1.0
   vitest: ^5.1.0
   typescript: 7.0.2
+  tsdown: ^0.23.7
+  vite: ^8.3.5
   react: 19.3.1
   react-dom: 19.3.1
+
+overrides:
+  "@trickfilm400/rollup-plugin-off-main-thread": 2.5.0
+  "semver@6": 6.3.2
 
 allowBuilds:
   esbuild: true

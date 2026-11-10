@@ -1,12 +1,15 @@
 {
 	"name": "nn",
 	"version": "1.0.0",
+	"private": true,
 	"description": "",
 	"keywords": [],
 	"license": "MIT",
 	"author": "",
+	"type": "module",
 	"scripts": {
 		"dev": "pnpm -r --parallel run dev",
+		"build": "pnpm -r --parallel build",
 		"ts:check": "pnpm -r --parallel ts:check",
 		"ts:watch": "pnpm -r --parallel ts:check --watch",
 		"lint:check": "oxlint",
@@ -39,5 +42,5 @@
 	"engines": {
 		"node": ">=24"
 	},
-	"packageManager": "pnpm@11.28.10"
+	"packageManager": "pnpm@12.18.0"
 }

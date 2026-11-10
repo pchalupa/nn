@@ -40,6 +40,9 @@ experiments
 **/.obsidian/workspace-mobile.json
 .trash/
 
+# Build
+dist
+
 # Tests
 coverage
 

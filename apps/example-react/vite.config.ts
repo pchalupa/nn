@@ -7,10 +7,6 @@ import React, { reactCompilerPreset } from "@vitejs/plugin-react";
 import { defineConfig, loadEnv } from "vite";
 import { VitePWA } from "vite-plugin-pwa";
 
-const reactCompilerConfig = {
-	target: "19" as const,
-};
-
 const serverHost = withRelatedProject({ projectName: "nn-example-server", defaultHost: "" });
 
 if (serverHost) {
@@ -22,7 +18,7 @@ export default defineConfig(({ mode }) => ({
 		VitePWA({ registerType: "autoUpdate", devOptions: { enabled: true } }),
 		tanstackRouter(),
 		React(),
-		Babel({ presets: [reactCompilerPreset(reactCompilerConfig)] }),
+		Babel({ presets: [reactCompilerPreset({ target: "19" })] }),
 		TailwindCSS(),
 	],
 	oxc: {

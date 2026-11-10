@@ -310,6 +310,9 @@ importers:
       '@nn/react':
         specifier: workspace:^
         version: link:../../packages/react
+      '@nn/react-devtools':
+        specifier: workspace:^
+        version: link:../../packages/react-devtools
       '@nn/sse-sync':
         specifier: workspace:^
         version: link:../../packages/sse-sync

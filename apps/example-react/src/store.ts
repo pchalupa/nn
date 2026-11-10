@@ -19,4 +19,4 @@ remote.connect();
 broadcast.connect();
 persistence.connect();
 
-export { useRead, useUpdate };
+export { store, useRead, useUpdate };

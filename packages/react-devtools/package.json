@@ -9,7 +9,11 @@
 	},
 	"license": "MIT",
 	"author": "pchalupa <chalupa.petr93@gmail.com> (https://github.com/pchalupa)",
-	"repository": "https://github.com/pchalupa/nn",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/pchalupa/nn.git",
+		"directory": "packages/react-devtools"
+	},
 	"files": [
 		"dist"
 	],

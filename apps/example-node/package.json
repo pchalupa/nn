@@ -9,14 +9,14 @@
 		"ts:check": "tsc --noEmit"
 	},
 	"dependencies": {
-		"@nn/sse-sync": "workspace:",
-		"@nn/store": "workspace:",
-		"example-schema": "workspace:",
+		"@nn/sse-sync": "workspace:^",
+		"@nn/store": "workspace:^",
+		"example-schema": "workspace:^",
 		"pino": "^10.4.0",
 		"pino-pretty": "^13.2.0"
 	},
 	"devDependencies": {
-		"@nn/typescript-config": "workspace:",
+		"@nn/typescript-config": "workspace:^",
 		"@types/node": "^26.6.6",
 		"tsx": "^4.23.15",
 		"typescript": "catalog:"

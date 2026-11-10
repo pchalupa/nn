@@ -1,5 +1,24 @@
 # @nn/react
 
+## 3.1.0
+
+### Minor Changes
+
+- 23da839: Ship compiled ES modules with type declarations and source maps from `dist`, so the package works without compiling TypeScript from `node_modules`.
+
+  Import paths stay the same.
+
+### Patch Changes
+
+- 23da839: Depend on other `@nn/*` packages through caret ranges instead of exact versions, so compatible releases share one installed copy instead of duplicating it.
+- 23da839: Accept any React 19 release as a peer instead of only 19.3.1, and install `@nn/schema` as a dependency, since the exported types refer to it.
+- Updated dependencies [23da839]
+- Updated dependencies [23da839]
+- Updated dependencies [63c2cc2]
+  - @nn/guards@0.4.0
+  - @nn/schema@2.1.0
+  - @nn/store@3.1.0
+
 ## 3.0.1
 
 ### Patch Changes

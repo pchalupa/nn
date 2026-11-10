@@ -1,6 +1,6 @@
 {
 	"name": "@nn/store",
-	"version": "3.0.1",
+	"version": "3.1.0",
 	"description": "Schema-typed state container that merges concurrent changes without conflicts",
 	"keywords": [
 		"crdt",

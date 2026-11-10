@@ -1,5 +1,24 @@
 # @nn/sync-engine
 
+## 4.1.0
+
+### Minor Changes
+
+- 23da839: Ship compiled ES modules with type declarations and source maps from `dist`, so the package works without compiling TypeScript from `node_modules`.
+
+  Import paths stay the same.
+
+### Patch Changes
+
+- 23da839: Depend on other `@nn/*` packages through caret ranges instead of exact versions, so compatible releases share one installed copy instead of duplicating it.
+- 63c2cc2: Document the order in which a sync engine calls `open`, `pull` and `push`, how it handles errors, and which built-in engines to use as examples, in the package README.
+- Updated dependencies [23da839]
+- Updated dependencies [23da839]
+- Updated dependencies [63c2cc2]
+  - @nn/entities@3.1.0
+  - @nn/observable@3.1.0
+  - @nn/store@3.1.0
+
 ## 4.0.0
 
 ### Major Changes

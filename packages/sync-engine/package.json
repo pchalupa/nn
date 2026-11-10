@@ -25,10 +25,7 @@
 	],
 	"type": "module",
 	"exports": {
-		".": {
-			"@nn/source": "./src/sync-engine.ts",
-			"default": "./dist/index.js"
-		},
+		".": "./src/sync-engine.ts",
 		"./package.json": "./package.json"
 	},
 	"publishConfig": {

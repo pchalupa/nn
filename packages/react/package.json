@@ -25,10 +25,7 @@
 	],
 	"type": "module",
 	"exports": {
-		".": {
-			"@nn/source": "./src/index.ts",
-			"default": "./dist/index.js"
-		},
+		".": "./src/index.ts",
 		"./package.json": "./package.json"
 	},
 	"publishConfig": {

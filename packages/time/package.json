@@ -25,10 +25,7 @@
 	],
 	"type": "module",
 	"exports": {
-		".": {
-			"@nn/source": "./src/time.ts",
-			"default": "./dist/index.js"
-		},
+		".": "./src/time.ts",
 		"./package.json": "./package.json"
 	},
 	"publishConfig": {

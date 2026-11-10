@@ -25,30 +25,12 @@
 	],
 	"type": "module",
 	"exports": {
-		"./codable": {
-			"@nn/source": "./src/codable.ts",
-			"default": "./dist/codable.js"
-		},
-		"./codec": {
-			"@nn/source": "./src/codec.ts",
-			"default": "./dist/codec.js"
-		},
-		"./entity": {
-			"@nn/source": "./src/entity.ts",
-			"default": "./dist/entity.js"
-		},
-		"./kinds/lww-map": {
-			"@nn/source": "./src/lww-map.ts",
-			"default": "./dist/kinds/lww-map.js"
-		},
-		"./kinds/lww-register": {
-			"@nn/source": "./src/lww-register.ts",
-			"default": "./dist/kinds/lww-register.js"
-		},
-		"./kinds/rga": {
-			"@nn/source": "./src/rga.ts",
-			"default": "./dist/kinds/rga.js"
-		},
+		"./codable": "./src/codable.ts",
+		"./codec": "./src/codec.ts",
+		"./entity": "./src/entity.ts",
+		"./kinds/lww-map": "./src/lww-map.ts",
+		"./kinds/lww-register": "./src/lww-register.ts",
+		"./kinds/rga": "./src/rga.ts",
 		"./package.json": "./package.json"
 	},
 	"publishConfig": {

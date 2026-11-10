@@ -24,14 +24,8 @@
 	],
 	"type": "module",
 	"exports": {
-		".": {
-			"@nn/source": "./src/delegatable.ts",
-			"default": "./dist/index.js"
-		},
-		"./observable": {
-			"@nn/source": "./src/observable.ts",
-			"default": "./dist/observable.js"
-		},
+		".": "./src/delegatable.ts",
+		"./observable": "./src/observable.ts",
 		"./package.json": "./package.json"
 	},
 	"publishConfig": {

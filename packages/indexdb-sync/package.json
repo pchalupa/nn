@@ -25,10 +25,7 @@
 	],
 	"type": "module",
 	"exports": {
-		".": {
-			"@nn/source": "./src/index-db-sync.ts",
-			"default": "./dist/index.js"
-		},
+		".": "./src/index-db-sync.ts",
 		"./package.json": "./package.json"
 	},
 	"publishConfig": {

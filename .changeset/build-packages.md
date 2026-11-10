@@ -15,4 +15,4 @@
 
 Ship compiled ES modules with type declarations and source maps from `dist`, so the package works without compiling TypeScript from `node_modules`.
 
-Import paths stay the same. The `@nn/source` export condition still resolves to the TypeScript source for tools that opt into it.
+Import paths stay the same.

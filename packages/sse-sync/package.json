@@ -26,10 +26,7 @@
 	],
 	"type": "module",
 	"exports": {
-		".": {
-			"@nn/source": "./src/sse-sync.ts",
-			"default": "./dist/index.js"
-		},
+		".": "./src/sse-sync.ts",
 		"./package.json": "./package.json"
 	},
 	"publishConfig": {

@@ -24,34 +24,13 @@
 	],
 	"type": "module",
 	"exports": {
-		".": {
-			"@nn/source": "./src/index.ts",
-			"default": "./dist/index.js"
-		},
-		"./array-schema": {
-			"@nn/source": "./src/array-schema.ts",
-			"default": "./dist/array-schema.js"
-		},
-		"./boolean-schema": {
-			"@nn/source": "./src/boolean-schema.ts",
-			"default": "./dist/boolean-schema.js"
-		},
-		"./enumeration-schema": {
-			"@nn/source": "./src/enumeration-schema.ts",
-			"default": "./dist/enumeration-schema.js"
-		},
-		"./number-schema": {
-			"@nn/source": "./src/number-schema.ts",
-			"default": "./dist/number-schema.js"
-		},
-		"./object-schema": {
-			"@nn/source": "./src/object-schema.ts",
-			"default": "./dist/object-schema.js"
-		},
-		"./string-schema": {
-			"@nn/source": "./src/string-schema.ts",
-			"default": "./dist/string-schema.js"
-		},
+		".": "./src/index.ts",
+		"./array-schema": "./src/array-schema.ts",
+		"./boolean-schema": "./src/boolean-schema.ts",
+		"./enumeration-schema": "./src/enumeration-schema.ts",
+		"./number-schema": "./src/number-schema.ts",
+		"./object-schema": "./src/object-schema.ts",
+		"./string-schema": "./src/string-schema.ts",
 		"./package.json": "./package.json"
 	},
 	"publishConfig": {

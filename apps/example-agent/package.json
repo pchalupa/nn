@@ -4,7 +4,7 @@
 	"private": true,
 	"type": "module",
 	"scripts": {
-		"dev": "tsx --conditions=@nn/source --experimental-eventsource --env-file=.env.development --env-file-if-exists=.env.development.local src/index.ts",
+		"dev": "tsx --experimental-eventsource --env-file=.env.development --env-file-if-exists=.env.development.local src/index.ts",
 		"ts:check": "tsc --noEmit"
 	},
 	"dependencies": {

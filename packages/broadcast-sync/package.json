@@ -25,10 +25,7 @@
 	],
 	"type": "module",
 	"exports": {
-		".": {
-			"@nn/source": "./src/broadcast-sync.ts",
-			"default": "./dist/index.js"
-		},
+		".": "./src/broadcast-sync.ts",
 		"./package.json": "./package.json"
 	},
 	"publishConfig": {

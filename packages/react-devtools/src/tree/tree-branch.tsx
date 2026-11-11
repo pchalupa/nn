@@ -14,6 +14,12 @@ export interface TreeBranchProps {
 export function TreeBranch({ label, value, level, children }: TreeBranchProps) {
 	const [expanded, setExpanded] = useState(false);
 	const style: Record<string, number> = { "--level": level };
+	const expandable = Object.keys(value).length > 0;
+	const open = expandable && expanded;
+
+	const handleClick = () => {
+		if (expandable) setExpanded((current) => !current);
+	};
 
 	return (
 		<>
@@ -22,17 +28,17 @@ export function TreeBranch({ label, value, level, children }: TreeBranchProps) {
 				role="treeitem"
 				className="tree-node"
 				aria-level={level}
-				aria-expanded={expanded}
+				aria-expanded={expandable ? open : undefined}
 				style={style}
-				onClick={() => setExpanded(!expanded)}
+				onClick={handleClick}
 			>
 				<span className="tree-node-caret" aria-hidden="true">
-					▸
+					{expandable && "▸"}
 				</span>
 				<span className="key">{label}</span>
 				{isArray(value) && <Text> [{value.length}]</Text>}
 			</button>
-			{expanded && <div role="group">{children()}</div>}
+			{open && <div role="group">{children()}</div>}
 		</>
 	);
 }

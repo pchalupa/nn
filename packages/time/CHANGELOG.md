@@ -1,5 +1,19 @@
 # @nn/time
 
+## 1.1.0
+
+### Minor Changes
+
+- 23da839: Ship compiled ES modules with type declarations and source maps from `dist`, so the package works without compiling TypeScript from `node_modules`.
+
+  Import paths stay the same.
+
+### Patch Changes
+
+- 23da839: Depend on other `@nn/*` packages through caret ranges instead of exact versions, so compatible releases share one installed copy instead of duplicating it.
+- Updated dependencies [23da839]
+  - @nn/id@0.2.0
+
 ## 1.0.1
 
 ### Patch Changes

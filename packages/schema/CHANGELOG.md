@@ -1,5 +1,13 @@
 # @nn/schema
 
+## 2.1.0
+
+### Minor Changes
+
+- 23da839: Ship compiled ES modules with type declarations and source maps from `dist`, so the package works without compiling TypeScript from `node_modules`.
+
+  Import paths stay the same.
+
 ## 2.0.1
 
 ### Patch Changes

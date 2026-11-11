@@ -4,7 +4,7 @@
 		"apps/example-server": {
 			"entry": ["api/*.ts!"]
 		},
-		"packages/react-devtools": {
+		"packages/build-config": {
 			"ignoreDependencies": ["babel-plugin-react-compiler"]
 		}
 	}

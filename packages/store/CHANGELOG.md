@@ -1,5 +1,11 @@
 # @nn/store
 
+## 3.1.1
+
+### Patch Changes
+
+- b81486e: Fill fields missing from merged data with their zero values. Data saved before a field was added to the schema no longer reads back as `undefined` for that field.
+
 ## 3.1.0
 
 ### Minor Changes

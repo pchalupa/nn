@@ -1,6 +1,6 @@
 {
 	"name": "@nn/react-devtools",
-	"version": "0.0.0",
+	"version": "1.0.0",
 	"description": "Devtools for nn stores",
 	"keywords": [],
 	"homepage": "https://github.com/pchalupa/nn/packages/react-devtools#readme",

@@ -5,7 +5,7 @@ import { createPortal } from "react-dom";
 import { Button } from "./components/button";
 import { Drawer } from "./components/drawer";
 import { ShadowHost } from "./components/shadow-host";
-import { Explorer } from "./explorer";
+import { Tree } from "./tree";
 import { css } from "./styles/css";
 
 export interface DevtoolsProps {
@@ -22,7 +22,7 @@ export default function Devtools({ store }: DevtoolsProps) {
 		<ShadowHost>
 			{open ? (
 				<Drawer title="nn" label="nn devtools" onClose={handleClose}>
-					<Explorer store={store} />
+					<Tree store={store} />
 				</Drawer>
 			) : (
 				<Button text="⚙️" label="Open nn devtools" variant="floating" onClick={handleOpen} />

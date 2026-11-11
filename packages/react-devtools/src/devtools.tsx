@@ -2,8 +2,11 @@ import type { Store } from "@nn/store";
 import { useState } from "react";
 import { createPortal } from "react-dom";
 
-import { StorePanel } from "./store-panel";
-import { styles } from "./styles";
+import { Button } from "./components/button";
+import { Drawer } from "./components/drawer";
+import { ShadowHost } from "./components/shadow-host";
+import { Explorer } from "./explorer";
+import { css } from "./styles/css";
 
 export interface DevtoolsProps {
 	store: Store;
@@ -12,30 +15,51 @@ export interface DevtoolsProps {
 export function Devtools({ store }: DevtoolsProps) {
 	const [open, setOpen] = useState(false);
 
+	const handleOpen = () => setOpen(true);
+	const handleClose = () => setOpen(false);
+
 	return createPortal(
-		<div data-nn-devtools="">
-			<style>{styles}</style>
+		<ShadowHost>
 			{open ? (
-				<aside className="nn-drawer" aria-label="nn devtools">
-					<header className="nn-drawer-bar">
-						<span>nn</span>
-						<button type="button" className="nn-drawer-close" onClick={() => setOpen(false)}>
-							Close
-						</button>
-					</header>
-					<StorePanel store={store} />
-				</aside>
+				<Drawer title="nn" label="nn devtools" onClose={handleClose}>
+					<Explorer store={store} />
+				</Drawer>
 			) : (
-				<button
-					type="button"
-					className="nn-drawer-toggle"
-					aria-label="Open nn devtools"
-					onClick={() => setOpen(true)}
-				>
-					⚙️
-				</button>
+				<Button text="⚙️" label="Open nn devtools" variant="floating" onClick={handleOpen} />
 			)}
-		</div>,
+		</ShadowHost>,
 		document.body,
 	);
 }
+
+css`
+	[data-devtools] {
+		--z: 2147483647;
+		--bg: #1e1e1e;
+		--bg-raised: #2a2a2a;
+		--fg: #d4d4d4;
+		--fg-muted: #8b8b8b;
+		--border: #3a3a3a;
+		--hover: #2d2d2d;
+		--selected: #264f78;
+		--focus: #4fc1ff;
+		--accent: #4fc1ff;
+		--flash: #5a4b1e;
+		--shadow: rgb(0 0 0 / 50%);
+		--syntax-key: #9cdcfe;
+		--syntax-string: #ce9178;
+		--syntax-number: #b5cea8;
+		--syntax-boolean: #569cd6;
+		--syntax-null: #808080;
+		--space-1: 2px;
+		--space-2: 4px;
+		--space-3: 8px;
+		--space-4: 16px;
+		--radius: 4px;
+		--indent: 12px;
+
+		color: var(--fg);
+		font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+		font-size: 12px;
+	}
+`;

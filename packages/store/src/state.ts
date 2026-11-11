@@ -60,8 +60,13 @@ export class State<
 	public merge(name: string, remote: Entity): void {
 		this.commit(() => {
 			const entity = this.root.get(name);
+			const strategy = this.reconciliationStrategy.get(name);
 
-			if (entity !== undefined && remote.key === entity.key) entity.merge(remote);
+			if (entity && strategy && remote.key === entity.key) {
+				const conformedRemote = strategy.conform(remote);
+
+				entity.merge(conformedRemote);
+			}
 		});
 	}
 

@@ -48,7 +48,7 @@ try {
 					}
 				});
 			} catch (error) {
-				logger.error({ err: error }, "Scan failed");
+				if (error instanceof Error) logger.error(`Scan failed with ${error.message}`);
 			}
 		}
 	});

@@ -12,7 +12,7 @@ export interface DevtoolsProps {
 	store: Store;
 }
 
-export function Devtools({ store }: DevtoolsProps) {
+export default function Devtools({ store }: DevtoolsProps) {
 	const [open, setOpen] = useState(false);
 
 	const handleOpen = () => setOpen(true);

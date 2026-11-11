@@ -1,6 +1,6 @@
 import { createHash } from "node:crypto";
 import { readFileSync, watch } from "node:fs";
-import { join, sep } from "node:path";
+import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 
 import { SseSync } from "@nn/sse-sync";
@@ -21,7 +21,7 @@ sseSync.connect();
 
 try {
 	watch(root, { recursive: true }, (_event, file) => {
-		if (file && !file.split(sep).includes("node_modules") && sseSync.connected) {
+		if (file && !/(?:^|[/\\])(?:node_modules|dist)(?:[/\\]|$)/.test(file) && sseSync.connected) {
 			try {
 				const lines = readFileSync(join(root, file), "utf8").split("\n");
 

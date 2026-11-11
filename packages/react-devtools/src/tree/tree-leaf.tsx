@@ -34,6 +34,7 @@ css`
 		color: var(--syntax-string);
 	}
 	.value[data-type="number"],
+	.value[data-type="bigint"],
 	.value[data-type="boolean"] {
 		color: var(--syntax-boolean);
 	}

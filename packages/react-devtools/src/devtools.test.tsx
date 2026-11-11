@@ -1,44 +1,56 @@
-// @vitest-environment jsdom
-import { array, object, string } from "@nn/schema";
+import { object, string } from "@nn/schema";
 import { Store } from "@nn/store";
-import { cleanup, fireEvent, render, screen } from "@testing-library/react";
-import { afterEach, describe, expect, it } from "vitest";
+import { fireEvent, render, within } from "@testing-library/react";
+import { StrictMode } from "react";
+import { describe, expect, it } from "vitest";
 
-import { Devtools } from "./devtools";
-
-const schema = object({ tickets: array(object({ title: string() })), language: string() });
-
-const open = () => fireEvent.click(screen.getByRole("button", { name: "Open nn devtools" }));
+import Devtools from "./devtools";
 
 describe("Devtools", () => {
-	afterEach(() => {
-		cleanup();
-	});
+	const schema = object({ language: string() });
 
-	it("starts closed with a button that opens the store panel", () => {
+	const devtools = () => {
+		const container = document.querySelector("[data-nn-devtools]")?.shadowRoot?.querySelector("[data-devtools]");
+
+		if (!(container instanceof HTMLElement)) throw new TypeError("Devtools are not rendered");
+
+		return within(container);
+	};
+
+	it("starts closed with a labelled button that opens the store panel", () => {
 		render(<Devtools store={new Store(schema)} />);
 
-		expect(screen.queryByRole("tree")).toBeNull();
+		expect(devtools().queryByRole("tree")).toBeNull();
+		expect(devtools().getByRole("button", { name: "Open nn devtools" }).textContent).toBe("DevTools");
 
-		open();
+		fireEvent.click(devtools().getByRole("button", { name: "Open nn devtools" }));
 
-		expect(screen.getByRole("complementary", { name: "nn devtools" })).toBeDefined();
-		expect(screen.getByRole("tree")).toBeDefined();
+		expect(devtools().getByRole("complementary", { name: "nn devtools" })).toBeDefined();
+		expect(devtools().getByRole("tree")).toBeDefined();
 	});
 
 	it("closes from the close button", () => {
 		render(<Devtools store={new Store(schema)} />);
-		open();
+		fireEvent.click(devtools().getByRole("button", { name: "Open nn devtools" }));
+		fireEvent.click(devtools().getByRole("button", { name: "Close" }));
 
-		fireEvent.click(screen.getByRole("button", { name: "Close" }));
-
-		expect(screen.queryByRole("tree")).toBeNull();
-		expect(screen.getByRole("button", { name: "Open nn devtools" })).toBeDefined();
+		expect(devtools().queryByRole("tree")).toBeNull();
+		expect(devtools().getByRole("button", { name: "Open nn devtools" })).toBeDefined();
 	});
 
-	it("shows an emoji on the button", () => {
-		render(<Devtools store={new Store(schema)} />);
+	it("opens and cleans up the devtools in strict mode", () => {
+		const { unmount } = render(
+			<StrictMode>
+				<Devtools store={new Store(schema)} />
+			</StrictMode>,
+		);
 
-		expect(screen.getByRole("button", { name: "Open nn devtools" }).textContent).toBe("⚙️");
+		fireEvent.click(devtools().getByRole("button", { name: "Open nn devtools" }));
+
+		expect(devtools().getByRole("tree")).toBeDefined();
+
+		unmount();
+
+		expect(document.querySelector("[data-nn-devtools]")).toBeNull();
 	});
 });

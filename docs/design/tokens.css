@@ -1,0 +1,108 @@
+:root {
+	--gs-martian-night: #1c130c;
+	--gs-sunlight: #faf0de;
+	--gs-paper: #eeddc2;
+	--gs-mars-orange: #d9621e;
+	--gs-bronze: #b48a55;
+	--gs-amber: #f5a623;
+	--gs-rust-dust: #8e4a26;
+	--gs-ink-muted: #6b4a34;
+
+	--gs-mars-orange-deep: #a3410e;
+	--gs-mars-orange-light: #e4733a;
+	--gs-amber-deep: #7f5300;
+	--gs-bronze-deep: #76552a;
+	--gs-rust-light: #c7744a;
+	--gs-abort-red: #a82b1e;
+	--gs-abort-red-light: #f2705c;
+	--gs-night-raised: #241810;
+	--gs-night-sunken: #140d08;
+
+	--gs-font-display: "Michroma", "IBM Plex Sans", system-ui, sans-serif;
+	--gs-font-sans: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+	--gs-font-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+	--gs-font-serif: "IBM Plex Serif", Georgia, "Times New Roman", serif;
+
+	--gs-text-display-xl: clamp(2rem, 1rem + 5vw, 4.5rem);
+	--gs-text-display: clamp(2rem, 1.5rem + 1.5vw, 2.5rem);
+	--gs-text-h1: clamp(1.5rem, 1.3rem + 1vw, 1.875rem);
+	--gs-text-h2: 1.5rem;
+	--gs-text-h3: 1.125rem;
+	--gs-text-body: 1rem;
+	--gs-text-small: 0.875rem;
+	--gs-text-label: 0.75rem;
+	--gs-text-quote: clamp(1.375rem, 1.2rem + 0.8vw, 1.625rem);
+
+	--gs-tracking-display: -0.014em;
+	--gs-tracking-headline: -0.0125em;
+	--gs-tracking-label: 0.12em;
+
+	--gs-gutter: 1rem;
+	--gs-section-gap: 3rem;
+	--gs-radius-xs: 3px;
+	--gs-duration: 120ms;
+
+	--gs-panel-bg: var(--gs-martian-night);
+	--gs-panel-bg-raised: var(--gs-night-raised);
+	--gs-panel-text: var(--gs-sunlight);
+	--gs-panel-text-muted: #faf0deb3;
+	--gs-panel-label: var(--gs-bronze);
+	--gs-panel-border: #faf0de26;
+	--gs-panel-outline: #b48a5559;
+
+	--gs-panel-connected: var(--gs-amber);
+	--gs-panel-connecting: var(--gs-bronze);
+	--gs-panel-disconnected: var(--gs-rust-light);
+	--gs-panel-idle: #faf0de99;
+	--gs-panel-error: var(--gs-abort-red-light);
+
+	--gs-syntax-keyword: var(--gs-mars-orange-light);
+	--gs-syntax-string: var(--gs-amber);
+	--gs-syntax-comment: var(--gs-bronze);
+	--gs-syntax-number: var(--gs-rust-light);
+	--gs-syntax-punctuation: #faf0deb3;
+	--gs-syntax-default: var(--gs-sunlight);
+
+	--gs-image-tint: #d9621e8c;
+	--gs-image-scrim: linear-gradient(to top, #1c130cf5 0%, #1c130cb3 50%, #1c130c1a 100%);
+	--gs-caption-bg: #1c130ccc;
+
+	color-scheme: light dark;
+
+	--gs-color-bg: light-dark(var(--gs-sunlight), var(--gs-martian-night));
+	--gs-color-bg-sunken: light-dark(var(--gs-paper), var(--gs-night-sunken));
+	--gs-color-surface-raised: light-dark(#fffaf0, var(--gs-night-raised));
+	--gs-color-text: light-dark(var(--gs-martian-night), var(--gs-sunlight));
+	--gs-color-text-muted: light-dark(var(--gs-ink-muted), #faf0deb3);
+	--gs-color-text-on-accent: var(--gs-martian-night);
+	--gs-color-label: light-dark(var(--gs-ink-muted), var(--gs-bronze));
+	--gs-color-border: light-dark(#1c130c26, #faf0de26);
+	--gs-color-border-strong: light-dark(var(--gs-martian-night), var(--gs-sunlight));
+	--gs-color-border-control: light-dark(var(--gs-ink-muted), var(--gs-bronze));
+	--gs-color-accent: var(--gs-mars-orange);
+	--gs-color-accent-hover: var(--gs-mars-orange-light);
+	--gs-color-accent-text: light-dark(var(--gs-mars-orange-deep), var(--gs-mars-orange-light));
+	--gs-color-focus: light-dark(var(--gs-mars-orange-deep), var(--gs-mars-orange-light));
+	--gs-color-disabled-bg: light-dark(#1c130c14, #faf0de14);
+	--gs-color-disabled-text: light-dark(#1c130c73, #faf0de66);
+
+	--gs-status-connected: light-dark(var(--gs-amber-deep), var(--gs-amber));
+	--gs-status-connecting: light-dark(var(--gs-bronze-deep), var(--gs-bronze));
+	--gs-status-disconnected: light-dark(var(--gs-rust-dust), var(--gs-rust-light));
+	--gs-status-idle: light-dark(var(--gs-ink-muted), #faf0de99);
+	--gs-status-error: light-dark(var(--gs-abort-red), var(--gs-abort-red-light));
+}
+
+:root[data-theme="light"] {
+	color-scheme: light;
+}
+
+:root[data-theme="dark"] {
+	color-scheme: dark;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	:root {
+		--gs-duration: 0ms;
+	}
+}

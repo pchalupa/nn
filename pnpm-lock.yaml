@@ -164,6 +164,12 @@ settings:
 
 catalogs:
   default:
+    '@babel/core':
+      specifier: ^8.0.10
+      version: 8.0.10
+    '@rolldown/plugin-babel':
+      specifier: ^0.2.4
+      version: 0.2.4
     '@types/react':
       specifier: ^19.3.0
       version: 19.3.0
@@ -173,6 +179,9 @@ catalogs:
     '@vitest/coverage-v8':
       specifier: ^5.1.0
       version: 5.1.0
+    babel-plugin-react-compiler:
+      specifier: 1.0.0
+      version: 1.0.0
     react:
       specifier: 19.3.1
       version: 19.3.1
@@ -310,6 +319,9 @@ importers:
       '@nn/react':
         specifier: workspace:^
         version: link:../../packages/react
+      '@nn/react-devtools':
+        specifier: workspace:^
+        version: link:../../packages/react-devtools
       '@nn/sse-sync':
         specifier: workspace:^
         version: link:../../packages/sse-sync
@@ -345,7 +357,7 @@ importers:
         version: 4.0.0
     devDependencies:
       '@babel/core':
-        specifier: ^8.0.10
+        specifier: 'catalog:'
         version: 8.0.10
       '@hono/node-server':
         specifier: ^2.1.6
@@ -354,7 +366,7 @@ importers:
         specifier: ^1.64.1
         version: 1.64.1
       '@rolldown/plugin-babel':
-        specifier: ^0.2.4
+        specifier: 'catalog:'
         version: 0.2.4(@babel/core@8.0.10)(@babel/runtime@7.29.10)(rolldown@1.3.0)(vite@8.3.5(@types/node@26.6.6)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(tsx@4.23.15)(yaml@2.9.1))
       '@tailwindcss/vite':
         specifier: ~4.3.3
@@ -387,7 +399,7 @@ importers:
         specifier: ^6.1.2
         version: 6.1.2(@rolldown/plugin-babel@0.2.4(@babel/core@8.0.10)(@babel/runtime@7.29.10)(rolldown@1.3.0)(vite@8.3.5(@types/node@26.6.6)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(tsx@4.23.15)(yaml@2.9.1)))(babel-plugin-react-compiler@1.0.0)(vite@8.3.5(@types/node@26.6.6)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(tsx@4.23.15)(yaml@2.9.1))
       babel-plugin-react-compiler:
-        specifier: 1.0.0
+        specifier: 'catalog:'
         version: 1.0.0
       example-server:
         specifier: workspace:^
@@ -675,6 +687,61 @@ importers:
       '@types/use-sync-external-store':
         specifier: ^1.7.0
         version: 1.7.0
+      jsdom:
+        specifier: ^30.1.3
+        version: 30.1.3
+      react:
+        specifier: 'catalog:'
+        version: 19.3.1
+      react-dom:
+        specifier: 'catalog:'
+        version: 19.3.1(react@19.3.1)
+      tsdown:
+        specifier: 'catalog:'
+        version: 0.23.7(@arethetypeswrong/core@0.18.5)(oxc-resolver@11.24.2)(publint@0.3.25)(tsx@4.23.15)(typescript@7.0.2)
+      typescript:
+        specifier: 'catalog:'
+        version: 7.0.2
+      vitest:
+        specifier: 'catalog:'
+        version: 5.1.0(@types/node@26.6.6)(@vitest/coverage-v8@5.1.0)(jsdom@30.1.3)(vite@8.3.5(@types/node@26.6.6)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(tsx@4.23.15)(yaml@2.9.1))
+
+  packages/react-devtools:
+    dependencies:
+      '@nn/guards':
+        specifier: workspace:^
+        version: link:../guards
+      '@nn/store':
+        specifier: 'workspace:'
+        version: link:../store
+    devDependencies:
+      '@babel/core':
+        specifier: 'catalog:'
+        version: 8.0.10
+      '@nn/build-config':
+        specifier: workspace:^
+        version: link:../build-config
+      '@nn/schema':
+        specifier: 'workspace:'
+        version: link:../schema
+      '@nn/typescript-config':
+        specifier: 'workspace:'
+        version: link:../typescript-config
+      '@rolldown/plugin-babel':
+        specifier: 'catalog:'
+        version: 0.2.4(@babel/core@8.0.10)(@babel/runtime@7.29.10)(rolldown@1.3.0)(vite@8.3.5(@types/node@26.6.6)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(tsx@4.23.15)(yaml@2.9.1))
+      '@testing-library/react':
+        specifier: ^16.3.3
+        version: 16.3.3(@testing-library/dom@10.4.1)(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
+      '@types/react':
+        specifier: 'catalog:'
+        version: 19.3.0
+      '@types/react-dom':
+        specifier: 'catalog:'
+        version: 19.3.0(@types/react@19.3.0)
+      babel-plugin-react-compiler:
+        specifier: 'catalog:'
+        version: 1.0.0
       jsdom:
         specifier: ^30.1.3
         version: 30.1.3
@@ -1025,11 +1092,6 @@ packages:
   '@babel/helpers@8.0.10':
     resolution: {integrity: sha512-tBG9yuaR26JJWFafcl/Dk4eib6bkRJ9H5e6lENcwZqFudA9ImNCuMXLjB3/t+Ub7/DOZv2Rmi5LCOi8q2DCekQ==}
     engines: {node: ^22.18.0 || >=24.11.0}
-
-  '@babel/parser@7.29.12':
-    resolution: {integrity: sha512-WJ7JBp/Q4+z/ImydtI7jS6NVco5++632ExBemSX+Ysb+G1lCwQ5BVo3SY+jGGOcZXI4ZccbZSUSJLNBW6eEpJg==}
-    engines: {node: '>=6.0.0'}
-    hasBin: true
 
   '@babel/parser@7.29.13':
     resolution: {integrity: sha512-fJM50YYjlTiBhgdkGmC1tBpv+FMAyo4annf2X6Aks+0yRlaiVkYW/3f07xAfVVkYIoZ9fFZp+mEThUFnuybhkQ==}
@@ -5731,7 +5793,7 @@ snapshots:
       '@babel/helper-compilation-targets': 7.29.7
       '@babel/helper-module-transforms': 7.29.7(@babel/core@7.29.7)
       '@babel/helpers': 7.29.10
-      '@babel/parser': 7.29.12
+      '@babel/parser': 7.29.13
       '@babel/template': 7.29.7
       '@babel/traverse': 7.29.12
       '@babel/types': 7.29.11
@@ -5765,7 +5827,7 @@ snapshots:
 
   '@babel/generator@7.29.12':
     dependencies:
-      '@babel/parser': 7.29.12
+      '@babel/parser': 7.29.13
       '@babel/types': 7.29.11
       '@jridgewell/gen-mapping': 0.3.13
       '@jridgewell/trace-mapping': 0.3.31
@@ -5918,10 +5980,6 @@ snapshots:
     dependencies:
       '@babel/template': 8.0.0
       '@babel/types': 8.0.10
-
-  '@babel/parser@7.29.12':
-    dependencies:
-      '@babel/types': 7.29.11
 
   '@babel/parser@7.29.13':
     dependencies:
@@ -6416,7 +6474,7 @@ snapshots:
   '@babel/template@7.29.7':
     dependencies:
       '@babel/code-frame': 7.29.7
-      '@babel/parser': 7.29.12
+      '@babel/parser': 7.29.13
       '@babel/types': 7.29.11
 
   '@babel/template@8.0.0':
@@ -6430,7 +6488,7 @@ snapshots:
       '@babel/code-frame': 7.29.7
       '@babel/generator': 7.29.12
       '@babel/helper-globals': 7.29.7
-      '@babel/parser': 7.29.12
+      '@babel/parser': 7.29.13
       '@babel/template': 7.29.7
       '@babel/types': 7.29.11
       debug: 4.4.3
@@ -7720,7 +7778,7 @@ snapshots:
   '@tanstack/router-utils@1.162.4':
     dependencies:
       '@babel/generator': 7.29.12
-      '@babel/parser': 7.29.12
+      '@babel/parser': 7.29.13
       '@babel/types': 7.29.11
       ansis: 4.4.0
       babel-dead-code-elimination: 1.0.12
@@ -7775,7 +7833,7 @@ snapshots:
 
   '@types/babel__core@7.20.5':
     dependencies:
-      '@babel/parser': 7.29.12
+      '@babel/parser': 7.29.13
       '@babel/types': 7.29.11
       '@types/babel__generator': 7.27.0
       '@types/babel__template': 7.4.4
@@ -7787,7 +7845,7 @@ snapshots:
 
   '@types/babel__template@7.4.4':
     dependencies:
-      '@babel/parser': 7.29.12
+      '@babel/parser': 7.29.13
       '@babel/types': 7.29.11
 
   '@types/babel__traverse@7.28.0':
@@ -8039,7 +8097,7 @@ snapshots:
   babel-dead-code-elimination@1.0.12:
     dependencies:
       '@babel/core': 7.29.7
-      '@babel/parser': 7.29.12
+      '@babel/parser': 7.29.13
       '@babel/traverse': 7.29.12
       '@babel/types': 7.29.11
     transitivePeerDependencies:

@@ -1,3 +1,4 @@
+import { Devtools } from "@nn/react-devtools";
 import { createRouter, RouterProvider } from "@tanstack/react-router";
 import { StrictMode } from "react";
 import ReactDOM from "react-dom/client";
@@ -5,6 +6,7 @@ import { I18nextProvider } from "react-i18next";
 
 import { i18n } from "./i18n";
 import { routeTree } from "./routeTree.gen";
+import { store } from "./store";
 
 declare module "@tanstack/react-router" {
 	interface Register {
@@ -25,5 +27,6 @@ root.render(
 		<I18nextProvider i18n={i18n}>
 			<RouterProvider router={router} />
 		</I18nextProvider>
+		<Devtools store={store} />
 	</StrictMode>,
 );

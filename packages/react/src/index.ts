@@ -14,7 +14,9 @@ type Update<Data> = (recipe: (draft: Data) => void) => void;
 
 export function createStore<StoreSchema extends ObjectSchema<Record<string, Schema>>>(schema: StoreSchema) {
 	type Data = InferStateType<StoreSchema>;
+
 	const store = new Store(schema);
+
 	const getSnapshot = () => store.read();
 	const subscribe = (listener: () => void) => store.onChange(listener);
 	const update: Update<Data> = (recipe) => store.update(recipe);

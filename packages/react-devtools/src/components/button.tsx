@@ -17,34 +17,39 @@ export function Button({ text, label, variant, onClick }: ButtonProps) {
 
 css`
 	.button {
-		padding: var(--space-1) var(--space-3);
-		border: 1px solid var(--border);
-		border-radius: var(--radius);
-		color: inherit;
+		min-height: 28px;
+		padding: var(--gs-space-1) var(--gs-space-2-5);
+		border: var(--gs-border-width) solid var(--gs-panel-label);
+		border-radius: 0;
+		color: var(--gs-panel-text);
 		background: transparent;
 		font: inherit;
+		line-height: var(--gs-leading-label);
+		letter-spacing: var(--gs-tracking-label);
+		text-transform: uppercase;
 		cursor: pointer;
+		transition:
+			color var(--gs-duration-fast) var(--gs-ease),
+			background-color var(--gs-duration-fast) var(--gs-ease);
 	}
 	.button:hover {
-		background: var(--hover);
+		color: var(--gs-panel-bg);
+		background: var(--gs-panel-text);
 	}
 	.button:focus-visible {
-		outline: 1px solid var(--focus);
-		outline-offset: 1px;
+		outline: var(--gs-focus-width) solid var(--gs-panel-focus);
+		outline-offset: var(--gs-focus-offset);
 	}
 	.button[data-variant="floating"] {
 		position: fixed;
-		right: var(--space-4);
-		bottom: var(--space-4);
+		right: var(--gs-space-4);
+		bottom: var(--gs-space-4);
 		z-index: var(--z);
-		padding: var(--space-3) var(--space-4);
-		border-radius: 999px;
-		color: var(--accent);
-		background: var(--bg);
-		font-weight: bold;
-		box-shadow: 0 2px 8px var(--shadow);
+		padding: var(--gs-space-2) var(--gs-space-3);
+		background: var(--gs-panel-bg);
 	}
 	.button[data-variant="floating"]:hover {
-		background: var(--bg-raised);
+		color: var(--gs-panel-text);
+		background: var(--gs-panel-bg-raised);
 	}
 `;

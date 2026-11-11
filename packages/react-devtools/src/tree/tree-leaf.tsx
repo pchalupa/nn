@@ -31,15 +31,15 @@ css`
 		cursor: default;
 	}
 	.value[data-type="string"] {
-		color: var(--syntax-string);
+		color: var(--gs-syntax-string);
 	}
 	.value[data-type="number"],
 	.value[data-type="bigint"],
 	.value[data-type="boolean"] {
-		color: var(--syntax-boolean);
+		color: var(--gs-syntax-keyword);
 	}
 	.value[data-type="null"],
 	.value[data-type="undefined"] {
-		color: var(--syntax-null);
+		color: var(--gs-syntax-comment);
 	}
 `;

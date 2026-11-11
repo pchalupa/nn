@@ -12,6 +12,6 @@ export function Text({ children }: TextProps) {
 
 css`
 	.text {
-		color: var(--fg-muted);
+		color: var(--gs-syntax-punctuation);
 	}
 `;

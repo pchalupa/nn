@@ -26,9 +26,9 @@ css`
 	.tree {
 		flex: 1;
 		min-height: 0;
-		padding: var(--space-3);
+		padding: var(--gs-space-2) 0;
 		overflow: auto;
 		scrollbar-width: thin;
-		scrollbar-color: var(--border) transparent;
+		scrollbar-color: var(--gs-panel-border) transparent;
 	}
 `;

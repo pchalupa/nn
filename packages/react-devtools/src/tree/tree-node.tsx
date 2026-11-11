@@ -31,34 +31,42 @@ css`
 		display: block;
 		width: 100%;
 		margin: 0;
-		padding: 0 var(--space-3);
-		padding-left: calc(var(--space-3) + (var(--level, 1) - 1) * var(--indent));
+		padding: 0 var(--gs-space-4);
+		padding-left: calc(var(--gs-space-4) + (var(--level, 1) - 1) * var(--indent));
 		overflow: hidden;
 		border: 0;
-		border-radius: var(--radius);
-		color: inherit;
+		border-radius: 0;
+		color: var(--gs-syntax-text);
 		background: transparent;
 		font: inherit;
+		font-variant-numeric: tabular-nums;
 		text-align: left;
 		text-overflow: ellipsis;
 		white-space: nowrap;
 		cursor: pointer;
+		transition: background-color var(--gs-duration-fast) var(--gs-ease);
+	}
+	.tree-node[aria-level="1"]:not(:first-child) {
+		border-top: var(--gs-border-width) solid var(--gs-panel-border);
 	}
 	.tree-node:hover {
-		background: var(--hover);
+		background: var(--gs-panel-bg-raised);
+	}
+	.tree-node[aria-expanded="true"] {
+		box-shadow: inset 2px 0 0 var(--gs-panel-accent);
 	}
 	.tree-node:focus-visible {
-		outline: 1px solid var(--focus);
-		outline-offset: -1px;
+		outline: var(--gs-focus-width) solid var(--gs-panel-focus);
+		outline-offset: calc(var(--gs-focus-width) * -1);
 	}
 	.tree-node-caret {
 		display: inline-block;
 		width: 1.5ch;
-		color: var(--fg-muted);
+		color: var(--gs-syntax-comment);
 		text-align: center;
-		transition: transform 0.1s ease-out;
+		transition: transform var(--gs-duration-fast) var(--gs-ease);
 	}
 	.key {
-		color: var(--syntax-key);
+		color: var(--gs-syntax-text);
 	}
 `;

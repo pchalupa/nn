@@ -14,7 +14,7 @@ export function Drawer({ title, label, children, onClose }: DrawerProps) {
 	return (
 		<aside className="drawer" aria-label={label}>
 			<header className="drawer-bar">
-				<span>{title}</span>
+				<span className="label">{title}</span>
 				<Button text="Close" onClick={onClose} />
 			</header>
 			{children}
@@ -32,17 +32,23 @@ css`
 		display: flex;
 		flex-direction: column;
 		height: 40vh;
-		border-top: 1px solid var(--border);
-		color: var(--fg);
-		background: var(--bg);
-		line-height: 1.5;
-		box-shadow: 0 -2px 12px var(--shadow);
+		border-top: var(--gs-border-width) solid var(--gs-panel-border);
+		color: var(--gs-panel-text);
+		background: var(--gs-panel-bg);
 	}
 	.drawer-bar {
 		display: flex;
+		flex-wrap: wrap;
 		align-items: center;
 		justify-content: space-between;
-		padding: var(--space-2) var(--space-3);
-		border-bottom: 1px solid var(--border);
+		gap: var(--gs-space-3);
+		padding: var(--gs-space-2) var(--gs-space-4);
+		border-bottom: var(--gs-border-width) solid var(--gs-panel-border);
+	}
+	.label {
+		color: var(--gs-panel-label);
+		line-height: var(--gs-leading-label);
+		letter-spacing: var(--gs-tracking-label);
+		text-transform: uppercase;
 	}
 `;

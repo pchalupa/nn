@@ -21,11 +21,11 @@ export default function Devtools({ store }: DevtoolsProps) {
 	return createPortal(
 		<ShadowHost>
 			{open ? (
-				<Drawer title="nn" label="nn devtools" onClose={handleClose}>
+				<Drawer title="Store" label="nn devtools" onClose={handleClose}>
 					<Tree store={store} />
 				</Drawer>
 			) : (
-				<Button text="⚙️" label="Open nn devtools" variant="floating" onClick={handleOpen} />
+				<Button text="DevTools" label="Open nn devtools" variant="floating" onClick={handleOpen} />
 			)}
 		</ShadowHost>,
 		document.body,
@@ -35,29 +35,53 @@ export default function Devtools({ store }: DevtoolsProps) {
 css`
 	[data-devtools] {
 		--z: 2147483647;
-		--bg: #1e1e1e;
-		--bg-raised: #2a2a2a;
-		--fg: #d4d4d4;
-		--fg-muted: #8b8b8b;
-		--border: #3a3a3a;
-		--hover: #2d2d2d;
-		--focus: #4fc1ff;
-		--accent: #4fc1ff;
-		--shadow: rgb(0 0 0 / 50%);
-		--syntax-key: #9cdcfe;
-		--syntax-string: #ce9178;
-		--syntax-number: #b5cea8;
-		--syntax-boolean: #569cd6;
-		--syntax-null: #808080;
-		--space-1: 2px;
-		--space-2: 4px;
-		--space-3: 8px;
-		--space-4: 16px;
-		--radius: 4px;
 		--indent: 12px;
 
-		color: var(--fg);
-		font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-		font-size: 12px;
+		--gs-font-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+		--gs-text-label: 12px;
+		--gs-tracking-label: 0.12em;
+		--gs-leading-label: 1.4;
+		--gs-leading-code: 1.5;
+
+		--gs-space-0-5: 2px;
+		--gs-space-1: 4px;
+		--gs-space-1-5: 6px;
+		--gs-space-2: 8px;
+		--gs-space-2-5: 10px;
+		--gs-space-3: 12px;
+		--gs-space-4: 16px;
+
+		--gs-border-width: 1px;
+		--gs-focus-width: 2px;
+		--gs-focus-offset: 2px;
+		--gs-duration-fast: 120ms;
+		--gs-ease: cubic-bezier(0.2, 0, 0, 1);
+
+		--gs-panel-bg: #1c130c;
+		--gs-panel-bg-raised: #241810;
+		--gs-panel-text: #faf0de;
+		--gs-panel-text-muted: #faf0deb3;
+		--gs-panel-text-subtle: #faf0de99;
+		--gs-panel-label: #b48a55;
+		--gs-panel-border: #faf0de26;
+		--gs-panel-accent: #d9621e;
+		--gs-panel-focus: #e4733a;
+
+		--gs-syntax-text: #faf0de;
+		--gs-syntax-keyword: #e4733a;
+		--gs-syntax-string: #f5a623;
+		--gs-syntax-comment: #b48a55;
+		--gs-syntax-punctuation: #faf0deb3;
+
+		color: var(--gs-panel-text);
+		font-family: var(--gs-font-mono);
+		font-size: var(--gs-text-label);
+		line-height: var(--gs-leading-code);
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		[data-devtools] {
+			--gs-duration-fast: 0ms;
+		}
 	}
 `;

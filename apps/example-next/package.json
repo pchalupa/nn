@@ -1,0 +1,39 @@
+{
+	"name": "example-next",
+	"version": "0.0.0",
+	"private": true,
+	"type": "module",
+	"scripts": {
+		"build": "next build",
+		"dev": "NODE_OPTIONS=--experimental-eventsource next dev --port 3200",
+		"start": "NODE_OPTIONS=--experimental-eventsource next start --port 3200",
+		"test:e2e": "playwright test",
+		"ts:check": "tsc --noEmit"
+	},
+	"dependencies": {
+		"@nn/broadcast-sync": "workspace:",
+		"@nn/indexdb-sync": "workspace:",
+		"@nn/next": "workspace:",
+		"@nn/sse-sync": "workspace:",
+		"@nn/sync-engine": "workspace:",
+		"example-schema": "workspace:",
+		"next": "~16.4.5",
+		"react": "catalog:",
+		"react-dom": "catalog:"
+	},
+	"devDependencies": {
+		"@nn/store": "workspace:",
+		"@nn/typescript-config": "workspace:",
+		"@playwright/test": "^1.64.1",
+		"@tailwindcss/postcss": "~4.3.3",
+		"@types/node": "^26.6.6",
+		"@types/react": "catalog:",
+		"@types/react-dom": "catalog:",
+		"tailwindcss": "~4.3.3",
+		"typescript": "catalog:",
+		"vitest": "catalog:"
+	},
+	"engines": {
+		"node": ">=24"
+	}
+}

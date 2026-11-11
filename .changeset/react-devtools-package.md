@@ -2,18 +2,18 @@
 "@nn/react-devtools": major
 ---
 
-Adds `@nn/react-devtools`, read-only devtools for nn stores.
+Adds `@nn/react-devtools`, a read-only panel for inspecting an nn `Store` while you develop.
 
-The panel shows a tree of the store's values and briefly flashes a row when its value changes. Click a map or list to expand it. Lists show their item count. Selecting a row shows its CRDT metadata in a side pane: the kind and merge rule, when it was written with its counter and replica, and the entity key. Values that were never written are labelled as schema defaults. The panel never writes to the store.
-
-Render it once with your app's `Store`:
+Render it once with your app's store:
 
 ```tsx
-<Devtools store={store} />
+import { Devtools } from "@nn/react-devtools";
+
+<Devtools store={store} />;
 ```
 
-It adds a small ⚙️ button in the bottom-right corner that opens a drawer along the bottom of the page. Close it with the Close button or Escape. It starts closed on every page load. The drawer isn't modal, so you can keep using the app while you watch values change, but it sits behind the app's own `showModal()` dialogs while one is open. It renders nothing under browser automation, so Playwright runs don't see it.
+A DevTools button in the bottom-right corner opens a drawer along the bottom of the page. The drawer shows the store as a tree that follows every change. Objects and arrays start collapsed and expand on click, arrays show their length, and expanded rows stay open across updates. Strings, numbers, booleans, `null`, and `undefined` are colored by type. The panel never writes to the store.
 
-The devtools use a dark theme.
+The drawer starts closed on every page load and isn't modal, so you can keep using the app while it's open. It renders in a shadow root, so your app's CSS doesn't change it and its CSS doesn't leak into your app. It uses a fixed dark theme with IBM Plex Mono when your app already loads it, and the system monospace font otherwise.
 
-`Devtools` renders only when `NODE_ENV` is `development`, and production builds leave it out.
+`Devtools` renders only when `NODE_ENV` is `development` or the page runs under browser automation, so Playwright tests can reach it. Everywhere else it renders nothing and never loads the panel code.

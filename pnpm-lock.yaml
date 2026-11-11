@@ -706,18 +706,9 @@ importers:
       '@nn/build-config':
         specifier: workspace:^
         version: link:../build-config
-      '@nn/entities':
-        specifier: 'workspace:'
-        version: link:../entities
       '@nn/schema':
         specifier: 'workspace:'
         version: link:../schema
-      '@nn/sync-engine':
-        specifier: 'workspace:'
-        version: link:../sync-engine
-      '@nn/time':
-        specifier: 'workspace:'
-        version: link:../time
       '@nn/typescript-config':
         specifier: 'workspace:'
         version: link:../typescript-config

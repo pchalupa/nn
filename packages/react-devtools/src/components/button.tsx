@@ -7,9 +7,9 @@ export interface ButtonProps {
 	onClick?: () => void;
 }
 
-export function Button({ text, label, variant = "outlined", onClick }: ButtonProps) {
+export function Button({ text, label, variant, onClick }: ButtonProps) {
 	return (
-		<button type="button" className="button" data-variant={variant} aria-label={label} onClick={onClick}>
+		<button type="button" className="button" data-variant={variant ?? "outlined"} aria-label={label} onClick={onClick}>
 			{text}
 		</button>
 	);

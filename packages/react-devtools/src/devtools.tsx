@@ -5,8 +5,8 @@ import { createPortal } from "react-dom";
 import { Button } from "./components/button";
 import { Drawer } from "./components/drawer";
 import { ShadowHost } from "./components/shadow-host";
-import { Tree } from "./tree";
 import { css } from "./styles/css";
+import { Tree } from "./tree";
 
 export interface DevtoolsProps {
 	store: Store;

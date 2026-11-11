@@ -133,7 +133,7 @@ describe("MapStrategy", () => {
 			assert(RGA.is(comments));
 			const comment = comments.find("c1");
 
-			assert(LWWMap.is(entity));
+			assert(LWWMap.is(comment));
 			expect(comment.get("body")?.current).toBe("");
 		});
 

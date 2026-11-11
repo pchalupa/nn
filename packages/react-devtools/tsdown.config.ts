@@ -1,10 +1,5 @@
-import { libraryConfig } from "@nn/build-config/tsdown";
-import babel from "@rolldown/plugin-babel";
-import { defineConfig } from "tsdown";
+import { reactLibraryConfig } from "@nn/build-config/react-tsdown";
 
-export default defineConfig({
-	...libraryConfig({
-		index: "src/index.ts",
-	}),
-	plugins: [babel({ plugins: [["babel-plugin-react-compiler", { target: "19", panicThreshold: "all_errors" }]] })],
+export default reactLibraryConfig({
+	index: "src/index.ts",
 });

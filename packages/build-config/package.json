@@ -6,6 +6,7 @@
 	"license": "MIT",
 	"type": "module",
 	"exports": {
+		"./react-tsdown": "./src/react-tsdown.ts",
 		"./tsdown": "./src/tsdown.ts"
 	},
 	"scripts": {
@@ -13,6 +14,9 @@
 	},
 	"dependencies": {
 		"@arethetypeswrong/core": "^0.18.5",
+		"@babel/core": "catalog:",
+		"@rolldown/plugin-babel": "catalog:",
+		"babel-plugin-react-compiler": "catalog:",
 		"publint": "^0.3.25",
 		"tsdown": "catalog:"
 	},

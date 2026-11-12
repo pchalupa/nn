@@ -498,6 +498,19 @@ describe("State notifications", () => {
 describe("State merges", () => {
 	const languageSchema = object({ language: string() });
 
+	afterEach(() => vi.restoreAllMocks());
+
+	it("completes a merged row without minting timestamps", () => {
+		const state = new State(schema);
+		const remote = new RGA([new LWWMap({}, "row")], "tickets");
+		const now = vi.spyOn(Time, "now");
+
+		state.merge("tickets", remote);
+
+		expect(state.read().tickets).toStrictEqual([{ title: "", assignee: { name: "" } }]);
+		expect(now).not.toHaveBeenCalled();
+	});
+
 	it("merges a decoded entity into a field and notifies once", () => {
 		const state = new State(languageSchema);
 		const listener = listen(state);

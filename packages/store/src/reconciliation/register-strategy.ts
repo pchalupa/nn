@@ -18,4 +18,8 @@ export class RegisterStrategy implements Strategy {
 			}
 		}
 	}
+
+	public conform(remote: Entity): Entity {
+		return remote;
+	}
 }

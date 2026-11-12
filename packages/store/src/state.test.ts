@@ -561,6 +561,20 @@ describe("State merges", () => {
 		expect(state.read().tickets.map((row) => row.title)).toStrictEqual(["Second"]);
 	});
 
+	it("removes a row that a remote replica removed", () => {
+		const remote = setup();
+		const state = new State(schema);
+		const codec = new Codec();
+
+		state.merge("tickets", codec.decode(remote.encode().data.tickets));
+		remote.update((draft) => {
+			draft.tickets = draft.tickets.filter((row) => row.title !== "First");
+		});
+		state.merge("tickets", codec.decode(remote.encode().data.tickets));
+
+		expect(state.read().tickets.map((row) => row.title)).toStrictEqual(["Second"]);
+	});
+
 	it("ignores merges into unknown or inherited names and entities stored under another key", () => {
 		const state = new State(languageSchema);
 		const before = state.read();

@@ -454,4 +454,39 @@ describe("RGA", () => {
 			expect(callback).not.toHaveBeenCalled();
 		});
 	});
+
+	describe("map", () => {
+		it("transforms every row and keeps the list key", () => {
+			const list = new RGA([new LWWRegister("1", "a"), new LWWRegister("2", "b")], "list");
+			const mapped = list.map((row) => new LWWRegister(Number(row.current), row.key));
+
+			expectTypeOf(mapped).toEqualTypeOf<RGA<LWWRegister<number>>>();
+			expect(mapped.key).toBe("list");
+			expect(mapped.current.map((row) => [row.key, row.current])).toStrictEqual([
+				["a", 1],
+				["b", 2],
+			]);
+		});
+
+		it("keeps the removed rows of the source list", () => {
+			const list = new RGA([new LWWRegister("1", "a"), new LWWRegister("2", "b")], "list");
+			const replica = new RGA([new LWWRegister("1", "a"), new LWWRegister("2", "b")], "list");
+
+			list.remove("a");
+			replica.merge(list.map((row) => new LWWRegister(row.current, row.key)));
+
+			expect(replica.current.map((row) => row.key)).toStrictEqual(["b"]);
+		});
+
+		it("leaves the source list unchanged", () => {
+			const list = new RGA([new LWWRegister("1", "a"), new LWWRegister("2", "b")], "list");
+			const mapped = list.map((row) => new LWWRegister(row.current, row.key));
+
+			mapped.remove("a");
+			list.push(new LWWRegister("3", "c"));
+
+			expect(list.current.map((row) => row.key)).toStrictEqual(["a", "b", "c"]);
+			expect(mapped.current.map((row) => row.key)).toStrictEqual(["b"]);
+		});
+	});
 });

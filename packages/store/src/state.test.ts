@@ -1,3 +1,4 @@
+import { Codec } from "@nn/entities/codec";
 import { LWWMap } from "@nn/entities/kinds/lww-map";
 import { LWWRegister } from "@nn/entities/kinds/lww-register";
 import { RGA } from "@nn/entities/kinds/rga";
@@ -546,6 +547,32 @@ describe("State merges", () => {
 		state.merge("language", new LWWRegister("de", "language", older));
 		expect(state.read().language).toBe("cs");
 		expect(listener).not.toHaveBeenCalled();
+	});
+
+	it("keeps a removed row removed when a stale copy merges", () => {
+		const state = setup();
+		const stale = new Codec().decode(state.encode().data.tickets);
+
+		state.update((draft) => {
+			draft.tickets = draft.tickets.filter((row) => row.title !== "First");
+		});
+		state.merge("tickets", stale);
+
+		expect(state.read().tickets.map((row) => row.title)).toStrictEqual(["Second"]);
+	});
+
+	it("removes a row that a remote replica removed", () => {
+		const remote = setup();
+		const state = new State(schema);
+		const codec = new Codec();
+
+		state.merge("tickets", codec.decode(remote.encode().data.tickets));
+		remote.update((draft) => {
+			draft.tickets = draft.tickets.filter((row) => row.title !== "First");
+		});
+		state.merge("tickets", codec.decode(remote.encode().data.tickets));
+
+		expect(state.read().tickets.map((row) => row.title)).toStrictEqual(["Second"]);
 	});
 
 	it("ignores merges into unknown or inherited names and entities stored under another key", () => {

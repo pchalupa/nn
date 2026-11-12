@@ -1,5 +1,19 @@
 # @nn/store
 
+## 3.1.2
+
+### Patch Changes
+
+- be7c2b2: Keep rows that a remote replica removed removed when its list merges into the store. Before, completing the merged list against the schema dropped the remote removals, so a row deleted in one tab stayed in the others.
+- Updated dependencies [be7c2b2]
+  - @nn/entities@4.0.0
+
+## 3.1.1
+
+### Patch Changes
+
+- b81486e: Fill fields missing from merged data with their zero values. Data saved before a field was added to the schema no longer reads back as `undefined` for that field.
+
 ## 3.1.0
 
 ### Minor Changes

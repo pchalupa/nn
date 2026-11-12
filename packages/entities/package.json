@@ -1,6 +1,6 @@
 {
 	"name": "@nn/entities",
-	"version": "3.1.0",
+	"version": "4.0.0",
 	"description": "Conflict-free replicated data types that a store keeps its state in",
 	"keywords": [
 		"crdt",

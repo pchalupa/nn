@@ -1,25 +1,40 @@
 import { isArray } from "@nn/guards/is-array";
+import { isString } from "@nn/guards/is-string";
 
 import type { Decoder, Encoded } from "./codable";
 import { Entity, type EntityDelegate } from "./entity";
 
-// TODO!: Implementation of RGA isn't done yet. This is just temporary stub!
+// TODO!: Ordering is not converged yet; only removals are tombstoned.
 export class RGA<Value extends Entity> extends Entity<Value[]> implements EntityDelegate {
 	private items = new Map<string, Value>();
+	private tombstones: Set<string>;
 
-	constructor(items: Value[] = [], key?: string) {
+	constructor(items: Value[] = [], key?: string, tombstones: Iterable<string> = []) {
 		super("RGA", key);
+
+		this.tombstones = new Set(tombstones);
 
 		for (const item of items) this.insert(item);
 	}
 
 	private insert(item: Value): void {
-		const existing = this.items.get(item.key);
+		if (!this.tombstones.has(item.key)) {
+			const existing = this.items.get(item.key);
 
-		if (existing) existing.merge(item);
-		else {
-			this.items.set(item.key, item);
-			item.delegate = this;
+			if (existing) existing.merge(item);
+			else {
+				this.items.set(item.key, item);
+				item.delegate = this;
+			}
+		}
+	}
+
+	private detach(key: string): void {
+		const item = this.items.get(key);
+
+		if (item) {
+			this.items.delete(key);
+			item.delegate = undefined;
 		}
 	}
 
@@ -32,13 +47,29 @@ export class RGA<Value extends Entity> extends Entity<Value[]> implements Entity
 	}
 
 	public set current(items: Value[]) {
-		for (const item of this.items.values()) item.delegate = undefined;
+		const previous = this.items;
 
-		this.items.clear();
+		this.items = new Map();
 
 		for (const item of items) this.insert(item);
 
+		for (const [key, item] of previous) {
+			const next = this.items.get(key);
+
+			if (next !== item) item.delegate = undefined;
+
+			if (!next) this.tombstones.add(key);
+		}
+
 		this.didChange();
+	}
+
+	public map<Next extends Entity>(callback: (item: Value) => Next): RGA<Next> {
+		const items: Next[] = [];
+
+		for (const item of this.items.values()) items.push(callback(item));
+
+		return new RGA(items, this.key, this.tombstones);
 	}
 
 	public find(key: string): Value | undefined {
@@ -46,39 +77,45 @@ export class RGA<Value extends Entity> extends Entity<Value[]> implements Entity
 	}
 
 	public push(item: Value): void {
+		const size = this.items.size;
+
 		this.insert(item);
 
-		this.didChange();
+		if (this.items.size !== size) this.didChange();
 	}
 
 	public remove(key: string): void {
-		const item = this.items.get(key);
-
-		if (item) {
-			this.items.delete(key);
-			item.delegate = undefined;
+		if (this.items.has(key)) {
+			this.detach(key);
+			this.tombstones.add(key);
 			this.didChange();
 		}
 	}
 
 	public merge(other: RGA<Value>): this {
+		const removed = other.tombstones.difference(this.tombstones);
+
+		for (const key of removed) this.detach(key);
+
+		this.tombstones = this.tombstones.union(removed);
+
 		const size = this.items.size;
 
 		for (const item of other.current) this.insert(item);
 
-		if (size !== this.items.size) this.didChange();
+		if (removed.size > 0 || this.items.size !== size) this.didChange();
 
 		return this;
 	}
 
-	public encode(): Encoded<Encoded[], { kind: string }> {
+	public encode(): Encoded<Encoded[], { kind: string; tombstones: string[] }> {
 		const data: Encoded[] = [];
 
 		for (const item of this.items.values()) {
 			data.push(item.encode());
 		}
 
-		return { key: this.key, data, metadata: { kind: this.kind } };
+		return { key: this.key, data, metadata: { kind: this.kind, tombstones: Array.from(this.tombstones) } };
 	}
 
 	public static decode(encoded: Encoded, decoder: Decoder): RGA<Entity> {
@@ -90,7 +127,7 @@ export class RGA<Value extends Entity> extends Entity<Value[]> implements Entity
 			items.push(decoder.decode(item));
 		}
 
-		return new RGA(items, encoded.key);
+		return new RGA(items, encoded.key, encoded.metadata.tombstones);
 	}
 
 	public static override is(entity: unknown): entity is RGA<Entity> {
@@ -101,7 +138,14 @@ export class RGA<Value extends Entity> extends Entity<Value[]> implements Entity
 		if (!RGA.is(entity)) throw new TypeError("Invalid RGA.");
 	}
 
-	private static assertEncoded(encoded: Encoded): asserts encoded is Encoded<readonly unknown[]> {
-		if (!isArray(encoded.data)) throw new TypeError("Invalid encoded RGA.");
+	private static assertEncoded(
+		encoded: Encoded,
+	): asserts encoded is Encoded<readonly unknown[], { kind: string; tombstones: readonly string[] }> {
+		const { data, metadata } = encoded;
+		const tombstones = "tombstones" in metadata ? metadata.tombstones : undefined;
+
+		if (!isArray(data) || !isArray(tombstones) || !tombstones.every(isString)) {
+			throw new TypeError("Invalid encoded RGA.");
+		}
 	}
 }

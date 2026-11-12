@@ -37,6 +37,8 @@ const todos = new RGA([new LWWMap({ title: new LWWRegister("Write README") })]);
 todos.push(new LWWMap({ title: new LWWRegister("Publish") }));
 ```
 
+Rows you take out with `remove` stay removed when replicas merge, and a removed key can't be added again.
+
 ### Encoding and decoding
 
 `Codec` turns any entity into a serializable form and back.

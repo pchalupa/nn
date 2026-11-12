@@ -45,12 +45,7 @@ export class ListStrategy implements Strategy {
 	}
 
 	public conform(remote: Entity): Entity {
-		if (RGA.is(remote)) {
-			return new RGA(
-				remote.current.map((row) => this.items.conform(row)),
-				remote.key,
-			);
-		}
+		if (RGA.is(remote)) return remote.map((row) => this.items.conform(row));
 
 		return remote;
 	}

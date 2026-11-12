@@ -1,0 +1,65 @@
+\begin{tikzpicture}[
+	thesis,
+	layer/.style={thesis/box, minimum width=2.65cm, minimum height=0.6cm},
+	store/.style={thesis/store, minimum width=2.65cm, minimum height=0.8cm},
+	local/.style={thesis/local, <->},
+	network/.style={thesis/network, <->}
+]
+	\node[thesis/heading] at (3.45,0) {(a) Server-centred};
+	\node[thesis/heading] at (11.1,0) {(b) Local-first};
+
+	\draw[thesis/boundary] (0.1,-0.5) rectangle (3.25,-1.95);
+	\draw[thesis/boundary] (3.65,-0.5) rectangle (6.8,-1.95);
+	\node at (1.675,-0.8) {Device A: browser};
+	\node at (5.225,-0.8) {Device B: browser};
+	\node[layer] (remote-ui-a) at (1.675,-1.4) {Presentation};
+	\node[layer] (remote-ui-b) at (5.225,-1.4) {Presentation};
+
+	\draw[thesis/boundary] (1.35,-3.25) rectangle (5.55,-5.85);
+	\node at (3.45,-3.55) {Application server};
+	\node[layer] (remote-domain) at (3.45,-4.15) {Business logic};
+	\node[layer] (remote-data) at (3.45,-5.2) {Data access};
+	\draw[local] (remote-domain) -- (remote-data);
+	\draw[network] (remote-ui-a.south) -- (1.675,-2.4) -- (3.45,-2.4) -- (3.45,-3.25);
+	\draw[network, <-] (remote-ui-b.south) -- (5.225,-2.4) -- (3.45,-2.4);
+	\node[thesis/label] at (3.45,-2.8) {Requests / responses};
+
+	\draw[thesis/boundary] (1.35,-7.05) rectangle (5.55,-8.5);
+	\node at (3.45,-7.35) {Database server};
+	\node[store] (remote-store) at (3.45,-7.95) {Authoritative tasks};
+	\draw[network] (remote-data.south) -- (3.45,-7.05);
+	\node[thesis/label] at (3.45,-6.45) {Database reads / writes};
+
+	\draw[thesis/boundary] (7.6,-0.5) rectangle (10.9,-5.6);
+	\draw[thesis/boundary] (11.3,-0.5) rectangle (14.6,-5.6);
+	\node at (9.25,-0.8) {Device A};
+	\node at (12.95,-0.8) {Device B};
+	\node[layer] (local-ui-a) at (9.25,-1.4) {Presentation};
+	\node[layer] (local-domain-a) at (9.25,-2.45) {Business logic};
+	\node[layer] (local-data-a) at (9.25,-3.5) {Data access};
+	\node[store] (local-store-a) at (9.25,-4.85) {Persistent\\local replica};
+	\node[layer] (local-ui-b) at (12.95,-1.4) {Presentation};
+	\node[layer] (local-domain-b) at (12.95,-2.45) {Business logic};
+	\node[layer] (local-data-b) at (12.95,-3.5) {Data access};
+	\node[store] (local-store-b) at (12.95,-4.85) {Persistent\\local replica};
+	\draw[local] (local-ui-a) -- (local-domain-a);
+	\draw[local] (local-domain-a) -- (local-data-a);
+	\draw[local] (local-data-a) -- (local-store-a);
+	\draw[local] (local-ui-b) -- (local-domain-b);
+	\draw[local] (local-domain-b) -- (local-data-b);
+	\draw[local] (local-data-b) -- (local-store-b);
+
+	\draw[thesis/boundary] (8.8,-7.05) rectangle (13.4,-8.5);
+	\node at (11.1,-7.35) {Synchronization server};
+	\node[store, minimum width=3.9cm] (sync-server) at (11.1,-7.95) {Relay and stored replica};
+	\draw[network] (local-store-a.south) -- (9.25,-6.05) -- (11.1,-6.05) -- (11.1,-7.05);
+	\draw[network, <-] (local-store-b.south) -- (12.95,-6.05) -- (11.1,-6.05);
+	\node[thesis/label] at (11.1,-6.45) {Asynchronous synchronization};
+
+	\draw[local] (0.35,-9.15) -- (1.15,-9.15);
+	\node[anchor=west] at (1.25,-9.15) {Local interaction};
+	\draw[network] (4.4,-9.15) -- (5.2,-9.15);
+	\node[anchor=west] at (5.3,-9.15) {Network communication};
+	\draw[thesis/boundary] (10.35,-9.3) rectangle (10.85,-9.0);
+	\node[anchor=west] at (10.95,-9.15) {Deployment boundary};
+\end{tikzpicture}

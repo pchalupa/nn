@@ -1,0 +1,214 @@
+\section{Comparison with Three-Layered Architecture}
+\label{sec:comparison-with-three-layered-architecture}
+
+The principles in Section~\ref{sec:key-principles-of-local-first-software} can be understood through a familiar application structure: presentation, business logic, and data access.
+These responsibilities remain useful in local-first software.
+What changes is where ordinary reads and writes happen, which copy of the data they use, and how changes reach other users.
+This chapter follows a shared task-board example to explain these differences.
+
+\subsection{The familiar three-layered model}
+
+In \emph{Patterns of Enterprise Application Architecture}, Fowler describes three principal layers: presentation, domain, and data source.
+The presentation layer displays information and handles user interaction.
+The business-logic layer, also called the domain layer, implements application rules and calculations.
+The data-source layer communicates with databases and other systems that provide services to the application.
+For the task-board example, its main responsibility is data access: reading and writing persistent tasks.
+\parencite[19--20]{patterns-of-enterprise-application-architecture}
+
+Separating these responsibilities allows developers to understand one layer without knowing the details of the others.
+Fowler requires the domain and data-source layers to remain independent of presentation, but permits presentation to access the data source directly.
+The dependency between domain logic and the data source depends on the patterns chosen for data access.
+The three layers therefore describe a separation of responsibilities without requiring every operation to pass through a strict chain of three modules.
+\parencite[17, 20--22]{patterns-of-enterprise-application-architecture}
+
+A layer describes a responsibility in the software; a tier describes where software runs.
+Three logical layers do not require three separate machines, and all three can run on one device.
+Fowler explicitly gives the example of running all three layers on a laptop with a local database.
+\parencite[19]{patterns-of-enterprise-application-architecture}
+Layering alone therefore says nothing about whether the application works offline or treats a server as authoritative.
+
+For the comparison, consider a common server-centred deployment of these layers.
+The browser displays a task board, an application server applies business rules, and a database stores tasks.
+The server checks permissions and validates requested changes before saving them through the data-access layer.
+The browser may keep recently fetched tasks in memory, but the server's database determines the accepted shared state.
+This is the cloud data model described by \textcite{local-first-software}.
+The comparison below uses this deployment as its baseline, rather than assuming that all layered applications require a server.
+
+\subsection{Moving ordinary work to the device}
+
+Fowler already identifies responsiveness and disconnected operation as reasons to run logic on the client.
+He also notes that disconnected use can require a local data source whose changes must later be synchronized with the server, while leaving the synchronization problem outside the book's scope.
+This provides a useful starting point for understanding local-first software: the familiar layers can move onto the device, but the application must also support independently editable copies and their reconciliation.
+\parencite[23--24]{patterns-of-enterprise-application-architecture}
+
+In a local-first version of the task board, each participating device holds an independently editable copy of the relevant board data.
+Such a copy is called a replica.
+The browser reads tasks from its local replica and applies edits locally, without waiting for a remote request.
+Persistent storage keeps those edits available across application restarts.
+A synchronization mechanism exchanges changes with other replicas when a connection is available.
+\parencite{local-first-software}
+
+In \emph{Designing Data-Intensive Applications}, \textcite[Chapter~5]{designing-data-intensive-applications} describes offline clients as a use case for multi-leader replication: several replicas can accept writes independently and exchange them asynchronously.
+Each device's local database acts as a leader for its own writes, and synchronization may be delayed for hours or days while the device is disconnected.
+He also explains collaborative editing as a replication problem, with edits applied to a local document replica and then shared with other participants.
+
+This gives a distributed-systems explanation of how the local-first task board can support independent editing across devices.
+The ownership and long-term access principles discussed earlier remain additional requirements beyond the replication mechanism.
+
+The familiar responsibilities still have a place in this design.
+Presentation renders the board and handles input.
+Business logic checks rules that can be evaluated from local information, such as requiring a non-empty task title.
+Data access loads and saves the local data.
+These responsibilities can remain separate modules even though they now execute on the same device.
+The client must contain enough logic and data to support the operations offered offline.
+
+Synchronization adds a responsibility beyond local persistence.
+Saving a task on a laptop does not, by itself, make that task available on a phone.
+The application must track and exchange changes, apply incoming updates, and reconcile edits made independently.
+Local persistence and synchronization have different failure conditions: a successful local save can coexist with an unavailable synchronization service.
+\parencite[Chapter~5]{designing-data-intensive-applications}
+
+A server can still help devices discover one another, relay updates, or retain a replica for devices that connect at different times.
+Its presence does not make the application server-centred.
+The important distinction is whether ordinary work with locally available data requires the server to respond.
+In the local-first model used here, the server supports collaboration while the device remains able to read, edit, and save its own copy independently.
+\parencite{local-first-software}
+
+Figure~\ref{fig:layer-deployment-comparison} shows how the same responsibilities can be distributed across the two deployments.
+The arrows represent runtime communication rather than source-code dependencies.
+In the local-first deployment, synchronization connects the replicas while ordinary reads and writes stay within each device.
+
+\begin{illustration}[htbp]
+	\centering
+	\caption{Placement of layers and persistent data in the two task-board deployments}
+	\label{fig:layer-deployment-comparison}
+	\begingroup
+	\setstretch{1}
+	\input{figures/layer-deployment-comparison.tex}
+	\endgroup
+	\figuresource{Author's illustration based on \textcite{patterns-of-enterprise-application-architecture,local-first-software,designing-data-intensive-applications}.}
+\end{illustration}
+\FloatBarrier
+
+\subsection{Following a task update}
+
+Suppose a user changes a task's title on a shared board.
+In the server-centred application, the operation follows this sequence:
+
+\begin{enumerate}
+	\item The presentation layer sends the new title and task identifier to the application server.
+	\item The server checks the user's permission and validates the title.
+	\item The data-access layer writes the change to the database.
+	\item The server returns a result, and the interface confirms that the change was saved.
+\end{enumerate}
+
+An optimistic interface can display the new title before the response arrives.
+However, this displayed result remains provisional until the server accepts the request.
+If the server rejects it, the interface must handle the rejection, for example by restoring the previous title or retaining the input for correction.
+Hiding the wait does not remove the remote dependency.
+\parencite{local-first-software}
+
+In the local-first application, the corresponding operation is:
+
+\begin{enumerate}
+	\item The presentation layer passes the new title to local business logic.
+	\item The application validates the title and updates its local replica.
+	\item The interface reflects the change, and local persistence saves it on the device.
+	\item Synchronization sends the change to other replicas when possible and incorporates their changes in return.
+\end{enumerate}
+
+The interface can update before persistence finishes, but it should report the edit as saved locally only after that save succeeds.
+Once saved locally, the edit survives an ordinary application restart without requiring a successful upload.
+The interface can distinguish this state from being synchronized with other devices.
+Losing the connection delays sharing the title; it does not prevent saving it locally.
+\parencite{local-first-software}
+
+Figure~\ref{fig:task-update-sequences} separates the visible update from the successful save and subsequent synchronization.
+Both examples begin with the same title edit; the local-first example assumes that local validation has passed.
+In the illustrated synchronization protocol, the server acknowledges receipt of the change, allowing the client to update its synchronization status.
+This acknowledgement does not imply that every other collaborator has already received the change.
+The vertical order shows the sequence of events, not their duration.
+
+\begin{illustration}[htbp]
+	\centering
+	\caption{Saving a title edit with server confirmation or local persistence}
+	\label{fig:task-update-sequences}
+	\begingroup
+	\setstretch{1}
+	\input{figures/task-update-sequences.tex}
+	\endgroup
+	\figuresource{Author's illustration based on \textcite{local-first-software,designing-data-intensive-applications}.}
+\end{illustration}
+
+The same distinction applies to reads.
+Reopening an already available board can load its local data without contacting the server.
+Opening a board that has never been downloaded still requires obtaining that data, and offline use also requires the application's code to be available on the device.
+Local-first operation removes the remote dependency for available work; it cannot supply information that the device has never received.
+
+\subsection{Concurrent changes and business rules}
+
+The server-centred model gives the application a common point at which to check and coordinate writes.
+It still needs a concurrency policy: two users may submit changes based on the same earlier task title.
+The server can, for example, use an atomic version check to reject an update based on an outdated task, or use locking to coordinate changes.
+Layering itself does not choose this policy or prevent lost updates.
+\parencite[Chapter~7]{designing-data-intensive-applications}
+
+Local-first software must also handle changes made while replicas cannot communicate.
+With asynchronous multi-leader replication, conflicting writes may both be accepted locally before either replica learns about the other write.
+The replicas therefore need rules for reconciling those writes when they exchange changes.
+\parencite[Chapter~5]{designing-data-intensive-applications}
+
+Suppose one user renames a task on a disconnected laptop while another user moves the same task to a different column.
+A merge mechanism that tracks the title and column independently can preserve both edits.
+If both users change the title, the application needs a defined way to select or expose the competing values.
+Replacing one entire board with the other would risk discarding unrelated work.
+
+CRDTs provide one approach to this reconciliation.
+They allow replicas that receive the same updates to converge, even when those updates arrive in different orders.
+The JSON CRDT described by \textcite{json-crdt}, for example, supports concurrent changes to nested data structures.
+Convergence does not mean that disconnected users always see identical state, nor does it guarantee that every merged result satisfies the application's business rules.
+
+Business-rule violations can arise even when concurrent operations modify different records.
+\textcite[Chapter~7]{designing-data-intensive-applications} illustrates this in his discussion of write skew: each transaction checks a condition and makes a change that appears valid, but their combined changes violate the condition.
+
+An analogous problem arises when disconnected devices check a shared constraint independently.
+Consider a board with a strict limit of five tasks in a column.
+Two disconnected devices may each see four tasks and independently move one more task into that column.
+Both local checks pass, but preserving both moves produces six tasks after synchronization.
+The application must decide whether to allow a temporary excess, reconcile the moves later, or coordinate permission to use the remaining capacity.
+If final approval requires contacting a server, that particular operation cannot be completed independently while offline.
+
+\subsection{Responsibilities and trade-offs}
+
+Table~\ref{tab:server-centred-and-local-first} summarizes the two task-board designs.
+The differences concern data authority and communication, while the three logical responsibilities can remain present in both.
+
+\begin{table}[htbp]
+	\centering
+	\caption{Comparison of the server-centred and local-first task boards}
+	\label{tab:server-centred-and-local-first}
+	\small
+	\begin{tabular}{@{}>{\raggedright\arraybackslash}p{0.22\linewidth}>{\raggedright\arraybackslash}p{0.35\linewidth}>{\raggedright\arraybackslash}p{\dimexpr0.43\linewidth-4\tabcolsep\relax}@{}}
+		\toprule
+		Aspect         & Server-centred design                                      & Local-first design                                                             \\
+		\midrule
+		Working data   & Client data is subordinate to the server's accepted state. & Each device has an independently editable replica.                             \\
+		Saving an edit & Completion depends on a server-side write.                 & Local saving completes independently of synchronization.                       \\
+		Network outage & Remote operations must wait or remain provisional.         & Available local data remains readable and editable.                            \\
+		Collaboration  & The server coordinates accepted updates.                   & Replicas exchange and reconcile independent updates.                           \\
+		Business rules & The server can check shared state before accepting writes. & Offline checks use local knowledge; global constraints need a separate policy. \\
+		Server role    & Required for authoritative reads and writes.               & Supports synchronization and storage of additional copies.                     \\
+		\bottomrule
+	\end{tabular}
+\end{table}
+
+The server-centred design concentrates control over shared state in the backend.
+This is useful when an operation must be checked against current shared information before it can be accepted.
+Local-first design gives the device more responsibility: it must preserve local work, handle incoming changes, and communicate the difference between local saving and synchronization.
+Locally persisted edits survive application restarts, but can still be lost if the device's storage fails or is erased before they are synchronized or backed up elsewhere.
+\parencite{local-first-software}
+
+Three-layered architecture remains a useful way to organize either application.
+To imagine the local-first version, place the presentation, the logic needed for ordinary editing, and persistent working data on each user's device, then connect those devices through synchronization.
+The user works with a local replica, and communication brings the replicas together as connectivity permits.
+This arrangement gives the preceding chapter's principles a concrete architectural form.

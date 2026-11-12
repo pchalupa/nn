@@ -47,19 +47,19 @@ export class RGA<Value extends Entity> extends Entity<Value[]> implements Entity
 	}
 
 	public set current(items: Value[]) {
-		const kept = new Set<string>();
+		const previous = this.items;
 
-		for (const item of items) kept.add(item.key);
-
-		for (const [key, item] of this.items) {
-			item.delegate = undefined;
-
-			if (!kept.has(key)) this.tombstones.add(key);
-		}
-
-		this.items.clear();
+		this.items = new Map();
 
 		for (const item of items) this.insert(item);
+
+		for (const [key, item] of previous) {
+			const next = this.items.get(key);
+
+			if (next !== item) item.delegate = undefined;
+
+			if (!next) this.tombstones.add(key);
+		}
 
 		this.didChange();
 	}

@@ -47,7 +47,9 @@ export class RGA<Value extends Entity> extends Entity<Value[]> implements Entity
 	}
 
 	public set current(items: Value[]) {
-		const kept = new Set(items.map((item) => item.key));
+		const kept = new Set<string>();
+
+		for (const item of items) kept.add(item.key);
 
 		for (const [key, item] of this.items) {
 			item.delegate = undefined;

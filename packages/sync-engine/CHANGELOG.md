@@ -1,5 +1,69 @@
 # @nn/sync-engine
 
+## 4.1.0
+
+### Minor Changes
+
+- 23da839: Ship compiled ES modules with type declarations and source maps from `dist`, so the package works without compiling TypeScript from `node_modules`.
+
+  Import paths stay the same.
+
+### Patch Changes
+
+- 23da839: Depend on other `@nn/*` packages through caret ranges instead of exact versions, so compatible releases share one installed copy instead of duplicating it.
+- 63c2cc2: Document the order in which a sync engine calls `open`, `pull` and `push`, how it handles errors, and which built-in engines to use as examples, in the package README.
+- Updated dependencies [23da839]
+- Updated dependencies [23da839]
+- Updated dependencies [63c2cc2]
+  - @nn/entities@3.1.0
+  - @nn/observable@3.1.0
+  - @nn/store@3.1.0
+
+## 4.0.0
+
+### Major Changes
+
+- bd887fa: Sync engines stop with `dispose()` instead of `detach()`, since nothing attaches them anymore.
+
+  - `sync.detach()` becomes `sync.dispose()`, and `sync.detached` becomes `sync.disposed`.
+  - `SyncState.Detached` becomes `SyncState.Disposed`, and its value changes from `"detached"` to `"disposed"`.
+
+  Custom engines that extend `SyncEngine` call `this.session.reopen()` instead of `this.session.reconnect()` to close and open a connected transport again. It still does nothing unless the engine is connected.
+
+### Patch Changes
+
+- 8abc710: Point `homepage` and `repository` to each package's own directory, so npm links open the right README and source.
+- 8abc710: Document installation, requirements, and usage in the package README.
+- Updated dependencies [8abc710]
+- Updated dependencies [8abc710]
+  - @nn/entities@3.0.1
+  - @nn/observable@3.0.2
+  - @nn/store@3.0.1
+
+## 3.0.0
+
+### Major Changes
+
+- 5d1e50e: Sync engines expose their connection lifecycle and failures directly, through `onStateChange` and `onError`, instead of `session` and `delegate`.
+
+  - `sync.session.retry()` and `sync.session.detach()` become `sync.retry()` and `sync.detach()`. `sync.session.state`, `connected`, `disconnected` and the other state flags become `sync.state`, `sync.connected` and so on.
+  - `sync.session.changes.subscribe(listener)` becomes `sync.onStateChange(listener)`.
+  - `sync.delegate = { syncEngineDidFail: (engine, error) => … }` becomes `sync.onError((error) => …)`. Any number of listeners can subscribe, at any time. With none, failures are dropped.
+  - `SessionState` is exported as `SyncState`, and `SyncEngineDelegate` is removed.
+
+  Custom engines that extend `SyncEngine` still drive `this.session`, which is now protected. They report failures with `this.errors.notify(error)` instead of `this.delegate?.syncEngineDidFail(this, error)`.
+
+### Minor Changes
+
+- 5d1e50e: Add public `connect()` so engines can be configured and observed before starting synchronization. It starts an idle engine without exposing its session. Retry and detachment behavior stays unchanged.
+
+### Patch Changes
+
+- Updated dependencies [5d1e50e]
+- Updated dependencies [5d1e50e]
+  - @nn/observable@3.0.1
+  - @nn/store@3.0.0
+
 ## 2.1.0
 
 ### Minor Changes

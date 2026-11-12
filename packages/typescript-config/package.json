@@ -1,22 +1,26 @@
 {
 	"name": "@nn/typescript-config",
-	"version": "1.0.0",
+	"version": "1.0.1",
+	"private": true,
 	"description": "Shared TypeScript configuration",
 	"keywords": [
 		"config",
+		"tsconfig",
 		"typescript"
 	],
-	"homepage": "https://github.com/pchalupa/nn/pacakges/typescript-config#readme",
+	"homepage": "https://github.com/pchalupa/nn/tree/main/packages/typescript-config#readme",
 	"bugs": {
 		"url": "https://github.com/pchalupa/nn/issues"
 	},
 	"license": "MIT",
 	"author": "pchalupa <chalupa.petr93@gmail.com> (https://github.com/pchalupa)",
-	"repository": "https://github.com/pchalupa/nn",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/pchalupa/nn.git",
+		"directory": "packages/typescript-config"
+	},
+	"type": "module",
 	"exports": {
-		"./*": {
-			"import": "./src/*",
-			"require": "./src/*"
-		}
+		"./*": "./src/*"
 	}
 }

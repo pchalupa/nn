@@ -1,5 +1,26 @@
 # @nn/observable
 
+## 3.1.0
+
+### Minor Changes
+
+- 23da839: Ship compiled ES modules with type declarations and source maps from `dist`, so the package works without compiling TypeScript from `node_modules`.
+
+  Import paths stay the same.
+
+## 3.0.2
+
+### Patch Changes
+
+- 8abc710: Point `homepage` and `repository` to each package's own directory, so npm links open the right README and source.
+- 8abc710: Document installation, requirements, and usage in the package README.
+
+## 3.0.1
+
+### Patch Changes
+
+- 5d1e50e: `Observable.notify` calls every observer even when one throws, then rethrows the first error, so one failing observer no longer hides the notification from the rest.
+
 ## 3.0.0
 
 ### Major Changes

@@ -1,6 +1,9 @@
 # Node
 node_modules
 
+# Environment
+*.local
+
 # LaTex
 *.aux
 *.fdb_latexmk
@@ -11,6 +14,17 @@ node_modules
 *.bcf
 *.blg
 *.run.xml
+*.toc
+*.lof
+*.lot
+*.lob
+*.out
+*.xdv
+*.synctex(busy)
+*.nav
+*.snm
+*.vrb
+docs/*/build
 
 # Logs
 *.log
@@ -25,6 +39,9 @@ experiments
 **/.obsidian/workspaces.json
 **/.obsidian/workspace-mobile.json
 .trash/
+
+# Build
+dist
 
 # Tests
 coverage

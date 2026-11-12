@@ -15,7 +15,7 @@ type ReadonlyData<Value> = {
 };
 
 export interface StateDelegate {
-	stateDidChange(state: State, changed: ReadonlySet<Entity>): void;
+	stateDidChange(changed: ReadonlySet<Entity>): void;
 }
 
 export class State<
@@ -42,7 +42,7 @@ export class State<
 		};
 	}
 
-	//TODO: Avoid overloading to cast the type
+	// TODO: Avoid overloading to cast the type
 	public read(): ReadonlyData<InferStateType<StoreSchema>>;
 	public read(): unknown {
 		return this.view.value;
@@ -60,8 +60,13 @@ export class State<
 	public merge(name: string, remote: Entity): void {
 		this.commit(() => {
 			const entity = this.root.get(name);
+			const strategy = this.reconciliationStrategy.get(name);
 
-			if (entity !== undefined && remote.key === entity.key) entity.merge(remote);
+			if (entity && strategy && remote.key === entity.key) {
+				const conformedRemote = strategy.conform(remote);
+
+				entity.merge(conformedRemote);
+			}
 		});
 	}
 
@@ -77,7 +82,7 @@ export class State<
 
 			this.changed = new Set();
 
-			if (changed.size > 0) this.delegate?.stateDidChange(this, changed);
+			if (changed.size > 0) this.delegate?.stateDidChange(changed);
 		}
 	}
 }

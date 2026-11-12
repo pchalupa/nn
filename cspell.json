@@ -21,8 +21,12 @@
 		"ctap",
 		"simplewebauthn",
 		"unstub",
+		"Menlo",
 		"mattpocock",
-		"ENOENT"
+		"ENOENT",
+		"eventsource",
+		"hset",
+		"hgetall"
 	],
 	"ignorePaths": ["docs/{notes,plans,research}"],
 	"useGitignore": true

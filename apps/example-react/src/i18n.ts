@@ -1,6 +1,5 @@
+import type { Language, Status } from "example-schema";
 import { createInstance } from "i18next";
-
-import type { Language, Status } from "./store";
 
 export const languageNames: Record<Language, string> = {
 	en: "English",
@@ -23,12 +22,14 @@ const resources = {
 			authFailed: "Couldn't verify your passkey. Try again.",
 			backlog: "Backlog",
 			board: "Board",
+			comments: "Comments",
 			create: "Create",
 			description: "Description",
 			done: "Done",
 			inProgress: "In Progress",
 			language: "Language",
 			name: "Name",
+			noComments: "No comments yet",
 			save: "Save",
 			signIn: "Sign in with a passkey",
 			signOut: "Sign out",
@@ -48,12 +49,14 @@ const resources = {
 			authFailed: "Přístupový klíč se nepodařilo ověřit. Zkuste to znovu.",
 			backlog: "Zásobník",
 			board: "Nástěnka",
+			comments: "Komentáře",
 			create: "Vytvořit",
 			description: "Popis",
 			done: "Hotovo",
 			inProgress: "Probíhá",
 			language: "Jazyk",
 			name: "Jméno",
+			noComments: "Zatím žádné komentáře",
 			save: "Uložit",
 			signIn: "Přihlásit se přístupovým klíčem",
 			signOut: "Odhlásit se",

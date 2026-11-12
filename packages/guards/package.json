@@ -1,33 +1,62 @@
 {
 	"name": "@nn/guards",
-	"version": "0.3.0",
+	"version": "0.4.0",
 	"description": "Runtime type guards",
-	"keywords": [],
-	"homepage": "https://github.com/pchalupa/nn/packages/guards#readme",
+	"keywords": [
+		"assertion",
+		"runtime",
+		"type-guard",
+		"typescript"
+	],
+	"homepage": "https://github.com/pchalupa/nn/tree/main/packages/guards#readme",
 	"bugs": {
 		"url": "https://github.com/pchalupa/nn/issues"
 	},
 	"license": "MIT",
 	"author": "pchalupa <chalupa.petr93@gmail.com> (https://github.com/pchalupa)",
-	"repository": "https://github.com/pchalupa/nn",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/pchalupa/nn.git",
+		"directory": "packages/guards"
+	},
+	"files": [
+		"dist"
+	],
 	"type": "module",
 	"exports": {
+		"./assert-array": "./src/assert-array.ts",
+		"./assert-object": "./src/assert-object.ts",
+		"./assert-plain-object": "./src/assert-plain-object.ts",
+		"./assert-string": "./src/assert-string.ts",
 		"./is-array": "./src/is-array.ts",
 		"./is-object": "./src/is-object.ts",
 		"./is-plain-object": "./src/is-plain-object.ts",
 		"./is-string": "./src/is-string.ts",
-		"./assert-array": "./src/assert-array.ts",
-		"./assert-object": "./src/assert-object.ts",
-		"./assert-plain-object": "./src/assert-plain-object.ts",
-		"./assert-string": "./src/assert-string.ts"
+		"./package.json": "./package.json"
+	},
+	"publishConfig": {
+		"exports": {
+			"./assert-array": "./dist/assert-array.js",
+			"./assert-object": "./dist/assert-object.js",
+			"./assert-plain-object": "./dist/assert-plain-object.js",
+			"./assert-string": "./dist/assert-string.js",
+			"./is-array": "./dist/is-array.js",
+			"./is-object": "./dist/is-object.js",
+			"./is-plain-object": "./dist/is-plain-object.js",
+			"./is-string": "./dist/is-string.js",
+			"./package.json": "./package.json"
+		}
 	},
 	"scripts": {
+		"build": "tsdown",
 		"ts:check": "tsc --noEmit",
 		"test": "vitest run",
 		"test:watch": "vitest watch"
 	},
 	"devDependencies": {
-		"@nn/typescript-config": "workspace:",
+		"@nn/build-config": "workspace:^",
+		"@nn/typescript-config": "workspace:^",
+		"tsdown": "catalog:",
 		"typescript": "catalog:",
 		"vitest": "catalog:"
 	}

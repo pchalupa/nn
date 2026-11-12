@@ -1,23 +1,18 @@
 import type { Encoded } from "@nn/entities/codable";
-import { Codec } from "@nn/entities/codec";
-import type { Delegatable } from "@nn/observable";
+import { Observable, type Unsubscribe } from "@nn/observable/observable";
 import type { Store } from "@nn/store";
 
-import { Session } from "./session";
+import { Session, type SessionState } from "./session";
 
-export { SessionState } from "./session";
+export { SessionState as SyncState } from "./session";
 
-export interface SyncEngineDelegate {
-	syncEngineDidFail(syncEngine: SyncEngine, error: unknown): void;
-}
-
-export abstract class SyncEngine implements Delegatable<SyncEngineDelegate> {
-	public delegate?: SyncEngineDelegate;
-	public readonly session = new Session();
-	private unsubscribeFromStoreChanges?: () => void;
-	private codec = new Codec();
+export abstract class SyncEngine {
+	protected readonly session = new Session();
+	protected readonly errors = new Observable<[unknown]>();
 
 	constructor(protected readonly store: Store) {
+		let unsubscribeFromStoreChanges: () => void | undefined;
+
 		this.session.delegate = {
 			sessionOpen: async (_session, signal) => {
 				try {
@@ -29,34 +24,73 @@ export abstract class SyncEngine implements Delegatable<SyncEngineDelegate> {
 
 							if (signal.aborted) break;
 
-							if (value) this.store.state.merge(key, this.codec.decode(value));
+							if (value) this.store.merge(key, value);
 						}
 					}
 				} catch (error) {
 					if (!signal.aborted) {
-						this.delegate?.syncEngineDidFail(this, error);
+						this.errors.notify(error);
 						this.session.drop();
 					}
 				}
 			},
-			sessionDidOpen: () => {
-				const { data } = this.store.state.encode();
+			sessionDidConnect: () => {
+				const { data } = this.store.encode();
+				const entries = Object.values(data);
 
-				for (const name in data) {
-					void this.send(data[name]);
-				}
+				void this.send(entries);
 
-				this.unsubscribeFromStoreChanges = this.store.changes.subscribe((changed) => {
-					for (const entity of changed) {
-						void this.send(this.codec.encode(entity));
-					}
-				});
+				unsubscribeFromStoreChanges = this.store.onChange((changes) => void this.send(Object.values(changes)));
 			},
-			sessionDidClose: () => {
-				this.unsubscribeFromStoreChanges?.();
+			sessionClose: () => {
+				unsubscribeFromStoreChanges?.();
 				this.close();
 			},
 		};
+	}
+
+	public get state(): SessionState {
+		return this.session.state;
+	}
+
+	public get idle(): boolean {
+		return this.session.idle;
+	}
+
+	public get connecting(): boolean {
+		return this.session.connecting;
+	}
+
+	public get connected(): boolean {
+		return this.session.connected;
+	}
+
+	public get disconnected(): boolean {
+		return this.session.disconnected;
+	}
+
+	public get disposed(): boolean {
+		return this.session.disposed;
+	}
+
+	public connect(): void {
+		this.session.connect();
+	}
+
+	public retry(): void {
+		this.session.retry();
+	}
+
+	public dispose(): void {
+		this.session.dispose();
+	}
+
+	public onStateChange(listener: (state: SessionState) => void): Unsubscribe {
+		return this.session.changes.subscribe(listener);
+	}
+
+	public onError(listener: (error: unknown) => void): Unsubscribe {
+		return this.errors.subscribe(listener);
 	}
 
 	protected abstract open(signal: AbortSignal): Promise<void>;
@@ -65,18 +99,22 @@ export abstract class SyncEngine implements Delegatable<SyncEngineDelegate> {
 	protected abstract push(name: string, entry: Encoded): Promise<void>;
 
 	protected receive(entries: Record<string, unknown>): void {
-		for (const name of Object.keys(this.store.schema.properties)) {
+		for (const name in this.store.schema.properties) {
 			if (Object.hasOwn(entries, name)) {
-				this.store.state.merge(name, this.codec.decode(entries[name]));
+				this.store.merge(name, entries[name]);
 			}
 		}
 	}
 
-	private async send(entry: Encoded): Promise<void> {
-		try {
-			await this.push(entry.key, entry);
-		} catch (error) {
-			this.delegate?.syncEngineDidFail(this, error);
-		}
+	private async send(entries: Encoded[]): Promise<void> {
+		await Promise.all(
+			entries.map(async (entry) => {
+				try {
+					await this.push(entry.key, entry);
+				} catch (error) {
+					this.errors.notify(error);
+				}
+			}),
+		);
 	}
 }

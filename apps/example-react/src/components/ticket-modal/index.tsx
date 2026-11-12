@@ -1,13 +1,15 @@
+import { status } from "example-schema";
 import { useEffect, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 
 import { statusLabels } from "../../i18n";
-import { status, useRead, useUpdate } from "../../store";
+import { useRead, useUpdate } from "../../store";
 import { Button } from "../button";
 import { Input } from "../input";
 import { Modal, type ModalHandle } from "../modal";
 import { TextArea } from "../text-area";
+import { Comments } from "./comments";
 
 interface TicketModalProps {
 	id?: string;
@@ -25,6 +27,10 @@ export const TicketModal = ({ id, onClose }: TicketModalProps) => {
 				description: selectedTicket.description,
 				status: selectedTicket.status,
 				assignee: selectedTicket.assignee,
+				comments: selectedTicket.comments.map((comment) => ({
+					...comment,
+					createdAt: new Date(comment.createdAt).toLocaleDateString(),
+				})),
 			};
 		}
 	});
@@ -40,7 +46,7 @@ export const TicketModal = ({ id, onClose }: TicketModalProps) => {
 
 		if (!ticket) {
 			updateStore((data) => {
-				data.tickets.push({ ...draft, id: crypto.randomUUID(), title });
+				data.tickets.push({ ...draft, id: crypto.randomUUID(), title, comments: [] });
 			});
 		} else {
 			updateStore((data) => {
@@ -104,6 +110,7 @@ export const TicketModal = ({ id, onClose }: TicketModalProps) => {
 					<Button text={t("save")} type="submit" size="sm" />
 				</div>
 			</form>
+			<Comments comments={ticket?.comments} />
 		</Modal>
 	);
 };

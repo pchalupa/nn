@@ -1,33 +1,54 @@
 {
 	"name": "@nn/react",
-	"version": "2.0.0",
-	"description": "React state management library",
-	"keywords": [],
-	"homepage": "https://github.com/pchalupa/nn/packages/time#readme",
+	"version": "3.1.0",
+	"description": "React hooks for reading and updating a store",
+	"keywords": [
+		"crdt",
+		"hooks",
+		"local-first",
+		"react",
+		"state-management"
+	],
+	"homepage": "https://github.com/pchalupa/nn/tree/main/packages/react#readme",
 	"bugs": {
 		"url": "https://github.com/pchalupa/nn/issues"
 	},
 	"license": "MIT",
 	"author": "pchalupa <chalupa.petr93@gmail.com> (https://github.com/pchalupa)",
-	"repository": "https://github.com/pchalupa/nn",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/pchalupa/nn.git",
+		"directory": "packages/react"
+	},
+	"files": [
+		"dist"
+	],
+	"type": "module",
 	"exports": {
-		".": {
-			"import": "./src/index.ts"
+		".": "./src/index.ts",
+		"./package.json": "./package.json"
+	},
+	"publishConfig": {
+		"exports": {
+			".": "./dist/index.js",
+			"./package.json": "./package.json"
 		}
 	},
 	"scripts": {
+		"build": "tsdown",
 		"ts:check": "tsc --noEmit",
 		"test": "vitest run",
 		"test:watch": "vitest watch"
 	},
 	"dependencies": {
-		"@nn/guards": "workspace:",
-		"@nn/store": "workspace:",
+		"@nn/guards": "workspace:^",
+		"@nn/schema": "workspace:^",
+		"@nn/store": "workspace:^",
 		"use-sync-external-store": "^1.7.0"
 	},
 	"devDependencies": {
-		"@nn/schema": "workspace:",
-		"@nn/typescript-config": "workspace:",
+		"@nn/build-config": "workspace:^",
+		"@nn/typescript-config": "workspace:^",
 		"@testing-library/react": "^16.3.3",
 		"@types/react": "catalog:",
 		"@types/react-dom": "catalog:",
@@ -35,10 +56,11 @@
 		"jsdom": "^30.1.3",
 		"react": "catalog:",
 		"react-dom": "catalog:",
+		"tsdown": "catalog:",
 		"typescript": "catalog:",
 		"vitest": "catalog:"
 	},
 	"peerDependencies": {
-		"react": "catalog:"
+		"react": "^19.0.0"
 	}
 }

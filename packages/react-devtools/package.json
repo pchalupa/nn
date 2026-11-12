@@ -1,0 +1,63 @@
+{
+	"name": "@nn/react-devtools",
+	"version": "1.0.0",
+	"description": "Devtools for nn stores",
+	"keywords": [],
+	"homepage": "https://github.com/pchalupa/nn/packages/react-devtools#readme",
+	"bugs": {
+		"url": "https://github.com/pchalupa/nn/issues"
+	},
+	"license": "MIT",
+	"author": "pchalupa <chalupa.petr93@gmail.com> (https://github.com/pchalupa)",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/pchalupa/nn.git",
+		"directory": "packages/react-devtools"
+	},
+	"files": [
+		"dist"
+	],
+	"type": "module",
+	"sideEffects": false,
+	"exports": {
+		".": "./src/index.ts",
+		"./package.json": "./package.json"
+	},
+	"publishConfig": {
+		"exports": {
+			".": "./dist/index.js",
+			"./package.json": "./package.json"
+		}
+	},
+	"scripts": {
+		"build": "tsdown",
+		"ts:check": "tsc --noEmit",
+		"test": "vitest run",
+		"test:watch": "vitest watch"
+	},
+	"dependencies": {
+		"@nn/guards": "workspace:^",
+		"@nn/store": "workspace:"
+	},
+	"devDependencies": {
+		"@babel/core": "catalog:",
+		"@nn/build-config": "workspace:^",
+		"@nn/schema": "workspace:",
+		"@nn/typescript-config": "workspace:",
+		"@rolldown/plugin-babel": "catalog:",
+		"@testing-library/react": "^16.3.3",
+		"@types/react": "catalog:",
+		"@types/react-dom": "catalog:",
+		"babel-plugin-react-compiler": "catalog:",
+		"jsdom": "^30.1.3",
+		"react": "catalog:",
+		"react-dom": "catalog:",
+		"tsdown": "catalog:",
+		"typescript": "catalog:",
+		"vitest": "catalog:"
+	},
+	"peerDependencies": {
+		"react": "catalog:",
+		"react-dom": "catalog:"
+	}
+}

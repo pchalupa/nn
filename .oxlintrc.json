@@ -11,6 +11,8 @@
 		"style": "off"
 	},
 	"rules": {
+		"oxc/no-map-spread": "off",
+
 		"default-param-last": "error",
 		"no-else-return": "error",
 		"no-param-reassign": "error",
@@ -56,6 +58,7 @@
 		"vitest/consistent-test-it": ["error", { "fn": "it" }],
 
 		"eslint/eqeqeq": "error",
+		"eslint/no-unused-expressions": ["error", { "allowTaggedTemplates": true }],
 		"eslint/curly": ["error", "multi-line"],
 		"eslint/no-use-before-define": ["error", { "functions": false }],
 

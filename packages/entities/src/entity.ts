@@ -18,6 +18,7 @@ export interface EntityDelegate {
 
 export abstract class Entity<Value = unknown> implements Delegatable<EntityDelegate>, Encodable {
 	private id: string;
+	// TODO: This should not be concert on entities. Consider moving it to state.
 	private changes = 0;
 	public delegate?: EntityDelegate;
 

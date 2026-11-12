@@ -82,4 +82,17 @@ describe("Observable", () => {
 
 		expect(observer).toHaveBeenCalledExactlyOnceWith("changed", 2);
 	});
+
+	it("notifies every observer when one throws, then rethrows the first error", () => {
+		const subject = new Observable();
+		const second = vi.fn();
+
+		subject.subscribe(() => {
+			throw new Error("first");
+		});
+		subject.subscribe(second);
+
+		expect(() => subject.notify()).toThrow("first");
+		expect(second).toHaveBeenCalledOnce();
+	});
 });

@@ -1,5 +1,73 @@
 # @nn/react
 
+## 3.1.0
+
+### Minor Changes
+
+- 23da839: Ship compiled ES modules with type declarations and source maps from `dist`, so the package works without compiling TypeScript from `node_modules`.
+
+  Import paths stay the same.
+
+### Patch Changes
+
+- 23da839: Depend on other `@nn/*` packages through caret ranges instead of exact versions, so compatible releases share one installed copy instead of duplicating it.
+- 23da839: Accept any React 19 release as a peer instead of only 19.3.1, and install `@nn/schema` as a dependency, since the exported types refer to it.
+- Updated dependencies [23da839]
+- Updated dependencies [23da839]
+- Updated dependencies [63c2cc2]
+  - @nn/guards@0.4.0
+  - @nn/schema@2.1.0
+  - @nn/store@3.1.0
+
+## 3.0.1
+
+### Patch Changes
+
+- 8abc710: Point `homepage` and `repository` to each package's own directory, so npm links open the right README and source.
+- 8abc710: Document installation, requirements, and usage in the package README.
+- Updated dependencies [8abc710]
+- Updated dependencies [8abc710]
+  - @nn/guards@0.3.1
+  - @nn/store@3.0.1
+
+## 3.0.0
+
+### Major Changes
+
+- 5d1e50e: Return `store`, `useRead`, and `useUpdate` directly from `createStore(schema)`, so hooks no longer need a separate setup call.
+
+  The `use(store)` export is removed. Destructure the store and hooks from `createStore` instead. The hooks behave as before, and `store` remains available for sync engines and direct reads and writes.
+
+  Before:
+
+  ```ts
+  import { createStore, use } from "@nn/react";
+
+  const store = createStore(schema);
+  const { useRead, useUpdate } = use(store);
+  ```
+
+  After:
+
+  ```ts
+  import { createStore } from "@nn/react";
+
+  const { store, useRead, useUpdate } = createStore(schema);
+  ```
+
+- 5d1e50e: `Store` now has a single listener method, `onChange`, and no longer exposes its `State` or any `Entity`.
+
+  - Read and write on the store directly: `store.state.read()` becomes `store.read()`, and `store.state.update(fn)` becomes `store.update(fn)`.
+  - Listen with `store.onChange(listener)`, which returns its unsubscribe function. It replaces `store.updates.subscribe` and `store.changes.subscribe`. The listener receives the changed top-level fields, keyed by name and encoded the first time it reads them, and can ignore them.
+  - `store.merge(name, value)` takes encoded data, the shape `store.encode().data[name]` returns, and throws when it can't be decoded.
+
+  `createStore` from `@nn/react` returns this `Store`, and `useRead` and `useUpdate` are unchanged.
+
+### Patch Changes
+
+- Updated dependencies [5d1e50e]
+  - @nn/store@3.0.0
+
 ## 2.0.0
 
 ### Major Changes

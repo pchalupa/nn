@@ -450,7 +450,7 @@ describe("State notifications", () => {
 
 			return { language: "ignored", tickets: [] };
 		});
-		expect(listener).toHaveBeenCalledExactlyOnceWith(state, new Set([expect.any(RGA), expect.any(LWWRegister)]));
+		expect(listener).toHaveBeenCalledExactlyOnceWith(new Set([expect.any(RGA), expect.any(LWWRegister)]));
 		expect(observed).toStrictEqual([state.read()]);
 		expect(state.read().language).toBe("cs");
 		expect(state.read().tickets[0].title).toBe("Changed");
@@ -475,7 +475,7 @@ describe("State notifications", () => {
 		const observed: string[][] = [];
 
 		state.delegate = {
-			stateDidChange: (_state, changed) => {
+			stateDidChange: (changed) => {
 				const keys = [...changed].map((entity) => entity.key);
 
 				observed.push(keys);
@@ -497,13 +497,26 @@ describe("State notifications", () => {
 describe("State merges", () => {
 	const languageSchema = object({ language: string() });
 
+	afterEach(() => vi.restoreAllMocks());
+
+	it("completes a merged row without minting timestamps", () => {
+		const state = new State(schema);
+		const remote = new RGA([new LWWMap({}, "row")], "tickets");
+		const now = vi.spyOn(Time, "now");
+
+		state.merge("tickets", remote);
+
+		expect(state.read().tickets).toStrictEqual([{ title: "", assignee: { name: "" } }]);
+		expect(now).not.toHaveBeenCalled();
+	});
+
 	it("merges a decoded entity into a field and notifies once", () => {
 		const state = new State(languageSchema);
 		const listener = listen(state);
 
 		state.merge("language", new LWWRegister("cs", "language", Time.now()));
 		expect(state.read().language).toBe("cs");
-		expect(listener).toHaveBeenCalledExactlyOnceWith(state, new Set([expect.any(LWWRegister)]));
+		expect(listener).toHaveBeenCalledExactlyOnceWith(new Set([expect.any(LWWRegister)]));
 	});
 
 	it("notifies once when a merge changes several fields of one entry", () => {

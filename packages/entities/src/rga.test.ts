@@ -40,8 +40,16 @@ describe("RGA", () => {
 		expect(rga.encode()).toStrictEqual({
 			key: "items",
 			data: [first.encode(), second.encode()],
-			metadata: { kind: "RGA" },
+			metadata: { kind: "RGA", tombstones: [] },
 		});
+	});
+
+	it("encodes removed keys", () => {
+		const rga = new RGA([new LWWRegister("1", "a"), new LWWRegister("2", "b")], "items");
+
+		rga.remove("a");
+
+		expect(rga.encode().metadata).toStrictEqual({ kind: "RGA", tombstones: ["a"] });
 	});
 
 	it("finds an item by key", () => {
@@ -154,6 +162,152 @@ describe("RGA", () => {
 
 		expect(item.delegate).toBeUndefined();
 		expect(callback).not.toHaveBeenCalled();
+	});
+
+	describe("tombstones", () => {
+		it("keeps a removed row removed when a replica that still holds it merges", () => {
+			const local = new RGA([new LWWRegister("1", "a"), new LWWRegister("2", "b")]);
+			const remote = new RGA([new LWWRegister("1", "a"), new LWWRegister("2", "b")]);
+
+			local.remove("a");
+			local.merge(remote);
+
+			expect(local.find("a")).toBeUndefined();
+			expect(local.current.map((row) => row.key)).toStrictEqual(["b"]);
+		});
+
+		it("removes a row locally when the remote removed it", () => {
+			const remote = new RGA([new LWWRegister("1", "a"), new LWWRegister("2", "b")]);
+			const local = new RGA([new LWWRegister("1", "a"), new LWWRegister("2", "b")]);
+			const callback = vi.fn();
+
+			remote.remove("a");
+			local.delegate = { entityDidChange: callback };
+			local.merge(remote);
+
+			expect(local.current.map((row) => row.key)).toStrictEqual(["b"]);
+			expect(callback).toHaveBeenCalledExactlyOnceWith(local, undefined);
+		});
+
+		it("converges whichever order replicas merge in", () => {
+			const build = () => new RGA([new LWWRegister("1", "a"), new LWWRegister("2", "b"), new LWWRegister("3", "c")]);
+			const left = build();
+			const right = build();
+
+			left.remove("a");
+			right.remove("c");
+			left.merge(right);
+			right.merge(left);
+
+			expect(left.current.map((row) => row.key)).toStrictEqual(["b"]);
+			expect(right.current.map((row) => row.key)).toStrictEqual(["b"]);
+		});
+
+		it("is idempotent", () => {
+			const local = new RGA([new LWWRegister("1", "a")]);
+			const remote = new RGA([new LWWRegister("1", "a"), new LWWRegister("2", "b")]);
+			const callback = vi.fn();
+
+			remote.remove("a");
+			local.merge(remote);
+			local.delegate = { entityDidChange: callback };
+			local.merge(remote);
+
+			expect(local.current.map((row) => row.key)).toStrictEqual(["b"]);
+			expect(callback).not.toHaveBeenCalled();
+		});
+
+		it("lets a removal win over a concurrent edit", () => {
+			const row = new LWWRegister("1", "a");
+			const local = new RGA([row]);
+			const remote = new RGA([new LWWRegister("1", "a")]);
+
+			remote.remove("a");
+			row.current = "edited";
+			local.merge(remote);
+
+			expect(local.find("a")).toBeUndefined();
+		});
+
+		it("ignores a row whose removal arrived first", () => {
+			const local = new RGA<LWWRegister<string>>();
+			const deleted = new RGA([new LWWRegister("1", "a")]);
+			const stale = new RGA([new LWWRegister("1", "a")]);
+
+			deleted.remove("a");
+			local.merge(deleted);
+			local.merge(stale);
+
+			expect(local.find("a")).toBeUndefined();
+			expect(local.current).toHaveLength(0);
+		});
+
+		it("notifies when only tombstones grow", () => {
+			const local = new RGA([new LWWRegister("2", "b")]);
+			const remote = new RGA([new LWWRegister("1", "a")]);
+			const callback = vi.fn();
+
+			remote.remove("a");
+			local.delegate = { entityDidChange: callback };
+			local.merge(remote);
+
+			expect(local.current.map((row) => row.key)).toStrictEqual(["b"]);
+			expect(callback).toHaveBeenCalledExactlyOnceWith(local, undefined);
+		});
+
+		it("detaches a row removed by a merge", () => {
+			const row = new LWWRegister("1", "a");
+			const local = new RGA([row]);
+			const remote = new RGA([new LWWRegister("1", "a")]);
+			const callback = vi.fn();
+
+			remote.remove("a");
+			local.merge(remote);
+			local.delegate = { entityDidChange: callback };
+			row.current = "2";
+
+			expect(row.delegate).toBeUndefined();
+			expect(callback).not.toHaveBeenCalled();
+		});
+
+		it("ignores a push of a removed key", () => {
+			const local = new RGA([new LWWRegister("1", "a")]);
+			const callback = vi.fn();
+			const again = new LWWRegister("2", "a");
+
+			local.remove("a");
+			local.delegate = { entityDidChange: callback };
+			local.push(again);
+
+			expect(local.find("a")).toBeUndefined();
+			expect(again.delegate).toBeUndefined();
+			expect(callback).not.toHaveBeenCalled();
+		});
+
+		it("does not tombstone an unknown key", () => {
+			const local = new RGA<LWWRegister<string>>();
+
+			local.remove("a");
+			local.push(new LWWRegister("1", "a"));
+
+			expect(local.find("a")).toBeDefined();
+		});
+
+		it("tombstones rows dropped by assigning current", () => {
+			const local = new RGA([new LWWRegister("1", "a"), new LWWRegister("2", "b")]);
+			const remote = new RGA([new LWWRegister("1", "a"), new LWWRegister("2", "b")]);
+
+			local.current = [new LWWRegister("2", "b"), new LWWRegister("3", "c")];
+			local.merge(remote);
+
+			expect(local.current.map((row) => row.key)).toStrictEqual(["b", "c"]);
+		});
+
+		it("skips removed keys when constructed", () => {
+			const local = new RGA([new LWWRegister("1", "a"), new LWWRegister("2", "b")], "list", ["a"]);
+
+			expect(local.current.map((row) => row.key)).toStrictEqual(["b"]);
+		});
 	});
 
 	describe("merge", () => {

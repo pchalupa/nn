@@ -59,6 +59,22 @@ describe("RGA", () => {
 		expect(rga.find(item.key)).toBe(item);
 	});
 
+	it("counts its items without removed ones", () => {
+		const rga = new RGA([new LWWRegister("1", "a"), new LWWRegister("2", "b")]);
+
+		expect(rga.size).toBe(2);
+		rga.remove("a");
+		expect(rga.size).toBe(1);
+	});
+
+	it("lists its keys in order", () => {
+		const rga = new RGA([new LWWRegister("1", "a"), new LWWRegister("2", "b"), new LWWRegister("3", "c")]);
+
+		rga.remove("b");
+
+		expect(Array.from(rga.keys())).toStrictEqual(["a", "c"]);
+	});
+
 	it("pushes to the rga", () => {
 		const rga = new RGA<LWWMap<{ title: LWWRegister<string> }>>();
 		const callback = vi.fn();

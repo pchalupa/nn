@@ -32,6 +32,22 @@ describe("Codec", () => {
 		expect(decoded.encode()).toStrictEqual(list.encode());
 	});
 
+	it("round-trips a list with removed keys and keeps them removed", () => {
+		const list = new RGA([new LWWRegister("a", "1"), new LWWRegister("b", "2")], "list");
+
+		list.remove("1");
+
+		const decoded = codec.decode(JSON.parse(JSON.stringify(codec.encode(list))));
+
+		expect(decoded.encode()).toStrictEqual(list.encode());
+
+		RGA.assert(decoded);
+
+		decoded.merge(new RGA([new LWWRegister("a", "1")], "list"));
+
+		expect(decoded.find("1")).toBeUndefined();
+	});
+
 	it("round-trips a map holding a list of maps", () => {
 		const rows = new RGA(
 			[
@@ -63,10 +79,13 @@ describe("Codec", () => {
 		[{ key: "k", data: null, metadata: { kind: "LWWMap" } }, "Invalid encoded LWWMap."],
 		[{ key: "k", data: [], metadata: { kind: "LWWMap" } }, "Invalid encoded LWWMap."],
 		[{ key: "k", data: "a", metadata: { kind: "LWWMap" } }, "Invalid encoded LWWMap."],
-		[{ key: "k", data: 5, metadata: { kind: "RGA" } }, "Invalid encoded RGA."],
-		[{ key: "k", data: {}, metadata: { kind: "RGA" } }, "Invalid encoded RGA."],
+		[{ key: "k", data: 5, metadata: { kind: "RGA", tombstones: [] } }, "Invalid encoded RGA."],
+		[{ key: "k", data: {}, metadata: { kind: "RGA", tombstones: [] } }, "Invalid encoded RGA."],
+		[{ key: "k", data: [], metadata: { kind: "RGA" } }, "Invalid encoded RGA."],
+		[{ key: "k", data: [], metadata: { kind: "RGA", tombstones: "a" } }, "Invalid encoded RGA."],
+		[{ key: "k", data: [], metadata: { kind: "RGA", tombstones: [1] } }, "Invalid encoded RGA."],
 		[{ key: "k", data: { name: 1 }, metadata: { kind: "LWWMap" } }, "Invalid encoded entity."],
-		[{ key: "k", data: [null], metadata: { kind: "RGA" } }, "Invalid encoded entity."],
+		[{ key: "k", data: [null], metadata: { kind: "RGA", tombstones: [] } }, "Invalid encoded entity."],
 	])("throws for malformed data or metadata %o", (value, message) => {
 		expect(() => codec.decode(value)).toThrow(message);
 	});

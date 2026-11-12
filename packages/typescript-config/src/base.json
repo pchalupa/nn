@@ -2,17 +2,16 @@
 	"$schema": "https://json.schemastore.org/tsconfig",
 	"display": "Nn",
 	"compilerOptions": {
-		"strict": true,
-		"esModuleInterop": true,
 		"target": "ES2022",
-		"module": "ES2022",
+		"lib": ["ES2022", "ES2025.Collection", "DOM"],
+		"module": "Preserve",
 		"moduleResolution": "Bundler",
 		"skipLibCheck": true,
 		"resolveJsonModule": true,
 		"isolatedModules": true,
 		"noUnusedLocals": true,
 		"incremental": true,
-		"tsBuildInfoFile": "./node_modules/.cache/tsbuildinfo",
-		"forceConsistentCasingInFileNames": true
-	}
+		"tsBuildInfoFile": "${configDir}/node_modules/.cache/tsbuildinfo"
+	},
+	"exclude": ["${configDir}/node_modules", "${configDir}/dist"]
 }

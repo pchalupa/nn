@@ -146,6 +146,16 @@ describe("ListStrategy", () => {
 			]);
 		});
 
+		it("keeps the removed rows of the remote list", () => {
+			const local = new RGA<Entity>([new LWWMap({}, "r1"), new LWWMap({}, "r2")], "list");
+			const remote = rows.conform(new RGA([new LWWMap({}, "r2")], "list", ["r1"]));
+
+			assert(RGA.is(remote));
+			local.merge(remote);
+
+			expect(local.current.map((row) => row.key)).toStrictEqual(["r2"]);
+		});
+
 		it("returns an entity of another kind unchanged", () => {
 			const register = new LWWRegister("A", "list", Time.now());
 

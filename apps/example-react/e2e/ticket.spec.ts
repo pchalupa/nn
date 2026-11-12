@@ -245,3 +245,52 @@ test.describe("TicketModal editing", () => {
 		await expect(dialog.getByRole("textbox", { name: "Title" })).toHaveValue("Renamed");
 	});
 });
+
+test.describe("TicketModal deleting", () => {
+	test("should not offer deleting a new ticket", async ({ page }) => {
+		await page.goto("/");
+		await page.getByRole("button", { name: "Create" }).click();
+
+		await expect(page.locator("dialog").getByRole("button", { name: "Delete" })).toHaveCount(0);
+	});
+
+	test("should delete the ticket and close", async ({ page }) => {
+		const { dialog, card } = await addTicket(page);
+
+		await page.getByRole("link", { name: "todo" }).click();
+		await dialog.getByRole("button", { name: "Delete" }).click();
+
+		await expect(dialog).toBeHidden();
+		await expect(card).toHaveCount(0);
+		await expect(page).toHaveURL(/\/$/);
+	});
+
+	test("should keep the ticket deleted after a reload", async ({ page }) => {
+		const { dialog, card } = await addTicket(page);
+
+		await page.getByRole("link", { name: "todo" }).click();
+		await dialog.getByRole("button", { name: "Delete" }).click();
+		await expect(card).toHaveCount(0);
+		await page.reload();
+
+		await expect(page.getByRole("button", { name: "Create" })).toBeVisible();
+		await expect(card).toHaveCount(0);
+	});
+
+	test("should delete the ticket in another tab", async ({ page }) => {
+		const { dialog, card } = await addTicket(page);
+		const other = await page.context().newPage();
+
+		await other.goto("/");
+		await expect(columnCards(other, "To Do")).toHaveCount(1);
+
+		await page.getByRole("link", { name: "todo" }).click();
+		await dialog.getByRole("button", { name: "Delete" }).click();
+		await expect(card).toHaveCount(0);
+
+		await expect(columnCards(other, "To Do")).toHaveCount(0);
+		await other.reload();
+		await expect(other.getByRole("button", { name: "Create" })).toBeVisible();
+		await expect(columnCards(other, "To Do")).toHaveCount(0);
+	});
+});

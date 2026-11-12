@@ -64,6 +64,14 @@ export const TicketModal = ({ id, onClose }: TicketModalProps) => {
 		onClose();
 	});
 
+	const handleDelete = () => {
+		updateStore((data) => {
+			data.tickets = data.tickets.filter((entry) => entry.id !== id);
+		});
+
+		onClose();
+	};
+
 	return (
 		<Modal ref={modalRef} onClose={onClose}>
 			<form className="flex flex-col gap-y-6" noValidate onSubmit={handleSubmit}>
@@ -107,6 +115,7 @@ export const TicketModal = ({ id, onClose }: TicketModalProps) => {
 					</div>
 				</div>
 				<div className="flex flex-row justify-end gap-x-2">
+					{ticket && <Button text={t("delete")} color="secondary" size="sm" onClick={handleDelete} />}
 					<Button text={t("save")} type="submit" size="sm" />
 				</div>
 			</form>

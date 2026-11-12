@@ -1,4 +1,5 @@
 import { LWWMap } from "@nn/entities/kinds/lww-map";
+import { LWWRegister } from "@nn/entities/kinds/lww-register";
 import { Time } from "@nn/time";
 import { describe, expect, it } from "vitest";
 
@@ -57,6 +58,14 @@ describe("RegisterStrategy", () => {
 			strategy.reconcile(entity, "A");
 
 			expect(entity.revision).toBe(revision);
+		});
+	});
+
+	describe("conform", () => {
+		it("returns the remote register", () => {
+			const remote = new LWWRegister("A", "title", Time.now());
+
+			expect(strategy.conform(remote)).toBe(remote);
 		});
 	});
 });

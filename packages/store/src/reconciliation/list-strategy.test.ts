@@ -1,4 +1,8 @@
 import type { Entity } from "@nn/entities/entity";
+import { LWWMap } from "@nn/entities/kinds/lww-map";
+import { LWWRegister } from "@nn/entities/kinds/lww-register";
+import { RGA } from "@nn/entities/kinds/rga";
+import { Time } from "@nn/time";
 import { assert, describe, expect, it } from "vitest";
 
 import { ListStrategy } from "./list-strategy";
@@ -126,6 +130,36 @@ describe("ListStrategy", () => {
 			tags.reconcile(list, "oops");
 
 			expect(list.revision).toBe(revision);
+		});
+	});
+
+	describe("conform", () => {
+		it("completes every row and keeps keys", () => {
+			const list = rows.conform(new RGA([new LWWMap({}, "r1"), new LWWMap({}, "r2")], "list"));
+
+			assert(RGA.is(list));
+			expect(list.key).toBe("list");
+			expect(list.current.map((row) => row.key)).toStrictEqual(["r1", "r2"]);
+			expect(list.current.map((row) => (row instanceof LWWMap ? row.get("title")?.current : undefined))).toStrictEqual([
+				"",
+				"",
+			]);
+		});
+
+		it("keeps the removed rows of the remote list", () => {
+			const local = new RGA<Entity>([new LWWMap({}, "r1"), new LWWMap({}, "r2")], "list");
+			const remote = rows.conform(new RGA([new LWWMap({}, "r2")], "list", ["r1"]));
+
+			assert(RGA.is(remote));
+			local.merge(remote);
+
+			expect(local.current.map((row) => row.key)).toStrictEqual(["r2"]);
+		});
+
+		it("returns an entity of another kind unchanged", () => {
+			const register = new LWWRegister("A", "list", Time.now());
+
+			expect(rows.conform(register)).toBe(register);
 		});
 	});
 });

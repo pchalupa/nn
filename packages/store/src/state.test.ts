@@ -1,3 +1,4 @@
+import { Codec } from "@nn/entities/codec";
 import { LWWMap } from "@nn/entities/kinds/lww-map";
 import { LWWRegister } from "@nn/entities/kinds/lww-register";
 import { RGA } from "@nn/entities/kinds/rga";
@@ -497,6 +498,19 @@ describe("State notifications", () => {
 describe("State merges", () => {
 	const languageSchema = object({ language: string() });
 
+	afterEach(() => vi.restoreAllMocks());
+
+	it("completes a merged row without minting timestamps", () => {
+		const state = new State(schema);
+		const remote = new RGA([new LWWMap({}, "row")], "tickets");
+		const now = vi.spyOn(Time, "now");
+
+		state.merge("tickets", remote);
+
+		expect(state.read().tickets).toStrictEqual([{ title: "", assignee: { name: "" } }]);
+		expect(now).not.toHaveBeenCalled();
+	});
+
 	it("merges a decoded entity into a field and notifies once", () => {
 		const state = new State(languageSchema);
 		const listener = listen(state);
@@ -533,6 +547,32 @@ describe("State merges", () => {
 		state.merge("language", new LWWRegister("de", "language", older));
 		expect(state.read().language).toBe("cs");
 		expect(listener).not.toHaveBeenCalled();
+	});
+
+	it("keeps a removed row removed when a stale copy merges", () => {
+		const state = setup();
+		const stale = new Codec().decode(state.encode().data.tickets);
+
+		state.update((draft) => {
+			draft.tickets = draft.tickets.filter((row) => row.title !== "First");
+		});
+		state.merge("tickets", stale);
+
+		expect(state.read().tickets.map((row) => row.title)).toStrictEqual(["Second"]);
+	});
+
+	it("removes a row that a remote replica removed", () => {
+		const remote = setup();
+		const state = new State(schema);
+		const codec = new Codec();
+
+		state.merge("tickets", codec.decode(remote.encode().data.tickets));
+		remote.update((draft) => {
+			draft.tickets = draft.tickets.filter((row) => row.title !== "First");
+		});
+		state.merge("tickets", codec.decode(remote.encode().data.tickets));
+
+		expect(state.read().tickets.map((row) => row.title)).toStrictEqual(["Second"]);
 	});
 
 	it("ignores merges into unknown or inherited names and entities stored under another key", () => {

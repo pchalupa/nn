@@ -111,11 +111,11 @@ export class IndexDb implements Delegatable<IndexDbDelegate> {
 			openRequest.onupgradeneeded = () => {
 				const transaction = openRequest.transaction;
 
-				typeNames.forEach((typeName) => {
+				for (const typeName of typeNames) {
 					if (!transaction?.db.objectStoreNames.contains(typeName)) {
 						transaction?.db.createObjectStore(typeName);
 					}
-				});
+				}
 
 				if (transaction) {
 					transaction.oncomplete = () => resolve(openRequest.result);

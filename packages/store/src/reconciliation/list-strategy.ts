@@ -7,11 +7,6 @@ import type { Time } from "@nn/time";
 
 import type { Strategy } from "./strategy";
 
-interface Match {
-	readonly entity: Entity | undefined;
-	readonly value: unknown;
-}
-
 export class ListStrategy implements Strategy {
 	constructor(
 		private items: Strategy,
@@ -31,15 +26,27 @@ export class ListStrategy implements Strategy {
 	public reconcile(entity: Entity, value: unknown): void {
 		if (RGA.is(entity) && isArray(value)) {
 			const matches = this.match(entity, value);
-			const kept = new Set(matches.flatMap((match) => (match.entity === undefined ? [] : [match.entity.key])));
-
-			for (const row of entity.current) {
-				if (!kept.has(row.key)) entity.remove(row.key);
-			}
+			const kept = new Set<string>();
 
 			for (const match of matches) {
-				if (match.entity === undefined) entity.push(this.items.create(match.value, ID.create()));
-				else this.items.reconcile(match.entity, match.value);
+				if (match) kept.add(match.key);
+			}
+
+			if (kept.size !== entity.size) {
+				const removed: string[] = [];
+
+				for (const key of entity.keys()) {
+					if (!kept.has(key)) removed.push(key);
+				}
+
+				for (const key of removed) entity.remove(key);
+			}
+
+			for (let index = 0; index < matches.length; index++) {
+				const match = matches[index];
+
+				if (match === undefined) entity.push(this.items.create(value[index], ID.create()));
+				else this.items.reconcile(match, value[index]);
 			}
 		}
 	}
@@ -50,13 +57,22 @@ export class ListStrategy implements Strategy {
 		return remote;
 	}
 
-	private match(list: RGA<Entity>, value: readonly unknown[]): Match[] {
-		const current = list.current;
+	private match(list: RGA<Entity>, value: readonly unknown[]): Array<Entity | undefined> {
+		const matches: Array<Entity | undefined> = [];
+		let current: Entity[] | undefined;
 
-		return Array.from(value, (item, index) => ({
-			entity: isObject(item) ? this.find(list, item) : current[index],
-			value: item,
-		}));
+		for (let index = 0; index < value.length; index++) {
+			const item = value[index];
+
+			if (isObject(item)) {
+				matches.push(this.find(list, item));
+			} else {
+				current ??= list.current;
+				matches.push(current[index]);
+			}
+		}
+
+		return matches;
 	}
 
 	private find(list: RGA<Entity>, item: object): Entity | undefined {

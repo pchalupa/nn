@@ -64,12 +64,20 @@ export class RGA<Value extends Entity> extends Entity<Value[]> implements Entity
 		this.didChange();
 	}
 
+	public get size(): number {
+		return this.items.size;
+	}
+
 	public map<Next extends Entity>(callback: (item: Value) => Next): RGA<Next> {
 		const items: Next[] = [];
 
 		for (const item of this.items.values()) items.push(callback(item));
 
 		return new RGA(items, this.key, this.tombstones);
+	}
+
+	public keys(): MapIterator<string> {
+		return this.items.keys();
 	}
 
 	public find(key: string): Value | undefined {

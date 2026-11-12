@@ -11,7 +11,8 @@
 		"style": "off"
 	},
 	"rules": {
-		"oxc/no-map-spread": "off",
+		"oxc/no-map-spread": "error",
+		"oxc/no-accumulating-spread": "error",
 
 		"default-param-last": "error",
 		"no-else-return": "error",
@@ -31,6 +32,7 @@
 		"typescript/ban-ts-comment": "error",
 		"typescript/consistent-type-definitions": ["error", "interface"],
 		"typescript/no-non-null-assertion": "error",
+		"typescript/prefer-for-of": "error",
 		"typescript/array-type": ["error", { "default": "array-simple" }],
 		"typescript/explicit-member-accessibility": [
 			"error",
@@ -45,6 +47,8 @@
 		"unicorn/throw-new-error": "error",
 		"unicorn/prefer-type-error": "error",
 		"unicorn/prefer-at": "error",
+		"unicorn/no-array-for-each": "error",
+		"unicorn/no-array-reduce": "error",
 		"unicorn/filename-case": ["error", { "case": "kebabCase" }],
 
 		"oxc/no-async-endpoint-handlers": "off",
@@ -86,6 +90,10 @@
 		{
 			"files": ["**/apps/example-react/src/routes/**"],
 			"rules": { "unicorn/filename-case": "off" }
+		},
+		{
+			"files": ["**/apps/**"],
+			"rules": { "oxc/no-map-spread": "off", "unicorn/no-array-reduce": "off" }
 		}
 	],
 	"ignorePatterns": [

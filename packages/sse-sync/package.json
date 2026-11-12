@@ -1,6 +1,6 @@
 {
 	"name": "@nn/sse-sync",
-	"version": "3.1.0",
+	"version": "3.1.1",
 	"description": "Sync engine that keeps a store in sync with a server over server-sent events",
 	"keywords": [
 		"eventsource",

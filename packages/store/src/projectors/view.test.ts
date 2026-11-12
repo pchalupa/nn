@@ -137,7 +137,7 @@ describe("View", () => {
 		const before = view.value;
 
 		rows.remove(first.key);
-		rows.push(new LWWMap({ title: new LWWRegister("Replacement") }, "first"));
+		rows.push(new LWWMap({ title: new LWWRegister("Replacement") }, "replacement"));
 		const after = view.value;
 
 		assertArray(before);

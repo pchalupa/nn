@@ -29,6 +29,8 @@ export class Draft {
 	}
 
 	public fill(entity: Entity): void {
+		if (!this.trackers.has(entity)) track(entity, undefined, this.trackers);
+
 		this.trackers.get(entity)?.fill();
 	}
 }

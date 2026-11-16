@@ -665,6 +665,51 @@ describe("State moves within a recipe", () => {
 		});
 	});
 
+	describe.each([
+		{ order: "x before y", shape: object({ x: object({ child: person }), y: object({ child: person }) }) },
+		{ order: "y before x", shape: object({ y: object({ child: person }), x: object({ child: person }) }) },
+	])("with nested objects declared $order", ({ shape }) => {
+		it("swaps two objects with unread nested objects", () => {
+			const state = new State(shape);
+
+			state.update((draft) => {
+				draft.x.child.name = "X";
+				draft.y.child.name = "Y";
+			});
+			state.update((draft) => {
+				const x = draft.x;
+
+				draft.x = draft.y;
+				draft.y = x;
+			});
+
+			expect(state.read()).toStrictEqual({ x: { child: { name: "Y" } }, y: { child: { name: "X" } } });
+		});
+	});
+
+	describe.each([
+		{ order: "x before y", shape: object({ x: object({ items: array(item) }), y: object({ items: array(item) }) }) },
+		{ order: "y before x", shape: object({ y: object({ items: array(item) }), x: object({ items: array(item) }) }) },
+	])("with objects holding collections declared $order", ({ shape }) => {
+		it("swaps two objects with unread collections", () => {
+			const state = new State(shape);
+
+			state.update((draft) => {
+				draft.x.items.push({ title: "X1" }, { title: "X2" });
+				draft.y.items.push({ title: "Y1" });
+			});
+			state.update((draft) => {
+				const x = draft.x;
+
+				draft.x = draft.y;
+				draft.y = x;
+			});
+
+			expect(titles(state.read().x.items)).toStrictEqual(["Y1"]);
+			expect(titles(state.read().y.items)).toStrictEqual(["X1", "X2"]);
+		});
+	});
+
 	it("keeps an inner update's write that the outer recipe never read", () => {
 		const state = setup();
 

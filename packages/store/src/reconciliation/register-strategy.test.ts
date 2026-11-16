@@ -52,7 +52,7 @@ describe("RegisterStrategy", () => {
 		});
 
 		it("ignores an entity that is not a register", () => {
-			const entity = new LWWMap({}, "row");
+			const entity = new LWWMap({}, "item");
 			const revision = entity.revision;
 
 			strategy.reconcile(entity, "A");

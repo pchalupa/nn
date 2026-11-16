@@ -80,7 +80,7 @@ describe("State reads", () => {
 		expect(reads).not.toHaveBeenCalled();
 	});
 
-	it("rebuilds only the rows and fields that changed", () => {
+	it("rebuilds only the items and fields that changed", () => {
 		const state = setup();
 		const before = state.read();
 
@@ -142,7 +142,7 @@ describe("State updates", () => {
 		expect(state.read().tickets[0].title).toBe("Changed");
 	});
 
-	it("removes and appends rows while retaining surviving entities", () => {
+	it("removes and appends items while retaining surviving entities", () => {
 		const state = setup();
 		const before = state.read();
 
@@ -151,14 +151,14 @@ describe("State updates", () => {
 			draft.tickets.push({ title: "Third", assignee: { name: "Cy" } });
 		});
 		expect(state.read().tickets[0]).toBe(before.tickets[1]);
-		expect(state.read().tickets.map((row) => row.title)).toStrictEqual(["Second", "Third"]);
+		expect(state.read().tickets.map((item) => item.title)).toStrictEqual(["Second", "Third"]);
 		state.update((draft) => {
 			draft.tickets.length = 0;
 		});
 		expect(state.read().tickets).toStrictEqual([]);
 	});
 
-	it("tells rows apart by identity rather than by value", () => {
+	it("tells items apart by identity rather than by value", () => {
 		const state = setup();
 		const third = () => ({ title: "Third", assignee: { name: "Cy" } });
 
@@ -168,7 +168,7 @@ describe("State updates", () => {
 		expect(state.read().tickets).toHaveLength(4);
 	});
 
-	it("recognizes a surviving row from an older snapshot after its projection is rebuilt", () => {
+	it("recognizes a surviving item from an older snapshot after its projection is rebuilt", () => {
 		const state = setup();
 		const saved = state.read().tickets[1];
 
@@ -185,7 +185,7 @@ describe("State updates", () => {
 		expect(state.read().tickets).toStrictEqual([saved]);
 	});
 
-	it("gives a spread snapshot row a new identity", () => {
+	it("gives a spread snapshot item a new identity", () => {
 		const state = setup();
 		const saved = state.read().tickets[0];
 		const assignee = saved.assignee;
@@ -198,7 +198,7 @@ describe("State updates", () => {
 		expect(state.read().tickets[0].assignee).not.toBe(assignee);
 	});
 
-	it("gives a snapshot row from another store a new identity", () => {
+	it("gives a snapshot item from another store a new identity", () => {
 		const state = setup();
 		const foreign = setup().read().tickets[0];
 		const assignee = state.read().tickets[0].assignee;
@@ -211,7 +211,7 @@ describe("State updates", () => {
 		expect(state.read().tickets[0].assignee).not.toBe(assignee);
 	});
 
-	it("treats a reinserted removed snapshot row as a new row", () => {
+	it("treats a reinserted removed snapshot item as a new item", () => {
 		const state = setup();
 		const saved = state.read().tickets[0];
 
@@ -248,7 +248,7 @@ describe("State updates", () => {
 		{
 			name: "a filter that removes nothing",
 			recipe: (draft) => {
-				draft.tickets = draft.tickets.filter((row) => row.title !== "Missing");
+				draft.tickets = draft.tickets.filter((item) => item.title !== "Missing");
 			},
 		},
 		{
@@ -275,9 +275,9 @@ describe("State updates", () => {
 });
 
 describe("State draft edits", () => {
-	const row = (title = "First") => ({ title, assignee: { name: "Ann", key: "data" }, tags: ["one"] });
+	const item = (title = "First") => ({ title, assignee: { name: "Ann", key: "data" }, tags: ["one"] });
 
-	const setupRows = (...titles: string[]) => {
+	const setupItems = (...titles: string[]) => {
 		const state = new State(
 			object({
 				language: string(),
@@ -288,27 +288,27 @@ describe("State draft edits", () => {
 		);
 
 		state.update((draft) => {
-			draft.tickets.push(...(titles.length ? titles : ["First", "Second"]).map((title) => row(title)));
+			draft.tickets.push(...(titles.length ? titles : ["First", "Second"]).map((title) => item(title)));
 		});
 
 		return state;
 	};
 
-	it("edits new rows and replaced nested objects within one recipe", () => {
-		const state = setupRows();
+	it("edits new items and replaced nested objects within one recipe", () => {
+		const state = setupItems();
 
 		state.update((draft) => {
-			draft.tickets.push(row("Third"));
+			draft.tickets.push(item("Third"));
 			draft.tickets[2].tags.push("two");
 			draft.tickets[0].assignee = { name: "Bob", key: "new" };
 			draft.tickets[0].assignee.name = "Cy";
 		});
-		expect(state.read().tickets[2]).toStrictEqual({ ...row("Third"), tags: ["one", "two"] });
+		expect(state.read().tickets[2]).toStrictEqual({ ...item("Third"), tags: ["one", "two"] });
 		expect(state.read().tickets[0].assignee).toStrictEqual({ name: "Cy", key: "new" });
 	});
 
 	it("validates only the final result", () => {
-		const state = setupRows();
+		const state = setupItems();
 
 		state.update((draft) => {
 			Reflect.set(draft.tickets[0], "title", 42);
@@ -322,7 +322,7 @@ describe("State draft edits", () => {
 	});
 
 	it("keeps snapshots and notifications unchanged when edits cancel out", () => {
-		const state = setupRows();
+		const state = setupItems();
 		const before = state.read();
 		const listener = listen(state);
 
@@ -337,8 +337,8 @@ describe("State draft edits", () => {
 	});
 
 	it("detaches retained drafts and inserted caller-owned values", () => {
-		const state = setupRows();
-		const added = row("Third");
+		const state = setupItems();
+		const added = item("Third");
 
 		let retained: string[] = [];
 
@@ -353,8 +353,8 @@ describe("State draft edits", () => {
 		expect(state.read().tickets[2].tags).toStrictEqual(["one"]);
 	});
 
-	it("preserves surviving row entities while removing rows", () => {
-		const state = setupRows();
+	it("preserves surviving item entities while removing items", () => {
+		const state = setupItems();
 		const before = state.read();
 
 		state.update((draft) => {
@@ -369,19 +369,19 @@ describe("State draft edits", () => {
 	});
 
 	it("gives an equal-valued fresh replacement a new identity", () => {
-		const state = setupRows("First");
+		const state = setupItems("First");
 		const before = state.read();
 		const listener = listen(state);
 
 		state.update((draft) => {
-			draft.tickets[0] = row();
+			draft.tickets[0] = item();
 		});
 		expect(state.read()).toStrictEqual(before);
 		expect(listener).toHaveBeenCalledOnce();
 	});
 
-	it("reads a computed field once while preserving row identity", () => {
-		const state = setupRows();
+	it("reads a computed field once while preserving item identity", () => {
+		const state = setupItems();
 		const before = state.read();
 
 		let reads = 0;
@@ -403,7 +403,7 @@ describe("State lazy updates", () => {
 
 	type Ticket = InferStateType<typeof schema>["tickets"][number];
 
-	it("reads the collection once for a one-field row update", () => {
+	it("reads the collection once for a one-field item update", () => {
 		const state = setup();
 		const lists = vi.spyOn(RGA.prototype, "current", "get");
 
@@ -415,7 +415,7 @@ describe("State lazy updates", () => {
 		expect(state.read().tickets[1].title).toBe("Changed");
 	});
 
-	it("fills no other row for a one-field row update", () => {
+	it("fills no other item for a one-field item update", () => {
 		const state = setup();
 		const maps = vi.spyOn(LWWMap.prototype, "current", "get");
 
@@ -438,7 +438,7 @@ describe("State lazy updates", () => {
 		expect(maps).not.toHaveBeenCalled();
 	});
 
-	it("writes back a draft row kept from an earlier update", () => {
+	it("writes back a draft item kept from an earlier update", () => {
 		const state = setup();
 
 		let kept: Ticket | undefined;
@@ -457,7 +457,7 @@ describe("State lazy updates", () => {
 		expect(state.read().tickets.map(({ title }) => title)).toStrictEqual(["First"]);
 	});
 
-	it("writes back a row kept from a recipe that throws", () => {
+	it("writes back an item kept from a recipe that throws", () => {
 		const state = setup();
 
 		let kept: Ticket | undefined;
@@ -479,12 +479,12 @@ describe("State lazy updates", () => {
 		expect(state.read().tickets.map(({ title }) => title)).toStrictEqual(["First"]);
 	});
 
-	it("edits a row found by scanning the collection", () => {
+	it("edits an item found by scanning the collection", () => {
 		const state = setup();
 		const before = state.read();
 
 		state.update((draft) => {
-			const found = draft.tickets.find((row) => row.title === "Second");
+			const found = draft.tickets.find((item) => item.title === "Second");
 
 			if (found) found.title = "Found";
 		});
@@ -493,12 +493,12 @@ describe("State lazy updates", () => {
 		expect(state.read().tickets[0]).toBe(before.tickets[0]);
 	});
 
-	it("reconciles only the edited row after scanning the collection", () => {
+	it("reconciles only the edited item after scanning the collection", () => {
 		const state = setup();
 		const lookups = vi.spyOn(RGA.prototype, "find");
 
 		state.update((draft) => {
-			const found = draft.tickets.find((row) => row.title === "First");
+			const found = draft.tickets.find((item) => item.title === "First");
 
 			if (found) found.assignee.name = "Cy";
 		});
@@ -507,7 +507,7 @@ describe("State lazy updates", () => {
 		expect(state.read().tickets.map(({ assignee }) => assignee.name)).toStrictEqual(["Cy", "Bob"]);
 	});
 
-	it("pushes a spread draft row as a new row", () => {
+	it("pushes a spread draft item as a new item", () => {
 		const state = setup();
 
 		state.update((draft) => {
@@ -570,7 +570,7 @@ describe("State nested collections", () => {
 		expect(state.read().boards[0].comments[0]).toStrictEqual({ key: "edited", text: "Hello" });
 	});
 
-	it("moves a row between same-named collections", () => {
+	it("moves an item between same-named collections", () => {
 		const state = setupBoards();
 
 		state.update((draft) => {
@@ -649,7 +649,7 @@ describe("State moves within a recipe", () => {
 		{ order: "tickets before archive", shape: object({ tickets: array(item), archive: array(item) }) },
 		{ order: "archive before tickets", shape: object({ archive: array(item), tickets: array(item) }) },
 	])("with collections declared $order", ({ shape }) => {
-		it("keeps the rows of a collection that is moved and then cleared", () => {
+		it("keeps the items of a collection that is moved and then cleared", () => {
 			const state = new State(shape);
 
 			state.update((draft) => {
@@ -803,9 +803,9 @@ describe("State merges", () => {
 
 	afterEach(() => vi.restoreAllMocks());
 
-	it("completes a merged row without minting timestamps", () => {
+	it("completes a merged item without minting timestamps", () => {
 		const state = new State(schema);
-		const remote = new RGA([new LWWMap({}, "row")], "tickets");
+		const remote = new RGA([new LWWMap({}, "item")], "tickets");
 		const now = vi.spyOn(Time, "now");
 
 		state.merge("tickets", remote);
@@ -852,30 +852,30 @@ describe("State merges", () => {
 		expect(listener).not.toHaveBeenCalled();
 	});
 
-	it("keeps a removed row removed when a stale copy merges", () => {
+	it("keeps a removed item removed when a stale copy merges", () => {
 		const state = setup();
 		const stale = new Codec().decode(state.encode().data.tickets);
 
 		state.update((draft) => {
-			draft.tickets = draft.tickets.filter((row) => row.title !== "First");
+			draft.tickets = draft.tickets.filter((item) => item.title !== "First");
 		});
 		state.merge("tickets", stale);
 
-		expect(state.read().tickets.map((row) => row.title)).toStrictEqual(["Second"]);
+		expect(state.read().tickets.map((item) => item.title)).toStrictEqual(["Second"]);
 	});
 
-	it("removes a row that a remote replica removed", () => {
+	it("removes an item that a remote replica removed", () => {
 		const remote = setup();
 		const state = new State(schema);
 		const codec = new Codec();
 
 		state.merge("tickets", codec.decode(remote.encode().data.tickets));
 		remote.update((draft) => {
-			draft.tickets = draft.tickets.filter((row) => row.title !== "First");
+			draft.tickets = draft.tickets.filter((item) => item.title !== "First");
 		});
 		state.merge("tickets", codec.decode(remote.encode().data.tickets));
 
-		expect(state.read().tickets.map((row) => row.title)).toStrictEqual(["Second"]);
+		expect(state.read().tickets.map((item) => item.title)).toStrictEqual(["Second"]);
 	});
 
 	it("ignores merges into unknown or inherited names and entities stored under another key", () => {

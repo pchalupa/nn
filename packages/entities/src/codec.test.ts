@@ -49,14 +49,14 @@ describe("Codec", () => {
 	});
 
 	it("round-trips a map holding a list of maps", () => {
-		const rows = new RGA(
+		const items = new RGA(
 			[
-				new LWWMap({ title: new LWWRegister("First", "title") }, "row-1"),
-				new LWWMap({ title: new LWWRegister("Second", "title") }, "row-2"),
+				new LWWMap({ title: new LWWRegister("First", "title") }, "item-1"),
+				new LWWMap({ title: new LWWRegister("Second", "title") }, "item-2"),
 			],
-			"rows",
+			"items",
 		);
-		const board = new LWWMap({ rows }, "board");
+		const board = new LWWMap({ items }, "board");
 		const decoded = codec.decode(codec.encode(board));
 
 		expect(decoded).toBeInstanceOf(LWWMap);

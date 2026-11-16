@@ -24,9 +24,9 @@ describe("MapStrategy", () => {
 
 	describe("create", () => {
 		it("creates a field entity for each declared field", () => {
-			const entity = strategy.create({ title: "A", count: 1, extra: true }, "row");
+			const entity = strategy.create({ title: "A", count: 1, extra: true }, "item");
 
-			expect(entity.key).toBe("row");
+			expect(entity.key).toBe("item");
 			expect(entity.get("title")?.key).toBe("title");
 			expect(entity.get("title")?.current).toBe("A");
 			expect(entity.get("count")?.current).toBe(1);
@@ -34,14 +34,14 @@ describe("MapStrategy", () => {
 		});
 
 		it.each([undefined, "oops"])("creates default fields from %s", (value) => {
-			const entity = strategy.create(value, "row");
+			const entity = strategy.create(value, "item");
 
 			expect(entity.get("title")?.current).toBe("");
 			expect(entity.get("count")?.current).toBe(0);
 		});
 
 		it("passes its timestamp to its fields", () => {
-			const title = strategy.create(undefined, "row", Time.epoch()).get("title");
+			const title = strategy.create(undefined, "item", Time.epoch()).get("title");
 
 			expect(title instanceof LWWRegister ? title.timestamp.toString() : undefined).toBe(Time.epoch().toString());
 		});
@@ -49,7 +49,7 @@ describe("MapStrategy", () => {
 
 	describe("reconcile", () => {
 		it("reconciles each declared field", () => {
-			const entity = strategy.create({ title: "A", count: 1 }, "row");
+			const entity = strategy.create({ title: "A", count: 1 }, "item");
 
 			strategy.reconcile(entity, { title: "B", count: 1 }, context);
 
@@ -58,7 +58,7 @@ describe("MapStrategy", () => {
 		});
 
 		it("ignores a non-object value", () => {
-			const entity = strategy.create({ title: "A" }, "row");
+			const entity = strategy.create({ title: "A" }, "item");
 			const revision = entity.revision;
 
 			strategy.reconcile(entity, "oops", context);
@@ -67,7 +67,7 @@ describe("MapStrategy", () => {
 		});
 
 		it("ignores an entity that is not a map", () => {
-			const entity = new LWWRegister("A", "row");
+			const entity = new LWWRegister("A", "item");
 
 			strategy.reconcile(entity, { title: "B" }, context);
 
@@ -77,10 +77,10 @@ describe("MapStrategy", () => {
 
 	describe("conform", () => {
 		it("fills a missing field with its zero value", () => {
-			const entity = strategy.conform(new LWWMap({ title: new LWWRegister("A", "title", Time.now()) }, "row"));
+			const entity = strategy.conform(new LWWMap({ title: new LWWRegister("A", "title", Time.now()) }, "item"));
 
 			assert(LWWMap.is(entity));
-			expect(entity.key).toBe("row");
+			expect(entity.key).toBe("item");
 			expect(entity.get("title")?.current).toBe("A");
 			expect(entity.get("count")?.current).toBe(0);
 		});
@@ -89,7 +89,7 @@ describe("MapStrategy", () => {
 			const entity = strategy.conform(
 				new LWWMap(
 					{ title: new LWWRegister("A", "title", Time.now()), count: new LWWRegister(3, "count", Time.now()) },
-					"row",
+					"item",
 				),
 			);
 
@@ -98,7 +98,7 @@ describe("MapStrategy", () => {
 		});
 
 		it("stamps filled fields at the epoch", () => {
-			const entity = strategy.conform(new LWWMap({}, "row"));
+			const entity = strategy.conform(new LWWMap({}, "item"));
 
 			assert(LWWMap.is(entity));
 			const count = entity.get("count");
@@ -109,13 +109,13 @@ describe("MapStrategy", () => {
 
 		it("carries over fields the schema does not declare", () => {
 			const extra = new LWWRegister(true, "extra", Time.now());
-			const entity = strategy.conform(new LWWMap({ extra }, "row"));
+			const entity = strategy.conform(new LWWMap({ extra }, "item"));
 
 			assert(entity instanceof LWWMap);
 			expect(entity.get("extra")).toBe(extra);
 		});
 
-		it("completes nested rows", () => {
+		it("completes nested items", () => {
 			const nested = new MapStrategy(
 				new Map<string, Strategy>([
 					["title", new RegisterStrategy("")],
@@ -128,7 +128,7 @@ describe("MapStrategy", () => {
 						title: new LWWRegister("A", "title", Time.now()),
 						comments: new RGA([new LWWMap({}, "c1")], "comments"),
 					},
-					"row",
+					"item",
 				),
 			);
 
@@ -143,7 +143,7 @@ describe("MapStrategy", () => {
 		});
 
 		it("returns an entity of another kind unchanged", () => {
-			const register = new LWWRegister("A", "row", Time.now());
+			const register = new LWWRegister("A", "item", Time.now());
 
 			expect(strategy.conform(register)).toBe(register);
 		});
@@ -156,7 +156,7 @@ describe("MapStrategy", () => {
 			const entity = withAssignee.conform(
 				new LWWMap(
 					{ assignee: new LWWMap({ name: new LWWRegister("Ann", "name", Time.now()), email }, "assignee") },
-					"row",
+					"item",
 				),
 			);
 
@@ -170,7 +170,7 @@ describe("MapStrategy", () => {
 
 		it("carries over a declared field of another kind unchanged", () => {
 			const count = new LWWMap({}, "count");
-			const entity = strategy.conform(new LWWMap({ count }, "row"));
+			const entity = strategy.conform(new LWWMap({ count }, "item"));
 
 			assert(LWWMap.is(entity));
 			expect(entity.get("count")).toBe(count);

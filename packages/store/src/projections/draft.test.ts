@@ -18,7 +18,7 @@ const at = (value: unknown, ...path: PropertyKey[]): unknown => {
 	return current;
 };
 
-const row = (title: string) =>
+const item = (title: string) =>
 	new LWWMap(
 		{
 			title: new LWWRegister(title, "title"),
@@ -28,11 +28,11 @@ const row = (title: string) =>
 	);
 
 const fixture = () => {
-	const rows = new RGA([row("A"), row("B"), row("C")], "rows");
-	const root = new LWWMap({ rows, language: new LWWRegister("en", "language") }, "root");
+	const items = new RGA([item("A"), item("B"), item("C")], "items");
+	const root = new LWWMap({ items, language: new LWWRegister("en", "language") }, "root");
 	const draft = new Draft(root, new View());
 
-	return { rows, root, draft };
+	return { items, root, draft };
 };
 
 describe("Draft", () => {
@@ -55,39 +55,39 @@ describe("Draft", () => {
 	});
 
 	it("knows the entity behind a draft list and none behind a foreign object", () => {
-		const { rows, draft } = fixture();
+		const { items, draft } = fixture();
 		const copy = draft.value;
-		const list = at(copy, "rows");
+		const list = at(copy, "items");
 
 		assertObject(list);
 
-		expect(draft.identify(list)).toBe(rows);
+		expect(draft.identify(list)).toBe(items);
 		expect(draft.identify({})).toBeUndefined();
 	});
 
 	it("knows the entity behind draft objects without exposing it", () => {
-		const { rows, root, draft } = fixture();
+		const { items, root, draft } = fixture();
 		const copy = draft.value;
-		const list = at(copy, "rows");
-		const first = at(copy, "rows", 0);
+		const list = at(copy, "items");
+		const first = at(copy, "items", 0);
 
 		assertObject(copy);
 		assertObject(list);
 		assertObject(first);
 
 		expect(draft.identify(copy)).toBe(root);
-		expect(draft.identify(list)).toBe(rows);
-		expect(draft.identify(first)).toBe(rows.current[0]);
+		expect(draft.identify(list)).toBe(items);
+		expect(draft.identify(first)).toBe(items.current[0]);
 		expect(Reflect.ownKeys(first)).toStrictEqual(["title", "assignee"]);
 		expect(draft.identify({ ...first })).toBeUndefined();
 	});
 
-	it("reads one row without reading the other rows", () => {
+	it("reads one item without reading the other items", () => {
 		const { draft } = fixture();
 		const lists = vi.spyOn(RGA.prototype, "current", "get");
 		const maps = vi.spyOn(LWWMap.prototype, "current", "get");
 
-		expect(at(draft.value, "rows", 1, "title")).toBe("B");
+		expect(at(draft.value, "items", 1, "title")).toBe("B");
 		expect(lists).toHaveBeenCalledOnce();
 		expect(maps.mock.calls.length).toBeLessThanOrEqual(2);
 	});
@@ -96,31 +96,31 @@ describe("Draft", () => {
 		const { draft } = fixture();
 		const lists = vi.spyOn(RGA.prototype, "current", "get");
 
-		expect(at(draft.value, "rows", "length")).toBe(3);
+		expect(at(draft.value, "items", "length")).toBe(3);
 		expect(lists).not.toHaveBeenCalled();
 	});
 
-	it.each(["01", "-1", "1.0", "3"])("treats only canonical indexes below the length as rows (%s)", (key) => {
+	it.each(["01", "-1", "1.0", "3"])("treats only canonical indexes below the length as items (%s)", (key) => {
 		const { draft } = fixture();
 
-		expect(at(draft.value, "rows", key)).toBeUndefined();
+		expect(at(draft.value, "items", key)).toBeUndefined();
 	});
 
-	it("returns the same row draft before and after the list fills", () => {
+	it("returns the same item draft before and after the list fills", () => {
 		const { draft } = fixture();
 		const copy = draft.value;
-		const first = at(copy, "rows", 0);
-		const list = at(copy, "rows");
+		const first = at(copy, "items", 0);
+		const list = at(copy, "items");
 
 		assertObject(list);
 		Object.keys(list);
 
-		expect(at(copy, "rows", 0)).toBe(first);
+		expect(at(copy, "items", 0)).toBe(first);
 	});
 
-	it("hands out row drafts, never entities, for rows a filled list has not read", () => {
-		const { rows, draft } = fixture();
-		const list = at(draft.value, "rows");
+	it("hands out item drafts, never entities, for items a filled list has not read", () => {
+		const { items, draft } = fixture();
+		const list = at(draft.value, "items");
 
 		assertArray(list);
 		Object.keys(list);
@@ -139,13 +139,13 @@ describe("Draft", () => {
 			expect(draft.identify(value)).toBeDefined();
 		}
 
-		expect(draft.identify(list[2] ?? {})).toBe(rows.current[2]);
+		expect(draft.identify(list[2] ?? {})).toBe(items.current[2]);
 		expect(list.slice(0)).toStrictEqual(["A", "B", "C"].map((title) => ({ title, assignee: { name: "Ann" } })));
 	});
 
-	it("tells a write to a row apart from a write to its list", () => {
+	it("tells a write to an item apart from a write to its list", () => {
 		const { draft } = fixture();
-		const list = at(draft.value, "rows");
+		const list = at(draft.value, "items");
 
 		assertArray(list);
 
@@ -174,29 +174,29 @@ describe("Draft", () => {
 		const { draft } = fixture();
 		const copy = draft.value;
 		const plain = {
-			rows: ["A", "B", "C"].map((title) => ({ title, assignee: { name: "Ann" } })),
+			items: ["A", "B", "C"].map((title) => ({ title, assignee: { name: "Ann" } })),
 			language: "en",
 		};
 
 		expect(copy).toStrictEqual(plain);
-		expect(Array.isArray(at(copy, "rows"))).toBe(true);
+		expect(Array.isArray(at(copy, "items"))).toBe(true);
 		expect(JSON.parse(JSON.stringify(copy))).toStrictEqual(plain);
 	});
 
 	it("marks a written object and its ancestors, not its siblings", () => {
-		const { rows, draft } = fixture();
+		const { items, draft } = fixture();
 		const copy = draft.value;
-		const assignee = at(copy, "rows", 1, "assignee");
+		const assignee = at(copy, "items", 1, "assignee");
 
 		assertObject(assignee);
 		Reflect.set(assignee, "name", "Bo");
 
-		for (const value of [assignee, at(copy, "rows", 1), at(copy, "rows"), copy]) {
+		for (const value of [assignee, at(copy, "items", 1), at(copy, "items"), copy]) {
 			expect(draft.inspect(value)?.modified).toBe(true);
 		}
 
-		expect(draft.inspect(at(copy, "rows", 0))?.modified).toBe(false);
-		expect(rows.current[1]?.encode()).toMatchObject({ data: { assignee: { data: { name: { data: "Ann" } } } } });
+		expect(draft.inspect(at(copy, "items", 0))?.modified).toBe(false);
+		expect(items.current[1]?.encode()).toMatchObject({ data: { assignee: { data: { name: { data: "Ann" } } } } });
 	});
 
 	it("copies object-valued registers shallowly", () => {
@@ -209,24 +209,24 @@ describe("Draft", () => {
 	});
 
 	it("fills an unfilled draft when its entity is filled", () => {
-		const { rows, draft } = fixture();
-		const list = at(draft.value, "rows");
+		const { items, draft } = fixture();
+		const list = at(draft.value, "items");
 
-		draft.fill(rows);
-		rows.push(row("D"));
+		draft.fill(items);
+		items.push(item("D"));
 
 		expect(at(list, "length")).toBe(3);
 	});
 
 	it("fills only its own objects", () => {
-		const { rows, root, draft: outer } = fixture();
-		const outerRows = at(outer.value, "rows");
+		const { items, root, draft: outer } = fixture();
+		const outerItems = at(outer.value, "items");
 		const inner = new Draft(root, new View());
 
-		at(inner.value, "rows");
-		inner.fill(rows);
+		at(inner.value, "items");
+		inner.fill(items);
 
-		expect(outer.inspect(outerRows)?.filled).toBe(false);
+		expect(outer.inspect(outerItems)?.filled).toBe(false);
 	});
 
 	it("does not recognize objects of another draft", () => {
@@ -246,11 +246,11 @@ describe("Draft", () => {
 		expect(root.get("language")?.current).toBe("en");
 	});
 
-	it("keeps an unread row and list readable after they are frozen", () => {
+	it("keeps an unread item and list readable after they are frozen", () => {
 		const { draft } = fixture();
 		const copy = draft.value;
-		const list = at(copy, "rows");
-		const first = at(copy, "rows", 0);
+		const list = at(copy, "items");
+		const first = at(copy, "items", 0);
 
 		assertObject(list);
 		assertObject(first);

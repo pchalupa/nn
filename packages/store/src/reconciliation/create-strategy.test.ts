@@ -2,7 +2,7 @@ import type { Entity } from "@nn/entities/entity";
 import { LWWMap } from "@nn/entities/kinds/lww-map";
 import { LWWRegister } from "@nn/entities/kinds/lww-register";
 import { RGA } from "@nn/entities/kinds/rga";
-import { array, boolean, enumeration, number, object, type Schema, string } from "@nn/schema";
+import { array, boolean, enumeration, number, object, string } from "@nn/schema";
 import { describe, expect, it } from "vitest";
 
 import { createReconciliationStrategy } from "./create-strategy";
@@ -100,9 +100,11 @@ describe("createReconciliationStrategy", () => {
 	});
 
 	it("throws a type error for an unsupported schema", () => {
-		expect(() =>
-			// oxlint-disable-next-line typescript/consistent-type-assertions
-			createReconciliationStrategy({ type: "date" } as unknown as Schema),
-		).toThrow(new TypeError('Unsupported schema type "date".'));
+		const schema = string();
+
+		Object.setPrototypeOf(schema, Object.prototype);
+		Reflect.set(schema, "type", "date");
+
+		expect(() => createReconciliationStrategy(schema)).toThrow(new TypeError('Unsupported schema type "date".'));
 	});
 });

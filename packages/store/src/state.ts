@@ -8,7 +8,7 @@ import { Time } from "@nn/time";
 import { Draft } from "./projections/draft";
 import { View } from "./projections/view";
 import { createReconciliationStrategy } from "./reconciliation/create-strategy";
-import type { MapStrategy } from "./reconciliation/map-strategy";
+import { MapStrategy } from "./reconciliation/map-strategy";
 
 type ReadonlyData<Value> = {
 	readonly [Key in keyof Value]: ReadonlyData<Value[Key]>;
@@ -28,9 +28,11 @@ export class State<
 	private changed = new Set<Entity>();
 
 	constructor(schema: StoreSchema) {
-		// oxlint-disable-next-line typescript/consistent-type-assertions state root is forced to be map
-		this.reconciliationStrategy = createReconciliationStrategy(schema) as MapStrategy;
+		const reconciliationStrategy = createReconciliationStrategy(schema);
 
+		if (!(reconciliationStrategy instanceof MapStrategy)) throw new TypeError("State schema must be an object schema.");
+
+		this.reconciliationStrategy = reconciliationStrategy;
 		this.root = this.reconciliationStrategy.create(undefined, "state", Time.epoch());
 		this.root.delegate = {
 			entityDidChange: (_entity, child) => {

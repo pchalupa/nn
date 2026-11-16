@@ -1,5 +1,47 @@
 # @nn/store
 
+## 4.0.0
+
+### Major Changes
+
+- ac071bc: Make `Store.update` much faster on large stores. The draft a recipe receives is now built only as far as the recipe reads it, and applying it skips every part the recipe did not write. At 10,000 rows, changing one field of one row drops from about 2.9 ms to about 10 µs, and rebuilding a collection with `map` while keeping its rows gets about 40% faster.
+
+  Drafts are now proxies rather than plain copies, which changes a few things a recipe can observe:
+
+  - `structuredClone` of a draft object throws a `DataCloneError`. Copy it instead, along with each nested object and array, for example `{ ...draft.tickets[0], assignee: { ...draft.tickets[0].assignee } }`.
+  - `console.log` of a draft object the recipe hasn't read yet prints `Proxy` instead of its data, and a logged draft collection shows internal entities for rows the recipe hasn't read.
+  - Spreading or serializing every row of a large collection inside a recipe, for example `draft.tickets.map((ticket) => ({ ...ticket }))`, is about twice as slow as before.
+  - A draft kept after its update has finished shows the store's later state for any part the recipe never read.
+  - An `update` called inside another recipe keeps its writes, unless the outer recipe already read the containing object before the inner update ran and then changed something inside it. Before, the outer update always overwrote them.
+
+### Patch Changes
+
+- ac071bc: Make `Store.update` faster on large collections. Matching a recipe's rows to the stored list allocates less and skips the removal check when no row was removed, which cuts nearly a fifth from an update at 10,000 rows.
+- Updated dependencies [ac071bc]
+  - @nn/entities@4.2.0
+
+## 3.1.3
+
+### Patch Changes
+
+- 2dac556: Make `Store.update` faster on large collections. Matching a recipe's rows to the stored list allocates less and skips the removal check when no row was removed, which cuts nearly a fifth from an update at 10,000 rows.
+- Updated dependencies [2dac556]
+  - @nn/entities@4.1.0
+
+## 3.1.2
+
+### Patch Changes
+
+- be7c2b2: Keep rows that a remote replica removed removed when its list merges into the store. Before, completing the merged list against the schema dropped the remote removals, so a row deleted in one tab stayed in the others.
+- Updated dependencies [be7c2b2]
+  - @nn/entities@4.0.0
+
+## 3.1.1
+
+### Patch Changes
+
+- b81486e: Fill fields missing from merged data with their zero values. Data saved before a field was added to the schema no longer reads back as `undefined` for that field.
+
 ## 3.1.0
 
 ### Minor Changes

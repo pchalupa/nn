@@ -1,5 +1,24 @@
 # @nn/sync-engine
 
+## 4.1.2
+
+### Patch Changes
+
+- Updated dependencies [ac071bc]
+- Updated dependencies [ac071bc]
+- Updated dependencies [ac071bc]
+  - @nn/store@4.0.0
+  - @nn/entities@4.2.0
+
+## 4.1.1
+
+### Patch Changes
+
+- Updated dependencies [be7c2b2]
+- Updated dependencies [be7c2b2]
+  - @nn/store@3.1.2
+  - @nn/entities@4.0.0
+
 ## 4.1.0
 
 ### Minor Changes

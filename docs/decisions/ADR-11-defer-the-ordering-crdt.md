@@ -7,6 +7,8 @@ date: 2026-10-14
 
 Supersedes the ordering decision in [ADR-03](ADR-03-use-rga-for-collection-row-order.md).
 
+Partly superseded by [ADR-19](ADR-19-tombstone-removed-rows.md), 2026-11-12: `RGA` now tombstones removed rows, so merges no longer bring them back. Ordering is still deferred.
+
 ## Context
 
 This branch built [`RGA`](../../packages/entities/src/rga.ts) in full: element ids pairing each row key with a `Time` stamp, insertion anchors, tombstones, and a clock that mints stamps above everything the instance has seen. That is what makes collection order converge across replicas, and [ADR-03](ADR-03-use-rga-for-collection-row-order.md) records why we wanted it.

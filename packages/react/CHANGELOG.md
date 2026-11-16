@@ -1,5 +1,13 @@
 # @nn/react
 
+## 3.1.1
+
+### Patch Changes
+
+- Updated dependencies [ac071bc]
+- Updated dependencies [ac071bc]
+  - @nn/store@4.0.0
+
 ## 3.1.0
 
 ### Minor Changes

@@ -1,9 +1,9 @@
-import type { Entity } from "@nn/entities/entity";
+import { Entity } from "@nn/entities/entity";
 import { LWWMap } from "@nn/entities/kinds/lww-map";
 import { isObject } from "@nn/guards/is-object";
-import type { Time } from "@nn/time";
+import { Time } from "@nn/time";
 
-import type { Strategy } from "./strategy";
+import type { ReconcileContext, Strategy } from "./strategy";
 
 export class MapStrategy implements Strategy {
 	constructor(private fields: ReadonlyMap<string, Strategy>) {}
@@ -19,13 +19,48 @@ export class MapStrategy implements Strategy {
 		return new LWWMap(fields, key);
 	}
 
-	public reconcile(entity: Entity, value: unknown): void {
-		if (entity instanceof LWWMap && isObject(value)) {
+	public reconcile(entity: Entity, value: unknown, context: ReconcileContext): void {
+		const tracker = context.inspect(value);
+
+		if (tracker?.entity === entity && !tracker.modified) return;
+
+		const target = tracker?.entity === entity ? tracker.target : value;
+
+		if (LWWMap.is(entity) && isObject(target)) {
+			context.fill(entity);
+
 			for (const [name, strategy] of this.fields) {
 				const field = entity.get(name);
+				const item = target[name];
 
-				if (field !== undefined) strategy.reconcile(field, value[name]);
+				if (field && field !== item) {
+					strategy.reconcile(field, Entity.is(item) && isObject(value) ? Reflect.get(value, name) : item, context);
+				}
 			}
 		}
+	}
+
+	public conform(remote: Entity): Entity {
+		if (LWWMap.is(remote)) {
+			const fields: Record<string, Entity> = { ...remote.current };
+
+			for (const [name, strategy] of this.fields) {
+				const remoteField = remote.get(name);
+
+				if (remoteField === undefined) {
+					fields[name] = strategy.create(undefined, name, Time.epoch());
+				} else {
+					fields[name] = strategy.conform(remoteField);
+				}
+			}
+
+			return new LWWMap(fields, remote.key);
+		}
+
+		return remote;
+	}
+
+	public get(name: string): Strategy | undefined {
+		return this.fields.get(name);
 	}
 }

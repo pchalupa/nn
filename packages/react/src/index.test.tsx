@@ -54,7 +54,7 @@ describe("@nn/react", () => {
 	});
 
 	describe("useRead", () => {
-		it("renders selected rows and updates only when their data changes", async () => {
+		it("renders selected items and updates only when their data changes", async () => {
 			const { store, useRead } = setup();
 			const rendered = vi.fn();
 			const Column = () => {

@@ -11,12 +11,14 @@
 		"style": "off"
 	},
 	"rules": {
-		"oxc/no-map-spread": "off",
+		"oxc/no-map-spread": "error",
+		"oxc/no-accumulating-spread": "error",
 
 		"default-param-last": "error",
 		"no-else-return": "error",
 		"no-param-reassign": "error",
 		"one-var": ["error", "never"],
+		"no-loop-func": "error",
 		"no-await-in-loop": "off",
 
 		"typescript/no-explicit-any": "error",
@@ -31,6 +33,8 @@
 		"typescript/ban-ts-comment": "error",
 		"typescript/consistent-type-definitions": ["error", "interface"],
 		"typescript/no-non-null-assertion": "error",
+		"typescript/prefer-for-of": "error",
+		"typescript/no-dynamic-delete": "error",
 		"typescript/array-type": ["error", { "default": "array-simple" }],
 		"typescript/explicit-member-accessibility": [
 			"error",
@@ -45,6 +49,13 @@
 		"unicorn/throw-new-error": "error",
 		"unicorn/prefer-type-error": "error",
 		"unicorn/prefer-at": "error",
+		"unicorn/no-array-for-each": "error",
+		"unicorn/no-array-reduce": "error",
+		"unicorn/prefer-array-some": "error",
+		"unicorn/prefer-array-flat": "error",
+		"unicorn/prefer-regexp-test": "error",
+		"unicorn/prefer-date-now": "error",
+		"unicorn/no-useless-iterator-to-array": "error",
 		"unicorn/filename-case": ["error", { "case": "kebabCase" }],
 
 		"oxc/no-async-endpoint-handlers": "off",
@@ -86,6 +97,10 @@
 		{
 			"files": ["**/apps/example-react/src/routes/**"],
 			"rules": { "unicorn/filename-case": "off" }
+		},
+		{
+			"files": ["**/apps/**"],
+			"rules": { "oxc/no-map-spread": "off", "unicorn/no-array-reduce": "off" }
 		}
 	],
 	"ignorePatterns": [

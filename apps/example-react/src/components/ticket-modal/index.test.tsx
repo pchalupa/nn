@@ -128,6 +128,21 @@ describe("TicketModal", () => {
 		expect(onClose).not.toHaveBeenCalled();
 	});
 
+	it("does not offer deleting a new ticket", async () => {
+		await setup();
+
+		expect(screen.queryByRole("button", { name: "Delete" })).toBeNull();
+	});
+
+	it("deletes an existing ticket and closes", async () => {
+		const { onClose } = await setup(<AddCommentedTicket />, "commented");
+
+		await user.click(await screen.findByRole("button", { name: "Delete" }));
+
+		expect(screen.getByRole("status", { name: "titles" }).textContent).not.toContain("Commented");
+		expect(onClose).toHaveBeenCalledOnce();
+	});
+
 	it("shows comments of an existing ticket", async () => {
 		await setup(<AddCommentedTicket />, "commented");
 

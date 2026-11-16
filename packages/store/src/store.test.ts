@@ -1,8 +1,10 @@
 import { Codec } from "@nn/entities/codec";
 import type { Entity } from "@nn/entities/entity";
+import { LWWMap } from "@nn/entities/kinds/lww-map";
+import { LWWRegister } from "@nn/entities/kinds/lww-register";
 import { RGA } from "@nn/entities/kinds/rga";
 import { ID } from "@nn/id";
-import { array, object, string } from "@nn/schema";
+import { array, number, object, string } from "@nn/schema";
 import { Time } from "@nn/time";
 import { afterEach, describe, expect, expectTypeOf, it, vi } from "vitest";
 
@@ -216,7 +218,7 @@ describe("Store", () => {
 	});
 
 	it("applies edits made before a failure and still publishes them", () => {
-		const shape = object({ first: string(), rows: array(object({ tags: array(string()) })) });
+		const shape = object({ first: string(), items: array(object({ tags: array(string()) })) });
 		const store = new Store(shape);
 		const listener = vi.fn();
 		const observer = vi.fn();
@@ -236,7 +238,7 @@ describe("Store", () => {
 		expect(() =>
 			store.update((draft) => {
 				draft.first = "edited";
-				draft.rows.push({ tags: ["new"] });
+				draft.items.push({ tags: ["new"] });
 			}),
 		).toThrow("id unavailable");
 		expect(store.read().first).toBe("edited");
@@ -257,17 +259,14 @@ describe("Store", () => {
 	});
 
 	describe("persistence format", () => {
-		it("encodes a collection as rows of field entities with their timestamps", () => {
-			const rows = new RGA(
-				[createReconciliationStrategy(ticket, new WeakMap()).create({ title: "A" }, "row-1")],
-				"tickets",
-			);
+		it("encodes a collection as items of field entities with their timestamps", () => {
+			const items = new RGA([createReconciliationStrategy(ticket).create({ title: "A" }, "item-1")], "tickets");
 
-			expect(rows.encode()).toMatchObject({
+			expect(items.encode()).toMatchObject({
 				metadata: { kind: "RGA" },
 				data: [
 					{
-						key: "row-1",
+						key: "item-1",
 						metadata: { kind: "LWWMap" },
 						data: {
 							title: {
@@ -282,7 +281,7 @@ describe("Store", () => {
 
 		it("round-trips a captured tree through restore without minting timestamps", () => {
 			const saved = new RGA(
-				[createReconciliationStrategy(ticket, new WeakMap()).create({ title: "A" }, "row-1")],
+				[createReconciliationStrategy(ticket).create({ title: "A" }, "item-1")],
 				"tickets",
 			).encode();
 			const now = vi.spyOn(Time, "now");
@@ -295,6 +294,80 @@ describe("Store", () => {
 
 			expect(now).not.toHaveBeenCalled();
 			expect(restored.encode()).toStrictEqual(saved);
+		});
+	});
+
+	describe("merging data saved by another schema", () => {
+		const comment = object({ body: string(), author: string() });
+		const current = object({ tickets: array(object({ title: string(), comments: array(comment) })) });
+
+		it("fills a field added after the item was saved", () => {
+			const older = new Store(object({ tickets: array(object({ title: string() })) }));
+			const store = new Store(current);
+
+			older.update((draft) => {
+				draft.tickets.push({ title: "Old" });
+			});
+			store.merge("tickets", older.encode().data.tickets);
+
+			expect(store.read().tickets).toStrictEqual([{ title: "Old", comments: [] }]);
+		});
+
+		it("fills a field missing from a nested item", () => {
+			const older = new Store(
+				object({ tickets: array(object({ title: string(), comments: array(object({ body: string() })) })) }),
+			);
+			const store = new Store(current);
+
+			older.update((draft) => {
+				draft.tickets.push({ title: "Old", comments: [{ body: "Hi" }] });
+			});
+			store.merge("tickets", older.encode().data.tickets);
+
+			expect(store.read().tickets).toStrictEqual([{ title: "Old", comments: [{ body: "Hi", author: "" }] }]);
+		});
+
+		it("keeps fields the schema does not declare on a new item", () => {
+			const newer = new Store(
+				object({ tickets: array(object({ title: string(), comments: array(comment), priority: number() })) }),
+			);
+			const store = new Store(current);
+
+			newer.update((draft) => {
+				draft.tickets.push({ title: "New", comments: [], priority: 2 });
+			});
+			store.merge("tickets", newer.encode().data.tickets);
+
+			expect(store.encode()).toMatchObject({
+				data: { tickets: { data: [{ data: { priority: { data: 2 } } }] } },
+			});
+		});
+
+		it("keeps every item when a nested field changed kind", () => {
+			const older = new Store(object({ tickets: array(object({ title: string(), comments: string() })) }));
+			const store = new Store(current);
+
+			older.update((draft) => {
+				draft.tickets.push({ title: "First", comments: "none" }, { title: "Second", comments: "none" });
+			});
+			store.merge("tickets", older.encode().data.tickets);
+
+			expect(store.read().tickets.map(({ title }) => title)).toStrictEqual(["First", "Second"]);
+		});
+
+		it("keeps local values when an older copy of the same item arrives", () => {
+			const store = new Store(current);
+			const older = Time.now();
+			const item = createReconciliationStrategy(current.properties.tickets.items).create(
+				{ title: "New", comments: [{ body: "Hi", author: "Ann" }] },
+				"t1",
+			);
+			const stale = new LWWMap({ title: new LWWRegister("Stale", "title", older) }, "t1");
+
+			store.merge("tickets", new RGA([item], "tickets").encode());
+			store.merge("tickets", new RGA([stale], "tickets").encode());
+
+			expect(store.read().tickets).toStrictEqual([{ title: "New", comments: [{ body: "Hi", author: "Ann" }] }]);
 		});
 	});
 });

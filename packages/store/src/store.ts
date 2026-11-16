@@ -4,8 +4,12 @@ import type { Entity } from "@nn/entities/entity";
 import { Observable, type Unsubscribe } from "@nn/observable/observable";
 import type { InferStateType, Schema } from "@nn/schema";
 import type { ObjectSchema } from "@nn/schema/object-schema";
+import { Time } from "@nn/time";
 
-import { State } from "./state";
+import { Draft } from "./projections/draft";
+import { View } from "./projections/view";
+import { createReconciliationStrategy } from "./reconciliation/create-strategy";
+import { MapStrategy } from "./reconciliation/map-strategy";
 
 type ReadonlyData<Value> = {
 	readonly [Key in keyof Value]: ReadonlyData<Value[Key]>;
@@ -13,11 +17,15 @@ type ReadonlyData<Value> = {
 
 export class Store<StateSchema extends ObjectSchema<Record<string, Schema>> = ObjectSchema<Record<string, Schema>>> {
 	private changes = new Observable<[Readonly<Record<string, Encoded>>]>();
-	private state: State<StateSchema>;
 	private codec = new Codec();
+	private view = new View();
+	private reconciliationStrategy: MapStrategy;
+	private root: ReturnType<MapStrategy["create"]>;
 
 	constructor(public readonly schema: StateSchema) {
-		MapStrategy.assert(reconciliationStrategy)) throw new TypeError("State schema must be an object schema.");
+		const reconciliationStrategy = createReconciliationStrategy(schema);
+
+		MapStrategy.assert(reconciliationStrategy);
 
 		this.reconciliationStrategy = reconciliationStrategy;
 		this.root = this.reconciliationStrategy.create(undefined, "state", Time.epoch());

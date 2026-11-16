@@ -1156,7 +1156,7 @@ describe("Store", () => {
 			const restored = new RGA<Entity>([], "tickets");
 			const decoded = new Codec().decode(saved);
 
-			if (!(decoded instanceof RGA)) throw new TypeError("Expected a decoded collection.");
+			RGA.assert(decoded);
 
 			restored.merge(decoded);
 

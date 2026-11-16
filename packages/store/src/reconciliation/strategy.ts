@@ -1,7 +1,7 @@
 import type { Entity } from "@nn/entities/entity";
 import type { Time } from "@nn/time";
 
-import type { ReadonlyTracker } from "../projectors/tracker";
+import type { ReadonlyTracker } from "../projectors/tracker/tracker";
 
 export interface ReconcileContext {
 	// TODO: Consider refactoring to ReadonlyTracker that comes from draft

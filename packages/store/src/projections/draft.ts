@@ -1,20 +1,20 @@
 import type { Entity } from "@nn/entities/entity";
 
-import { type ReadonlyTracker, Tracker } from "./tracker";
+import { type ReadonlyTracker, Tracker } from "./tracker/tracker";
 
 interface Snapshots {
 	identify(value: object): Entity | undefined;
 }
 
 export class Draft {
-	private readonly trackers = new Map<Entity, Tracker>();
+	private trackers = new Map<Entity, Tracker>();
 	public readonly value: unknown;
 
 	constructor(
 		entity: Entity,
 		private readonly snapshots: Snapshots,
 	) {
-		this.value = Tracker.wrap(entity, undefined, this.trackers);
+		this.value = Tracker.track(entity, undefined, this.trackers);
 	}
 
 	public inspect(value: unknown): ReadonlyTracker | undefined {

@@ -13,7 +13,7 @@ export interface ReadonlyTracker {
 	readonly modified: boolean;
 }
 
-export type Track = (entity: Entity, parent: Tracker | undefined) => unknown;
+export type Track = (entity: Entity, parent: Tracker) => unknown;
 
 const own = Symbol("draft tracker");
 const none: readonly Tracker[] = [];

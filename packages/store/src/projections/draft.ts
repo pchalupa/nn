@@ -1,5 +1,6 @@
 import type { Entity } from "@nn/entities/entity";
 
+import { track } from "./tracker/track";
 import { type ReadonlyTracker, Tracker } from "./tracker/tracker";
 
 interface Snapshots {
@@ -14,7 +15,7 @@ export class Draft {
 		entity: Entity,
 		private readonly snapshots: Snapshots,
 	) {
-		this.value = Tracker.track(entity, undefined, this.trackers);
+		this.value = track(entity, undefined, this.trackers);
 	}
 
 	public inspect(value: unknown): ReadonlyTracker | undefined {

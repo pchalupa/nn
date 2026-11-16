@@ -1,12 +1,7 @@
 import type { Entity } from "@nn/entities/entity";
-import { LWWMap } from "@nn/entities/kinds/lww-map";
 import { LWWRegister } from "@nn/entities/kinds/lww-register";
-import { RGA } from "@nn/entities/kinds/rga";
 import { isArray } from "@nn/guards/is-array";
 import { isObject } from "@nn/guards/is-object";
-
-import { ListReader } from "./list-reader";
-import { MapReader } from "./map-reader";
 
 export interface ReadonlyTracker {
 	readonly entity: Entity;
@@ -18,26 +13,23 @@ export interface ReadonlyTracker {
 	readonly modified: boolean;
 }
 
-export interface Reader {
-	readonly entity: Entity;
-	readonly target: Record<string, unknown> | unknown[];
-	peek(key: string | symbol, tracker: Tracker): unknown;
-	seed(tracker: Tracker): void;
-	pending(key: string | symbol, value: unknown): value is Entity;
-}
+export type Track = (entity: Entity, parent: Tracker | undefined) => unknown;
 
 const own = Symbol("draft tracker");
 const none: readonly Tracker[] = [];
 
-function copy(value: unknown): unknown {
+export function copy(value: unknown): unknown {
 	if (isArray(value)) return [...value];
 
 	return isObject(value) ? { ...value } : value;
 }
 
-export class Tracker implements ReadonlyTracker, ProxyHandler<object> {
-	public readonly entity: Entity;
-	public readonly target: Record<string, unknown> | unknown[];
+export abstract class Tracker<
+	Source extends Entity = Entity,
+	Target extends Record<string, unknown> | unknown[] = Record<string, unknown> | unknown[],
+>
+	implements ReadonlyTracker, ProxyHandler<object>
+{
 	public readonly proxy: object;
 	public filled = false;
 	public written = false;
@@ -45,29 +37,21 @@ export class Tracker implements ReadonlyTracker, ProxyHandler<object> {
 	private children: Tracker[] | undefined;
 
 	constructor(
-		private readonly reader: Reader,
+		public readonly entity: Source,
+		public readonly target: Target,
 		private readonly parent: Tracker | undefined,
 		public readonly trackers: Map<Entity, Tracker>,
+		private readonly track: Track,
 	) {
-		this.entity = reader.entity;
-		this.target = reader.target;
-		this.proxy = new Proxy(this.target, this);
+		this.proxy = new Proxy(target, this);
 
-		trackers.set(this.entity, this);
+		trackers.set(entity, this);
 	}
 
 	public static of(value: unknown): Tracker | undefined {
 		const tracker: unknown = isObject(value) ? Reflect.get(value, own) : undefined;
 
 		return tracker instanceof Tracker ? tracker : undefined;
-	}
-
-	public static track(entity: Entity, parent: Tracker | undefined, trackers: Map<Entity, Tracker>): unknown {
-		if (RGA.is(entity)) return new Tracker(new ListReader(entity), parent, trackers).proxy;
-
-		if (LWWMap.is(entity)) return new Tracker(new MapReader(entity), parent, trackers).proxy;
-
-		return copy(entity.current);
 	}
 
 	public get changed(): readonly Tracker[] {
@@ -77,15 +61,9 @@ export class Tracker implements ReadonlyTracker, ProxyHandler<object> {
 	public get(_target: object, key: string | symbol, receiver: unknown): unknown {
 		if (key === own) return this;
 
-		if (!this.filled) {
-			const peeked = this.reader.peek(key, this);
-
-			if (peeked !== undefined) return peeked;
-		}
-
 		const value: unknown = Reflect.get(this.real(), key, receiver);
 
-		return this.reader.pending(key, value) ? this.resolve(key, value) : value;
+		return this.pending(key, value) ? this.resolve(key, value) : value;
 	}
 
 	public has(_target: object, key: string | symbol): boolean {
@@ -132,23 +110,27 @@ export class Tracker implements ReadonlyTracker, ProxyHandler<object> {
 		if (this.filled) return;
 
 		this.filled = true;
-		this.reader.seed(this);
+		this.seed();
 	}
 
-	public placeholder(entity: Entity): unknown {
+	protected abstract seed(): void;
+
+	protected abstract pending(key: string | symbol, value: unknown): value is Entity;
+
+	protected placeholder(entity: Entity): unknown {
 		if (LWWRegister.is(entity)) return copy(entity.current);
 
 		return this.trackers.get(entity)?.proxy ?? entity;
 	}
 
-	public read(entity: Entity): unknown {
-		return this.trackers.get(entity)?.proxy ?? Tracker.track(entity, this, this.trackers);
+	protected read(entity: Entity): unknown {
+		return this.trackers.get(entity)?.proxy ?? this.track(entity, this);
 	}
 
 	private settle(key: string | symbol): void {
 		const value: unknown = Reflect.get(this.target, key);
 
-		if (this.reader.pending(key, value)) this.resolve(key, value);
+		if (this.pending(key, value)) this.resolve(key, value);
 	}
 
 	private resolve(key: string | symbol, entity: Entity): unknown {

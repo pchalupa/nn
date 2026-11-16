@@ -28,6 +28,15 @@ describe("View", () => {
 		});
 	});
 
+	it("keeps a __proto__ field as an own property", () => {
+		const root = new LWWMap({ ["__proto__"]: new LWWRegister("saved") });
+		const value = new View().read(root);
+
+		assertObject(value);
+		expect(Object.hasOwn(value, "__proto__")).toBe(true);
+		expect(Object.getOwnPropertyDescriptor(value, "__proto__")?.value).toBe("saved");
+	});
+
 	it.each(["root", "rows", "row"])("rejects mutations to the projected %s", (target) => {
 		const row = new LWWMap({ title: new LWWRegister("First") });
 		const root = new LWWMap({ rows: new RGA([row]) });

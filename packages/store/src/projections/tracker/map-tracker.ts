@@ -8,7 +8,12 @@ export class MapTracker extends Tracker<LWWMap<Record<string, Entity>>, Record<s
 		const fields = this.entity.current;
 
 		for (const key in fields) {
-			this.target[key] = this.placeholder(fields[key]);
+			Object.defineProperty(this.target, key, {
+				value: this.placeholder(fields[key]),
+				writable: true,
+				enumerable: true,
+				configurable: true,
+			});
 		}
 	}
 

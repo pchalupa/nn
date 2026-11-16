@@ -161,6 +161,15 @@ describe("Draft", () => {
 		expect(draft.inspect(list)?.written).toBe(true);
 	});
 
+	it("keeps a __proto__ field as an own property", () => {
+		const root = new LWWMap({ ["__proto__"]: new LWWRegister("saved") });
+		const value = new Draft(root, new View()).value;
+
+		assertObject(value);
+		expect(Object.hasOwn(value, "__proto__")).toBe(true);
+		expect(Object.getOwnPropertyDescriptor(value, "__proto__")?.value).toBe("saved");
+	});
+
 	it("behaves like plain data", () => {
 		const { draft } = fixture();
 		const copy = draft.value;

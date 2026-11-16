@@ -40,7 +40,14 @@ export class View {
 		if (isObject(current)) {
 			const value: Record<string, unknown> = {};
 
-			for (const key in current) value[key] = this.unwrap(current[key]);
+			for (const key in current) {
+				Object.defineProperty(value, key, {
+					value: this.unwrap(current[key]),
+					writable: true,
+					enumerable: true,
+					configurable: true,
+				});
+			}
 
 			return value;
 		}

@@ -62,7 +62,7 @@ describe("Memory with 10000 items", () => {
 		expect(state.read().tickets).toHaveLength(size);
 	});
 
-	it("allocates at most 24 MB for a one-field update and read", () => {
+	it("allocates at most 1 MB for a one-field update and read", () => {
 		const state = new State(schema);
 
 		state.update((draft) => {
@@ -81,7 +81,7 @@ describe("Memory with 10000 items", () => {
 			return measure(v8, "getHeapStatistics", "total_allocated_bytes") - before;
 		});
 
-		expect(Math.min(...samples.slice(10))).toBeLessThan(24 * 1024 * 1024);
+		expect(Math.min(...samples.slice(10))).toBeLessThan(1024 * 1024);
 	});
 });
 
@@ -103,8 +103,8 @@ describe("Store", () => {
 });
 
 describe.each([
-	{ size: 100, updateFloor: 0, rebuildFloor: 0 },
-	{ size: 10_000, updateFloor: 70, rebuildFloor: 1_600 },
+	{ size: 100, updateFloor: 100_000, rebuildFloor: 50_000 },
+	{ size: 10_000, updateFloor: 30_000, rebuildFloor: 1_600 },
 ])("Root snapshots with $size items", ({ size, updateFloor, rebuildFloor }) => {
 	const lastIndex = size - 1;
 
@@ -167,7 +167,7 @@ describe.each([
 });
 
 describe("Update scaling", () => {
-	it("keeps a one-field update at 10,000 items under 20 times its cost at 1,000 items", async ({ bench }) => {
+	it("keeps a one-field update at 10,000 items under 8 times its cost at 1,000 items", async ({ bench }) => {
 		const small = new State(schema);
 		const large = new State(schema);
 		let name = "Ann";
@@ -197,7 +197,7 @@ describe("Update scaling", () => {
 		const smallMean = result.get("update at 1,000 items").latency.mean;
 		const largeMean = result.get("update at 10,000 items").latency.mean;
 
-		expect(largeMean / smallMean).toBeLessThan(20);
-		expect(result.get("update at 10,000 items").throughput.mean).toBeGreaterThan(70);
+		expect(largeMean / smallMean).toBeLessThan(8);
+		expect(result.get("update at 10,000 items").throughput.mean).toBeGreaterThan(30_000);
 	});
 });

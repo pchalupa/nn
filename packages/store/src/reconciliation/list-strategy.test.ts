@@ -171,9 +171,10 @@ describe("ListStrategy", () => {
 			assert(RGA.is(list));
 			expect(list.key).toBe("list");
 			expect(list.current.map((item) => item.key)).toStrictEqual(["r1", "r2"]);
-			expect(
-				list.current.map((item) => (item instanceof LWWMap ? item.get("title")?.current : undefined)),
-			).toStrictEqual(["", ""]);
+			expect(list.current.map((item) => (LWWMap.is(item) ? item.get("title")?.current : undefined))).toStrictEqual([
+				"",
+				"",
+			]);
 		});
 
 		it("keeps the removed items of the remote list", () => {

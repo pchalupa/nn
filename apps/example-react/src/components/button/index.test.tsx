@@ -2,27 +2,21 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 
-import { Button, type ButtonProps } from ".";
+import { Button } from ".";
 
 describe("Button", () => {
-	const setup = (props: ButtonProps) => {
-		render(<Button {...props} />);
+	it("defaults to type button", () => {
+		render(<Button>Save</Button>);
 
-		return props;
-	};
-
-	it("renders correctly", () => {
-		const { text } = setup({ text: "Test" });
-
-		expect(screen.getByText(text)).toBeTruthy();
-		expect(screen.getByRole("button")).toBeTruthy();
+		expect(screen.getByRole("button", { name: "Save" })).toHaveProperty("type", "button");
 	});
 
-	it("calls onClick when clicked", async () => {
+	it("calls onClick", async () => {
 		const onClick = vi.fn();
-		const { text } = setup({ text: "Test", onClick });
 
-		await userEvent.click(screen.getByText(text));
+		render(<Button onClick={onClick}>Save</Button>);
+
+		await userEvent.click(screen.getByRole("button", { name: "Save" }));
 
 		expect(onClick).toHaveBeenCalled();
 	});

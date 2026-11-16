@@ -1,18 +1,7 @@
 import type { ComponentProps } from "react";
 
-import { classNames } from "./index.styles";
+import { classNames } from "./text-area.styles";
 
-interface TextAreaProps extends Omit<ComponentProps<"textarea">, "className"> {
-	label: string;
-}
-
-export const TextArea = ({ label, ...props }: TextAreaProps) => {
-	const styles = classNames();
-
-	return (
-		<label className={styles.label()}>
-			{label}
-			<textarea className={styles.textArea()} {...props} />
-		</label>
-	);
-};
+export const TextArea = ({ className, ...props }: ComponentProps<"textarea">) => (
+	<textarea className={classNames({ className })} {...props} />
+);

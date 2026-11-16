@@ -1,6 +1,6 @@
 import { createFileRoute, useNavigate, useParams } from "@tanstack/react-router";
 
-import { TicketModal } from "../../components/ticket-modal";
+import { TicketModal } from "../../features/board/ticket-modal";
 
 const BoardTicket = () => {
 	const { ticketId } = useParams({ from: "/_app/_board/tickets/$ticketId" });

@@ -73,4 +73,25 @@ describe("Modal", () => {
 		expect(dialog).toHaveProperty("open", true);
 		expect(onClose).not.toHaveBeenCalled();
 	});
+
+	it("does not report a nested modal closing", () => {
+		const outer = createRef<ModalHandle>();
+		const inner = createRef<ModalHandle>();
+		const onOuterClose = vi.fn();
+		const onInnerClose = vi.fn();
+
+		render(
+			<Modal ref={outer} onClose={onOuterClose}>
+				<Modal ref={inner} onClose={onInnerClose}>
+					<p>Nested</p>
+				</Modal>
+			</Modal>,
+		);
+		act(() => outer.current?.open());
+		act(() => inner.current?.open());
+		act(() => inner.current?.close());
+
+		expect(onInnerClose).toHaveBeenCalledOnce();
+		expect(onOuterClose).not.toHaveBeenCalled();
+	});
 });

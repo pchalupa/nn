@@ -1,7 +1,7 @@
 import { createRootRoute, Outlet } from "@tanstack/react-router";
 
 const RootComponent = () => (
-	<div className="flex flex-row bg-zinc-900">
+	<div className="flex h-screen bg-canvas text-fg">
 		<Outlet />
 	</div>
 );

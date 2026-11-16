@@ -1,11 +1,11 @@
 import type { Entity } from "@nn/entities/entity";
 import type { Time } from "@nn/time";
 
-import type { ReadonlyDraftHandler } from "../projectors/draft-handler";
+import type { ReadonlyTracker } from "../projectors/tracker";
 
 export interface ReconcileContext {
-	// TODO: Consider refactoring to ReadonlyDraftHandler that comes from draft
-	inspect(value: unknown): ReadonlyDraftHandler | undefined;
+	// TODO: Consider refactoring to ReadonlyTracker that comes from draft
+	inspect(value: unknown): ReadonlyTracker | undefined;
 	fill(entity: Entity): void;
 	identify(value: object): Entity | undefined;
 }

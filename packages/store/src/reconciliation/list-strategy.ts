@@ -25,15 +25,15 @@ export class ListStrategy implements Strategy {
 	}
 
 	public reconcile(entity: Entity, value: unknown, context: ReconcileContext): void {
-		const handler = context.inspect(value);
-		const drafted = handler?.entity === entity;
+		const tracker = context.inspect(value);
+		const drafted = tracker?.entity === entity;
 
-		if (drafted && !handler.written) {
-			for (const row of handler.changed) {
+		if (drafted && !tracker.written) {
+			for (const row of tracker.changed) {
 				this.items.reconcile(row.entity, row.proxy, context);
 			}
 		} else {
-			const target = drafted ? handler.target : value;
+			const target = drafted ? tracker.target : value;
 
 			if (RGA.is(entity) && isArray(target)) {
 				context.fill(entity);

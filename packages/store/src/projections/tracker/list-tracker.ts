@@ -4,16 +4,16 @@ import type { RGA } from "@nn/entities/kinds/rga";
 import { Tracker } from "./tracker";
 
 export class ListTracker extends Tracker<RGA<Entity>, unknown[]> {
-	private rows: readonly Entity[] | undefined;
+	private items: readonly Entity[] | undefined;
 
 	public override get(target: object, key: string | symbol, receiver: unknown): unknown {
 		if (!this.filled) {
-			if (key === "length") return this.rows?.length ?? this.entity.size;
+			if (key === "length") return this.items?.length ?? this.entity.size;
 
 			if (this.isIndex(key)) {
-				const row = this.snapshot()[Number(key)];
+				const item = this.snapshot()[Number(key)];
 
-				if (row) return this.read(row);
+				if (item) return this.read(item);
 			}
 		}
 
@@ -21,11 +21,11 @@ export class ListTracker extends Tracker<RGA<Entity>, unknown[]> {
 	}
 
 	protected seed(): void {
-		for (const row of this.snapshot()) this.target.push(this.placeholder(row));
+		for (const item of this.snapshot()) this.target.push(this.placeholder(item));
 	}
 
 	protected pending(key: string | symbol, value: unknown): value is Entity {
-		return typeof value === "object" && this.isIndex(key) && this.rows?.[Number(key)] === value;
+		return typeof value === "object" && this.isIndex(key) && this.items?.[Number(key)] === value;
 	}
 
 	private isIndex(key: string | symbol): key is string {
@@ -35,8 +35,8 @@ export class ListTracker extends Tracker<RGA<Entity>, unknown[]> {
 	}
 
 	private snapshot(): readonly Entity[] {
-		this.rows ??= this.entity.current;
+		this.items ??= this.entity.current;
 
-		return this.rows;
+		return this.items;
 	}
 }

@@ -11,12 +11,12 @@ describe("View", () => {
 	afterEach(() => vi.restoreAllMocks());
 
 	it("materializes entities into plain values", () => {
-		const row = new LWWMap({ title: new LWWRegister("A"), assignee: new LWWMap({ name: new LWWRegister("Ann") }) });
+		const item = new LWWMap({ title: new LWWRegister("A"), assignee: new LWWMap({ name: new LWWRegister("Ann") }) });
 		const root = new LWWMap({
 			count: new LWWRegister(1),
 			selection: new LWWRegister<string | null>(null),
 			missing: new LWWRegister(undefined),
-			rows: new RGA([row]),
+			items: new RGA([item]),
 		});
 		const view = new View();
 
@@ -24,7 +24,7 @@ describe("View", () => {
 			count: 1,
 			selection: null,
 			missing: undefined,
-			rows: [{ title: "A", assignee: { name: "Ann" } }],
+			items: [{ title: "A", assignee: { name: "Ann" } }],
 		});
 	});
 
@@ -37,25 +37,25 @@ describe("View", () => {
 		expect(Object.getOwnPropertyDescriptor(value, "__proto__")?.value).toBe("saved");
 	});
 
-	it.each(["root", "rows", "row"])("rejects mutations to the projected %s", (target) => {
-		const row = new LWWMap({ title: new LWWRegister("First") });
-		const root = new LWWMap({ rows: new RGA([row]) });
+	it.each(["root", "items", "item"])("rejects mutations to the projected %s", (target) => {
+		const item = new LWWMap({ title: new LWWRegister("First") });
+		const root = new LWWMap({ items: new RGA([item]) });
 		const view = new View();
 		const value = view.read(root);
 
 		assertObject(value);
-		assertArray(value.rows);
-		const first = value.rows[0];
+		assertArray(value.items);
+		const first = value.items[0];
 
 		assertObject(first);
-		const container = target === "root" ? value : target === "rows" ? value.rows : first;
-		const property = target === "root" ? "rows" : target === "rows" ? "0" : "title";
+		const container = target === "root" ? value : target === "items" ? value.items : first;
+		const property = target === "root" ? "items" : target === "items" ? "0" : "title";
 
 		expect(Reflect.set(container, property, "Changed")).toBe(false);
 		expect(Reflect.deleteProperty(container, property)).toBe(false);
 		expect(Reflect.set(container, "extra", true)).toBe(false);
 		expect(view.read(root)).toBe(value);
-		expect(view.read(root)).toStrictEqual({ rows: [{ title: "First" }] });
+		expect(view.read(root)).toStrictEqual({ items: [{ title: "First" }] });
 	});
 
 	it("records the entity behind each container without tagging it", () => {
@@ -91,20 +91,20 @@ describe("View", () => {
 
 	it("rebuilds after a change and leaves earlier values intact", () => {
 		const title = new LWWRegister("First");
-		const row = new LWWMap({ title });
+		const item = new LWWMap({ title });
 		const view = new View();
-		const before = view.read(row);
+		const before = view.read(item);
 
 		title.current = "Changed";
-		const after = view.read(row);
+		const after = view.read(item);
 
 		assertObject(before);
 		assertObject(after);
 
 		expect(after).toStrictEqual({ title: "Changed" });
 		expect(before).toStrictEqual({ title: "First" });
-		expect(view.identify(after)).toBe(row);
-		expect(view.identify(before)).toBe(row);
+		expect(view.identify(after)).toBe(item);
+		expect(view.identify(before)).toBe(item);
 	});
 
 	it("rebuilds only the changed path and reuses everything else", () => {
@@ -144,15 +144,15 @@ describe("View", () => {
 		expect(settingsReads).not.toHaveBeenCalled();
 	});
 
-	it("reuses surviving rows at their new positions", () => {
+	it("reuses surviving items at their new positions", () => {
 		const first = new LWWMap({ title: new LWWRegister("First") }, "first");
-		const rows = new RGA([first, new LWWMap({ title: new LWWRegister("Second") })]);
+		const items = new RGA([first, new LWWMap({ title: new LWWRegister("Second") })]);
 		const view = new View();
-		const before = view.read(rows);
+		const before = view.read(items);
 
-		rows.remove(first.key);
-		rows.push(new LWWMap({ title: new LWWRegister("Replacement") }, "replacement"));
-		const after = view.read(rows);
+		items.remove(first.key);
+		items.push(new LWWMap({ title: new LWWRegister("Replacement") }, "replacement"));
+		const after = view.read(items);
 
 		assertArray(before);
 		assertArray(after);

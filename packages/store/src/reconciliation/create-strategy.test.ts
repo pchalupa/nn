@@ -43,10 +43,10 @@ describe("createReconciliationStrategy", () => {
 		RGA.assert(entity);
 
 		expect(
-			entity.current.map((row) => {
-				RGA.assert(row);
+			entity.current.map((list) => {
+				RGA.assert(list);
 
-				return row.current.map((item) => item.current);
+				return list.current.map((item) => item.current);
 			}),
 		).toStrictEqual([[1, 2], [3]]);
 	});
@@ -68,13 +68,13 @@ describe("createReconciliationStrategy", () => {
 	it("matches object list items by identity", () => {
 		const entities = new WeakMap<object, Entity>();
 		const strategy = createReconciliationStrategy(array(object({ title: string() })));
-		const entity = strategy.create([{ title: "A" }, { title: "B" }], "rows");
+		const entity = strategy.create([{ title: "A" }, { title: "B" }], "items");
 
 		RGA.assert(entity);
 
 		const [first, second] = entity.current;
 
-		if (first === undefined || second === undefined) throw new Error("Expected two rows.");
+		if (first === undefined || second === undefined) throw new Error("Expected two items.");
 
 		const draft = { title: "B" };
 

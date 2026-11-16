@@ -29,8 +29,8 @@ export class ListStrategy implements Strategy {
 		const drafted = tracker?.entity === entity;
 
 		if (drafted && !tracker.written) {
-			for (const row of tracker.changed) {
-				this.items.reconcile(row.entity, row.proxy, context);
+			for (const item of tracker.changed) {
+				this.items.reconcile(item.entity, item.proxy, context);
 			}
 		} else {
 			const target = drafted ? tracker.target : value;
@@ -72,7 +72,7 @@ export class ListStrategy implements Strategy {
 	}
 
 	public conform(remote: Entity): Entity {
-		if (RGA.is(remote)) return remote.map((row) => this.items.conform(row));
+		if (RGA.is(remote)) return remote.map((item) => this.items.conform(item));
 
 		return remote;
 	}

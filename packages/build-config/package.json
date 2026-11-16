@@ -6,6 +6,7 @@
 	"license": "MIT",
 	"type": "module",
 	"exports": {
+		"./react-tsdown": "./src/react-tsdown.ts",
 		"./tsdown": "./src/tsdown.ts"
 	},
 	"scripts": {

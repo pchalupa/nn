@@ -1,0 +1,3 @@
+{
+	"extends": "@nn/typescript-config/react.json"
+}

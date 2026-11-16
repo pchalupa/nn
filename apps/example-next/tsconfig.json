@@ -1,0 +1,12 @@
+{
+	"extends": "@nn/typescript-config/react.json",
+	"compilerOptions": {
+		"lib": ["DOM", "DOM.Iterable", "ES2022"],
+		"types": ["node", "next"],
+		"noEmit": true,
+		"jsx": "react-jsx",
+		"plugins": [{ "name": "next" }]
+	},
+	"include": ["next-env.d.ts", "src/**/*.ts", "src/**/*.tsx", ".next/types/**/*.ts"],
+	"exclude": ["node_modules"]
+}

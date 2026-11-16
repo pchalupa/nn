@@ -1,0 +1,6 @@
+# Next
+.next/
+next-env.d.ts
+
+# Playwright
+test-results/

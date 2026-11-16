@@ -8,14 +8,14 @@ const { store, useRead, useUpdate } = createStore(schema);
 
 const persistence = new IndexDbSync(store, "example-react");
 const broadcast = new BroadcastSync(store, "example-react");
-const remote = new SseSync(store, new URL(import.meta.env.VITE_REMOTE_URL, location.origin));
+const sseSync = new SseSync(store, new URL(import.meta.env.VITE_REMOTE_URL, location.origin));
 
-addEventListener("online", () => remote.retry());
+addEventListener("online", () => sseSync.retry());
 document.addEventListener("visibilitychange", () => {
-	if (document.visibilityState === "visible") remote.retry();
+	if (document.visibilityState === "visible") sseSync.retry();
 });
 
-remote.connect();
+sseSync.connect();
 broadcast.connect();
 persistence.connect();
 

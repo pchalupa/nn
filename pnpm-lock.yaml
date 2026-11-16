@@ -319,6 +319,18 @@ importers:
 
   apps/example-react:
     dependencies:
+      '@fontsource-variable/inter':
+        specifier: ^5.3.0
+        version: 5.3.0
+      '@fontsource-variable/jetbrains-mono':
+        specifier: ^5.3.0
+        version: 5.3.0
+      '@hono/node-server':
+        specifier: ^2.1.6
+        version: 2.1.8(hono@4.13.18)
+      '@hono/vercel':
+        specifier: ^1.0.1
+        version: 1.0.1(hono@4.13.18)
       '@nn/broadcast-sync':
         specifier: workspace:^
         version: link:../../packages/broadcast-sync
@@ -331,9 +343,15 @@ importers:
       '@nn/react-devtools':
         specifier: workspace:^
         version: link:../../packages/react-devtools
+      '@nn/schema':
+        specifier: 'workspace:'
+        version: link:../../packages/schema
       '@nn/sse-sync':
         specifier: workspace:^
         version: link:../../packages/sse-sync
+      '@phosphor-icons/react':
+        specifier: ^2.1.10
+        version: 2.1.10(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
       '@simplewebauthn/browser':
         specifier: ^14.0.0
         version: 14.0.0
@@ -368,9 +386,6 @@ importers:
       '@babel/core':
         specifier: 'catalog:'
         version: 8.1.2
-      '@hono/node-server':
-        specifier: ^2.1.6
-        version: 2.1.8(hono@4.13.18)
       '@playwright/test':
         specifier: ^1.64.1
         version: 1.65.0
@@ -2089,6 +2104,12 @@ packages:
       '@noble/hashes':
         optional: true
 
+  '@fontsource-variable/inter@5.3.0':
+    resolution: {integrity: sha512-OupL48va4JNofb97w6NYeF9S7W/kHNKM0Er8Dem5nqi4jeOLrVJDoE8tZEpnMJmtkvNbB1EIPPwHcdkF6b1oUA==}
+
+  '@fontsource-variable/jetbrains-mono@5.3.0':
+    resolution: {integrity: sha512-F32xpS2NsGYoQi2ADSkKTgpJj7ozajsGgDJ8woTnqjmIB+dxDIqImjl4pXZVEExu8UFZ2ndhmX18EBS/hdz3Lw==}
+
   '@hono/node-server@2.1.8':
     resolution: {integrity: sha512-jdf7FHh6A1lzjpHHQUgxsg2GeER2vMetnAOfeActzcoli6jamlK+NAwL6Dsr5Fl3BS3tYUQzCdtZjU8Qxv7bEA==}
     engines: {node: '>=20'}
@@ -2666,6 +2687,13 @@ packages:
     engines: {node: ^20.19.0 || >=22.12.0}
     cpu: [x64]
     os: [win32]
+
+  '@phosphor-icons/react@2.1.10':
+    resolution: {integrity: sha512-vt8Tvq8GLjheAZZYa+YG/pW7HDbov8El/MANW8pOAz4eGxrwhnbfrQZq0Cp4q8zBEu8NIhHdnr+r8thnfRSNYA==}
+    engines: {node: '>=10'}
+    peerDependencies:
+      react: '>= 16.8'
+      react-dom: '>= 16.8'
 
   '@pinojs/redact@0.4.0':
     resolution: {integrity: sha512-k2ENnmBugE/rzQfEcdWHcCY+/FM3VLzH9cYEsbdsoqrvzAKRhUZeRNhAZvB8OitQJ1TBed3yqWtdjzS6wJKBwg==}
@@ -6968,6 +6996,10 @@ snapshots:
 
   '@exodus/bytes@1.16.0': {}
 
+  '@fontsource-variable/inter@5.3.0': {}
+
+  '@fontsource-variable/jetbrains-mono@5.3.0': {}
+
   '@hono/node-server@2.1.8(hono@4.13.18)':
     dependencies:
       hono: 4.13.18
@@ -7304,6 +7336,11 @@ snapshots:
 
   '@oxlint/binding-win32-x64-msvc@1.93.0':
     optional: true
+
+  '@phosphor-icons/react@2.1.10(react-dom@19.3.1(react@19.3.1))(react@19.3.1)':
+    dependencies:
+      react: 19.3.1
+      react-dom: 19.3.1(react@19.3.1)
 
   '@pinojs/redact@0.4.0': {}
 

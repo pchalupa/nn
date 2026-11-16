@@ -22,7 +22,7 @@ async function review() {
 	if (sync.connected) {
 		if (!data.users.some((user) => user.id === agentId)) {
 			store.update((draft) => {
-				draft.users.push({ id: agentId, name: agentName, passkeys: [] });
+				draft.users.push({ id: agentId, name: agentName, createdAt: Date.now(), passkeys: [] });
 			});
 		}
 
@@ -39,7 +39,7 @@ async function review() {
 					reviewTicket.comments.push({
 						id: crypto.randomUUID(),
 						author: agentId,
-						createdAt: new Date().toISOString(),
+						createdAt: Date.now(),
 						body: text.trim(),
 					});
 				}

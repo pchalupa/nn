@@ -1,15 +1,16 @@
 import { expect, test } from "./fixtures";
 
-test.describe("LanguageSelector", () => {
-	test("should translate the interface", async ({ page }) => {
-		await page.goto("/");
-
-		await expect(page.getByRole("heading", { name: "To Do" })).toBeVisible();
-		await expect(page.getByRole("link", { name: "Board" })).toBeVisible();
+test.describe("Language", () => {
+	test("keeps the selected language after a reload", async ({ page }) => {
+		await page.goto("/profile");
 
 		await page.getByRole("combobox", { name: "Language" }).selectOption("cs");
 
-		await expect(page.getByRole("heading", { name: "K udělání" })).toBeVisible();
-		await expect(page.getByRole("link", { name: "Nástěnka" })).toBeVisible();
+		await expect(page.getByRole("button", { name: /Nástěnka/ })).toBeVisible();
+
+		await page.reload();
+
+		await expect(page.getByRole("combobox", { name: "Jazyk" })).toHaveValue("cs");
+		await expect(page.getByRole("button", { name: /Nástěnka/ })).toBeVisible();
 	});
 });

@@ -48,14 +48,16 @@ export class State<
 	public update(recipe: (draft: InferStateType<StoreSchema>) => void): void {
 		const draft = new Draft(this.root, this.view);
 
-		try {
-			// oxlint-disable-next-line typescript/consistent-type-assertions todo: fix this type casting
-			recipe(draft.value as InferStateType<StoreSchema>);
+		// oxlint-disable-next-line typescript/consistent-type-assertions todo: fix this type casting
+		recipe(draft.value as InferStateType<StoreSchema>);
 
-			this.commit(() => this.reconciliationStrategy.reconcile(this.root, draft.value, draft));
-		} finally {
-			draft.close();
-		}
+		this.commit(() =>
+			this.reconciliationStrategy.reconcile(this.root, draft.value, {
+				draftNodeOf: (value) => draft.draftNodeOf(value),
+				settle: (entity) => draft.settle(entity),
+				entityOf: (value) => draft.entityOf(value),
+			}),
+		);
 	}
 
 	public merge(name: string, remote: Entity): void {

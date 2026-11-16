@@ -10,8 +10,16 @@ export interface ReconcileContext {
 	identify(value: object): Entity | undefined;
 }
 
-export interface Strategy {
-	create(value: unknown, key: string, timestamp?: Time): Entity;
-	reconcile(entity: Entity, value: unknown, context: ReconcileContext): void;
-	conform(remote: Entity): Entity;
+export abstract class Strategy {
+	public abstract create(value: unknown, key: string, timestamp?: Time): Entity;
+	public abstract reconcile(entity: Entity, value: unknown, context: ReconcileContext): void;
+	public abstract conform(remote: Entity): Entity;
+
+	public static is(strategy: unknown): strategy is Strategy {
+		return strategy instanceof Strategy;
+	}
+
+	public static assert(strategy: unknown): asserts strategy is Strategy {
+		if (!Strategy.is(strategy)) throw new TypeError("Invalid strategy.");
+	}
 }

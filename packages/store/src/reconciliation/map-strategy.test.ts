@@ -43,7 +43,9 @@ describe("MapStrategy", () => {
 		it("passes its timestamp to its fields", () => {
 			const title = strategy.create(undefined, "item", Time.epoch()).get("title");
 
-			expect(title instanceof LWWRegister ? title.timestamp.toString() : undefined).toBe(Time.epoch().toString());
+			LWWRegister.assert(title);
+
+			expect(title.timestamp.toString()).toBe(Time.epoch().toString());
 		});
 	});
 
@@ -103,7 +105,7 @@ describe("MapStrategy", () => {
 			assert(LWWMap.is(entity));
 			const count = entity.get("count");
 
-			assert(count instanceof LWWRegister);
+			LWWRegister.assert(count);
 			expect(count.timestamp.toString()).toBe(Time.epoch().toString());
 		});
 
@@ -111,7 +113,7 @@ describe("MapStrategy", () => {
 			const extra = new LWWRegister(true, "extra", Time.now());
 			const entity = strategy.conform(new LWWMap({ extra }, "item"));
 
-			assert(entity instanceof LWWMap);
+			LWWMap.assert(entity);
 			expect(entity.get("extra")).toBe(extra);
 		});
 
@@ -163,7 +165,7 @@ describe("MapStrategy", () => {
 			assert(LWWMap.is(entity));
 			const assignee = entity.get("assignee");
 
-			assert(assignee instanceof LWWMap);
+			LWWMap.assert(assignee);
 			expect(assignee.get("name")?.current).toBe("Ann");
 			expect(assignee.get("email")).toBe(email);
 		});

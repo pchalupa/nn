@@ -3,10 +3,12 @@ import { LWWMap } from "@nn/entities/kinds/lww-map";
 import { isObject } from "@nn/guards/is-object";
 import { Time } from "@nn/time";
 
-import type { ReconcileContext, Strategy } from "./strategy";
+import { type ReconcileContext, Strategy } from "./strategy";
 
-export class MapStrategy implements Strategy {
-	constructor(private fields: ReadonlyMap<string, Strategy>) {}
+export class MapStrategy extends Strategy {
+	constructor(private fields: ReadonlyMap<string, Strategy>) {
+		super();
+	}
 
 	public create(value: unknown, key: string, timestamp?: Time): LWWMap<Record<string, Entity>> {
 		const source = isObject(value) ? value : {};
@@ -62,5 +64,13 @@ export class MapStrategy implements Strategy {
 
 	public get(name: string): Strategy | undefined {
 		return this.fields.get(name);
+	}
+
+	public static override is(strategy: unknown): strategy is MapStrategy {
+		return strategy instanceof MapStrategy;
+	}
+
+	public static override assert(strategy: unknown): asserts strategy is MapStrategy {
+		if (!MapStrategy.is(strategy)) throw new TypeError("Invalid MapStrategy.");
 	}
 }

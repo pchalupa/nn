@@ -1,7 +1,7 @@
 import { array, boolean, object, string } from "@nn/schema";
 import { describe, it } from "vitest";
 
-import { State } from "./state";
+import { Store } from "./store";
 
 const options = { time: 0, iterations: 256, warmupTime: 0, warmupIterations: 64 };
 
@@ -14,27 +14,27 @@ describe("Store", () => {
 		const sizes = [100, 1_000, 10_000];
 
 		return sizes.map((size) => {
-			const state = new State(schema);
+			const store = new Store(schema);
 
-			state.update((draft) => {
+			store.update((draft) => {
 				draft.tickets = Array.from({ length: size }, (_, index) => ({
 					title: `Ticket ${index}`,
 					done: false,
 					assignee: { name: "Ann" },
 				}));
 			});
-			state.read();
+			store.read();
 
-			return { name: `${size.toLocaleString("en-US")} items`, state, last: size - 1 };
+			return { name: `${size.toLocaleString("en-US")} items`, store, last: size - 1 };
 		});
 	}
 
 	describe("Update", () => {
 		it("changes a nested field", ({ bench }) =>
 			bench.compare(
-				...seed().map(({ name, state, last }) =>
+				...seed().map(({ name, store, last }) =>
 					bench(name, () =>
-						state.update((draft) => {
+						store.update((draft) => {
 							draft.tickets[last].done = !draft.tickets[last].done;
 						}),
 					),
@@ -44,9 +44,9 @@ describe("Store", () => {
 
 		it("writes an equal value", ({ bench }) =>
 			bench.compare(
-				...seed().map(({ name, state, last }) =>
+				...seed().map(({ name, store, last }) =>
 					bench(name, () =>
-						state.update((draft) => {
+						store.update((draft) => {
 							draft.tickets[last].done = false;
 						}),
 					),
@@ -57,21 +57,21 @@ describe("Store", () => {
 
 	describe("Read", () => {
 		it("returns a cached item", ({ bench }) =>
-			bench.compare(...seed().map(({ name, state, last }) => bench(name, () => state.read().tickets[last])), options));
+			bench.compare(...seed().map(({ name, store, last }) => bench(name, () => store.read().tickets[last])), options));
 
 		it("rebuilds after a change", ({ bench }) =>
 			bench.compare(
-				...seed().map(({ name, state, last }) =>
+				...seed().map(({ name, store, last }) =>
 					bench(
 						name,
 						{
 							beforeEach() {
-								state.update((draft) => {
+								store.update((draft) => {
 									draft.tickets[last].done = !draft.tickets[last].done;
 								});
 							},
 						},
-						() => state.read().tickets[last],
+						() => store.read().tickets[last],
 					),
 				),
 				options,

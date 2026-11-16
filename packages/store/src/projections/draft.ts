@@ -1,6 +1,6 @@
 import type { Entity } from "@nn/entities/entity";
 
-import { track } from "./tracker/track";
+import { track } from "./tracker";
 import { type ReadonlyTracker, Tracker } from "./tracker/tracker";
 
 interface Snapshots {

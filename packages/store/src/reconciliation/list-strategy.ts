@@ -5,10 +5,12 @@ import { isObject } from "@nn/guards/is-object";
 import { ID } from "@nn/id";
 import type { Time } from "@nn/time";
 
-import type { ReconcileContext, Strategy } from "./strategy";
+import { type ReconcileContext, Strategy } from "./strategy";
 
-export class ListStrategy implements Strategy {
-	constructor(private items: Strategy) {}
+export class ListStrategy extends Strategy {
+	constructor(private items: Strategy) {
+		super();
+	}
 
 	public create(value: unknown, key: string, timestamp?: Time): RGA<Entity> {
 		if (isArray(value)) {
@@ -99,5 +101,13 @@ export class ListStrategy implements Strategy {
 		const previous = context.identify(item) ?? (Entity.is(item) ? item : undefined);
 
 		return previous !== undefined && list.find(previous.key) === previous ? previous : undefined;
+	}
+
+	public static override is(strategy: unknown): strategy is ListStrategy {
+		return strategy instanceof ListStrategy;
+	}
+
+	public static override assert(strategy: unknown): asserts strategy is ListStrategy {
+		if (!ListStrategy.is(strategy)) throw new TypeError("Invalid ListStrategy.");
 	}
 }

@@ -20,14 +20,14 @@ export class MapStrategy implements Strategy {
 	}
 
 	public reconcile(entity: Entity, value: unknown, context: ReconcileContext): void {
-		const draftNode = context.draftNodeOf(value);
+		const handler = context.inspect(value);
 
-		if (draftNode?.entity === entity && !draftNode.modified) return;
+		if (handler?.entity === entity && !handler.modified) return;
 
-		const target = draftNode?.entity === entity ? draftNode.target : value;
+		const target = handler?.entity === entity ? handler.target : value;
 
 		if (LWWMap.is(entity) && isObject(target)) {
-			context.settle(entity);
+			context.fill(entity);
 
 			for (const [name, strategy] of this.fields) {
 				const field = entity.get(name);

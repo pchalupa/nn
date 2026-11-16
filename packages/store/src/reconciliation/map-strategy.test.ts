@@ -11,9 +11,9 @@ import type { ReconcileContext, Strategy } from "./strategy";
 
 describe("MapStrategy", () => {
 	const context: ReconcileContext = {
-		draftNodeOf: () => undefined,
-		settle: () => undefined,
-		entityOf: () => undefined,
+		inspect: () => undefined,
+		fill: () => undefined,
+		identify: () => undefined,
 	};
 	const strategy = new MapStrategy(
 		new Map([

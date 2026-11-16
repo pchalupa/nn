@@ -53,9 +53,9 @@ export class State<
 
 		this.commit(() =>
 			this.reconciliationStrategy.reconcile(this.root, draft.value, {
-				draftNodeOf: (value) => draft.draftNodeOf(value),
-				settle: (entity) => draft.settle(entity),
-				entityOf: (value) => draft.entityOf(value),
+				inspect: (value) => draft.inspect(value),
+				fill: (entity) => draft.fill(entity),
+				identify: (value) => draft.identify(value),
 			}),
 		);
 	}

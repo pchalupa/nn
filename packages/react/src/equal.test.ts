@@ -39,11 +39,11 @@ describe("equal", () => {
 		expect(equal(value, { title: "Second" })).toBe(false);
 	});
 
-	it("compares nested rows field by field", () => {
-		const rows = [{ key: "1", title: "First", assignee: { name: "Ann" } }];
+	it("compares nested items field by field", () => {
+		const items = [{ key: "1", title: "First", assignee: { name: "Ann" } }];
 
-		expect(equal(rows, structuredClone(rows))).toBe(true);
-		expect(equal(rows, [{ key: "1", title: "First", assignee: { name: "Bob" } }])).toBe(false);
-		expect(equal(rows, [])).toBe(false);
+		expect(equal(items, structuredClone(items))).toBe(true);
+		expect(equal(items, [{ key: "1", title: "First", assignee: { name: "Bob" } }])).toBe(false);
+		expect(equal(items, [])).toBe(false);
 	});
 });

@@ -22,3 +22,5 @@ jobs:
         with:
           version-script: pnpm changeset:version
           publish-script: pnpm changeset git-tag
+          commit-message: "Version packages"
+          pr-title: "Version packages"

@@ -218,7 +218,7 @@ describe("Store", () => {
 	});
 
 	it("applies edits made before a failure and still publishes them", () => {
-		const shape = object({ first: string(), rows: array(object({ tags: array(string()) })) });
+		const shape = object({ first: string(), items: array(object({ tags: array(string()) })) });
 		const store = new Store(shape);
 		const listener = vi.fn();
 		const observer = vi.fn();
@@ -238,7 +238,7 @@ describe("Store", () => {
 		expect(() =>
 			store.update((draft) => {
 				draft.first = "edited";
-				draft.rows.push({ tags: ["new"] });
+				draft.items.push({ tags: ["new"] });
 			}),
 		).toThrow("id unavailable");
 		expect(store.read().first).toBe("edited");
@@ -259,17 +259,14 @@ describe("Store", () => {
 	});
 
 	describe("persistence format", () => {
-		it("encodes a collection as rows of field entities with their timestamps", () => {
-			const rows = new RGA(
-				[createReconciliationStrategy(ticket, new WeakMap()).create({ title: "A" }, "row-1")],
-				"tickets",
-			);
+		it("encodes a collection as items of field entities with their timestamps", () => {
+			const items = new RGA([createReconciliationStrategy(ticket).create({ title: "A" }, "item-1")], "tickets");
 
-			expect(rows.encode()).toMatchObject({
+			expect(items.encode()).toMatchObject({
 				metadata: { kind: "RGA" },
 				data: [
 					{
-						key: "row-1",
+						key: "item-1",
 						metadata: { kind: "LWWMap" },
 						data: {
 							title: {
@@ -284,7 +281,7 @@ describe("Store", () => {
 
 		it("round-trips a captured tree through restore without minting timestamps", () => {
 			const saved = new RGA(
-				[createReconciliationStrategy(ticket, new WeakMap()).create({ title: "A" }, "row-1")],
+				[createReconciliationStrategy(ticket).create({ title: "A" }, "item-1")],
 				"tickets",
 			).encode();
 			const now = vi.spyOn(Time, "now");
@@ -304,7 +301,7 @@ describe("Store", () => {
 		const comment = object({ body: string(), author: string() });
 		const current = object({ tickets: array(object({ title: string(), comments: array(comment) })) });
 
-		it("fills a field added after the row was saved", () => {
+		it("fills a field added after the item was saved", () => {
 			const older = new Store(object({ tickets: array(object({ title: string() })) }));
 			const store = new Store(current);
 
@@ -316,7 +313,7 @@ describe("Store", () => {
 			expect(store.read().tickets).toStrictEqual([{ title: "Old", comments: [] }]);
 		});
 
-		it("fills a field missing from a nested row", () => {
+		it("fills a field missing from a nested item", () => {
 			const older = new Store(
 				object({ tickets: array(object({ title: string(), comments: array(object({ body: string() })) })) }),
 			);
@@ -330,7 +327,7 @@ describe("Store", () => {
 			expect(store.read().tickets).toStrictEqual([{ title: "Old", comments: [{ body: "Hi", author: "" }] }]);
 		});
 
-		it("keeps fields the schema does not declare on a new row", () => {
+		it("keeps fields the schema does not declare on a new item", () => {
 			const newer = new Store(
 				object({ tickets: array(object({ title: string(), comments: array(comment), priority: number() })) }),
 			);
@@ -346,7 +343,7 @@ describe("Store", () => {
 			});
 		});
 
-		it("keeps every row when a nested field changed kind", () => {
+		it("keeps every item when a nested field changed kind", () => {
 			const older = new Store(object({ tickets: array(object({ title: string(), comments: string() })) }));
 			const store = new Store(current);
 
@@ -358,16 +355,16 @@ describe("Store", () => {
 			expect(store.read().tickets.map(({ title }) => title)).toStrictEqual(["First", "Second"]);
 		});
 
-		it("keeps local values when an older copy of the same row arrives", () => {
+		it("keeps local values when an older copy of the same item arrives", () => {
 			const store = new Store(current);
 			const older = Time.now();
-			const row = createReconciliationStrategy(current.properties.tickets.items, new WeakMap()).create(
+			const item = createReconciliationStrategy(current.properties.tickets.items).create(
 				{ title: "New", comments: [{ body: "Hi", author: "Ann" }] },
 				"t1",
 			);
 			const stale = new LWWMap({ title: new LWWRegister("Stale", "title", older) }, "t1");
 
-			store.merge("tickets", new RGA([row], "tickets").encode());
+			store.merge("tickets", new RGA([item], "tickets").encode());
 			store.merge("tickets", new RGA([stale], "tickets").encode());
 
 			expect(store.read().tickets).toStrictEqual([{ title: "New", comments: [{ body: "Hi", author: "Ann" }] }]);

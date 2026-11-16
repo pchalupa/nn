@@ -1,0 +1,54 @@
+\begin{tikzpicture}[
+	thesis,
+	participant/.style={thesis/participant, minimum height=0.65cm, text width=1.7cm},
+	status/.style={thesis/box, text width=1.75cm, inner sep=3pt},
+	lifeline/.style={thesis/lifeline},
+	local/.style={thesis/local, ->},
+	network/.style={thesis/network, ->},
+	message/.style={thesis/label, above}
+]
+	\fill[thesis/region] (7.3,-1.35) rectangle (14.9,-5.75);
+	\node[thesis/heading] at (3.6,0) {(a) Server-centred, optimistic display};
+	\node[thesis/heading] at (11.1,0) {(b) Local-first, initially offline};
+	\node[participant] at (1.1,-0.8) {Browser};
+	\node[participant] at (3.65,-0.8) {Application\\server};
+	\node[participant] at (6.2,-0.8) {Database\\server};
+	\node[participant] at (8.35,-0.8) {Interface};
+	\node[participant] at (11.1,-0.8) {Local data\\and sync};
+	\node[participant] at (13.85,-0.8) {Sync\\server};
+
+	\draw[lifeline] (1.1,-1.15) -- (1.1,-8.95);
+	\draw[lifeline] (3.65,-1.15) -- (3.65,-8.95);
+	\draw[lifeline] (6.2,-1.15) -- (6.2,-8.95);
+	\draw[lifeline] (8.35,-1.15) -- (8.35,-8.95);
+	\draw[lifeline] (11.1,-1.15) -- (11.1,-8.95);
+	\draw[lifeline] (13.85,-1.15) -- (13.85,-8.95);
+
+	\node[status] at (1.1,-1.9) {Display updated\\(provisional)};
+	\draw[network] (1.1,-2.75) -- node[message] {Send title} (3.65,-2.75);
+	\node[status] at (3.65,-3.35) {Validate};
+	\draw[network] (3.65,-4.05) -- node[message] {Write title} (6.2,-4.05);
+	\draw[network] (6.2,-4.75) -- node[message] {Persisted} (3.65,-4.75);
+	\draw[network] (3.65,-5.45) -- node[message] {Confirm save} (1.1,-5.45);
+	\node[status] at (1.1,-6.15) {Saved on server};
+	\node[align=center, text width=6.3cm] at (3.6,-9.4) {Saving requires a successful network exchange.};
+
+	\node[anchor=north east, inner sep=4pt] at (14.9,-1.35) {Disconnected};
+	\node[status] at (8.35,-1.9) {Display updated};
+	\draw[local] (8.35,-2.75) -- node[message] {Save title} (11.1,-2.75);
+	\draw[local] (11.1,-3.65) -- node[message] {Persisted} (8.35,-3.65);
+	\node[status] at (8.35,-4.35) {Saved locally};
+	\node[align=center, text width=4.8cm] at (10.6,-5.15) {Editing can continue while disconnected.};
+	\draw[thesis/divider] (7.3,-5.85) -- (14.9,-5.85);
+	\node[thesis/label, inner sep=3pt] at (11.1,-5.85) {Connection restored};
+	\draw[network] (11.1,-6.55) -- node[message] {Send changes} (13.85,-6.55);
+	\draw[network] (13.85,-7.3) -- node[message] {Acknowledge} (11.1,-7.3);
+	\draw[local] (11.1,-8.0) -- node[message] {Update sync status} (8.35,-8.0);
+	\node[status] at (8.35,-8.65) {Synchronized\\with server};
+	\node[align=center, text width=6.6cm] at (11.1,-9.4) {Local saving completes before sharing.};
+
+	\draw[local] (1.5,-10.15) -- (2.3,-10.15);
+	\node[anchor=west] at (2.4,-10.15) {Local interaction};
+	\draw[network] (7.8,-10.15) -- (8.6,-10.15);
+	\node[anchor=west] at (8.7,-10.15) {Network message};
+\end{tikzpicture}

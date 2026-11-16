@@ -36,6 +36,26 @@
 
 % Figures, tables and code
 \usepackage{graphicx}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta}
+\colorlet{figure-ink}{black}
+\colorlet{figure-fill}{black!5}
+\colorlet{figure-paper}{white}
+\colorlet{figure-muted}{black!45}
+\tikzset{
+	thesis/.style={font=\footnotesize, >=Stealth, color=figure-ink},
+	thesis/heading/.style={font=\small\bfseries},
+	thesis/boundary/.style={draw=figure-ink},
+	thesis/region/.style={fill=figure-fill},
+	thesis/box/.style={draw=figure-ink, fill=figure-fill, align=center},
+	thesis/participant/.style={draw=figure-ink, fill=figure-paper, align=center},
+	thesis/store/.style={draw=figure-ink, double, double distance=1pt, fill=figure-paper, align=center},
+	thesis/local/.style={semithick},
+	thesis/network/.style={semithick, dashed},
+	thesis/divider/.style={dotted},
+	thesis/lifeline/.style={thin, figure-muted},
+	thesis/label/.style={fill=figure-paper, inner sep=2pt, align=center},
+}
 \graphicspath{{figures/}}
 \makeatletter
 \def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
@@ -43,6 +63,7 @@
 \makeatother
 \setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
 \usepackage{float}
+\usepackage{placeins}
 \floatplacement{figure}{htbp}
 % Charts use figure, captioned "Chart"; illustrations use illustration, captioned "Figure".
 \floatstyle{plaintop}

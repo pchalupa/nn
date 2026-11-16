@@ -1,5 +1,11 @@
 # @nn/entities
 
+## 4.1.0
+
+### Minor Changes
+
+- 2dac556: Add `RGA#size` and `RGA#keys()` to count a list's rows and walk their keys in order without copying the rows, as `current` does.
+
 ## 4.0.0
 
 ### Major Changes

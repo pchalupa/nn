@@ -5,8 +5,8 @@ import type { InferStateType, Schema } from "@nn/schema";
 import type { ObjectSchema } from "@nn/schema/object-schema";
 import { Time } from "@nn/time";
 
-import { Draft } from "./projectors/draft";
-import { View } from "./projectors/view";
+import { Draft } from "./projections/draft";
+import { View } from "./projections/view";
 import { createReconciliationStrategy } from "./reconciliation/create-strategy";
 import type { MapStrategy } from "./reconciliation/map-strategy";
 

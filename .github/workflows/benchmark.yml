@@ -1,0 +1,21 @@
+name: Benchmark
+on:
+  push:
+    branches: [main]
+  pull_request:
+jobs:
+  benchmark:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 26
+          cache: "pnpm"
+      - run: pnpm install
+      - uses: CodSpeedHQ/action@v5
+        with:
+          mode: simulation
+          run: pnpm bench

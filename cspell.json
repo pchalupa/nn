@@ -27,7 +27,8 @@
 		"ENOENT",
 		"eventsource",
 		"hset",
-		"hgetall"
+		"hgetall",
+		"codspeed"
 	],
 	"ignorePaths": ["docs/{notes,plans,research}"],
 	"useGitignore": true

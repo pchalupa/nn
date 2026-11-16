@@ -5,10 +5,10 @@ import type { InferStateType, Schema } from "@nn/schema";
 import type { ObjectSchema } from "@nn/schema/object-schema";
 import { Time } from "@nn/time";
 
-import { Draft } from "./projectors/draft";
-import { View } from "./projectors/view";
+import { Draft } from "./projections/draft";
+import { View } from "./projections/view";
 import { createReconciliationStrategy } from "./reconciliation/create-strategy";
-import type { MapStrategy } from "./reconciliation/map-strategy";
+import { MapStrategy } from "./reconciliation/map-strategy";
 
 type ReadonlyData<Value> = {
 	readonly [Key in keyof Value]: ReadonlyData<Value[Key]>;
@@ -22,19 +22,18 @@ export class State<
 	StoreSchema extends ObjectSchema<Record<string, Schema>> = ObjectSchema<Record<string, Schema>>,
 > implements Delegatable<StateDelegate> {
 	public delegate?: StateDelegate;
-	private entities = new WeakMap<object, Entity>();
 	private reconciliationStrategy: MapStrategy;
 	private root: ReturnType<MapStrategy["create"]>;
-	private view: View;
-	private draft = new Draft(this.entities);
+	private view = new View();
 	private changed = new Set<Entity>();
 
 	constructor(schema: StoreSchema) {
-		// oxlint-disable-next-line typescript/consistent-type-assertions state root is forced to be map
-		this.reconciliationStrategy = createReconciliationStrategy(schema, this.entities) as MapStrategy;
+		const reconciliationStrategy = createReconciliationStrategy(schema);
 
+		if (!(reconciliationStrategy instanceof MapStrategy)) throw new TypeError("State schema must be an object schema.");
+
+		this.reconciliationStrategy = reconciliationStrategy;
 		this.root = this.reconciliationStrategy.create(undefined, "state", Time.epoch());
-		this.view = new View(this.root, this.entities);
 		this.root.delegate = {
 			entityDidChange: (_entity, child) => {
 				if (child) this.changed.add(child);
@@ -45,16 +44,22 @@ export class State<
 	// TODO: Avoid overloading to cast the type
 	public read(): ReadonlyData<InferStateType<StoreSchema>>;
 	public read(): unknown {
-		return this.view.value;
+		return this.view.read(this.root);
 	}
 
 	public update(recipe: (draft: InferStateType<StoreSchema>) => void): void {
+		const draft = new Draft(this.root, this.view);
+
 		// oxlint-disable-next-line typescript/consistent-type-assertions todo: fix this type casting
-		const draft = this.draft.create(this.root) as InferStateType<StoreSchema>;
+		recipe(draft.value as InferStateType<StoreSchema>);
 
-		recipe(draft);
-
-		this.commit(() => this.reconciliationStrategy.reconcile(this.root, draft));
+		this.commit(() =>
+			this.reconciliationStrategy.reconcile(this.root, draft.value, {
+				inspect: (value) => draft.inspect(value),
+				fill: (entity) => draft.fill(entity),
+				identify: (value) => draft.identify(value),
+			}),
+		);
 	}
 
 	public merge(name: string, remote: Entity): void {

@@ -5,6 +5,7 @@
 - In the workspace, library `exports` resolve to `src/*.ts`, so everything runs on source without a build. Only `pnpm pack` and `pnpm publish` swap in `publishConfig.exports` from `dist`, so publish through pnpm (`changeset publish` uses it) and never `npm publish`.
 - Do not use TypeScript type casts (`as Type` or `<Type>value`); narrow or model the type correctly instead.
 - `any` is prohibited. Type values of unknown shape as `unknown` and narrow them before use.
+- Prefer `if` statements over ternary operators.
 - Name files and directories in kebab-case. TanStack route files under `apps/example-react/src/routes` are exempt because their names define the routes.
 - Avoid code comments.
 - Add a Changeset for consumer-visible changes to public `@nn/*` packages. `example-react` is ignored by Changesets.

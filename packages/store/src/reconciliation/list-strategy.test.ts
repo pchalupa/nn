@@ -8,11 +8,17 @@ import { assert, describe, expect, it } from "vitest";
 import { ListStrategy } from "./list-strategy";
 import { MapStrategy } from "./map-strategy";
 import { RegisterStrategy } from "./register-strategy";
+import type { ReconcileContext } from "./strategy";
 
 describe("ListStrategy", () => {
 	const entities = new WeakMap<object, Entity>();
-	const tags = new ListStrategy(new RegisterStrategy(""), entities);
-	const rows = new ListStrategy(new MapStrategy(new Map([["title", new RegisterStrategy("")]])), entities);
+	const context: ReconcileContext = {
+		inspect: () => undefined,
+		fill: () => undefined,
+		identify: (value) => entities.get(value),
+	};
+	const tags = new ListStrategy(new RegisterStrategy(""));
+	const rows = new ListStrategy(new MapStrategy(new Map([["title", new RegisterStrategy("")]])));
 
 	describe("create", () => {
 		it("creates an item entity for each value", () => {
@@ -43,7 +49,7 @@ describe("ListStrategy", () => {
 		});
 
 		it("assigns item keys independently of a declared key field", () => {
-			const strategy = new ListStrategy(new MapStrategy(new Map([["key", new RegisterStrategy("")]])), entities);
+			const strategy = new ListStrategy(new MapStrategy(new Map([["key", new RegisterStrategy("")]])));
 
 			expect(strategy.create([{ key: "c1" }], "rows").current[0]?.key).not.toBe("c1");
 		});
@@ -54,12 +60,12 @@ describe("ListStrategy", () => {
 			const list = tags.create(["x", "y"], "tags");
 			const [first] = list.current;
 
-			tags.reconcile(list, ["x", "z", "w"]);
+			tags.reconcile(list, ["x", "z", "w"], context);
 
 			expect(list.current.map((item) => item.current)).toStrictEqual(["x", "z", "w"]);
 			expect(list.current[0]).toBe(first);
 
-			tags.reconcile(list, ["x"]);
+			tags.reconcile(list, ["x"], context);
 
 			expect(list.current.map((item) => item.current)).toStrictEqual(["x"]);
 		});
@@ -69,7 +75,7 @@ describe("ListStrategy", () => {
 			const value = ["x"];
 
 			value[2] = "z";
-			tags.reconcile(list, value);
+			tags.reconcile(list, value, context);
 
 			expect(list.current.map((item) => item.current)).toStrictEqual(["x", "", "z"]);
 		});
@@ -81,7 +87,7 @@ describe("ListStrategy", () => {
 
 			assert(row);
 			entities.set(draft, row);
-			rows.reconcile(list, [draft, { title: "C" }]);
+			rows.reconcile(list, [draft, { title: "C" }], context);
 
 			expect(list.current[0]).toBe(row);
 			expect(list.current[1]?.key).not.toBe(row.key);
@@ -99,10 +105,35 @@ describe("ListStrategy", () => {
 
 			assert(row);
 			entities.set(draft, row);
-			rows.reconcile(target, [draft]);
+			rows.reconcile(target, [draft], context);
 
 			expect(target.current[0]?.key).not.toBe(row.key);
 			expect(source.current).toStrictEqual([row]);
+		});
+
+		it("gives an object tagged with another entity under the same key a new identity", () => {
+			const list = rows.create([{ title: "A" }], "rows");
+			const [row] = list.current;
+
+			assert(row);
+
+			const foreign = new LWWMap({ title: new LWWRegister("A", "title") }, row.key);
+			const value = { title: "B" };
+
+			entities.set(value, foreign);
+			rows.reconcile(list, [value], context);
+
+			expect(list.current[0]?.key).not.toBe(row.key);
+			expect(foreign.get("title")?.current).toBe("A");
+		});
+
+		it("gives a frozen untagged object a new identity", () => {
+			const list = rows.create([{ title: "A" }], "rows");
+			const [row] = list.current;
+
+			rows.reconcile(list, [Object.freeze({ title: "A" })], context);
+
+			expect(list.current[0]?.key).not.toBe(row?.key);
 		});
 
 		it("keeps row order on a reorder-only draft", () => {
@@ -117,7 +148,7 @@ describe("ListStrategy", () => {
 
 			const revision = list.revision;
 
-			rows.reconcile(list, [b, a]);
+			rows.reconcile(list, [b, a], context);
 
 			expect(list.current).toStrictEqual([first, second]);
 			expect(list.revision).toBe(revision);
@@ -127,7 +158,7 @@ describe("ListStrategy", () => {
 			const list = tags.create(["x"], "tags");
 			const revision = list.revision;
 
-			tags.reconcile(list, "oops");
+			tags.reconcile(list, "oops", context);
 
 			expect(list.revision).toBe(revision);
 		});

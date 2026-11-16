@@ -1,9 +1,9 @@
-import type { Entity } from "@nn/entities/entity";
+import { Entity } from "@nn/entities/entity";
 import { LWWMap } from "@nn/entities/kinds/lww-map";
 import { isObject } from "@nn/guards/is-object";
 import { Time } from "@nn/time";
 
-import type { Strategy } from "./strategy";
+import type { ReconcileContext, Strategy } from "./strategy";
 
 export class MapStrategy implements Strategy {
 	constructor(private fields: ReadonlyMap<string, Strategy>) {}
@@ -19,12 +19,23 @@ export class MapStrategy implements Strategy {
 		return new LWWMap(fields, key);
 	}
 
-	public reconcile(entity: Entity, value: unknown): void {
-		if (entity instanceof LWWMap && isObject(value)) {
+	public reconcile(entity: Entity, value: unknown, context: ReconcileContext): void {
+		const draftNode = context.draftNodeOf(value);
+
+		if (draftNode?.entity === entity && !draftNode.modified) return;
+
+		const target = draftNode?.entity === entity ? draftNode.target : value;
+
+		if (LWWMap.is(entity) && isObject(target)) {
+			context.settle(entity);
+
 			for (const [name, strategy] of this.fields) {
 				const field = entity.get(name);
+				const item = target[name];
 
-				if (field !== undefined) strategy.reconcile(field, value[name]);
+				if (field && field !== item) {
+					strategy.reconcile(field, Entity.is(item) && isObject(value) ? Reflect.get(value, name) : item, context);
+				}
 			}
 		}
 	}

@@ -260,10 +260,7 @@ describe("Store", () => {
 
 	describe("persistence format", () => {
 		it("encodes a collection as rows of field entities with their timestamps", () => {
-			const rows = new RGA(
-				[createReconciliationStrategy(ticket, new WeakMap()).create({ title: "A" }, "row-1")],
-				"tickets",
-			);
+			const rows = new RGA([createReconciliationStrategy(ticket).create({ title: "A" }, "row-1")], "tickets");
 
 			expect(rows.encode()).toMatchObject({
 				metadata: { kind: "RGA" },
@@ -283,10 +280,7 @@ describe("Store", () => {
 		});
 
 		it("round-trips a captured tree through restore without minting timestamps", () => {
-			const saved = new RGA(
-				[createReconciliationStrategy(ticket, new WeakMap()).create({ title: "A" }, "row-1")],
-				"tickets",
-			).encode();
+			const saved = new RGA([createReconciliationStrategy(ticket).create({ title: "A" }, "row-1")], "tickets").encode();
 			const now = vi.spyOn(Time, "now");
 			const restored = new RGA<Entity>([], "tickets");
 			const decoded = new Codec().decode(saved);
@@ -361,7 +355,7 @@ describe("Store", () => {
 		it("keeps local values when an older copy of the same row arrives", () => {
 			const store = new Store(current);
 			const older = Time.now();
-			const row = createReconciliationStrategy(current.properties.tickets.items, new WeakMap()).create(
+			const row = createReconciliationStrategy(current.properties.tickets.items).create(
 				{ title: "New", comments: [{ body: "Hi", author: "Ann" }] },
 				"t1",
 			);

@@ -7,9 +7,14 @@ import { assert, describe, expect, it } from "vitest";
 import { ListStrategy } from "./list-strategy";
 import { MapStrategy } from "./map-strategy";
 import { RegisterStrategy } from "./register-strategy";
-import type { Strategy } from "./strategy";
+import type { ReconcileContext, Strategy } from "./strategy";
 
 describe("MapStrategy", () => {
+	const context: ReconcileContext = {
+		draftNodeOf: () => undefined,
+		settle: () => undefined,
+		entityOf: () => undefined,
+	};
 	const strategy = new MapStrategy(
 		new Map([
 			["title", new RegisterStrategy("")],
@@ -46,7 +51,7 @@ describe("MapStrategy", () => {
 		it("reconciles each declared field", () => {
 			const entity = strategy.create({ title: "A", count: 1 }, "row");
 
-			strategy.reconcile(entity, { title: "B", count: 1 });
+			strategy.reconcile(entity, { title: "B", count: 1 }, context);
 
 			expect(entity.get("title")?.current).toBe("B");
 			expect(entity.get("count")?.current).toBe(1);
@@ -56,7 +61,7 @@ describe("MapStrategy", () => {
 			const entity = strategy.create({ title: "A" }, "row");
 			const revision = entity.revision;
 
-			strategy.reconcile(entity, "oops");
+			strategy.reconcile(entity, "oops", context);
 
 			expect(entity.revision).toBe(revision);
 		});
@@ -64,7 +69,7 @@ describe("MapStrategy", () => {
 		it("ignores an entity that is not a map", () => {
 			const entity = new LWWRegister("A", "row");
 
-			strategy.reconcile(entity, { title: "B" });
+			strategy.reconcile(entity, { title: "B" }, context);
 
 			expect(entity.current).toBe("A");
 		});
@@ -114,7 +119,7 @@ describe("MapStrategy", () => {
 			const nested = new MapStrategy(
 				new Map<string, Strategy>([
 					["title", new RegisterStrategy("")],
-					["comments", new ListStrategy(new MapStrategy(new Map([["body", new RegisterStrategy("")]])), new WeakMap())],
+					["comments", new ListStrategy(new MapStrategy(new Map([["body", new RegisterStrategy("")]])))],
 				]),
 			);
 			const entity = nested.conform(

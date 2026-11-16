@@ -185,6 +185,32 @@ describe("State updates", () => {
 		expect(state.read().tickets).toStrictEqual([saved]);
 	});
 
+	it("gives a spread snapshot row a new identity", () => {
+		const state = setup();
+		const saved = state.read().tickets[0];
+		const assignee = saved.assignee;
+
+		state.update((draft) => {
+			draft.tickets = [{ ...saved, title: "Changed" }];
+		});
+
+		expect(state.read().tickets[0].title).toBe("Changed");
+		expect(state.read().tickets[0].assignee).not.toBe(assignee);
+	});
+
+	it("gives a snapshot row from another store a new identity", () => {
+		const state = setup();
+		const foreign = setup().read().tickets[0];
+		const assignee = state.read().tickets[0].assignee;
+
+		state.update((draft) => {
+			draft.tickets = [foreign];
+		});
+
+		expect(state.read().tickets).toStrictEqual([foreign]);
+		expect(state.read().tickets[0].assignee).not.toBe(assignee);
+	});
+
 	it("treats a reinserted removed snapshot row as a new row", () => {
 		const state = setup();
 		const saved = state.read().tickets[0];
@@ -372,6 +398,126 @@ describe("State draft edits", () => {
 	});
 });
 
+describe("State lazy updates", () => {
+	afterEach(() => vi.restoreAllMocks());
+
+	type Ticket = InferStateType<typeof schema>["tickets"][number];
+
+	it("reads the collection once for a one-field row update", () => {
+		const state = setup();
+		const lists = vi.spyOn(RGA.prototype, "current", "get");
+
+		state.update((draft) => {
+			draft.tickets[1].title = "Changed";
+		});
+
+		expect(lists).toHaveBeenCalledOnce();
+		expect(state.read().tickets[1].title).toBe("Changed");
+	});
+
+	it("fills no other row for a one-field row update", () => {
+		const state = setup();
+		const maps = vi.spyOn(LWWMap.prototype, "current", "get");
+
+		state.update((draft) => {
+			draft.tickets[1].assignee.name = "Cy";
+		});
+
+		expect(maps.mock.calls.length).toBeLessThanOrEqual(3);
+		expect(state.read().tickets[1].assignee.name).toBe("Cy");
+	});
+
+	it("reads nothing for a recipe that changes nothing", () => {
+		const state = setup();
+		const lists = vi.spyOn(RGA.prototype, "current", "get");
+		const maps = vi.spyOn(LWWMap.prototype, "current", "get");
+
+		state.update(() => {});
+
+		expect(lists).not.toHaveBeenCalled();
+		expect(maps).not.toHaveBeenCalled();
+	});
+
+	it("writes back a draft row kept from an earlier update", () => {
+		const state = setup();
+
+		let kept: Ticket | undefined;
+
+		state.update((draft) => {
+			kept = draft.tickets[0];
+			expect(kept.title).toBe("First");
+		});
+		state.update((draft) => {
+			draft.tickets[0].title = "Changed";
+		});
+		state.update((draft) => {
+			if (kept) draft.tickets = [kept];
+		});
+
+		expect(state.read().tickets.map(({ title }) => title)).toStrictEqual(["First"]);
+	});
+
+	it("writes back a row kept from a recipe that throws", () => {
+		const state = setup();
+
+		let kept: Ticket | undefined;
+
+		expect(() =>
+			state.update((draft) => {
+				kept = draft.tickets[0];
+				expect(kept.title).toBe("First");
+				throw new Error("stop");
+			}),
+		).toThrow("stop");
+		state.update((draft) => {
+			draft.tickets[0].title = "Changed";
+		});
+		state.update((draft) => {
+			if (kept) draft.tickets = [kept];
+		});
+
+		expect(state.read().tickets.map(({ title }) => title)).toStrictEqual(["First"]);
+	});
+
+	it("edits a row found by scanning the collection", () => {
+		const state = setup();
+		const before = state.read();
+
+		state.update((draft) => {
+			const found = draft.tickets.find((row) => row.title === "Second");
+
+			if (found) found.title = "Found";
+		});
+
+		expect(state.read().tickets.map(({ title }) => title)).toStrictEqual(["First", "Found"]);
+		expect(state.read().tickets[0]).toBe(before.tickets[0]);
+	});
+
+	it("reconciles only the edited row after scanning the collection", () => {
+		const state = setup();
+		const lookups = vi.spyOn(RGA.prototype, "find");
+
+		state.update((draft) => {
+			const found = draft.tickets.find((row) => row.title === "First");
+
+			if (found) found.assignee.name = "Cy";
+		});
+
+		expect(lookups).not.toHaveBeenCalled();
+		expect(state.read().tickets.map(({ assignee }) => assignee.name)).toStrictEqual(["Cy", "Bob"]);
+	});
+
+	it("pushes a spread draft row as a new row", () => {
+		const state = setup();
+
+		state.update((draft) => {
+			draft.tickets.push({ ...draft.tickets[0], assignee: { ...draft.tickets[0].assignee } });
+		});
+
+		expect(state.read().tickets.map(({ title }) => title)).toStrictEqual(["First", "Second", "First"]);
+	});
+});
+
 describe("State nested collections", () => {
 	const setupBoards = () => {
 		const state = new State(
@@ -433,6 +579,118 @@ describe("State nested collections", () => {
 			if (comment) draft.boards[1].comments.push(comment);
 		});
 		expect(state.read().boards.map((board) => board.comments)).toStrictEqual([[], [{ key: "public", text: "Hello" }]]);
+	});
+
+	it("reads each collection once for a nested one-field update", () => {
+		const state = setupBoards();
+		const lists = vi.spyOn(RGA.prototype, "current", "get");
+
+		state.update((draft) => {
+			draft.boards[0].comments[0].text = "Changed";
+		});
+
+		expect(lists).toHaveBeenCalledTimes(2);
+		expect(state.read().boards[0].comments[0].text).toBe("Changed");
+		vi.restoreAllMocks();
+	});
+});
+
+describe("State moves within a recipe", () => {
+	const item = object({ title: string() });
+	const person = object({ name: string() });
+	const titles = (items: ReadonlyArray<{ readonly title: string }>) => items.map(({ title }) => title);
+
+	describe.each([
+		{ order: "a before b", shape: object({ a: array(item), b: array(item) }) },
+		{ order: "b before a", shape: object({ b: array(item), a: array(item) }) },
+	])("with collections declared $order", ({ shape }) => {
+		it("swaps two collections", () => {
+			const state = new State(shape);
+
+			state.update((draft) => {
+				draft.a.push({ title: "A" });
+				draft.b.push({ title: "B" });
+			});
+			state.update((draft) => {
+				const a = draft.a;
+
+				draft.a = draft.b;
+				draft.b = a;
+			});
+
+			expect(titles(state.read().a)).toStrictEqual(["B"]);
+			expect(titles(state.read().b)).toStrictEqual(["A"]);
+		});
+	});
+
+	describe.each([
+		{ order: "x before y", shape: object({ x: person, y: person }) },
+		{ order: "y before x", shape: object({ y: person, x: person }) },
+	])("with objects declared $order", ({ shape }) => {
+		it("swaps two objects", () => {
+			const state = new State(shape);
+
+			state.update((draft) => {
+				draft.x.name = "X";
+				draft.y.name = "Y";
+			});
+			state.update((draft) => {
+				const x = draft.x;
+
+				draft.x = draft.y;
+				draft.y = x;
+			});
+
+			expect(state.read()).toStrictEqual({ x: { name: "Y" }, y: { name: "X" } });
+		});
+	});
+
+	describe.each([
+		{ order: "tickets before archive", shape: object({ tickets: array(item), archive: array(item) }) },
+		{ order: "archive before tickets", shape: object({ archive: array(item), tickets: array(item) }) },
+	])("with collections declared $order", ({ shape }) => {
+		it("keeps the rows of a collection that is moved and then cleared", () => {
+			const state = new State(shape);
+
+			state.update((draft) => {
+				draft.tickets.push({ title: "A" }, { title: "B" });
+			});
+			state.update((draft) => {
+				draft.archive = draft.tickets;
+				draft.tickets = [];
+			});
+
+			expect(titles(state.read().archive)).toStrictEqual(["A", "B"]);
+			expect(state.read().tickets).toStrictEqual([]);
+		});
+	});
+
+	it("keeps an inner update's write that the outer recipe never read", () => {
+		const state = setup();
+
+		state.update((outer) => {
+			state.update((inner) => {
+				inner.language = "cs";
+			});
+			outer.tickets[0].title = "Outer";
+		});
+
+		expect(state.read().language).toBe("cs");
+		expect(state.read().tickets[0].title).toBe("Outer");
+	});
+
+	it("keeps the outer copy of a map it read before an inner update", () => {
+		const state = setup();
+
+		state.update((outer) => {
+			expect(outer.language).toBe("en");
+			state.update((inner) => {
+				inner.language = "cs";
+			});
+			outer.tickets[0].title = "Outer";
+		});
+
+		expect(state.read().language).toBe("en");
 	});
 });
 

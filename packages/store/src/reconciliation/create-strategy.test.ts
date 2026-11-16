@@ -5,12 +5,19 @@ import { RGA } from "@nn/entities/kinds/rga";
 import { array, boolean, enumeration, number, object, type Schema, string } from "@nn/schema";
 import { describe, expect, it } from "vitest";
 
-import { Draft } from "../projectors/draft";
-import { View } from "../projectors/view";
 import { createReconciliationStrategy } from "./create-strategy";
 import { ListStrategy } from "./list-strategy";
 import { MapStrategy } from "./map-strategy";
 import { RegisterStrategy } from "./register-strategy";
+import type { ReconcileContext } from "./strategy";
+
+function contextOf(origins: WeakMap<object, Entity> = new WeakMap()): ReconcileContext {
+	return {
+		draftNodeOf: () => undefined,
+		settle: () => undefined,
+		entityOf: (value) => origins.get(value),
+	};
+}
 
 describe("createReconciliationStrategy", () => {
 	it("creates a map strategy for an object schema", () => {
@@ -52,7 +59,7 @@ describe("createReconciliationStrategy", () => {
 
 		const [first] = entity.current;
 
-		strategy.reconcile(entity, ["b"], new Draft(new View()));
+		strategy.reconcile(entity, ["b"], contextOf());
 
 		expect(entity.current[0]).toBe(first);
 		expect(entity.current[0]?.current).toBe("b");
@@ -72,7 +79,7 @@ describe("createReconciliationStrategy", () => {
 		const draft = { title: "B" };
 
 		origins.set(draft, second);
-		strategy.reconcile(entity, [draft], new Draft({ origin: (value) => origins.get(value) }));
+		strategy.reconcile(entity, [draft], contextOf(origins));
 
 		expect(entity.current).toStrictEqual([second]);
 		expect(entity.find(first.key)).toBeUndefined();

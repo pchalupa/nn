@@ -1,5 +1,16 @@
 # @nn/sse-sync
 
+## 3.1.2
+
+### Patch Changes
+
+- Updated dependencies [ac071bc]
+- Updated dependencies [ac071bc]
+- Updated dependencies [ac071bc]
+  - @nn/store@4.0.0
+  - @nn/entities@4.2.0
+  - @nn/sync-engine@4.1.2
+
 ## 3.1.1
 
 ### Patch Changes

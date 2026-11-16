@@ -1,40 +1,55 @@
-import type { Entity } from "@nn/entities/entity";
+import { Entity } from "@nn/entities/entity";
+import { isArray } from "@nn/guards/is-array";
 import { isObject } from "@nn/guards/is-object";
 
-import { Projector } from "./projector";
+export class View {
+	private materialized = new WeakMap<Entity, { value: unknown; revision: number }>();
+	private origins = new WeakMap<object, Entity>();
 
-interface Snapshot {
-	readonly value: unknown;
-	readonly revision: number;
-}
-
-export class View extends Projector {
-	private snapshots = new WeakMap<Entity, Snapshot>();
-
-	constructor(
-		private state: Entity,
-		entities: WeakMap<object, Entity>,
-	) {
-		super(entities);
-	}
-
-	public get value(): unknown {
-		return this.child(this.state);
-	}
-
-	protected child(entity: Entity): unknown {
+	public read(entity: Entity): unknown {
 		const revision = entity.revision;
-		const cached = this.snapshots.get(entity);
+		const cached = this.materialized.get(entity);
 
 		if (cached !== undefined && cached.revision === revision) return cached.value;
 
-		const value = this.project(entity);
+		const value = this.project(entity.current);
 
 		if (isObject(value)) {
 			Object.freeze(value);
 
-			this.snapshots.set(entity, { value, revision });
+			this.origins.set(value, entity);
+			this.materialized.set(entity, { value, revision });
 		}
+
+		return value;
+	}
+
+	public origin(value: object): Entity | undefined {
+		return this.origins.get(value);
+	}
+
+	private project(current: unknown): unknown {
+		if (isArray(current)) {
+			const value: unknown[] = [];
+
+			for (const item of current) value.push(this.unwrap(item));
+
+			return value;
+		}
+
+		if (isObject(current)) {
+			const value: Record<string, unknown> = {};
+
+			for (const key in current) value[key] = this.unwrap(current[key]);
+
+			return value;
+		}
+
+		return current;
+	}
+
+	private unwrap(value: unknown): unknown {
+		if (Entity.is(value)) return this.read(value);
 
 		return value;
 	}

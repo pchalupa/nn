@@ -1,4 +1,3 @@
-import type { Entity } from "@nn/entities/entity";
 import { LWWMap } from "@nn/entities/kinds/lww-map";
 import { LWWRegister } from "@nn/entities/kinds/lww-register";
 import { RGA } from "@nn/entities/kinds/rga";
@@ -19,9 +18,9 @@ describe("View", () => {
 			missing: new LWWRegister(undefined),
 			rows: new RGA([row]),
 		});
-		const view = new View(root, new WeakMap<object, Entity>());
+		const view = new View();
 
-		expect(view.value).toStrictEqual({
+		expect(view.read(root)).toStrictEqual({
 			count: 1,
 			selection: null,
 			missing: undefined,
@@ -31,8 +30,9 @@ describe("View", () => {
 
 	it.each(["root", "rows", "row"])("rejects mutations to the projected %s", (target) => {
 		const row = new LWWMap({ title: new LWWRegister("First") });
-		const view = new View(new LWWMap({ rows: new RGA([row]) }), new WeakMap<object, Entity>());
-		const value = view.value;
+		const root = new LWWMap({ rows: new RGA([row]) });
+		const view = new View();
+		const value = view.read(root);
 
 		assertObject(value);
 		assertArray(value.rows);
@@ -45,32 +45,37 @@ describe("View", () => {
 		expect(Reflect.set(container, property, "Changed")).toBe(false);
 		expect(Reflect.deleteProperty(container, property)).toBe(false);
 		expect(Reflect.set(container, "extra", true)).toBe(false);
-		expect(view.value).toBe(value);
-		expect(view.value).toStrictEqual({ rows: [{ title: "First" }] });
+		expect(view.read(root)).toBe(value);
+		expect(view.read(root)).toStrictEqual({ rows: [{ title: "First" }] });
 	});
 
-	it("maps each container to its entity", () => {
+	it("records the entity behind each container without tagging it", () => {
 		const tags = new RGA([new LWWRegister("red")]);
 		const settings = new LWWMap({ tags });
-		const entities = new WeakMap<object, Entity>();
-		const value = new View(settings, entities).value;
+		const view = new View();
+		const value = view.read(settings);
 
 		assertObject(value);
 		assertArray(value.tags);
 
-		expect(entities.get(value)).toBe(settings);
-		expect(entities.get(value.tags)).toBe(tags);
+		expect(view.origin(value)).toBe(settings);
+		expect(view.origin(value.tags)).toBe(tags);
+		expect(Reflect.ownKeys(value)).toStrictEqual(["tags"]);
+		expect(Reflect.ownKeys(value.tags)).toStrictEqual(["0", "length"]);
+		expect(Object.isFrozen(value)).toBe(true);
+		expect(value).toStrictEqual({ tags: ["red"] });
 	});
 
 	it("reads each entity once and returns the same value while nothing changes", () => {
 		const tag = new LWWRegister("red");
 		const tags = new RGA([tag]);
-		const view = new View(new LWWMap({ tags }), new WeakMap<object, Entity>());
+		const root = new LWWMap({ tags });
+		const view = new View();
 		const tagsReads = vi.spyOn(tags, "current", "get");
 		const tagReads = vi.spyOn(tag, "current", "get");
-		const value = view.value;
+		const value = view.read(root);
 
-		expect(view.value).toBe(value);
+		expect(view.read(root)).toBe(value);
 		expect(tagsReads).toHaveBeenCalledOnce();
 		expect(tagReads).toHaveBeenCalledOnce();
 	});
@@ -78,20 +83,19 @@ describe("View", () => {
 	it("rebuilds after a change and leaves earlier values intact", () => {
 		const title = new LWWRegister("First");
 		const row = new LWWMap({ title });
-		const entities = new WeakMap<object, Entity>();
-		const view = new View(row, entities);
-		const before = view.value;
+		const view = new View();
+		const before = view.read(row);
 
 		title.current = "Changed";
-		const after = view.value;
+		const after = view.read(row);
 
 		assertObject(before);
 		assertObject(after);
 
 		expect(after).toStrictEqual({ title: "Changed" });
 		expect(before).toStrictEqual({ title: "First" });
-		expect(entities.get(after)).toBe(row);
-		expect(entities.get(before)).toBe(row);
+		expect(view.origin(after)).toBe(row);
+		expect(view.origin(before)).toBe(row);
 	});
 
 	it("rebuilds only the changed path and reuses everything else", () => {
@@ -100,14 +104,15 @@ describe("View", () => {
 		const second = new LWWMap({ title: new LWWRegister("Second") });
 		const settings = new LWWMap({ theme: new LWWRegister("dark") });
 		const tickets = new RGA([new LWWMap({ title, assignee }), second]);
-		const view = new View(new LWWMap({ tickets, settings }), new WeakMap<object, Entity>());
-		const before = view.value;
+		const root = new LWWMap({ tickets, settings });
+		const view = new View();
+		const before = view.read(root);
 		const secondReads = vi.spyOn(second, "current", "get");
 		const assigneeReads = vi.spyOn(assignee, "current", "get");
 		const settingsReads = vi.spyOn(settings, "current", "get");
 
 		title.current = "Changed";
-		const after = view.value;
+		const after = view.read(root);
 
 		assertObject(before);
 		assertObject(after);
@@ -133,12 +138,12 @@ describe("View", () => {
 	it("reuses surviving rows at their new positions", () => {
 		const first = new LWWMap({ title: new LWWRegister("First") }, "first");
 		const rows = new RGA([first, new LWWMap({ title: new LWWRegister("Second") })]);
-		const view = new View(rows, new WeakMap<object, Entity>());
-		const before = view.value;
+		const view = new View();
+		const before = view.read(rows);
 
 		rows.remove(first.key);
 		rows.push(new LWWMap({ title: new LWWRegister("Replacement") }, "replacement"));
-		const after = view.value;
+		const after = view.read(rows);
 
 		assertArray(before);
 		assertArray(after);
@@ -150,20 +155,21 @@ describe("View", () => {
 	it("reads unchanged registers again when their parent rebuilds", () => {
 		const title = new LWWRegister("First");
 		const done = new LWWRegister(false);
-		const view = new View(new LWWMap({ title, done }), new WeakMap<object, Entity>());
+		const root = new LWWMap({ title, done });
+		const view = new View();
 
-		void view.value;
+		void view.read(root);
 		const doneReads = vi.spyOn(done, "current", "get");
 
 		title.current = "Changed";
 
-		expect(view.value).toStrictEqual({ title: "Changed", done: false });
+		expect(view.read(root)).toStrictEqual({ title: "Changed", done: false });
 		expect(doneReads).toHaveBeenCalledOnce();
 	});
 
 	it("keeps non-entity values by reference", () => {
 		const label = { text: "red" };
-		const value = new View(new LWWMap({ tag: new LWWRegister({ label }) }), new WeakMap<object, Entity>()).value;
+		const value = new View().read(new LWWMap({ tag: new LWWRegister({ label }) }));
 
 		assertObject(value);
 		assertObject(value.tag);

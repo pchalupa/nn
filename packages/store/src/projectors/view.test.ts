@@ -58,8 +58,8 @@ describe("View", () => {
 		assertObject(value);
 		assertArray(value.tags);
 
-		expect(view.origin(value)).toBe(settings);
-		expect(view.origin(value.tags)).toBe(tags);
+		expect(view.identify(value)).toBe(settings);
+		expect(view.identify(value.tags)).toBe(tags);
 		expect(Reflect.ownKeys(value)).toStrictEqual(["tags"]);
 		expect(Reflect.ownKeys(value.tags)).toStrictEqual(["0", "length"]);
 		expect(Object.isFrozen(value)).toBe(true);
@@ -94,8 +94,8 @@ describe("View", () => {
 
 		expect(after).toStrictEqual({ title: "Changed" });
 		expect(before).toStrictEqual({ title: "First" });
-		expect(view.origin(after)).toBe(row);
-		expect(view.origin(before)).toBe(row);
+		expect(view.identify(after)).toBe(row);
+		expect(view.identify(before)).toBe(row);
 	});
 
 	it("rebuilds only the changed path and reuses everything else", () => {

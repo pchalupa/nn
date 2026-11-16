@@ -11,11 +11,11 @@ import { MapStrategy } from "./map-strategy";
 import { RegisterStrategy } from "./register-strategy";
 import type { ReconcileContext } from "./strategy";
 
-function contextOf(origins: WeakMap<object, Entity> = new WeakMap()): ReconcileContext {
+function contextOf(entities: WeakMap<object, Entity> = new WeakMap()): ReconcileContext {
 	return {
-		draftNodeOf: () => undefined,
-		settle: () => undefined,
-		entityOf: (value) => origins.get(value),
+		inspect: () => undefined,
+		fill: () => undefined,
+		identify: (value) => entities.get(value),
 	};
 }
 
@@ -66,7 +66,7 @@ describe("createReconciliationStrategy", () => {
 	});
 
 	it("matches object list items by identity", () => {
-		const origins = new WeakMap<object, Entity>();
+		const entities = new WeakMap<object, Entity>();
 		const strategy = createReconciliationStrategy(array(object({ title: string() })));
 		const entity = strategy.create([{ title: "A" }, { title: "B" }], "rows");
 
@@ -78,8 +78,8 @@ describe("createReconciliationStrategy", () => {
 
 		const draft = { title: "B" };
 
-		origins.set(draft, second);
-		strategy.reconcile(entity, [draft], contextOf(origins));
+		entities.set(draft, second);
+		strategy.reconcile(entity, [draft], contextOf(entities));
 
 		expect(entity.current).toStrictEqual([second]);
 		expect(entity.find(first.key)).toBeUndefined();

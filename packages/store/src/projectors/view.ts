@@ -4,7 +4,7 @@ import { isObject } from "@nn/guards/is-object";
 
 export class View {
 	private materialized = new WeakMap<Entity, { value: unknown; revision: number }>();
-	private origins = new WeakMap<object, Entity>();
+	private entities = new WeakMap<object, Entity>();
 
 	public read(entity: Entity): unknown {
 		const revision = entity.revision;
@@ -17,15 +17,15 @@ export class View {
 		if (isObject(value)) {
 			Object.freeze(value);
 
-			this.origins.set(value, entity);
+			this.entities.set(value, entity);
 			this.materialized.set(entity, { value, revision });
 		}
 
 		return value;
 	}
 
-	public origin(value: object): Entity | undefined {
-		return this.origins.get(value);
+	public identify(value: object): Entity | undefined {
+		return this.entities.get(value);
 	}
 
 	private project(current: unknown): unknown {

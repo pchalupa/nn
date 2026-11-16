@@ -5,6 +5,8 @@ import { RGA } from "@nn/entities/kinds/rga";
 import { array, boolean, enumeration, number, object, type Schema, string } from "@nn/schema";
 import { describe, expect, it } from "vitest";
 
+import { Draft } from "../projectors/draft";
+import { View } from "../projectors/view";
 import { createReconciliationStrategy } from "./create-strategy";
 import { ListStrategy } from "./list-strategy";
 import { MapStrategy } from "./map-strategy";
@@ -12,14 +14,14 @@ import { RegisterStrategy } from "./register-strategy";
 
 describe("createReconciliationStrategy", () => {
 	it("creates a map strategy for an object schema", () => {
-		const strategy = createReconciliationStrategy(object({ title: string() }), new WeakMap());
+		const strategy = createReconciliationStrategy(object({ title: string() }));
 
 		expect(strategy).toBeInstanceOf(MapStrategy);
 		expect(strategy.create(undefined, "root")).toBeInstanceOf(LWWMap);
 	});
 
 	it("creates a list strategy for an array schema at the root", () => {
-		const strategy = createReconciliationStrategy(array(string()), new WeakMap());
+		const strategy = createReconciliationStrategy(array(string()));
 		const entity = strategy.create(["a", "b"], "tags");
 
 		RGA.assert(entity);
@@ -29,7 +31,7 @@ describe("createReconciliationStrategy", () => {
 	});
 
 	it("creates a list of lists for a nested array schema", () => {
-		const entity = createReconciliationStrategy(array(array(number())), new WeakMap()).create([[1, 2], [3]], "grid");
+		const entity = createReconciliationStrategy(array(array(number()))).create([[1, 2], [3]], "grid");
 
 		RGA.assert(entity);
 
@@ -43,22 +45,22 @@ describe("createReconciliationStrategy", () => {
 	});
 
 	it("matches primitive list items by index", () => {
-		const strategy = createReconciliationStrategy(array(string()), new WeakMap());
+		const strategy = createReconciliationStrategy(array(string()));
 		const entity = strategy.create(["a"], "tags");
 
 		RGA.assert(entity);
 
 		const [first] = entity.current;
 
-		strategy.reconcile(entity, ["b"]);
+		strategy.reconcile(entity, ["b"], new Draft(new View()));
 
 		expect(entity.current[0]).toBe(first);
 		expect(entity.current[0]?.current).toBe("b");
 	});
 
 	it("matches object list items by identity", () => {
-		const entities = new WeakMap<object, Entity>();
-		const strategy = createReconciliationStrategy(array(object({ title: string() })), entities);
+		const origins = new WeakMap<object, Entity>();
+		const strategy = createReconciliationStrategy(array(object({ title: string() })));
 		const entity = strategy.create([{ title: "A" }, { title: "B" }], "rows");
 
 		RGA.assert(entity);
@@ -69,8 +71,8 @@ describe("createReconciliationStrategy", () => {
 
 		const draft = { title: "B" };
 
-		entities.set(draft, second);
-		strategy.reconcile(entity, [draft]);
+		origins.set(draft, second);
+		strategy.reconcile(entity, [draft], new Draft({ origin: (value) => origins.get(value) }));
 
 		expect(entity.current).toStrictEqual([second]);
 		expect(entity.find(first.key)).toBeUndefined();
@@ -82,7 +84,7 @@ describe("createReconciliationStrategy", () => {
 		["boolean", boolean(), false],
 		["enumeration", enumeration("todo", "done"), "todo"],
 	])("creates a register strategy with a default for a %s schema", (_name, schema, value) => {
-		const strategy = createReconciliationStrategy(schema, new WeakMap());
+		const strategy = createReconciliationStrategy(schema);
 		const entity = strategy.create(undefined, "field");
 
 		expect(strategy).toBeInstanceOf(RegisterStrategy);
@@ -91,9 +93,9 @@ describe("createReconciliationStrategy", () => {
 	});
 
 	it("throws a type error for an unsupported schema", () => {
-		// oxlint-disable-next-line typescript/consistent-type-assertions
-		expect(() => createReconciliationStrategy({ type: "date" } as unknown as Schema, new WeakMap())).toThrow(
-			new TypeError('Unsupported schema type "date".'),
-		);
+		expect(() =>
+			// oxlint-disable-next-line typescript/consistent-type-assertions
+			createReconciliationStrategy({ type: "date" } as unknown as Schema),
+		).toThrow(new TypeError('Unsupported schema type "date".'));
 	});
 });

@@ -1,4 +1,3 @@
-import type { Entity } from "@nn/entities/entity";
 import type { Schema } from "@nn/schema";
 import { ArraySchema } from "@nn/schema/array-schema";
 import { BooleanSchema } from "@nn/schema/boolean-schema";
@@ -12,21 +11,21 @@ import { MapStrategy } from "./map-strategy";
 import { RegisterStrategy } from "./register-strategy";
 import type { Strategy } from "./strategy";
 
-export function createReconciliationStrategy(schema: Schema, entities: WeakMap<object, Entity>): Strategy {
+export function createReconciliationStrategy(schema: Schema): Strategy {
 	if (ObjectSchema.is(schema)) {
 		const fields = new Map<string, Strategy>();
 
 		for (const name in schema.properties) {
-			fields.set(name, createReconciliationStrategy(schema.properties[name], entities));
+			fields.set(name, createReconciliationStrategy(schema.properties[name]));
 		}
 
 		return new MapStrategy(fields);
 	}
 
 	if (ArraySchema.is(schema)) {
-		const items = createReconciliationStrategy(schema.items, entities);
+		const items = createReconciliationStrategy(schema.items);
 
-		return new ListStrategy(items, entities);
+		return new ListStrategy(items);
 	}
 
 	if (StringSchema.is(schema)) return new RegisterStrategy("");

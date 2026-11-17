@@ -1,3 +1,4 @@
+import { isString } from "@nn/guards/is-string";
 import { Time } from "@nn/time";
 
 import type { Encoded } from "./codable";
@@ -69,7 +70,7 @@ export class LWWRegister<Value> extends Entity<Value> {
 	): asserts encoded is Encoded<unknown, { kind: string; timestamp: string }> {
 		const { metadata } = encoded;
 
-		if (!("timestamp" in metadata) || typeof metadata.timestamp !== "string") {
+		if (!("timestamp" in metadata) || !isString(metadata.timestamp)) {
 			throw new TypeError("Invalid encoded LWWRegister.");
 		}
 	}

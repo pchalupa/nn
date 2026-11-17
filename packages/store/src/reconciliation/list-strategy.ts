@@ -79,7 +79,6 @@ export class ListStrategy implements Strategy {
 
 	private match(list: RGA<Entity>, value: readonly unknown[], context: ReconcileContext): Array<Entity | undefined> {
 		const matches: Array<Entity | undefined> = [];
-		let current: Entity[] | undefined;
 
 		for (let index = 0; index < value.length; index++) {
 			const item = value[index];
@@ -87,8 +86,7 @@ export class ListStrategy implements Strategy {
 			if (isObject(item)) {
 				matches.push(this.find(list, item, context));
 			} else {
-				current ??= list.current;
-				matches.push(current[index]);
+				matches.push(list.current[index]);
 			}
 		}
 

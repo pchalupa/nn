@@ -1,3 +1,6 @@
+import { isObject } from "@nn/guards/is-object";
+import { isString } from "@nn/guards/is-string";
+
 import type { Entity } from "./entity";
 import { LWWMap } from "./lww-map";
 import { LWWRegister } from "./lww-register";
@@ -25,15 +28,11 @@ export const entities = { LWWRegister, LWWMap, RGA };
 
 export function assertEncoded(value: unknown): asserts value is Encoded {
 	if (
-		typeof value !== "object" ||
-		value === null ||
+		!isObject(value) ||
 		!("key" in value) ||
 		!("data" in value) ||
-		!("metadata" in value) ||
-		typeof value.metadata !== "object" ||
-		value.metadata === null ||
-		!("kind" in value.metadata) ||
-		typeof value.metadata.kind !== "string"
+		!isObject(value.metadata) ||
+		!isString(value.metadata.kind)
 	) {
 		throw new TypeError("Invalid encoded entity.");
 	}

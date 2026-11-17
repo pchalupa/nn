@@ -1,7 +1,6 @@
 import { Time } from "@nn/time";
 import { describe, it } from "vitest";
 
-import { Codec } from "./codec";
 import { LWWRegister } from "./lww-register";
 import { RGA } from "./rga";
 
@@ -16,13 +15,6 @@ function createList() {
 }
 
 describe("RGA", () => {
-	it("encodes and decodes a list of 1,000 items", async ({ bench }) => {
-		const codec = new Codec();
-		const list = createList();
-
-		await bench("codec.decode(list.encode())", () => codec.decode(list.encode())).run(options);
-	});
-
 	it("merges an equal list of 1,000 items", async ({ bench }) => {
 		const list = createList();
 		const remote = list.map((item) => new LWWRegister(item.current, item.key, item.timestamp));

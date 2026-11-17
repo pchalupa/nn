@@ -1,6 +1,6 @@
 # Repository Guide
 
-- `packages/*` are public `@nn/*` libraries, except the private `@nn/build-config` and `@nn/typescript-config`; `apps/*` are private examples.
+- `packages/*` are public `@nn/*` libraries, except the private `@nn/build-config`, `@nn/test-config` and `@nn/typescript-config`; `apps/*` are private examples.
 - Library `exports` are generated: edit the entries in a package's `tsdown.config.ts`, then run `pnpm build` to rewrite `exports` and `publishConfig.exports`.
 - In the workspace, library `exports` resolve to `src/*.ts`, so everything runs on source without a build. Only `pnpm pack` and `pnpm publish` swap in `publishConfig.exports` from `dist`, so publish through pnpm (`changeset publish` uses it) and never `npm publish`.
 - Do not use TypeScript type casts (`as Type` or `<Type>value`); narrow or model the type correctly instead.

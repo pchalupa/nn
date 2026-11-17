@@ -43,7 +43,7 @@ It should stay small and easy to maintain. A mobile app and a Next.js app will c
 
 ### Agents
 
-An agent can use the board as a user. This is a new concept and how it works is still open.
+Agents are first-class citizens, just like human users. An agent can use the board as a user.
 
 - An agent is a user with a name. It can be an assignee, and its changes and comments show who made them.
 - An agent can do what a person can: read the board, create, edit, move and delete tickets, and comment.

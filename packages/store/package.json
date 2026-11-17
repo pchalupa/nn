@@ -48,8 +48,8 @@
 		"@nn/time": "workspace:^"
 	},
 	"devDependencies": {
-		"@codspeed/vitest-plugin": "catalog:",
 		"@nn/build-config": "workspace:^",
+		"@nn/test-config": "workspace:^",
 		"@nn/typescript-config": "workspace:^",
 		"@types/node": "catalog:",
 		"tsdown": "catalog:",

@@ -1,6 +1,6 @@
 {
 	"name": "@nn/cache",
-	"version": "0.0.0",
+	"version": "1.0.0",
 	"description": "Caches for values derived from other state",
 	"keywords": [
 		"cache",

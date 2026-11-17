@@ -25,17 +25,19 @@ describe("Store", () => {
 
 	it("creates a list of 1,000 items", async ({ bench }) => {
 		let store = new Store(schema);
+		let tickets = createTickets();
 
 		await bench(
 			"store.update()",
 			{
 				beforeEach() {
 					store = new Store(schema);
+					tickets = createTickets();
 				},
 			},
 			() =>
 				store.update((draft) => {
-					draft.tickets = createTickets();
+					draft.tickets = tickets;
 				}),
 		).run(options);
 	});

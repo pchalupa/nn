@@ -471,6 +471,68 @@ describe("RGA", () => {
 		});
 	});
 
+	describe("current", () => {
+		const keys = (list: RGA<LWWRegister<string>>) => list.current.map((item) => item.key);
+
+		it("returns the same rows until membership changes", () => {
+			const list = new RGA([new LWWRegister("1", "a"), new LWWRegister("2", "b")]);
+
+			expect(list.current).toBe(list.current);
+		});
+
+		it("returns new rows after a push, removal or replacement", () => {
+			const list = new RGA([new LWWRegister("1", "a"), new LWWRegister("2", "b")]);
+			let previous = list.current;
+
+			list.push(new LWWRegister("3", "c"));
+			expect(list.current).not.toBe(previous);
+			expect(keys(list)).toStrictEqual(["a", "b", "c"]);
+
+			previous = list.current;
+			list.remove("a");
+			expect(list.current).not.toBe(previous);
+			expect(keys(list)).toStrictEqual(["b", "c"]);
+
+			previous = list.current;
+			list.current = [new LWWRegister("4", "d")];
+			expect(list.current).not.toBe(previous);
+			expect(keys(list)).toStrictEqual(["d"]);
+		});
+
+		it("returns no rows after assigning an empty list", () => {
+			const list = new RGA([new LWWRegister("1", "a")]);
+			const previous = list.current;
+
+			list.current = [];
+
+			expect(list.current).not.toBe(previous);
+			expect(list.current).toStrictEqual([]);
+		});
+
+		it("returns new rows after a merge that adds or removes", () => {
+			const local = new RGA([new LWWRegister("1", "a"), new LWWRegister("2", "b")]);
+			const remote = new RGA([new LWWRegister("1", "a"), new LWWRegister("2", "b"), new LWWRegister("3", "c")]);
+			const previous = local.current;
+
+			remote.remove("a");
+			local.merge(remote);
+
+			expect(local.current).not.toBe(previous);
+			expect(keys(local)).toStrictEqual(["b", "c"]);
+		});
+
+		it("keeps its rows when an item changes", () => {
+			const list = new RGA([new LWWRegister("1", "a")]);
+			const rows = list.current;
+			const [first] = rows;
+
+			LWWRegister.assert(first);
+			first.current = "changed";
+
+			expect(list.current).toBe(rows);
+		});
+	});
+
 	describe("map", () => {
 		it("transforms every item and keeps the list key", () => {
 			const list = new RGA([new LWWRegister("1", "a"), new LWWRegister("2", "b")], "list");

@@ -21,4 +21,10 @@ describe("RGA", () => {
 
 		await bench("list.merge(remote)", () => list.merge(remote)).run(options);
 	});
+
+	it("encodes a list of 1,000 items", async ({ bench }) => {
+		const list = createList();
+
+		await bench("list.encode()", () => list.encode()).run(options);
+	});
 });

@@ -1,6 +1,7 @@
 import type { Encoded } from "@nn/entities/codable";
 import { Codec } from "@nn/entities/codec";
 import type { Entity } from "@nn/entities/entity";
+import type { LWWMap } from "@nn/entities/kinds/lww-map";
 import { Observable, type Unsubscribe } from "@nn/observable/observable";
 import type { InferStateType, Schema } from "@nn/schema";
 import type { ObjectSchema } from "@nn/schema/object-schema";
@@ -9,7 +10,7 @@ import { Time } from "@nn/time";
 import { Draft } from "./projections/draft";
 import { View } from "./projections/view";
 import { createReconciliationStrategy } from "./reconciliation/create-strategy";
-import { MapStrategy } from "./reconciliation/map-strategy";
+import type { MapStrategy } from "./reconciliation/map-strategy";
 
 type ReadonlyData<Value> = {
 	readonly [Key in keyof Value]: ReadonlyData<Value[Key]>;
@@ -20,14 +21,10 @@ export class Store<StateSchema extends ObjectSchema<Record<string, Schema>> = Ob
 	private codec = new Codec();
 	private view = new View();
 	private reconciliationStrategy: MapStrategy;
-	private root: ReturnType<MapStrategy["create"]>;
+	private root: LWWMap<Record<string, Entity>>;
 
 	constructor(public readonly schema: StateSchema) {
-		const reconciliationStrategy = createReconciliationStrategy(schema);
-
-		MapStrategy.assert(reconciliationStrategy);
-
-		this.reconciliationStrategy = reconciliationStrategy;
+		this.reconciliationStrategy = createReconciliationStrategy(schema);
 		this.root = this.reconciliationStrategy.create(undefined, "state", Time.epoch());
 	}
 

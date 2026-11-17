@@ -3,7 +3,7 @@ import { LWWMap } from "@nn/entities/kinds/lww-map";
 import { LWWRegister } from "@nn/entities/kinds/lww-register";
 import { RGA } from "@nn/entities/kinds/rga";
 import { array, boolean, enumeration, number, object, string } from "@nn/schema";
-import { describe, expect, it } from "vitest";
+import { describe, expect, expectTypeOf, it } from "vitest";
 
 import { createReconciliationStrategy } from "./create-strategy";
 import { ListStrategy } from "./list-strategy";
@@ -106,5 +106,20 @@ describe("createReconciliationStrategy", () => {
 		Reflect.set(schema, "type", "date");
 
 		expect(() => createReconciliationStrategy(schema)).toThrow(new TypeError('Unsupported schema type "date".'));
+	});
+
+	it("types the strategy for an object schema as a map strategy", () => {
+		expectTypeOf(createReconciliationStrategy(object({ title: string() }))).toEqualTypeOf<MapStrategy>();
+	});
+
+	it("types the strategy for an array schema as a list strategy", () => {
+		expectTypeOf(createReconciliationStrategy(array(object({ title: string() })))).toEqualTypeOf<ListStrategy>();
+	});
+
+	it("types the strategy for a primitive schema as a register strategy", () => {
+		expectTypeOf(createReconciliationStrategy(string())).toEqualTypeOf<RegisterStrategy>();
+		expectTypeOf(createReconciliationStrategy(number())).toEqualTypeOf<RegisterStrategy>();
+		expectTypeOf(createReconciliationStrategy(boolean())).toEqualTypeOf<RegisterStrategy>();
+		expectTypeOf(createReconciliationStrategy(enumeration("todo", "done"))).toEqualTypeOf<RegisterStrategy>();
 	});
 });

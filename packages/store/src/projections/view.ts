@@ -9,9 +9,29 @@ export class View {
 	private cachedProjections = new VersionedCache<Entity, object>();
 
 	private materialize = (entity: Entity): object => {
-		const value = this.project(entity.current);
+		const current = entity.current;
+		let value: object;
 
-		if (!isObject(value)) throw new TypeError("Expected an object projection.");
+		if (isArray(current)) {
+			const items: unknown[] = [];
+
+			for (const item of current) items.push(this.unwrap(item));
+
+			value = items;
+		} else if (isObject(current)) {
+			const fields: Record<string, unknown> = {};
+
+			for (const key in current) {
+				Object.defineProperty(fields, key, {
+					value: this.unwrap(current[key]),
+					writable: true,
+					enumerable: true,
+					configurable: true,
+				});
+			}
+
+			value = fields;
+		} else throw new TypeError("Expected an object projection.");
 
 		Object.freeze(value);
 		this.entities.set(value, entity);
@@ -27,33 +47,6 @@ export class View {
 
 	public identify(value: object): Entity | undefined {
 		return this.entities.get(value);
-	}
-
-	private project(current: unknown): unknown {
-		if (isArray(current)) {
-			const value: unknown[] = [];
-
-			for (const item of current) value.push(this.unwrap(item));
-
-			return value;
-		}
-
-		if (isObject(current)) {
-			const value: Record<string, unknown> = {};
-
-			for (const key in current) {
-				Object.defineProperty(value, key, {
-					value: this.unwrap(current[key]),
-					writable: true,
-					enumerable: true,
-					configurable: true,
-				});
-			}
-
-			return value;
-		}
-
-		return current;
 	}
 
 	private unwrap(value: unknown): unknown {

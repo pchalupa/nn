@@ -11,6 +11,12 @@ import { MapStrategy } from "./map-strategy";
 import { RegisterStrategy } from "./register-strategy";
 import type { Strategy } from "./strategy";
 
+export function createReconciliationStrategy(schema: ObjectSchema<Record<string, Schema>>): MapStrategy;
+export function createReconciliationStrategy(schema: ArraySchema<Schema>): ListStrategy;
+export function createReconciliationStrategy(
+	schema: StringSchema | NumberSchema | BooleanSchema | EnumerationSchema<readonly [string, ...string[]]>,
+): RegisterStrategy;
+export function createReconciliationStrategy(schema: Schema): Strategy;
 export function createReconciliationStrategy(schema: Schema): Strategy {
 	if (ObjectSchema.is(schema)) {
 		const fields = new Map<string, Strategy>();

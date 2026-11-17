@@ -26,7 +26,7 @@ export interface SessionDelegate {
 }
 
 export class Session implements Delegatable<SessionDelegate> {
-	public readonly changes = new Observable<[SessionState]>();
+	public readonly changes: Observable<[SessionState]> = new Observable();
 	public delegate?: SessionDelegate;
 	private queue: SessionEvent[] = [];
 	private currentState = SessionState.Idle;

@@ -10,7 +10,7 @@ export interface DrawerProps {
 	onClose: () => void;
 }
 
-export function Drawer({ title, label, children, onClose }: DrawerProps) {
+export function Drawer({ title, label, children, onClose }: DrawerProps): ReactNode {
 	return (
 		<aside className="drawer" aria-label={label}>
 			<header className="drawer-bar">

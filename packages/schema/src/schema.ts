@@ -1,9 +1,7 @@
 export type InferStateType<FromSchema> = FromSchema extends Schema<infer Type> ? Type : never;
 
-declare const InferredType: unique symbol;
-
 export abstract class Schema<Type = unknown> {
-	declare public readonly [InferredType]: Type;
+	declare protected readonly inferredType: Type;
 	public abstract readonly type: "string" | "number" | "boolean" | "enumeration" | "object" | "array";
 	declare public title?: string;
 	declare public description?: string;

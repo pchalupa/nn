@@ -8,7 +8,7 @@ export const css = (strings: TemplateStringsArray, ...values: unknown[]): void =
 	styleSheet?.replaceSync(rules.join(""));
 };
 
-export const getStyleSheet = () => {
+export const getStyleSheet = (): CSSStyleSheet => {
 	if (!styleSheet) {
 		styleSheet = new CSSStyleSheet();
 		styleSheet.replaceSync(rules.join(""));

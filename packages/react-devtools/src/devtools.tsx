@@ -1,5 +1,5 @@
 import type { Store } from "@nn/store";
-import { useState } from "react";
+import { type ReactNode, useState } from "react";
 import { createPortal } from "react-dom";
 
 import { Button } from "./components/button";
@@ -12,7 +12,7 @@ export interface DevtoolsProps {
 	store: Store;
 }
 
-export default function Devtools({ store }: DevtoolsProps) {
+export default function Devtools({ store }: DevtoolsProps): ReactNode {
 	const [open, setOpen] = useState(false);
 
 	const handleOpen = () => setOpen(true);

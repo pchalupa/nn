@@ -14,7 +14,7 @@ class GlobalTime {
 	/** Logical time */
 	protected static counter = 0;
 	/** Identity of the replica this process stamps onto every time it mints */
-	protected static replicaId = ID.create();
+	protected static replicaId: string = ID.create();
 
 	/**
 	 * Moves the shared clock to the present, keeping the logical time inside the timestamp field.

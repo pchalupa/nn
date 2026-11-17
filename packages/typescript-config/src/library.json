@@ -1,5 +1,9 @@
 {
 	"$schema": "https://json.schemastore.org/tsconfig",
 	"display": "Nn",
-	"extends": "./base.json"
+	"extends": "./base.json",
+	"compilerOptions": {
+		"declaration": true,
+		"isolatedDeclarations": true
+	}
 }

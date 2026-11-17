@@ -1,6 +1,6 @@
-import { libraryConfig } from "@nn/build-config/tsdown";
+import { libraryConfig, type UserConfig } from "@nn/build-config/tsdown";
 
-export default libraryConfig({
+const config: UserConfig = libraryConfig({
 	index: "src/index.ts",
 	"array-schema": "src/array-schema.ts",
 	"boolean-schema": "src/boolean-schema.ts",
@@ -9,3 +9,5 @@ export default libraryConfig({
 	"object-schema": "src/object-schema.ts",
 	"string-schema": "src/string-schema.ts",
 });
+
+export default config;

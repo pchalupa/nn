@@ -1,6 +1,6 @@
-import { libraryConfig } from "@nn/build-config/tsdown";
+import { libraryConfig, type UserConfig } from "@nn/build-config/tsdown";
 
-export default libraryConfig({
+const config: UserConfig = libraryConfig({
 	"is-array": "src/is-array.ts",
 	"is-object": "src/is-object.ts",
 	"is-plain-object": "src/is-plain-object.ts",
@@ -10,3 +10,5 @@ export default libraryConfig({
 	"assert-plain-object": "src/assert-plain-object.ts",
 	"assert-string": "src/assert-string.ts",
 });
+
+export default config;

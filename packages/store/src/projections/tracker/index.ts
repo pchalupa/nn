@@ -9,7 +9,7 @@ import { copy, type Tracker } from "./tracker";
 export function track(
 	entity: Entity,
 	parent: Tracker | undefined,
-	trackers = parent?.trackers ?? new Map<Entity, Tracker>(),
+	trackers: Map<Entity, Tracker> = parent?.trackers ?? new Map(),
 ): unknown {
 	if (RGA.is(entity)) return new ListTracker(entity, [], parent, trackers, track).proxy;
 

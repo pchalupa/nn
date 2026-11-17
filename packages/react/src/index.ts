@@ -12,7 +12,15 @@ type Snapshot<Value> = {
 
 type Update<Data> = (recipe: (draft: Data) => void) => void;
 
-export function createStore<StoreSchema extends ObjectSchema<Record<string, Schema>>>(schema: StoreSchema) {
+export interface ReactStore<StoreSchema extends ObjectSchema<Record<string, Schema>>> {
+	store: Store<StoreSchema>;
+	useRead<Result>(selector: (data: Snapshot<InferStateType<StoreSchema>>) => Result): Result;
+	useUpdate(): Update<InferStateType<StoreSchema>>;
+}
+
+export function createStore<StoreSchema extends ObjectSchema<Record<string, Schema>>>(
+	schema: StoreSchema,
+): ReactStore<StoreSchema> {
 	type Data = InferStateType<StoreSchema>;
 
 	const store = new Store(schema);

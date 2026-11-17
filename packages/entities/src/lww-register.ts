@@ -8,7 +8,7 @@ export class LWWRegister<Value> extends Entity<Value> {
 	constructor(
 		private value: Value,
 		key?: string,
-		public timestamp = Time.now(),
+		public timestamp: Time = Time.now(),
 	) {
 		super("LWWRegister", key);
 	}

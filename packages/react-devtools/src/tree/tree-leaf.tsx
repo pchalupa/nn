@@ -1,4 +1,5 @@
 import { isString } from "@nn/guards/is-string";
+import type { ReactNode } from "react";
 
 import { Text } from "../components/text";
 import { css } from "../styles/css";
@@ -9,7 +10,7 @@ export interface TreeLeafProps {
 	level: number;
 }
 
-export function TreeLeaf({ label, value, level }: TreeLeafProps) {
+export function TreeLeaf({ label, value, level }: TreeLeafProps): ReactNode {
 	const style: Record<string, number> = { "--level": level };
 	const type = value === null ? "null" : typeof value;
 	const serializedValue = isString(value) ? JSON.stringify(value) : String(value);

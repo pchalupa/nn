@@ -1,3 +1,5 @@
+import type { ReactNode } from "react";
+
 import { css } from "../styles/css";
 
 export interface ButtonProps {
@@ -7,7 +9,7 @@ export interface ButtonProps {
 	onClick?: () => void;
 }
 
-export function Button({ text, label, variant, onClick }: ButtonProps) {
+export function Button({ text, label, variant, onClick }: ButtonProps): ReactNode {
 	return (
 		<button type="button" className="button" data-variant={variant ?? "outlined"} aria-label={label} onClick={onClick}>
 			{text}

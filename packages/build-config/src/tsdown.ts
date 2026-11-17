@@ -1,6 +1,8 @@
 import babel from "@rolldown/plugin-babel";
 import { defineConfig, type UserConfig } from "tsdown";
 
+export type { UserConfig };
+
 export function libraryConfig(entry: UserConfig["entry"]): UserConfig {
 	return defineConfig({
 		entry,

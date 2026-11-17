@@ -1,5 +1,6 @@
 import { isObject } from "@nn/guards/is-object";
 import type { Store } from "@nn/store";
+import type { ReactNode } from "react";
 
 import { useStore } from "../hooks/use-store";
 import { css } from "../styles/css";
@@ -9,7 +10,7 @@ export interface TreeProps {
 	store: Store;
 }
 
-export function Tree({ store }: TreeProps) {
+export function Tree({ store }: TreeProps): ReactNode {
 	const value = useStore(store);
 	const nodes = isObject(value) ? Object.entries(value) : [];
 

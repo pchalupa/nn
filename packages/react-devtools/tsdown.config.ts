@@ -1,5 +1,7 @@
-import { reactLibraryConfig } from "@nn/build-config/tsdown";
+import { reactLibraryConfig, type UserConfig } from "@nn/build-config/tsdown";
 
-export default reactLibraryConfig({
+const config: UserConfig = reactLibraryConfig({
 	index: "src/index.ts",
 });
+
+export default config;

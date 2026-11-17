@@ -1,6 +1,6 @@
-import { libraryConfig } from "@nn/build-config/tsdown";
+import { libraryConfig, type UserConfig } from "@nn/build-config/tsdown";
 
-export default libraryConfig({
+const config: UserConfig = libraryConfig({
 	entity: "src/entity.ts",
 	codable: "src/codable.ts",
 	codec: "src/codec.ts",
@@ -8,3 +8,5 @@ export default libraryConfig({
 	"kinds/lww-map": "src/lww-map.ts",
 	"kinds/rga": "src/rga.ts",
 });
+
+export default config;

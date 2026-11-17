@@ -1,4 +1,5 @@
 import { isObject } from "@nn/guards/is-object";
+import type { ReactNode } from "react";
 
 import { css } from "../styles/css";
 import { TreeBranch } from "./tree-branch";
@@ -10,7 +11,7 @@ export interface TreeNodeProps {
 	level: number;
 }
 
-export function TreeNode({ label, value, level }: TreeNodeProps) {
+export function TreeNode({ label, value, level }: TreeNodeProps): ReactNode {
 	if (isObject(value)) {
 		return (
 			<TreeBranch label={label} value={value} level={level}>

@@ -1,6 +1,8 @@
 import { benchmarkPlugin } from "@nn/test-config/vitest/plugins";
-import { defineProject } from "vitest/config";
+import { defineProject, type UserWorkspaceConfig } from "vitest/config";
 
-export default defineProject({
+const config: UserWorkspaceConfig = defineProject({
 	plugins: [benchmarkPlugin()],
 });
+
+export default config;

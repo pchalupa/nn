@@ -1,5 +1,7 @@
-import { libraryConfig } from "@nn/build-config/tsdown";
+import { libraryConfig, type UserConfig } from "@nn/build-config/tsdown";
 
-export default libraryConfig({
+const config: UserConfig = libraryConfig({
 	index: "src/broadcast-sync.ts",
 });
+
+export default config;

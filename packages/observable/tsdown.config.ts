@@ -1,6 +1,8 @@
-import { libraryConfig } from "@nn/build-config/tsdown";
+import { libraryConfig, type UserConfig } from "@nn/build-config/tsdown";
 
-export default libraryConfig({
+const config: UserConfig = libraryConfig({
 	index: "src/delegatable.ts",
 	observable: "src/observable.ts",
 });
+
+export default config;

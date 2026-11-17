@@ -11,7 +11,7 @@ export interface TreeBranchProps {
 	children: () => ReactNode;
 }
 
-export function TreeBranch({ label, value, level, children }: TreeBranchProps) {
+export function TreeBranch({ label, value, level, children }: TreeBranchProps): ReactNode {
 	const [expanded, setExpanded] = useState(false);
 	const style: Record<string, number> = { "--level": level };
 	const expandable = Object.keys(value).length > 0;

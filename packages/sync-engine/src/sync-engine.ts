@@ -7,8 +7,8 @@ import { Session, type SessionState } from "./session";
 export { SessionState as SyncState } from "./session";
 
 export abstract class SyncEngine {
-	protected readonly session = new Session();
-	protected readonly errors = new Observable<[unknown]>();
+	protected readonly session: Session = new Session();
+	protected readonly errors: Observable<[unknown]> = new Observable();
 
 	constructor(protected readonly store: Store) {
 		let unsubscribeFromStoreChanges: () => void | undefined;

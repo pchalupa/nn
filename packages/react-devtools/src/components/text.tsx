@@ -6,7 +6,7 @@ export interface TextProps {
 	children: ReactNode;
 }
 
-export function Text({ children }: TextProps) {
+export function Text({ children }: TextProps): ReactNode {
 	return <span className="text">{children}</span>;
 }
 

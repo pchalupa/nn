@@ -24,7 +24,11 @@ export interface Decodable<Instance extends Entity = Entity> {
 	decode(encoded: Encoded, decoder: Decoder): Instance;
 }
 
-export const entities = { LWWRegister, LWWMap, RGA };
+export const entities: { LWWRegister: typeof LWWRegister; LWWMap: typeof LWWMap; RGA: typeof RGA } = {
+	LWWRegister,
+	LWWMap,
+	RGA,
+};
 
 export function assertEncoded(value: unknown): asserts value is Encoded {
 	if (

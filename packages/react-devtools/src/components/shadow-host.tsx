@@ -7,7 +7,7 @@ interface ShadowHostProps {
 	children: ReactNode;
 }
 
-export function ShadowHost({ children }: ShadowHostProps) {
+export function ShadowHost({ children }: ShadowHostProps): ReactNode {
 	const [shadowRoot, setShadowRoot] = useState<ShadowRoot | null>(null);
 	const hostRef = useRef<HTMLDivElement>(null);
 

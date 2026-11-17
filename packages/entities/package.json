@@ -57,6 +57,7 @@
 		"@nn/time": "workspace:^"
 	},
 	"devDependencies": {
+		"@codspeed/vitest-plugin": "catalog:",
 		"@nn/build-config": "workspace:^",
 		"@nn/typescript-config": "workspace:^",
 		"tsdown": "catalog:",

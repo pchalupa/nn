@@ -30,6 +30,8 @@ export class LWWRegister<Value> extends Entity<Value> {
 		if (this.timestamp.isAfter(remote.timestamp)) {
 			remote.value = this.value;
 			remote.timestamp = this.timestamp;
+
+			remote.didChange();
 		} else if (remote.timestamp.isAfter(this.timestamp)) {
 			this.value = remote.value;
 			this.timestamp = remote.timestamp;

@@ -1,27 +1,26 @@
+import { VersionedCache } from "@nn/cache/versioned-cache";
 import { Entity } from "@nn/entities/entity";
+import { LWWRegister } from "@nn/entities/kinds/lww-register";
 import { isArray } from "@nn/guards/is-array";
 import { isObject } from "@nn/guards/is-object";
 
 export class View {
-	private materialized = new WeakMap<Entity, { value: unknown; revision: number }>();
 	private entities = new WeakMap<object, Entity>();
+	private readonly cachedProjections = new VersionedCache<Entity, object>();
 
 	public read(entity: Entity): unknown {
-		const revision = entity.revision;
-		const cached = this.materialized.get(entity);
+		if (LWWRegister.is(entity)) return entity.current;
 
-		if (cached !== undefined && cached.revision === revision) return cached.value;
+		return this.cachedProjections.ensure(entity, entity.revision, () => {
+			const value = this.project(entity.current);
 
-		const value = this.project(entity.current);
+			if (!isObject(value)) throw new TypeError("Expected an object projection.");
 
-		if (isObject(value)) {
 			Object.freeze(value);
-
 			this.entities.set(value, entity);
-			this.materialized.set(entity, { value, revision });
-		}
 
-		return value;
+			return value;
+		});
 	}
 
 	public identify(value: object): Entity | undefined {

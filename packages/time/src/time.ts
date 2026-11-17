@@ -1,3 +1,4 @@
+import { InvalidatableCache } from "@nn/cache/invalidatable-cache";
 import { ID } from "@nn/id";
 
 import { CounterOverflowError } from "./errors/counter-overflow-error";
@@ -36,7 +37,7 @@ class GlobalTime {
 
 /** Represents time using a Hybrid Logical Clock (HLC) model */
 export class Time extends GlobalTime {
-	private cachedTimeString: string | undefined;
+	private readonly cachedTimeString = new InvalidatableCache<string>();
 
 	constructor(
 		/** Physical time in milliseconds */
@@ -64,14 +65,12 @@ export class Time extends GlobalTime {
 	 * @example '2024-11-10T12:39:10.776Z+00002+9f1d0b07-7a3c-4d1e-9f52-6c2a4e8b1d30'
 	 */
 	public toString(): string {
-		if (!this.cachedTimeString) {
+		return this.cachedTimeString.ensure(() => {
 			const time = new Date(this.time).toISOString();
 			const counter = this.counter.toString(16).padStart(COUNTER_DIGITS, "0");
 
-			this.cachedTimeString = [time, counter, this.replicaId].join(TIMESTAMP_DELIMITER);
-		}
-
-		return this.cachedTimeString;
+			return [time, counter, this.replicaId].join(TIMESTAMP_DELIMITER);
+		});
 	}
 
 	/** Orders this time against another. */

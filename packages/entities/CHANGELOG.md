@@ -1,5 +1,14 @@
 # @nn/entities
 
+## 4.2.1
+
+### Patch Changes
+
+- Updated dependencies [91a6bc5]
+- Updated dependencies [91a6bc5]
+  - @nn/cache@1.0.0
+  - @nn/time@1.1.1
+
 ## 4.2.0
 
 ### Minor Changes

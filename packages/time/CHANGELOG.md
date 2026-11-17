@@ -1,5 +1,13 @@
 # @nn/time
 
+## 1.1.1
+
+### Patch Changes
+
+- 91a6bc5: Make repeated encodes cheaper. A time now formats its timestamp string once and reuses it.
+- Updated dependencies [91a6bc5]
+  - @nn/cache@1.0.0
+
 ## 1.1.0
 
 ### Minor Changes

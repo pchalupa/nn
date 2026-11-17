@@ -1,5 +1,7 @@
+import { isObject } from "./is-object";
+
 export function isPlainObject(value: unknown): value is Record<string, unknown> {
-	if (typeof value !== "object" || value === null) return false;
+	if (!isObject(value)) return false;
 
 	const prototype = Object.getPrototypeOf(value);
 

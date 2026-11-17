@@ -36,7 +36,7 @@ class GlobalTime {
 
 /** Represents time using a Hybrid Logical Clock (HLC) model */
 export class Time extends GlobalTime {
-	private formattedTimeString: string | undefined;
+	private cachedTimeString: string | undefined;
 
 	constructor(
 		/** Physical time in milliseconds */
@@ -64,14 +64,14 @@ export class Time extends GlobalTime {
 	 * @example '2024-11-10T12:39:10.776Z+00002+9f1d0b07-7a3c-4d1e-9f52-6c2a4e8b1d30'
 	 */
 	public toString(): string {
-		if (!this.formattedTimeString) {
+		if (!this.cachedTimeString) {
 			const time = new Date(this.time).toISOString();
 			const counter = this.counter.toString(16).padStart(COUNTER_DIGITS, "0");
 
-			this.formattedTimeString = [time, counter, this.replicaId].join(TIMESTAMP_DELIMITER);
+			this.cachedTimeString = [time, counter, this.replicaId].join(TIMESTAMP_DELIMITER);
 		}
 
-		return this.formattedTimeString;
+		return this.cachedTimeString;
 	}
 
 	/** Orders this time against another. */

@@ -16,6 +16,8 @@ jobs:
           cache: "pnpm"
       - run: pnpm install
       - uses: CodSpeedHQ/action@v5
+        env:
+          NODE_OPTIONS: --disable-wasm-trap-handler
         with:
           mode: simulation,memory
           run: pnpm bench

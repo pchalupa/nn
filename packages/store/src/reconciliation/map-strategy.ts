@@ -1,14 +1,12 @@
-import { Entity } from "@nn/entities/entity";
+import type { Entity } from "@nn/entities/entity";
 import { LWWMap } from "@nn/entities/kinds/lww-map";
 import { isObject } from "@nn/guards/is-object";
 import { Time } from "@nn/time";
 
-import { type ReconcileContext, Strategy } from "./strategy";
+import type { ReconcileContext, Strategy } from "./strategy";
 
-export class MapStrategy extends Strategy {
-	constructor(private fields: ReadonlyMap<string, Strategy>) {
-		super();
-	}
+export class MapStrategy implements Strategy {
+	constructor(private fields: ReadonlyMap<string, Strategy>) {}
 
 	public create(value: unknown, key: string, timestamp?: Time): LWWMap<Record<string, Entity>> {
 		const source = isObject(value) ? value : {};
@@ -36,7 +34,7 @@ export class MapStrategy extends Strategy {
 				const item = target[name];
 
 				if (field && field !== item) {
-					strategy.reconcile(field, Entity.is(item) && isObject(value) ? Reflect.get(value, name) : item, context);
+					strategy.reconcile(field, context.resolve(item, value, name), context);
 				}
 			}
 		}
@@ -64,13 +62,5 @@ export class MapStrategy extends Strategy {
 
 	public get(name: string): Strategy | undefined {
 		return this.fields.get(name);
-	}
-
-	public static override is(strategy: unknown): strategy is MapStrategy {
-		return strategy instanceof MapStrategy;
-	}
-
-	public static override assert(strategy: unknown): asserts strategy is MapStrategy {
-		if (!MapStrategy.is(strategy)) throw new TypeError("Invalid MapStrategy.");
 	}
 }

@@ -143,6 +143,32 @@ describe("Draft", () => {
 		expect(list.slice(0)).toStrictEqual(["A", "B", "C"].map((title) => ({ title, assignee: { name: "Ann" } })));
 	});
 
+	it("resolves an unread item of a filled list to its draft", () => {
+		const { items, draft } = fixture();
+		const list = at(draft.value, "items");
+
+		draft.fill(items);
+
+		const placeholder = at(draft.inspect(list)?.target, 1);
+
+		expect(Entity.is(placeholder)).toBe(true);
+
+		const resolved = draft.resolve(placeholder, list, 1);
+
+		expect(Entity.is(resolved)).toBe(false);
+		assertObject(resolved);
+		expect(draft.identify(resolved)).toBe(items.current[1]);
+		expect(resolved).toStrictEqual({ title: "B", assignee: { name: "Ann" } });
+	});
+
+	it("resolves a plain value to itself", () => {
+		const { draft } = fixture();
+		const value = { title: "A" };
+
+		expect(draft.resolve(value, { item: value }, "item")).toBe(value);
+		expect(draft.resolve("A", ["A"], 0)).toBe("A");
+	});
+
 	it("tells a write to an item apart from a write to its list", () => {
 		const { draft } = fixture();
 		const list = at(draft.value, "items");

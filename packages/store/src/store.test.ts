@@ -831,6 +831,23 @@ describe("Store", () => {
 
 			expect(store.read().language).toBe("en");
 		});
+
+		it("keeps the outer copy of an item an inner update removed after the outer recipe filled its collection", () => {
+			const store = setup();
+
+			store.update((outer) => {
+				outer.tickets.push({ title: "Third", assignee: { name: "Cid" } });
+				store.update((inner) => {
+					inner.tickets.splice(0, 1);
+				});
+			});
+
+			expect(store.read().tickets).toStrictEqual([
+				{ title: "Second", assignee: { name: "Bob" } },
+				{ title: "First", assignee: { name: "Ann" } },
+				{ title: "Third", assignee: { name: "Cid" } },
+			]);
+		});
 	});
 
 	describe("notifications", () => {

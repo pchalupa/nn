@@ -1,7 +1,6 @@
 import { Time } from "@nn/time";
 import { describe, it } from "vitest";
 
-import { Codec } from "./codec";
 import { LWWMap } from "./lww-map";
 import { LWWRegister } from "./lww-register";
 
@@ -13,13 +12,6 @@ function createFields() {
 }
 
 describe("LWWMap", () => {
-	it("encodes and decodes a map of 1,000 fields", async ({ bench }) => {
-		const codec = new Codec();
-		const map = new LWWMap(Object.fromEntries(createFields().map((field) => [field.key, field])), "map");
-
-		await bench("codec.decode(map.encode())", () => codec.decode(map.encode())).run(options);
-	});
-
 	it("merges an equal map of 1,000 fields", async ({ bench }) => {
 		const fields = createFields();
 		const map = new LWWMap(Object.fromEntries(fields.map((field) => [field.key, field])), "map");

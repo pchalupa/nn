@@ -2,12 +2,10 @@ import type { Entity } from "@nn/entities/entity";
 import { LWWRegister } from "@nn/entities/kinds/lww-register";
 import type { Time } from "@nn/time";
 
-import { Strategy } from "./strategy";
+import type { Strategy } from "./strategy";
 
-export class RegisterStrategy extends Strategy {
-	constructor(private defaultValue: unknown) {
-		super();
-	}
+export class RegisterStrategy implements Strategy {
+	constructor(private defaultValue: unknown) {}
 
 	public create(value: unknown, key: string, timestamp?: Time): LWWRegister<unknown> {
 		return new LWWRegister(value ?? this.defaultValue, key, timestamp);
@@ -21,13 +19,5 @@ export class RegisterStrategy extends Strategy {
 
 	public conform(remote: Entity): Entity {
 		return remote;
-	}
-
-	public static override is(strategy: unknown): strategy is RegisterStrategy {
-		return strategy instanceof RegisterStrategy;
-	}
-
-	public static override assert(strategy: unknown): asserts strategy is RegisterStrategy {
-		if (!RegisterStrategy.is(strategy)) throw new TypeError("Invalid RegisterStrategy.");
 	}
 }

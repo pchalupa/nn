@@ -86,7 +86,12 @@
 			{ "blankLine": "always", "prev": ["function", "export"], "next": "*" },
 			{ "blankLine": "always", "prev": "*", "next": ["function", "export"] },
 			{ "blankLine": "always", "prev": ["for", "while", "do"], "next": "*" },
-			{ "blankLine": "always", "prev": "*", "next": ["for", "while", "do"] }
+			{ "blankLine": "always", "prev": "*", "next": ["for", "while", "do"] },
+			{
+				"blankLine": "any",
+				"prev": ["function-overload", { "selector": "ExportNamedDeclaration[declaration.type='TSDeclareFunction']" }],
+				"next": "*"
+			}
 		],
 		"@stylistic/lines-between-class-members": [
 			"error",

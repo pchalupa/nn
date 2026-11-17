@@ -6,7 +6,7 @@
 	"license": "MIT",
 	"type": "module",
 	"exports": {
-		"./vitest": "./src/vitest.ts"
+		"./vitest/plugins": "./src/vitest/plugins.ts"
 	},
 	"scripts": {
 		"ts:check": "tsc --noEmit"

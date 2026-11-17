@@ -96,4 +96,15 @@ describe("Time", () => {
 		expect(new Time(0, 0).isAfter(new Time(1, 0))).toBe(false);
 		expect(new Time(0, 1).isAfter(new Time(0, 2))).toBe(false);
 	});
+
+	it("formats a time once", () => {
+		const time = Time.fromTimestamp("2024-11-10T12:39:10.776Z+00002+replica-id");
+		const format = vi.spyOn(Date.prototype, "toISOString");
+
+		expect(time.toString()).toBe("2024-11-10T12:39:10.776Z+00002+replica-id");
+		expect(time.toString()).toBe("2024-11-10T12:39:10.776Z+00002+replica-id");
+		expect(format).toHaveBeenCalledOnce();
+
+		format.mockRestore();
+	});
 });

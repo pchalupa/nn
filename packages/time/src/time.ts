@@ -36,13 +36,15 @@ class GlobalTime {
 
 /** Represents time using a Hybrid Logical Clock (HLC) model */
 export class Time extends GlobalTime {
+	private formattedTimeString: string | undefined;
+
 	constructor(
 		/** Physical time in milliseconds */
-		private time: number,
+		private readonly time: number,
 		/** Logical time */
-		private counter: number,
+		private readonly counter: number,
 		/** Identity of the replica that minted this time */
-		private replicaId: string = GlobalTime.replicaId,
+		private readonly replicaId: string = GlobalTime.replicaId,
 	) {
 		super();
 	}
@@ -62,10 +64,14 @@ export class Time extends GlobalTime {
 	 * @example '2024-11-10T12:39:10.776Z+00002+9f1d0b07-7a3c-4d1e-9f52-6c2a4e8b1d30'
 	 */
 	public toString(): string {
-		const time = new Date(this.time).toISOString();
-		const counter = this.counter.toString(16).padStart(COUNTER_DIGITS, "0");
+		if (!this.formattedTimeString) {
+			const time = new Date(this.time).toISOString();
+			const counter = this.counter.toString(16).padStart(COUNTER_DIGITS, "0");
 
-		return [time, counter, this.replicaId].join(TIMESTAMP_DELIMITER);
+			this.formattedTimeString = [time, counter, this.replicaId].join(TIMESTAMP_DELIMITER);
+		}
+
+		return this.formattedTimeString;
 	}
 
 	/** Orders this time against another. */

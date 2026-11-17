@@ -16,6 +16,7 @@ describe("ListStrategy", () => {
 		inspect: () => undefined,
 		fill: () => undefined,
 		identify: (value) => entities.get(value),
+		resolve: (item) => item,
 	};
 	const tags = new ListStrategy(new RegisterStrategy(""));
 	const items = new ListStrategy(new MapStrategy(new Map([["title", new RegisterStrategy("")]])));

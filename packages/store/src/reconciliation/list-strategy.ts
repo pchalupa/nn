@@ -62,7 +62,7 @@ export class ListStrategy implements Strategy {
 					const item = target[index];
 
 					if (!match) {
-						entity.push(this.items.create(Entity.is(item) && isObject(value) ? value[index] : item, ID.create()));
+						entity.push(this.items.create(context.resolve(item, value, index), ID.create()));
 					} else if (match !== item) {
 						this.items.reconcile(match, item, context);
 					}

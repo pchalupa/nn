@@ -16,6 +16,7 @@ function contextOf(entities: WeakMap<object, Entity> = new WeakMap()): Reconcile
 		inspect: () => undefined,
 		fill: () => undefined,
 		identify: (value) => entities.get(value),
+		resolve: (item) => item,
 	};
 }
 

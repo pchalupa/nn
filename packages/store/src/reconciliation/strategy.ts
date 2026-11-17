@@ -8,6 +8,7 @@ export interface ReconcileContext {
 	inspect(value: unknown): ReadonlyTracker | undefined;
 	fill(entity: Entity): void;
 	identify(value: object): Entity | undefined;
+	resolve(item: unknown, parent: unknown, key: string | number): unknown;
 }
 
 export interface Strategy {

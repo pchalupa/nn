@@ -1,4 +1,4 @@
-import { Entity } from "@nn/entities/entity";
+import type { Entity } from "@nn/entities/entity";
 import { LWWMap } from "@nn/entities/kinds/lww-map";
 import { isObject } from "@nn/guards/is-object";
 import { Time } from "@nn/time";
@@ -34,7 +34,7 @@ export class MapStrategy implements Strategy {
 				const item = target[name];
 
 				if (field && field !== item) {
-					strategy.reconcile(field, Entity.is(item) && isObject(value) ? Reflect.get(value, name) : item, context);
+					strategy.reconcile(field, context.resolve(item, value, name), context);
 				}
 			}
 		}

@@ -1,4 +1,5 @@
-import type { Entity } from "@nn/entities/entity";
+import { Entity } from "@nn/entities/entity";
+import { isObject } from "@nn/guards/is-object";
 
 import { track } from "./tracker";
 import { type ReadonlyTracker, Tracker } from "./tracker/tracker";
@@ -26,6 +27,14 @@ export class Draft {
 
 	public identify(value: object): Entity | undefined {
 		return Tracker.of(value)?.entity ?? this.snapshots.identify(value);
+	}
+
+	public resolve(item: unknown, parent: unknown, key: string | number): unknown {
+		if (Entity.is(item) && isObject(parent)) {
+			return parent[key];
+		}
+
+		return item;
 	}
 
 	public fill(entity: Entity): void {

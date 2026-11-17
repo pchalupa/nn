@@ -45,6 +45,7 @@ export class Store<StateSchema extends ObjectSchema<Record<string, Schema>> = Ob
 				inspect: (value) => draft.inspect(value),
 				fill: (entity) => draft.fill(entity),
 				identify: (value) => draft.identify(value),
+				resolve: (item, parent, key) => draft.resolve(item, parent, key),
 			}),
 		);
 	}

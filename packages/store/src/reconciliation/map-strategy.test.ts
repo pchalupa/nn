@@ -14,6 +14,7 @@ describe("MapStrategy", () => {
 		inspect: () => undefined,
 		fill: () => undefined,
 		identify: () => undefined,
+		resolve: (item) => item,
 	};
 	const strategy = new MapStrategy(
 		new Map([

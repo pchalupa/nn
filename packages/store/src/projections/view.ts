@@ -6,21 +6,23 @@ import { isObject } from "@nn/guards/is-object";
 
 export class View {
 	private entities = new WeakMap<object, Entity>();
-	private readonly cachedProjections = new VersionedCache<Entity, object>();
+	private cachedProjections = new VersionedCache<Entity, object>();
+
+	private materialize = (entity: Entity): object => {
+		const value = this.project(entity.current);
+
+		if (!isObject(value)) throw new TypeError("Expected an object projection.");
+
+		Object.freeze(value);
+		this.entities.set(value, entity);
+
+		return value;
+	};
 
 	public read(entity: Entity): unknown {
 		if (LWWRegister.is(entity)) return entity.current;
 
-		return this.cachedProjections.ensure(entity, entity.revision, () => {
-			const value = this.project(entity.current);
-
-			if (!isObject(value)) throw new TypeError("Expected an object projection.");
-
-			Object.freeze(value);
-			this.entities.set(value, entity);
-
-			return value;
-		});
+		return this.cachedProjections.ensure(entity, entity.revision, this.materialize);
 	}
 
 	public identify(value: object): Entity | undefined {

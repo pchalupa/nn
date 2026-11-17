@@ -58,6 +58,7 @@
 	},
 	"devDependencies": {
 		"@nn/build-config": "workspace:^",
+		"@nn/test-config": "workspace:^",
 		"@nn/typescript-config": "workspace:^",
 		"tsdown": "catalog:",
 		"typescript": "catalog:",

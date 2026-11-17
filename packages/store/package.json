@@ -40,6 +40,7 @@
 		"test:watch": "vitest watch"
 	},
 	"dependencies": {
+		"@nn/cache": "workspace:^",
 		"@nn/entities": "workspace:^",
 		"@nn/guards": "workspace:^",
 		"@nn/id": "workspace:^",

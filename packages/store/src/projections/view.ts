@@ -1,47 +1,28 @@
+import { VersionedCache } from "@nn/cache/versioned-cache";
 import { Entity } from "@nn/entities/entity";
+import { LWWRegister } from "@nn/entities/kinds/lww-register";
 import { isArray } from "@nn/guards/is-array";
 import { isObject } from "@nn/guards/is-object";
 
 export class View {
-	private materialized = new WeakMap<Entity, { value: unknown; revision: number }>();
 	private entities = new WeakMap<object, Entity>();
+	private cachedProjections = new VersionedCache<Entity, object>();
 
-	public read(entity: Entity): unknown {
-		const revision = entity.revision;
-		const cached = this.materialized.get(entity);
+	private materialize = (entity: Entity): object => {
+		const current = entity.current;
+		let value: object;
 
-		if (cached !== undefined && cached.revision === revision) return cached.value;
-
-		const value = this.project(entity.current);
-
-		if (isObject(value)) {
-			Object.freeze(value);
-
-			this.entities.set(value, entity);
-			this.materialized.set(entity, { value, revision });
-		}
-
-		return value;
-	}
-
-	public identify(value: object): Entity | undefined {
-		return this.entities.get(value);
-	}
-
-	private project(current: unknown): unknown {
 		if (isArray(current)) {
-			const value: unknown[] = [];
+			const items: unknown[] = [];
 
-			for (const item of current) value.push(this.unwrap(item));
+			for (const item of current) items.push(this.unwrap(item));
 
-			return value;
-		}
-
-		if (isObject(current)) {
-			const value: Record<string, unknown> = {};
+			value = items;
+		} else if (isObject(current)) {
+			const fields: Record<string, unknown> = {};
 
 			for (const key in current) {
-				Object.defineProperty(value, key, {
+				Object.defineProperty(fields, key, {
 					value: this.unwrap(current[key]),
 					writable: true,
 					enumerable: true,
@@ -49,10 +30,23 @@ export class View {
 				});
 			}
 
-			return value;
-		}
+			value = fields;
+		} else throw new TypeError("Expected an object projection.");
 
-		return current;
+		Object.freeze(value);
+		this.entities.set(value, entity);
+
+		return value;
+	};
+
+	public read(entity: Entity): unknown {
+		if (LWWRegister.is(entity)) return entity.current;
+
+		return this.cachedProjections.ensure(entity, entity.revision, this.materialize);
+	}
+
+	public identify(value: object): Entity | undefined {
+		return this.entities.get(value);
 	}
 
 	private unwrap(value: unknown): unknown {

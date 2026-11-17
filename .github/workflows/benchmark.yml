@@ -5,7 +5,7 @@ on:
   pull_request:
 jobs:
   benchmark:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04-arm
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v7
@@ -16,6 +16,8 @@ jobs:
           cache: "pnpm"
       - run: pnpm install
       - uses: CodSpeedHQ/action@v5
+        env:
+          NODE_OPTIONS: --disable-wasm-trap-handler
         with:
-          mode: walltime,memory
+          mode: simulation,memory
           run: pnpm bench

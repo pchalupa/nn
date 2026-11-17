@@ -51,6 +51,7 @@
 		"test:watch": "vitest watch"
 	},
 	"dependencies": {
+		"@nn/cache": "workspace:^",
 		"@nn/guards": "workspace:^",
 		"@nn/id": "workspace:^",
 		"@nn/observable": "workspace:^",

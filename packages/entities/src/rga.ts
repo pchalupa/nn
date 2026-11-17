@@ -1,3 +1,4 @@
+import { InvalidatableCache } from "@nn/cache/invalidatable-cache";
 import { isArray } from "@nn/guards/is-array";
 import { isString } from "@nn/guards/is-string";
 
@@ -7,6 +8,7 @@ import { Entity, type EntityDelegate } from "./entity";
 // TODO!: Ordering is not converged yet; only removals are tombstoned.
 export class RGA<Value extends Entity> extends Entity<Value[]> implements EntityDelegate {
 	private items = new Map<string, Value>();
+	private cachedItems = new InvalidatableCache<Value[]>();
 	private tombstones: Set<string>;
 
 	constructor(items: Value[] = [], key?: string, tombstones: Iterable<string> = []) {
@@ -24,6 +26,7 @@ export class RGA<Value extends Entity> extends Entity<Value[]> implements Entity
 			if (existing) existing.merge(item);
 			else {
 				this.items.set(item.key, item);
+				this.cachedItems.invalidate();
 				item.delegate = this;
 			}
 		}
@@ -34,6 +37,7 @@ export class RGA<Value extends Entity> extends Entity<Value[]> implements Entity
 
 		if (item) {
 			this.items.delete(key);
+			this.cachedItems.invalidate();
 			item.delegate = undefined;
 		}
 	}
@@ -43,13 +47,14 @@ export class RGA<Value extends Entity> extends Entity<Value[]> implements Entity
 	}
 
 	public get current(): Value[] {
-		return Array.from(this.items.values());
+		return this.cachedItems.ensure(() => Array.from(this.items.values()));
 	}
 
 	public set current(items: Value[]) {
 		const previous = this.items;
 
 		this.items = new Map();
+		this.cachedItems.invalidate();
 
 		for (const item of items) this.insert(item);
 

@@ -92,6 +92,36 @@ describe("@nn/react", () => {
 			expect(rendered.mock.calls.length).toBeGreaterThan(renders);
 		});
 
+		it("rerenders only the row whose ticket changed", async () => {
+			const { store, useRead } = setup();
+			const rendered = vi.fn();
+			const Row = ({ index }: { index: number }) => {
+				const title = useRead((data) => data.tickets[index].title);
+
+				rendered(index);
+
+				return <li>{title}</li>;
+			};
+
+			await mount(
+				<ul>
+					{[0, 1, 2].map((index) => (
+						<Row key={index} index={index} />
+					))}
+				</ul>,
+			);
+
+			rendered.mockClear();
+
+			await act(async () =>
+				store.update((draft) => {
+					draft.tickets[1].title = "Changed";
+				}),
+			);
+
+			expect(rendered.mock.calls).toStrictEqual([[1]]);
+		});
+
 		it("does not rerender when none of several reads change", async () => {
 			const { store, useRead } = setup();
 			const rendered = vi.fn();

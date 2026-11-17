@@ -12,6 +12,12 @@
 			"sourceType": "local",
 			"computedHash": "557d12cf2d543bb1f3b86b868a821492f6f2f80533560824fc4bd32cb6632e12"
 		},
+		"codspeed-write-benchmarks": {
+			"source": "CodSpeedHQ/codspeed",
+			"sourceType": "github",
+			"skillPath": "skills/codspeed-write-benchmarks/SKILL.md",
+			"computedHash": "b40c5a4a45b45723037580d24c77620d36b7f8d45f39169f7180f526c8609134"
+		},
 		"research": {
 			"source": "mattpocock/skills",
 			"sourceType": "github",

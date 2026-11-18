@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 import { array, type InferStateType, object, string } from "@nn/schema";
 import { act, cleanup, render, screen } from "@testing-library/react";
-import { startTransition, StrictMode, Suspense, useState, type ReactNode } from "react";
+import { startTransition, StrictMode, Suspense, useLayoutEffect, useState, type ReactNode } from "react";
 import { renderToString } from "react-dom/server";
 import { afterEach, describe, expect, expectTypeOf, it, vi } from "vitest";
 
@@ -18,7 +18,7 @@ const setup = () => {
 	const result = createStore(schema);
 	const { store } = result;
 
-	store.update((draft) => {
+	store.mutate((draft) => {
 		draft.tickets.push(
 			{ id: "1", title: "First", status: "todo" },
 			{ id: "2", title: "Second", status: "done" },
@@ -48,17 +48,17 @@ describe("@nn/react", () => {
 		it("creates a store with the schema defaults", () => {
 			const { store } = createStore(schema);
 
-			expect(store.read()).toStrictEqual({ tickets: [], language: "" });
-			expectTypeOf(store.read().language).toEqualTypeOf<string>();
+			expect(store.query((state) => state)).toStrictEqual({ tickets: [], language: "" });
+			expectTypeOf(store.query((state) => state).language).toEqualTypeOf<string>();
 		});
 	});
 
-	describe("useRead", () => {
+	describe("useQuery", () => {
 		it("renders selected items and updates only when their data changes", async () => {
-			const { store, useRead } = setup();
+			const { store, useQuery } = setup();
 			const rendered = vi.fn();
 			const Column = () => {
-				const tickets = useRead((data) => data.tickets.filter((ticket) => ticket.status === "todo"));
+				const tickets = useQuery((data) => data.tickets.filter((ticket) => ticket.status === "todo"));
 
 				rendered();
 
@@ -75,7 +75,7 @@ describe("@nn/react", () => {
 			const renders = rendered.mock.calls.length;
 
 			await act(async () =>
-				store.update((draft) => {
+				store.mutate((draft) => {
 					draft.tickets[1].title = "Elsewhere";
 					draft.language = "cs";
 				}),
@@ -84,7 +84,7 @@ describe("@nn/react", () => {
 			expect(screen.getAllByRole("listitem")).toHaveLength(1);
 
 			await act(async () =>
-				store.update((draft) => {
+				store.mutate((draft) => {
 					draft.tickets[0].title = "Changed";
 				}),
 			);
@@ -93,10 +93,10 @@ describe("@nn/react", () => {
 		});
 
 		it("rerenders only the row whose ticket changed", async () => {
-			const { store, useRead } = setup();
+			const { store, useQuery } = setup();
 			const rendered = vi.fn();
 			const Row = ({ index }: { index: number }) => {
-				const title = useRead((data) => data.tickets[index].title);
+				const title = useQuery((data) => data.tickets[index].title);
 
 				rendered(index);
 
@@ -114,7 +114,7 @@ describe("@nn/react", () => {
 			rendered.mockClear();
 
 			await act(async () =>
-				store.update((draft) => {
+				store.mutate((draft) => {
 					draft.tickets[1].title = "Changed";
 				}),
 			);
@@ -123,12 +123,12 @@ describe("@nn/react", () => {
 		});
 
 		it("does not rerender when none of several reads change", async () => {
-			const { store, useRead } = setup();
+			const { store, useQuery } = setup();
 			const rendered = vi.fn();
 			const Summary = () => {
-				const language = useRead((data) => data.language);
-				const count = useRead((data) => data.tickets.length);
-				const title = useRead((data) => data.tickets[0]?.title);
+				const language = useQuery((data) => data.language);
+				const count = useQuery((data) => data.tickets.length);
+				const title = useQuery((data) => data.tickets[0]?.title);
 
 				rendered();
 
@@ -137,7 +137,7 @@ describe("@nn/react", () => {
 
 			await mount(<Summary />);
 			await act(async () =>
-				store.update((draft) => {
+				store.mutate((draft) => {
 					draft.tickets[0].title = "Changed";
 				}),
 			);
@@ -145,17 +145,17 @@ describe("@nn/react", () => {
 			const renders = rendered.mock.calls.length;
 
 			await act(async () =>
-				store.update((draft) => {
+				store.mutate((draft) => {
 					draft.tickets[1].title = "Elsewhere";
 				}),
 			);
 			expect(rendered).toHaveBeenCalledTimes(renders);
 		});
 
-		it("uses a changed captured prop without requiring a store update", async () => {
-			const { useRead } = setup();
+		it("uses a changed captured prop without requiring a store mutation", async () => {
+			const { useQuery } = setup();
 			const Column = ({ status }: { status: string }) => {
-				const titles = useRead((data) =>
+				const titles = useQuery((data) =>
 					data.tickets.filter((ticket) => ticket.status === status).map((ticket) => ticket.title),
 				);
 
@@ -169,10 +169,10 @@ describe("@nn/react", () => {
 		});
 
 		it("keeps the committed subscription's selector when a concurrent render suspends", async () => {
-			const { store, useRead } = setup();
+			const { store, useQuery } = setup();
 			const evaluated: string[] = [];
 			const Column = ({ status }: { status: string }) => {
-				const titles = useRead((data) => {
+				const titles = useQuery((data) => {
 					evaluated.push(status);
 
 					return data.tickets.filter((ticket) => ticket.status === status).map((ticket) => ticket.title);
@@ -201,7 +201,7 @@ describe("@nn/react", () => {
 			evaluated.length = 0;
 
 			await act(async () =>
-				store.update((draft) => {
+				store.mutate((draft) => {
 					draft.tickets[0].title = "Changed";
 				}),
 			);
@@ -210,13 +210,13 @@ describe("@nn/react", () => {
 		});
 
 		it("infers scalar, derived, optional and readonly collection selections", async () => {
-			const { useRead, useUpdate } = setup();
+			const { useQuery, useMutation } = setup();
 			const Typed = () => {
-				const language = useRead((data) => data.language);
-				const count = useRead((data) => data.tickets.length);
-				const tickets = useRead((data) => data.tickets);
-				const ticket = useRead((data) => data.tickets.find((item) => item.id === "missing"));
-				const update = useUpdate();
+				const language = useQuery((data) => data.language);
+				const count = useQuery((data) => data.tickets.length);
+				const tickets = useQuery((data) => data.tickets);
+				const ticket = useQuery((data) => data.tickets.find((item) => item.id === "missing"));
+				const mutate = useMutation();
 
 				expectTypeOf(language).toEqualTypeOf<string>();
 				expectTypeOf(count).toEqualTypeOf<number>();
@@ -226,7 +226,7 @@ describe("@nn/react", () => {
 				expectTypeOf(ticket).toEqualTypeOf<
 					{ readonly id: string; readonly title: string; readonly status: string } | undefined
 				>();
-				expectTypeOf(update).toEqualTypeOf<(recipe: (draft: Data) => void) => void>();
+				expectTypeOf(mutate).toEqualTypeOf<(recipe: (draft: Data) => void) => void>();
 
 				return <span>{`${language}:${count}:${ticket?.title ?? "missing"}`}</span>;
 			};
@@ -236,15 +236,15 @@ describe("@nn/react", () => {
 		});
 
 		it("provides a server snapshot for a resolved store", async () => {
-			const { useRead } = setup();
-			const Language = () => <span>{useRead((data) => data.language)}</span>;
+			const { useQuery } = setup();
+			const Language = () => <span>{useQuery((data) => data.language)}</span>;
 
 			await mount(<Language />);
 			expect(renderToString(<Language />)).toBe("<span>en</span>");
 		});
 
 		it("keeps one live subscription through StrictMode and removes it on unmount", async () => {
-			const { store, useRead } = setup();
+			const { store, useQuery } = setup();
 			const onChange = store.onChange.bind(store);
 			let active = 0;
 
@@ -257,7 +257,7 @@ describe("@nn/react", () => {
 					unsubscribe();
 				};
 			});
-			const Language = () => <span>{useRead((data) => data.language)}</span>;
+			const Language = () => <span>{useQuery((data) => data.language)}</span>;
 			const { unmount, rerender } = await mount(
 				<StrictMode>
 					<Language />
@@ -274,15 +274,123 @@ describe("@nn/react", () => {
 			await unmount();
 			expect(active).toBe(0);
 		});
+
+		it("keeps a derived selection's identity when an unrelated field changes", async () => {
+			const { store, useQuery } = setup();
+			const selections: unknown[] = [];
+			const Done = () => {
+				selections.push(useQuery((data) => data.tickets.filter((ticket) => ticket.status === "done")));
+
+				return null;
+			};
+
+			await mount(<Done />);
+			await act(async () =>
+				store.mutate((draft) => {
+					draft.language = "cs";
+				}),
+			);
+
+			expect(new Set(selections).size).toBe(1);
+		});
+
+		it("keeps a stable selector's result without rerunning it when rerendered without a store change", async () => {
+			const { useQuery } = setup();
+			const selector = vi.fn((data: { readonly language: string }) => new Map([["language", data.language]]));
+			const results: unknown[] = [];
+			const Language = ({ pass }: { pass: number }) => {
+				results.push(useQuery(selector));
+
+				return <span>{pass}</span>;
+			};
+			const { rerender } = await mount(<Language pass={0} />);
+			const calls = selector.mock.calls.length;
+
+			await rerender(<Language pass={1} />);
+			await rerender(<Language pass={2} />);
+
+			expect(results.length).toBeGreaterThan(1);
+			expect(new Set(results).size).toBe(1);
+			expect(selector).toHaveBeenCalledTimes(calls);
+		});
+
+		it("shows a change made between render and subscription", async () => {
+			const { store, useQuery } = setup();
+			const Language = () => <span>{useQuery((data) => data.language)}</span>;
+			const Writer = () => {
+				useLayoutEffect(
+					() =>
+						store.mutate((draft) => {
+							draft.language = "cs";
+						}),
+					[],
+				);
+
+				return null;
+			};
+
+			await mount(
+				<>
+					<Language />
+					<Writer />
+				</>,
+			);
+
+			expect(screen.getByText("cs")).toBeDefined();
+		});
+
+		it("shows the final state after a listener mutates during a change", async () => {
+			const { store, useQuery } = setup();
+
+			store.onChange(() => {
+				if (store.query((data) => data.language) === "cs") {
+					store.mutate((draft) => {
+						draft.language = "de";
+					});
+				}
+			});
+			const Language = () => <span>{useQuery((data) => data.language)}</span>;
+
+			await mount(<Language />);
+			await act(async () =>
+				store.mutate((draft) => {
+					draft.language = "cs";
+				}),
+			);
+
+			expect(screen.getByText("de")).toBeDefined();
+		});
+
+		it("does not rerender a component when another store changes", async () => {
+			const first = setup();
+			const second = setup();
+			let renders = 0;
+			const Language = () => {
+				renders++;
+
+				return <span>{first.useQuery((data) => data.language)}</span>;
+			};
+
+			await mount(<Language />);
+			const before = renders;
+
+			await act(async () =>
+				second.store.mutate((draft) => {
+					draft.language = "cs";
+				}),
+			);
+
+			expect(renders).toBe(before);
+		});
 	});
 
-	describe("useUpdate", () => {
+	describe("useMutation", () => {
 		it("keeps its identity and never subscribes or rerenders on store changes", async () => {
-			const { store, useUpdate } = setup();
+			const { store, useMutation } = setup();
 			const subscribe = vi.spyOn(store, "onChange");
-			const updates: unknown[] = [];
+			const mutations: unknown[] = [];
 			const Writer = () => {
-				updates.push(useUpdate());
+				mutations.push(useMutation());
 
 				return null;
 			};
@@ -291,30 +399,30 @@ describe("@nn/react", () => {
 					<Writer />
 				</StrictMode>,
 			);
-			const renders = updates.length;
+			const renders = mutations.length;
 
 			await act(async () =>
-				store.update((draft) => {
+				store.mutate((draft) => {
 					draft.language = "cs";
 				}),
 			);
-			expect(updates).toHaveLength(renders);
+			expect(mutations).toHaveLength(renders);
 
 			await rerender(
 				<StrictMode>
 					<Writer />
 				</StrictMode>,
 			);
-			expect(updates.length).toBeGreaterThan(renders);
-			expect(new Set(updates).size).toBe(1);
+			expect(mutations.length).toBeGreaterThan(renders);
+			expect(new Set(mutations).size).toBe(1);
 			expect(subscribe).not.toHaveBeenCalled();
 		});
 
 		it("updates a reading sibling without rerendering the writer", async () => {
-			const { useRead, useUpdate } = setup();
+			const { useQuery, useMutation } = setup();
 			const rendered = vi.fn();
 			const Writer = () => {
-				const update = useUpdate();
+				const mutate = useMutation();
 
 				rendered();
 
@@ -322,7 +430,7 @@ describe("@nn/react", () => {
 					<button
 						type="button"
 						onClick={() =>
-							update((draft) => {
+							mutate((draft) => {
 								draft.language = "cs";
 							})
 						}
@@ -331,7 +439,7 @@ describe("@nn/react", () => {
 					</button>
 				);
 			};
-			const Label = () => <span>{useRead((data) => data.language)}</span>;
+			const Label = () => <span>{useQuery((data) => data.language)}</span>;
 
 			await mount(
 				<>
@@ -345,17 +453,17 @@ describe("@nn/react", () => {
 			expect(rendered).toHaveBeenCalledTimes(1);
 		});
 
-		it("rerenders a reading component that writes through its own updater", async () => {
-			const { store, useRead, useUpdate } = setup();
+		it("rerenders a reading component that writes through its own mutation", async () => {
+			const { store, useQuery, useMutation } = setup();
 			const Editor = () => {
-				const language = useRead((data) => data.language);
-				const update = useUpdate();
+				const language = useQuery((data) => data.language);
+				const mutate = useMutation();
 
 				return (
 					<button
 						type="button"
 						onClick={() =>
-							update((draft) => {
+							mutate((draft) => {
 								draft.language = "cs";
 							})
 						}
@@ -369,40 +477,42 @@ describe("@nn/react", () => {
 			expect(screen.getByRole("button").textContent).toBe("en");
 			await act(async () => screen.getByRole("button").click());
 			expect(screen.getByRole("button").textContent).toBe("cs");
-			expect(store.read().language).toBe("cs");
+			expect(store.query((state) => state).language).toBe("cs");
 		});
 
 		it("writes against current state after its component unmounts", async () => {
-			const { store, useUpdate } = setup();
-			const updates: Array<(recipe: (draft: Data) => void) => void> = [];
+			const { store, useMutation } = setup();
+			const mutations: Array<(recipe: (draft: Data) => void) => void> = [];
 			const Writer = () => {
-				updates.push(useUpdate());
+				mutations.push(useMutation());
 
 				return null;
 			};
 			const { unmount } = await mount(<Writer />);
 
 			await unmount();
-			store.update((draft) => {
+			store.mutate((draft) => {
 				draft.tickets.splice(0, draft.tickets.length, { id: "4", title: "Fresh", status: "todo" });
 			});
-			updates[0]((draft) => {
+			mutations[0]((draft) => {
 				draft.tickets[0].title += " updated";
 			});
-			expect(store.read().tickets).toStrictEqual([{ id: "4", title: "Fresh updated", status: "todo" }]);
+			expect(store.query((state) => state).tickets).toStrictEqual([
+				{ id: "4", title: "Fresh updated", status: "todo" },
+			]);
 		});
 
 		it("reads and writes a store without a suspense boundary", async () => {
-			const { store, useRead, useUpdate } = createStore(schema);
+			const { store, useQuery, useMutation } = createStore(schema);
 			const Editor = () => {
-				const update = useUpdate();
-				const language = useRead((data) => data.language);
+				const mutate = useMutation();
+				const language = useQuery((data) => data.language);
 
 				return (
 					<button
 						type="button"
 						onClick={() =>
-							update((draft) => {
+							mutate((draft) => {
 								draft.language = "cs";
 							})
 						}
@@ -415,7 +525,7 @@ describe("@nn/react", () => {
 			render(<Editor />);
 			expect(screen.getByRole("button").textContent).toBe("empty");
 			await act(async () => screen.getByRole("button").click());
-			expect(store.read().language).toBe("cs");
+			expect(store.query((state) => state).language).toBe("cs");
 			expect(screen.getByRole("button").textContent).toBe("cs");
 		});
 	});

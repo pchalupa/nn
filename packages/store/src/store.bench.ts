@@ -15,10 +15,10 @@ describe("Store", () => {
 	function createStore() {
 		const store = new Store(schema);
 
-		store.update((draft) => {
+		store.mutate((draft) => {
 			draft.tickets = createTickets();
 		});
-		store.read();
+		store.query((state) => state);
 
 		return store;
 	}
@@ -28,7 +28,7 @@ describe("Store", () => {
 		let tickets = createTickets();
 
 		await bench(
-			"store.update()",
+			"store.mutate()",
 			{
 				beforeEach() {
 					store = new Store(schema);
@@ -36,17 +36,17 @@ describe("Store", () => {
 				},
 			},
 			() =>
-				store.update((draft) => {
+				store.mutate((draft) => {
 					draft.tickets = tickets;
 				}),
 		).run(options);
 	});
 
-	it("updates one field in a list of 1,000 items", async ({ bench }) => {
+	it("mutates one field in a list of 1,000 items", async ({ bench }) => {
 		const store = createStore();
 
-		await bench("store.update()", () =>
-			store.update((draft) => {
+		await bench("store.mutate()", () =>
+			store.mutate((draft) => {
 				draft.tickets[0].done = !draft.tickets[0].done;
 			})).run(options);
 	});
@@ -55,14 +55,14 @@ describe("Store", () => {
 		let store = createStore();
 
 		await bench(
-			"store.update()",
+			"store.mutate()",
 			{
 				beforeEach() {
 					store = createStore();
 				},
 			},
 			() =>
-				store.update((draft) => {
+				store.mutate((draft) => {
 					draft.tickets.splice(0, 1);
 				}),
 		).run(options);
@@ -72,15 +72,15 @@ describe("Store", () => {
 		const store = createStore();
 
 		await bench(
-			"store.read()",
+			"store.query((state) => state)",
 			{
 				beforeEach() {
-					store.update((draft) => {
+					store.mutate((draft) => {
 						draft.tickets[0].done = !draft.tickets[0].done;
 					});
 				},
 			},
-			() => store.read(),
+			() => store.query((state) => state),
 		).run(options);
 	});
 });

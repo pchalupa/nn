@@ -114,7 +114,7 @@ describe("SyncEngine", () => {
 		await flush();
 
 		expect(sync.idle).toBe(true);
-		expect(store.read().language).toBe("");
+		expect(store.query((state) => state).language).toBe("");
 		expect(transport.open).not.toHaveBeenCalled();
 		expect(transport.pull).not.toHaveBeenCalled();
 		expect(transport.push).not.toHaveBeenCalled();
@@ -126,7 +126,7 @@ describe("SyncEngine", () => {
 
 		await flush();
 
-		expect(store.read().language).toBe("cs");
+		expect(store.query((state) => state).language).toBe("cs");
 		expect(transport.push).toHaveBeenCalledWith("language", expect.objectContaining({ data: "cs" }));
 		expect(listener.mock.calls).toStrictEqual([["connecting"], ["connected"]]);
 	});
@@ -136,7 +136,7 @@ describe("SyncEngine", () => {
 		const store = new Store(schema);
 		const sync = new TestEngine(transport, store, false);
 
-		store.update((draft) => {
+		store.mutate((draft) => {
 			draft.language = "cs";
 		});
 		await flush();
@@ -255,7 +255,7 @@ describe("SyncEngine", () => {
 		transport.push.mockClear();
 
 		expect(() =>
-			store.update((draft) => {
+			store.mutate((draft) => {
 				draft.language = "cs";
 			}),
 		).toThrow("ui bug");
@@ -276,7 +276,7 @@ describe("SyncEngine", () => {
 
 		expect(transport.open).toHaveBeenCalledOnce();
 		expect(transport.pull.mock.calls).toStrictEqual([["tickets"], ["language"]]);
-		expect(store.read().language).toBe("cs");
+		expect(store.query((state) => state).language).toBe("cs");
 	});
 
 	it("connects and pushes every field without pulling when the engine has no pull", async () => {
@@ -296,7 +296,7 @@ describe("SyncEngine", () => {
 		void new TestEngine(transport, store);
 		await flush();
 
-		expect(store.read()).toStrictEqual({ tickets: [], language: "" });
+		expect(store.query((state) => state)).toStrictEqual({ tickets: [], language: "" });
 		expect(transport.close).not.toHaveBeenCalled();
 	});
 
@@ -328,7 +328,7 @@ describe("SyncEngine", () => {
 
 		transport.open.mockReturnValue(opening.promise);
 		void new TestEngine(transport, store);
-		store.update((draft) => {
+		store.mutate((draft) => {
 			draft.language = "cs";
 		});
 
@@ -349,7 +349,7 @@ describe("SyncEngine", () => {
 		void new TestEngine(transport, store);
 		await flush();
 		transport.push.mockClear();
-		store.update((draft) => {
+		store.mutate((draft) => {
 			draft.tickets.push({ title: "First" });
 			draft.language = "cs";
 		});
@@ -372,7 +372,7 @@ describe("SyncEngine", () => {
 		transport.push.mockReturnValueOnce(pushing.promise);
 
 		for (const language of ["cs", "en", "de"]) {
-			store.update((draft) => {
+			store.mutate((draft) => {
 				draft.language = language;
 			});
 		}
@@ -397,14 +397,14 @@ describe("SyncEngine", () => {
 		transport.push.mockClear();
 		sync.onError(onError);
 		transport.push.mockRejectedValueOnce(error);
-		store.update((draft) => {
+		store.mutate((draft) => {
 			draft.language = "cs";
 		});
 		await flush();
 
 		expect(onError).toHaveBeenCalledExactlyOnceWith(error);
 
-		store.update((draft) => {
+		store.mutate((draft) => {
 			draft.language = "en";
 		});
 
@@ -464,7 +464,7 @@ describe("SyncEngine", () => {
 		pulling.resolve(new RGA([new LWWMap({ title: new LWWRegister("First", "title") }, "first")], "tickets").encode());
 		await flush();
 
-		expect(store.read().tickets).toStrictEqual([]);
+		expect(store.query((state) => state).tickets).toStrictEqual([]);
 		expect(transport.pull).toHaveBeenCalledOnce();
 		expect(transport.push).not.toHaveBeenCalled();
 	});
@@ -487,7 +487,7 @@ describe("SyncEngine", () => {
 		await flush();
 		transport.push.mockClear();
 		sync.dispose();
-		store.update((draft) => {
+		store.mutate((draft) => {
 			draft.language = "cs";
 		});
 
@@ -529,7 +529,7 @@ describe("SyncEngine", () => {
 
 		expect(transport.open).toHaveBeenCalledOnce();
 
-		store.update((draft) => {
+		store.mutate((draft) => {
 			draft.language = "cs";
 		});
 		await flush();
@@ -554,7 +554,7 @@ describe("SyncEngine", () => {
 		await flush();
 
 		expect(transport.open).toHaveBeenCalledTimes(2);
-		expect(store.read().language).toBe("cs");
+		expect(store.query((state) => state).language).toBe("cs");
 		expect(transport.push.mock.calls.map(([name]) => name)).toStrictEqual(["tickets", "language"]);
 		expect(sync.state).toBe("connected");
 	});
@@ -568,7 +568,7 @@ describe("SyncEngine", () => {
 		sync.reopen();
 		await flush();
 		transport.push.mockClear();
-		store.update((draft) => {
+		store.mutate((draft) => {
 			draft.language = "cs";
 		});
 
@@ -585,7 +585,7 @@ describe("SyncEngine", () => {
 			language: new LWWRegister("cs", "language", Time.now()).encode(),
 		});
 
-		expect(store.read().language).toBe("cs");
+		expect(store.query((state) => state).language).toBe("cs");
 	});
 
 	it("merges only the received fields", async () => {
@@ -593,12 +593,12 @@ describe("SyncEngine", () => {
 		const sync = new TestEngine(transportMock(), store);
 
 		await flush();
-		store.update((draft) => {
+		store.mutate((draft) => {
 			draft.tickets.push({ title: "First" });
 		});
 		sync.deliver({ language: new LWWRegister("cs", "language", Time.now()).encode() });
 
-		expect(store.read()).toStrictEqual({ tickets: [{ title: "First" }], language: "cs" });
+		expect(store.query((state) => state)).toStrictEqual({ tickets: [{ title: "First" }], language: "cs" });
 	});
 
 	it("throws on a received entry that cannot be decoded", async () => {
@@ -608,7 +608,7 @@ describe("SyncEngine", () => {
 		await flush();
 
 		expect(() => sync.deliver({ tickets: {}, language: {} })).toThrow("Invalid encoded entity.");
-		expect(store.read().language).toBe("");
+		expect(store.query((state) => state).language).toBe("");
 	});
 
 	describe("dropping", () => {
@@ -628,7 +628,7 @@ describe("SyncEngine", () => {
 			expect(onError).not.toHaveBeenCalled();
 			expect(transport.close).toHaveBeenCalledOnce();
 
-			store.update((draft) => {
+			store.mutate((draft) => {
 				draft.language = "cs";
 			});
 			await flush();

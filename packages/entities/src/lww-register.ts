@@ -5,12 +5,14 @@ import type { Encoded } from "./codable";
 import { Entity } from "./entity";
 
 export class LWWRegister<Value> extends Entity<Value> {
-	constructor(
-		private value: Value,
-		key?: string,
-		public timestamp: Time = Time.now(),
-	) {
+	private value: Value;
+	public timestamp: Time;
+
+	constructor(value: Value, key?: string, timestamp: Time = Time.now()) {
 		super("LWWRegister", key);
+
+		this.value = value;
+		this.timestamp = timestamp;
 	}
 
 	public get [Symbol.toStringTag](): string {

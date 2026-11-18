@@ -12,11 +12,14 @@ export interface IndexDbDelegate {
 }
 
 export class IndexDb implements Delegatable<IndexDbDelegate> {
-	public delegate?: IndexDbDelegate;
+	private name: string;
 	private indexDbDatabase?: IDBDatabase;
 	private transactions = new Map<string, IDBTransaction>();
+	public delegate?: IndexDbDelegate;
 
-	constructor(private readonly name = "nn-default") {}
+	constructor(name = "nn-default") {
+		this.name = name;
+	}
 
 	public async set(name: string, entry: Encoded): Promise<void> {
 		IndexDb.assertIndexDB(this.indexDbDatabase);

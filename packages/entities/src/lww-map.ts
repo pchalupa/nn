@@ -5,11 +5,12 @@ import type { Decoder, Encoded } from "./codable";
 import { Entity, type EntityDelegate } from "./entity";
 
 export class LWWMap<Fields extends Record<string, Entity>> extends Entity<Fields> implements EntityDelegate {
-	constructor(
-		private fields: Fields,
-		key?: string,
-	) {
+	private fields: Fields;
+
+	constructor(fields: Fields, key?: string) {
 		super("LWWMap", key);
+
+		this.fields = fields;
 
 		for (const name in fields) {
 			fields[name].delegate = this;

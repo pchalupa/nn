@@ -7,11 +7,12 @@ describe("Entity", () => {
 	afterEach(() => vi.restoreAllMocks());
 
 	class TestEntity extends Entity<string> {
-		constructor(
-			private value: string,
-			key?: string,
-		) {
+		private value: string;
+
+		constructor(value: string, key?: string) {
 			super("test", key);
+
+			this.value = value;
 		}
 
 		public get current(): string {

@@ -8,7 +8,11 @@ import type { Time } from "@nn/time";
 import type { ReconcileContext, Strategy } from "./strategy";
 
 export class ListStrategy implements Strategy {
-	constructor(private items: Strategy) {}
+	private items: Strategy;
+
+	constructor(items: Strategy) {
+		this.items = items;
+	}
 
 	public create(value: unknown, key: string, timestamp?: Time): RGA<Entity> {
 		if (isArray(value)) {

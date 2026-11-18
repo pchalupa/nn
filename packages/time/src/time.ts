@@ -37,17 +37,20 @@ class GlobalTime {
 
 /** Represents time using a Hybrid Logical Clock (HLC) model */
 export class Time extends GlobalTime {
+	/** Physical time in milliseconds */
+	private readonly time: number;
+	/** Logical time */
+	private readonly counter: number;
+	/** Identity of the replica that minted this time */
+	private readonly replicaId: string;
 	private readonly cachedTimeString = new InvalidatableCache<string>();
 
-	constructor(
-		/** Physical time in milliseconds */
-		private readonly time: number,
-		/** Logical time */
-		private readonly counter: number,
-		/** Identity of the replica that minted this time */
-		private readonly replicaId: string = GlobalTime.replicaId,
-	) {
+	constructor(time: number, counter: number, replicaId: string = GlobalTime.replicaId) {
 		super();
+
+		this.time = time;
+		this.counter = counter;
+		this.replicaId = replicaId;
 	}
 
 	/** Returns the physical time in milliseconds */

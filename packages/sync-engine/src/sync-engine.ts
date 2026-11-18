@@ -9,8 +9,11 @@ export { SessionState as SyncState } from "./session";
 export abstract class SyncEngine {
 	protected readonly session: Session = new Session();
 	protected readonly errors: Observable<[unknown]> = new Observable();
+	protected readonly store: Store;
 
-	constructor(protected readonly store: Store) {
+	constructor(store: Store) {
+		this.store = store;
+
 		let unsubscribeFromStoreChanges: () => void | undefined;
 
 		this.session.delegate = {

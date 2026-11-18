@@ -6,7 +6,11 @@ import { Time } from "@nn/time";
 import type { ReconcileContext, Strategy } from "./strategy";
 
 export class MapStrategy implements Strategy {
-	constructor(private fields: ReadonlyMap<string, Strategy>) {}
+	private fields: ReadonlyMap<string, Strategy>;
+
+	constructor(fields: ReadonlyMap<string, Strategy>) {
+		this.fields = fields;
+	}
 
 	public create(value: unknown, key: string, timestamp?: Time): LWWMap<Record<string, Entity>> {
 		const source = isObject(value) ? value : {};

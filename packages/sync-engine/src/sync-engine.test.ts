@@ -21,12 +21,12 @@ const transportMock = (entries: Record<string, unknown> = {}) => ({
 const engines: SyncEngine[] = [];
 
 class TestEngine extends SyncEngine {
-	constructor(
-		private readonly transport: ReturnType<typeof transportMock>,
-		store = new Store(schema),
-		connect = true,
-	) {
+	private transport: ReturnType<typeof transportMock>;
+
+	constructor(transport: ReturnType<typeof transportMock>, store = new Store(schema), connect = true) {
 		super(store);
+
+		this.transport = transport;
 		engines.push(this);
 
 		if (connect) this.session.connect();
@@ -62,8 +62,11 @@ class TestEngine extends SyncEngine {
 }
 
 class StreamEngine extends SyncEngine {
-	constructor(private readonly transport: ReturnType<typeof transportMock>) {
+	private readonly transport: ReturnType<typeof transportMock>;
+
+	constructor(transport: ReturnType<typeof transportMock>) {
 		super(new Store(schema));
+		this.transport = transport;
 		engines.push(this);
 		this.session.connect();
 	}

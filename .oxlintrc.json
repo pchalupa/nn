@@ -36,6 +36,7 @@
 		"typescript/prefer-for-of": "error",
 		"typescript/no-dynamic-delete": "error",
 		"typescript/array-type": ["error", { "default": "array-simple" }],
+		"typescript/parameter-properties": "error",
 		"typescript/explicit-member-accessibility": [
 			"error",
 			{ "accessibility": "explicit", "overrides": { "constructors": "no-public" } }

@@ -4,8 +4,6 @@ import type { Store } from "@nn/store";
 
 import { Session, type SessionState } from "./session";
 
-export { SessionState as SyncState } from "./session";
-
 export abstract class SyncEngine {
 	protected readonly session: Session = new Session();
 	protected readonly errors: Observable<[unknown]> = new Observable();

@@ -25,7 +25,6 @@
 		"typescript/no-inferrable-types": "error",
 		"typescript/no-unnecessary-template-expression": "error",
 		"typescript/prefer-as-const": "error",
-		"typescript/prefer-enum-initializers": "error",
 		"typescript/consistent-type-imports": ["error", { "fixStyle": "inline-type-imports" }],
 		"typescript/no-import-type-side-effects": "error",
 		"typescript/no-extraneous-class": ["error", { "allowStaticOnly": true }],

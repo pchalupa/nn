@@ -61,17 +61,15 @@ sync.connect();
 
 `close()` runs when the connection ends or the engine is disposed. `receive(entries)` merges entries keyed by state property name and ignores names that are not in the schema. Entries are what `Store.encode()` produces, so a value that went through `JSON.stringify` merges back as is.
 
-If `open` or `pull` throws, the engine reports the error to `onError` and moves to `SyncState.Disconnected`. If `push` throws, the engine reports the error and stays connected.
+If `open` or `pull` throws, the engine reports the error to `onError` and moves to the `"disconnected"` state. If `push` throws, the engine reports the error and stays connected.
 
 The built-in engines are complete examples: [`@nn/broadcast-sync`](https://github.com/pchalupa/nn/tree/main/packages/broadcast-sync) for push-only messaging, [`@nn/indexdb-sync`](https://github.com/pchalupa/nn/tree/main/packages/indexdb-sync) for storage with `pull`, and [`@nn/sse-sync`](https://github.com/pchalupa/nn/tree/main/packages/sse-sync) for a server connection.
 
 ### Observing the connection
 
 ```ts
-import { SyncState } from "@nn/sync-engine";
-
 sync.onStateChange((state) => {
-	if (state === SyncState.Disconnected) sync.retry();
+	if (state === "disconnected") sync.retry();
 });
 
 sync.onError((error) => console.error(error));

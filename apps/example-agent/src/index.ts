@@ -17,7 +17,7 @@ store.onChange(review);
 async function review() {
 	const agentId = "example-description-reviewer";
 	const agentName = "Description reviewer";
-	const agentUser = store.query((state) => state.users.filter(({ id }) => id === agentId));
+	const agentUser = store.query((state) => state.users.find(({ id }) => id === agentId));
 	const assigned = store.query((state) => state.tickets.filter(({ assignee }) => assignee === agentId));
 
 	if (sync.connected) {

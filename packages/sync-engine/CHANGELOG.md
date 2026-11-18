@@ -1,5 +1,12 @@
 # @nn/sync-engine
 
+## 5.0.1
+
+### Patch Changes
+
+- Updated dependencies [79bcd03]
+  - @nn/store@5.0.0
+
 ## 5.0.0
 
 ### Major Changes

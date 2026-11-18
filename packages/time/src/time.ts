@@ -7,6 +7,7 @@ import { TimestampMalformedError } from "./errors/timestamp-malformed-error";
 const TIMESTAMP_DELIMITER = "+" as const;
 const COUNTER_DIGITS = 5;
 const MAX_COUNTER = 16 ** COUNTER_DIGITS - 1;
+const TIMESTAMP_PATTERN = /^(.+)\+([0-9a-f]{5})\+([^+]+)$/;
 
 class GlobalTime {
 	/** Physical time in milliseconds */
@@ -106,7 +107,7 @@ export class Time extends GlobalTime {
 
 	/** Returns a time from a timestamp */
 	public static fromTimestamp(timestamp: string): Time {
-		const [, physical, logical, replicaId] = timestamp.match(/^(.+)\+([0-9a-f]{5})\+([^+]+)$/) ?? [];
+		const [, physical, logical, replicaId] = timestamp.match(TIMESTAMP_PATTERN) ?? [];
 
 		if (!physical || !logical || !replicaId) throw new TimestampMalformedError(timestamp);
 
@@ -117,6 +118,10 @@ export class Time extends GlobalTime {
 			throw new TimestampMalformedError(timestamp);
 		}
 
-		return new Time(time, counter, replicaId);
+		const parsed = new Time(time, counter, replicaId);
+
+		parsed.cachedTimeString.ensure(() => timestamp);
+
+		return parsed;
 	}
 }

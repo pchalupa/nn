@@ -98,12 +98,23 @@ describe("Time", () => {
 	});
 
 	it("formats a time once", () => {
-		const time = Time.fromTimestamp("2024-11-10T12:39:10.776Z+00002+replica-id");
+		const time = new Time(1731242350776, 2, "replica-id");
 		const format = vi.spyOn(Date.prototype, "toISOString");
 
 		expect(time.toString()).toBe("2024-11-10T12:39:10.776Z+00002+replica-id");
 		expect(time.toString()).toBe("2024-11-10T12:39:10.776Z+00002+replica-id");
 		expect(format).toHaveBeenCalledOnce();
+
+		format.mockRestore();
+	});
+
+	it("reuses the timestamp it was parsed from", () => {
+		const format = vi.spyOn(Date.prototype, "toISOString");
+
+		expect(Time.fromTimestamp("2024-11-10T12:39:10.776Z+00002+replica-id").toString()).toBe(
+			"2024-11-10T12:39:10.776Z+00002+replica-id",
+		);
+		expect(format).not.toHaveBeenCalled();
 
 		format.mockRestore();
 	});

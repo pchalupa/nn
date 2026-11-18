@@ -1,6 +1,6 @@
 {
 	"name": "@nn/sync-engine",
-	"version": "4.1.2",
+	"version": "5.0.0",
 	"description": "Base class for sync engines",
 	"keywords": [
 		"crdt",

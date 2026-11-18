@@ -1,5 +1,12 @@
 # @nn/indexdb-sync
 
+## 4.1.3
+
+### Patch Changes
+
+- Updated dependencies [9f2f4be]
+  - @nn/sync-engine@5.0.0
+
 ## 4.1.2
 
 ### Patch Changes

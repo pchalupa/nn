@@ -1,5 +1,13 @@
 # @nn/react-devtools
 
+## 1.0.1
+
+### Patch Changes
+
+- 79bcd03: Read the inspected store through `store.query`, so the devtools work with stores that no longer have `read()`.
+- Updated dependencies [79bcd03]
+  - @nn/store@5.0.0
+
 ## 1.0.0
 
 ### Major Changes

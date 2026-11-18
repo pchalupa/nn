@@ -30,13 +30,15 @@ export class Store<StateSchema extends ObjectSchema<Record<string, Schema>> = Ob
 		this.root = this.reconciliationStrategy.create(undefined, "state", Time.epoch());
 	}
 
-	// TODO: Avoid overloading to cast the type
-	public read(): ReadonlyData<InferStateType<StateSchema>>;
-	public read(): unknown {
-		return this.view.read(this.root);
+	public query<Result>(selector: (state: ReadonlyData<InferStateType<StateSchema>>) => Result): Result {
+		// TODO: Avoid type cast
+		// oxlint-disable-next-line typescript/consistent-type-assertions
+		const state = this.view.read(this.root) as ReadonlyData<InferStateType<StateSchema>>;
+
+		return selector(state);
 	}
 
-	public update(recipe: (draft: InferStateType<StateSchema>) => void): void {
+	public mutate(recipe: (draft: InferStateType<StateSchema>) => void): void {
 		const draft = new Draft(this.root, this.view);
 
 		// oxlint-disable-next-line typescript/consistent-type-assertions todo: fix this type casting

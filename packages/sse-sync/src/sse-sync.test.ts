@@ -68,7 +68,7 @@ const connect = async ({ url = "http://remote.test", snapshot = "{}" } = {}) => 
 };
 
 const editTickets = (store: Store<typeof schema>) =>
-	store.update((draft) => {
+	store.mutate((draft) => {
 		draft.tickets.push({ title: "Offline" });
 	});
 
@@ -91,7 +91,7 @@ describe("SseSync", () => {
 		const sync = new SseSync(store, new URL("http://remote.test"));
 
 		engines.push(sync);
-		store.update((draft) => {
+		store.mutate((draft) => {
 			draft.language = "cs";
 		});
 		await Promise.resolve();
@@ -129,7 +129,7 @@ describe("SseSync", () => {
 	it("bootstraps the store from the first event", async () => {
 		const { store } = await connect({ snapshot: language("cs") });
 
-		expect(store.read().language).toBe("cs");
+		expect(store.query((state) => state).language).toBe("cs");
 	});
 
 	it("merges fields carried by later events", async () => {
@@ -137,13 +137,13 @@ describe("SseSync", () => {
 
 		sources[0]?.emit(language("cs"));
 
-		expect(store.read().language).toBe("cs");
+		expect(store.query((state) => state).language).toBe("cs");
 	});
 
 	it("posts each changed field on its own", async () => {
 		const { store } = await connect();
 
-		store.update((draft) => {
+		store.mutate((draft) => {
 			draft.language = "cs";
 		});
 
@@ -175,7 +175,7 @@ describe("SseSync", () => {
 		sources[0]?.emit(language("cs"));
 
 		expect(syncEngineDidFail).toHaveBeenCalledTimes(3);
-		expect(store.read().language).toBe("cs");
+		expect(store.query((state) => state).language).toBe("cs");
 	});
 
 	it.each([
@@ -224,7 +224,7 @@ describe("SseSync", () => {
 		await vi.waitFor(() => {
 			expect(sync.connected).toBe(true);
 		});
-		expect(store.read().language).toBe("cs");
+		expect(store.query((state) => state).language).toBe("cs");
 	});
 
 	it("opens one stream for several retries", async () => {
@@ -274,7 +274,7 @@ describe("SseSync", () => {
 		const { store, sync } = await connect();
 
 		sources[0]?.shutDown();
-		store.update((draft) => {
+		store.mutate((draft) => {
 			draft.language = "en";
 		});
 		sync.retry();

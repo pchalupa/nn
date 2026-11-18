@@ -21,7 +21,7 @@ const assignedSchema = object({ tickets: array(assignedTicket), language: string
 const setup = () => {
 	const store = new Store(assignedSchema);
 
-	store.update((draft) => {
+	store.mutate((draft) => {
 		draft.tickets.push({ title: "First", assignee: { name: "Ann" } }, { title: "Second", assignee: { name: "Bob" } });
 		draft.language = "en";
 	});
@@ -47,7 +47,7 @@ describe("Store", () => {
 			expectTypeOf(store).toEqualTypeOf<Store<typeof ticketsSchema>>();
 			expect(store.schema).toBe(ticketsSchema);
 			expectTypeOf(store.schema).toEqualTypeOf<typeof ticketsSchema>();
-			expect(store.read()).toStrictEqual({ tickets: [], language: "" });
+			expect(store.query((state) => state)).toStrictEqual({ tickets: [], language: "" });
 		});
 
 		it("initializes every declared shape without minting timestamps", () => {
@@ -56,17 +56,22 @@ describe("Store", () => {
 				object({ count: number(), enabled: boolean(), settings: object({ theme: string() }), tags: array(string()) }),
 			);
 
-			expect(store.read()).toStrictEqual({ count: 0, enabled: false, settings: { theme: "" }, tags: [] });
+			expect(store.query((state) => state)).toStrictEqual({
+				count: 0,
+				enabled: false,
+				settings: { theme: "" },
+				tags: [],
+			});
 			expect(now).not.toHaveBeenCalled();
 		});
 
 		it("supports an empty schema", () => {
 			const store = new Store(object({}));
-			const before = store.read();
+			const before = store.query((state) => state);
 
-			store.update(() => {});
+			store.mutate(() => {});
 			expect(before).toStrictEqual({});
-			expect(store.read()).toBe(before);
+			expect(store.query((state) => state)).toBe(before);
 		});
 
 		it("infers the readonly snapshot and mutable draft from the schema", () => {
@@ -78,7 +83,7 @@ describe("Store", () => {
 			});
 			const store = new Store(shape);
 
-			expectTypeOf(store.read()).toEqualTypeOf<{
+			expectTypeOf(store.query((state) => state)).toEqualTypeOf<{
 				readonly language: string;
 				readonly count: number;
 				readonly enabled: boolean;
@@ -86,7 +91,8 @@ describe("Store", () => {
 					readonly tickets: ReadonlyArray<{ readonly title: string; readonly tags: readonly string[] }>;
 				};
 			}>();
-			store.update((draft) => {
+			expectTypeOf(store.query((state) => state.count)).toEqualTypeOf<number>();
+			store.mutate((draft) => {
 				expectTypeOf(draft).toEqualTypeOf<InferStateType<typeof shape>>();
 				expectTypeOf<{ title: string }>().not.toExtend<Parameters<typeof draft.board.tickets.push>[0]>();
 			});
@@ -94,8 +100,16 @@ describe("Store", () => {
 	});
 
 	describe("reads", () => {
+		it("returns what the selector returns from the current state", () => {
+			const store = setup();
+
+			expect(store.query((state) => state.language)).toBe("en");
+			expect(store.query((state) => state.tickets.map(({ title }) => title))).toStrictEqual(["First", "Second"]);
+			expect(store.query((state) => state)).toBe(store.query((state) => state));
+		});
+
 		it("reads the store as schema-shaped data", () => {
-			expect(setup().read()).toStrictEqual({
+			expect(setup().query((state) => state)).toStrictEqual({
 				language: "en",
 				tickets: [
 					{ title: "First", assignee: { name: "Ann" } },
@@ -106,49 +120,49 @@ describe("Store", () => {
 
 		it("protects cached snapshots passed to a mutable consumer", () => {
 			const store = setup();
-			const before = store.read();
+			const before = store.query((state) => state);
 			const listener = listen(store);
 			const rename = (assignee: { name: string }) => {
 				assignee.name = "Changed";
 			};
 
 			expect(() => rename(before.tickets[0].assignee)).toThrow(TypeError);
-			expect(store.read()).toBe(before);
-			expect(store.read().tickets[0].assignee.name).toBe("Ann");
+			expect(store.query((state) => state)).toBe(before);
+			expect(store.query((state) => state).tickets[0].assignee.name).toBe("Ann");
 			expect(listener).not.toHaveBeenCalled();
-			store.update((draft) => {
+			store.mutate((draft) => {
 				draft.language = "cs";
 			});
-			expect(store.read().tickets).toBe(before.tickets);
-			expect(store.read().tickets[0].assignee.name).toBe("Ann");
+			expect(store.query((state) => state).tickets).toBe(before.tickets);
+			expect(store.query((state) => state).tickets[0].assignee.name).toBe("Ann");
 			expect(listener).toHaveBeenCalledOnce();
 		});
 
 		it("reuses unchanged projections without reading their entities again", () => {
 			const store = setup();
 			const reads = vi.spyOn(RGA.prototype, "current", "get");
-			const before = store.read();
+			const before = store.query((state) => state);
 
-			expect(store.read()).toBe(before);
+			expect(store.query((state) => state)).toBe(before);
 			expect(reads).toHaveBeenCalledOnce();
-			store.update((draft) => {
+			store.mutate((draft) => {
 				draft.language = "cs";
 			});
-			store.update(() => {});
+			store.mutate(() => {});
 			reads.mockClear();
-			expect(store.read()).not.toBe(before);
-			expect(store.read().tickets).toBe(before.tickets);
+			expect(store.query((state) => state)).not.toBe(before);
+			expect(store.query((state) => state).tickets).toBe(before.tickets);
 			expect(reads).not.toHaveBeenCalled();
 		});
 
 		it("rebuilds only the items and fields that changed", () => {
 			const store = setup();
-			const before = store.read();
+			const before = store.query((state) => state);
 
-			store.update((draft) => {
+			store.mutate((draft) => {
 				draft.tickets[0].title = "Changed";
 			});
-			const after = store.read();
+			const after = store.query((state) => state);
 
 			expect(after.tickets).not.toBe(before.tickets);
 			expect(after.tickets[1]).toBe(before.tickets[1]);
@@ -158,23 +172,23 @@ describe("Store", () => {
 
 		it("preserves an object entry's snapshot when another entry changes", () => {
 			const store = new Store(object({ settings: object({ theme: string() }), tickets: array(assignedTicket) }));
-			const before = store.read().settings;
+			const before = store.query((state) => state).settings;
 
-			store.update((draft) => {
+			store.mutate((draft) => {
 				draft.tickets.push({ title: "First", assignee: { name: "Ann" } });
 			});
-			expect(store.read().settings).toBe(before);
+			expect(store.query((state) => state).settings).toBe(before);
 		});
 	});
 
-	describe("updates", () => {
+	describe("mutations", () => {
 		it("hands the recipe an independent copy of the current snapshot", () => {
 			const store = setup();
-			const before = store.read();
+			const before = store.query((state) => state);
 
 			let retained: unknown[] = [];
 
-			store.update((draft) => {
+			store.mutate((draft) => {
 				expect(draft).toStrictEqual(before);
 				expect(draft).not.toBe(before);
 				expect(draft.tickets).not.toBe(before.tickets);
@@ -185,126 +199,126 @@ describe("Store", () => {
 			});
 			retained.length = 0;
 			expect(before.tickets[0].assignee.name).toBe("Ann");
-			expect(store.read().tickets).toHaveLength(2);
-			expect(store.read().tickets[0].assignee.name).toBe("Edited");
+			expect(store.query((state) => state).tickets).toHaveLength(2);
+			expect(store.query((state) => state).tickets[0].assignee.name).toBe("Edited");
 		});
 
 		it("clears a string field", () => {
 			const store = setup();
 
-			store.update((draft) => {
+			store.mutate((draft) => {
 				draft.language = "";
 			});
-			expect(store.read().language).toBe("");
+			expect(store.query((state) => state).language).toBe("");
 		});
 
-		it("updates primitive fields without structured cloning", () => {
+		it("mutates primitive fields without structured cloning", () => {
 			const store = setup();
 			const cloned = vi.spyOn(globalThis, "structuredClone");
 
-			store.update((draft) => {
+			store.mutate((draft) => {
 				draft.tickets[0].title = "Changed";
 				draft.language = "cs";
 			});
 			expect(cloned).not.toHaveBeenCalled();
-			expect(store.read().tickets[0].title).toBe("Changed");
+			expect(store.query((state) => state).tickets[0].title).toBe("Changed");
 		});
 
 		it("removes and appends items while retaining surviving entities", () => {
 			const store = setup();
-			const before = store.read();
+			const before = store.query((state) => state);
 
-			store.update((draft) => {
+			store.mutate((draft) => {
 				draft.tickets.shift();
 				draft.tickets.push({ title: "Third", assignee: { name: "Cy" } });
 			});
-			expect(store.read().tickets[0]).toBe(before.tickets[1]);
-			expect(store.read().tickets.map((item) => item.title)).toStrictEqual(["Second", "Third"]);
-			store.update((draft) => {
+			expect(store.query((state) => state).tickets[0]).toBe(before.tickets[1]);
+			expect(store.query((state) => state).tickets.map((item) => item.title)).toStrictEqual(["Second", "Third"]);
+			store.mutate((draft) => {
 				draft.tickets.length = 0;
 			});
-			expect(store.read().tickets).toStrictEqual([]);
+			expect(store.query((state) => state).tickets).toStrictEqual([]);
 		});
 
 		it("tells items apart by identity rather than by value", () => {
 			const store = setup();
 			const third = () => ({ title: "Third", assignee: { name: "Cy" } });
 
-			store.update((draft) => {
+			store.mutate((draft) => {
 				draft.tickets.push(draft.tickets[0], third(), third());
 			});
-			expect(store.read().tickets).toHaveLength(4);
+			expect(store.query((state) => state).tickets).toHaveLength(4);
 		});
 
 		it("recognizes a surviving item from an older snapshot after its projection is rebuilt", () => {
 			const store = setup();
-			const saved = store.read().tickets[1];
+			const saved = store.query((state) => state).tickets[1];
 
-			store.update((draft) => {
+			store.mutate((draft) => {
 				draft.tickets[1].title = "Changed";
 			});
-			expect(store.read().tickets[1]).not.toBe(saved);
-			const assignee = store.read().tickets[1].assignee;
+			expect(store.query((state) => state).tickets[1]).not.toBe(saved);
+			const assignee = store.query((state) => state).tickets[1].assignee;
 
-			store.update((draft) => {
+			store.mutate((draft) => {
 				draft.tickets = [saved];
 			});
-			expect(store.read().tickets[0].assignee).toBe(assignee);
-			expect(store.read().tickets).toStrictEqual([saved]);
+			expect(store.query((state) => state).tickets[0].assignee).toBe(assignee);
+			expect(store.query((state) => state).tickets).toStrictEqual([saved]);
 		});
 
 		it("gives a spread snapshot item a new identity", () => {
 			const store = setup();
-			const saved = store.read().tickets[0];
+			const saved = store.query((state) => state).tickets[0];
 			const assignee = saved.assignee;
 
-			store.update((draft) => {
+			store.mutate((draft) => {
 				draft.tickets = [{ ...saved, title: "Changed" }];
 			});
 
-			expect(store.read().tickets[0].title).toBe("Changed");
-			expect(store.read().tickets[0].assignee).not.toBe(assignee);
+			expect(store.query((state) => state).tickets[0].title).toBe("Changed");
+			expect(store.query((state) => state).tickets[0].assignee).not.toBe(assignee);
 		});
 
 		it("gives a snapshot item from another store a new identity", () => {
 			const store = setup();
-			const foreign = setup().read().tickets[0];
-			const assignee = store.read().tickets[0].assignee;
+			const foreign = setup().query((state) => state).tickets[0];
+			const assignee = store.query((state) => state).tickets[0].assignee;
 
-			store.update((draft) => {
+			store.mutate((draft) => {
 				draft.tickets = [foreign];
 			});
 
-			expect(store.read().tickets).toStrictEqual([foreign]);
-			expect(store.read().tickets[0].assignee).not.toBe(assignee);
+			expect(store.query((state) => state).tickets).toStrictEqual([foreign]);
+			expect(store.query((state) => state).tickets[0].assignee).not.toBe(assignee);
 		});
 
 		it("treats a reinserted removed snapshot item as a new item", () => {
 			const store = setup();
-			const saved = store.read().tickets[0];
+			const saved = store.query((state) => state).tickets[0];
 
-			store.update((draft) => {
+			store.mutate((draft) => {
 				draft.tickets.length = 0;
 			});
-			store.update((draft) => {
+			store.mutate((draft) => {
 				draft.tickets.push(saved);
 			});
-			expect(store.read().tickets).toStrictEqual([saved]);
+			expect(store.query((state) => state).tickets).toStrictEqual([saved]);
 		});
 
-		it("does not apply or report any part of a thrown update", () => {
+		it("does not apply or report any part of a thrown mutation", () => {
 			const store = setup();
-			const before = store.read();
+			const before = store.query((state) => state);
 			const listener = listen(store);
 
 			expect(() =>
-				store.update((draft) => {
+				store.mutate((draft) => {
 					draft.tickets.push({ title: "Valid", assignee: { name: "Cy" } });
 					draft.language = "cs";
 					throw new Error("stop");
 				}),
 			).toThrow("stop");
-			expect(store.read()).toBe(before);
+			expect(store.query((state) => state)).toBe(before);
 			expect(listener).not.toHaveBeenCalled();
 		});
 
@@ -321,12 +335,12 @@ describe("Store", () => {
 				return create();
 			});
 			expect(() =>
-				store.update((draft) => {
+				store.mutate((draft) => {
 					draft.first = "edited";
 					draft.items.push({ tags: ["new"] });
 				}),
 			).toThrow("id unavailable");
-			expect(store.read().first).toBe("edited");
+			expect(store.query((state) => state).first).toBe("edited");
 			expect(listener).toHaveBeenCalledOnce();
 			expect(Object.keys(listener.mock.calls[0][0])).toContain("first");
 		});
@@ -359,11 +373,11 @@ describe("Store", () => {
 			},
 		])("ignores $name", ({ recipe }) => {
 			const store = setup();
-			const before = store.read();
+			const before = store.query((state) => state);
 			const listener = listen(store);
 
-			store.update(recipe);
-			expect(store.read()).toBe(before);
+			store.mutate(recipe);
+			expect(store.query((state) => state)).toBe(before);
 			expect(listener).not.toHaveBeenCalled();
 		});
 	});
@@ -381,7 +395,7 @@ describe("Store", () => {
 				}),
 			);
 
-			store.update((draft) => {
+			store.mutate((draft) => {
 				draft.tickets.push(...(titles.length ? titles : ["First", "Second"]).map((title) => item(title)));
 			});
 
@@ -391,20 +405,20 @@ describe("Store", () => {
 		it("edits new items and replaced nested objects within one recipe", () => {
 			const store = setupItems();
 
-			store.update((draft) => {
+			store.mutate((draft) => {
 				draft.tickets.push(item("Third"));
 				draft.tickets[2].tags.push("two");
 				draft.tickets[0].assignee = { name: "Bob", key: "new" };
 				draft.tickets[0].assignee.name = "Cy";
 			});
-			expect(store.read().tickets[2]).toStrictEqual({ ...item("Third"), tags: ["one", "two"] });
-			expect(store.read().tickets[0].assignee).toStrictEqual({ name: "Cy", key: "new" });
+			expect(store.query((state) => state).tickets[2]).toStrictEqual({ ...item("Third"), tags: ["one", "two"] });
+			expect(store.query((state) => state).tickets[0].assignee).toStrictEqual({ name: "Cy", key: "new" });
 		});
 
 		it("validates only the final result", () => {
 			const store = setupItems();
 
-			store.update((draft) => {
+			store.mutate((draft) => {
 				Reflect.set(draft.tickets[0], "title", 42);
 				Reflect.set(draft.tickets[0], "extra", true);
 				draft.tickets[0].title = "Valid";
@@ -412,21 +426,21 @@ describe("Store", () => {
 				draft.tickets.reverse();
 				draft.tickets.reverse();
 			});
-			expect(store.read().tickets[0].title).toBe("Valid");
+			expect(store.query((state) => state).tickets[0].title).toBe("Valid");
 		});
 
 		it("keeps snapshots and notifications unchanged when edits cancel out", () => {
 			const store = setupItems();
-			const before = store.read();
+			const before = store.query((state) => state);
 			const listener = listen(store);
 
-			store.update((draft) => {
+			store.mutate((draft) => {
 				draft.tickets[0].title = "Temporary";
 				draft.tickets[0].title = "First";
 				draft.tickets[0].tags.push("temporary");
 				draft.tickets[0].tags.pop();
 			});
-			expect(store.read()).toBe(before);
+			expect(store.query((state) => state)).toBe(before);
 			expect(listener).not.toHaveBeenCalled();
 		});
 
@@ -436,87 +450,87 @@ describe("Store", () => {
 
 			let retained: string[] = [];
 
-			store.update((draft) => {
+			store.mutate((draft) => {
 				draft.tickets.push(added);
 				retained = draft.tickets[0].tags;
 				retained.push("two");
 			});
 			retained.push("late");
 			added.tags.push("late");
-			expect(store.read().tickets[0].tags).toStrictEqual(["one", "two"]);
-			expect(store.read().tickets[2].tags).toStrictEqual(["one"]);
+			expect(store.query((state) => state).tickets[0].tags).toStrictEqual(["one", "two"]);
+			expect(store.query((state) => state).tickets[2].tags).toStrictEqual(["one"]);
 		});
 
 		it("preserves surviving item entities while removing items", () => {
 			const store = setupItems();
-			const before = store.read();
+			const before = store.query((state) => state);
 
-			store.update((draft) => {
+			store.mutate((draft) => {
 				draft.tickets[0].assignee.name = "Cy";
 				const removed = draft.tickets.pop();
 
 				if (removed) removed.title = "Detached";
 			});
-			expect(store.read().tickets).toHaveLength(1);
-			expect(store.read().tickets[0].tags).toBe(before.tickets[0].tags);
-			expect(store.read().tickets[0].assignee.name).toBe("Cy");
+			expect(store.query((state) => state).tickets).toHaveLength(1);
+			expect(store.query((state) => state).tickets[0].tags).toBe(before.tickets[0].tags);
+			expect(store.query((state) => state).tickets[0].assignee.name).toBe("Cy");
 		});
 
 		it("gives an equal-valued fresh replacement a new identity", () => {
 			const store = setupItems("First");
-			const before = store.read();
+			const before = store.query((state) => state);
 			const listener = listen(store);
 
-			store.update((draft) => {
+			store.mutate((draft) => {
 				draft.tickets[0] = item();
 			});
-			expect(store.read()).toStrictEqual(before);
+			expect(store.query((state) => state)).toStrictEqual(before);
 			expect(listener).toHaveBeenCalledOnce();
 		});
 
 		it("reads a computed field once while preserving item identity", () => {
 			const store = setupItems();
-			const before = store.read();
+			const before = store.query((state) => state);
 
 			let reads = 0;
 
-			store.update((draft) => {
+			store.mutate((draft) => {
 				Object.defineProperty(draft.tickets[0], "title", {
 					enumerable: true,
 					get: () => (++reads === 1 ? "Computed" : 42),
 				});
 			});
-			expect(store.read().tickets[0].title).toBe("Computed");
-			expect(store.read().tickets[0].tags).toBe(before.tickets[0].tags);
+			expect(store.query((state) => state).tickets[0].title).toBe("Computed");
+			expect(store.query((state) => state).tickets[0].tags).toBe(before.tickets[0].tags);
 			expect(reads).toBe(1);
 		});
 	});
 
-	describe("lazy updates", () => {
+	describe("lazy mutations", () => {
 		type Ticket = InferStateType<typeof assignedSchema>["tickets"][number];
 
-		it("reads the collection once for a one-field item update", () => {
+		it("reads the collection once for a one-field item mutation", () => {
 			const store = setup();
 			const lists = vi.spyOn(RGA.prototype, "current", "get");
 
-			store.update((draft) => {
+			store.mutate((draft) => {
 				draft.tickets[1].title = "Changed";
 			});
 
 			expect(lists).toHaveBeenCalledOnce();
-			expect(store.read().tickets[1].title).toBe("Changed");
+			expect(store.query((state) => state).tickets[1].title).toBe("Changed");
 		});
 
-		it("fills no other item for a one-field item update", () => {
+		it("fills no other item for a one-field item mutation", () => {
 			const store = setup();
 			const maps = vi.spyOn(LWWMap.prototype, "current", "get");
 
-			store.update((draft) => {
+			store.mutate((draft) => {
 				draft.tickets[1].assignee.name = "Cy";
 			});
 
 			expect(maps.mock.calls.length).toBeLessThanOrEqual(3);
-			expect(store.read().tickets[1].assignee.name).toBe("Cy");
+			expect(store.query((state) => state).tickets[1].assignee.name).toBe("Cy");
 		});
 
 		it("reads nothing for a recipe that changes nothing", () => {
@@ -524,29 +538,29 @@ describe("Store", () => {
 			const lists = vi.spyOn(RGA.prototype, "current", "get");
 			const maps = vi.spyOn(LWWMap.prototype, "current", "get");
 
-			store.update(() => {});
+			store.mutate(() => {});
 
 			expect(lists).not.toHaveBeenCalled();
 			expect(maps).not.toHaveBeenCalled();
 		});
 
-		it("writes back a draft item kept from an earlier update", () => {
+		it("writes back a draft item kept from an earlier mutation", () => {
 			const store = setup();
 
 			let kept: Ticket | undefined;
 
-			store.update((draft) => {
+			store.mutate((draft) => {
 				kept = draft.tickets[0];
 				expect(kept.title).toBe("First");
 			});
-			store.update((draft) => {
+			store.mutate((draft) => {
 				draft.tickets[0].title = "Changed";
 			});
-			store.update((draft) => {
+			store.mutate((draft) => {
 				if (kept) draft.tickets = [kept];
 			});
 
-			expect(store.read().tickets.map(({ title }) => title)).toStrictEqual(["First"]);
+			expect(store.query((state) => state).tickets.map(({ title }) => title)).toStrictEqual(["First"]);
 		});
 
 		it("writes back an item kept from a recipe that throws", () => {
@@ -555,58 +569,62 @@ describe("Store", () => {
 			let kept: Ticket | undefined;
 
 			expect(() =>
-				store.update((draft) => {
+				store.mutate((draft) => {
 					kept = draft.tickets[0];
 					expect(kept.title).toBe("First");
 					throw new Error("stop");
 				}),
 			).toThrow("stop");
-			store.update((draft) => {
+			store.mutate((draft) => {
 				draft.tickets[0].title = "Changed";
 			});
-			store.update((draft) => {
+			store.mutate((draft) => {
 				if (kept) draft.tickets = [kept];
 			});
 
-			expect(store.read().tickets.map(({ title }) => title)).toStrictEqual(["First"]);
+			expect(store.query((state) => state).tickets.map(({ title }) => title)).toStrictEqual(["First"]);
 		});
 
 		it("edits an item found by scanning the collection", () => {
 			const store = setup();
-			const before = store.read();
+			const before = store.query((state) => state);
 
-			store.update((draft) => {
+			store.mutate((draft) => {
 				const found = draft.tickets.find((item) => item.title === "Second");
 
 				if (found) found.title = "Found";
 			});
 
-			expect(store.read().tickets.map(({ title }) => title)).toStrictEqual(["First", "Found"]);
-			expect(store.read().tickets[0]).toBe(before.tickets[0]);
+			expect(store.query((state) => state).tickets.map(({ title }) => title)).toStrictEqual(["First", "Found"]);
+			expect(store.query((state) => state).tickets[0]).toBe(before.tickets[0]);
 		});
 
 		it("reconciles only the edited item after scanning the collection", () => {
 			const store = setup();
 			const lookups = vi.spyOn(RGA.prototype, "find");
 
-			store.update((draft) => {
+			store.mutate((draft) => {
 				const found = draft.tickets.find((item) => item.title === "First");
 
 				if (found) found.assignee.name = "Cy";
 			});
 
 			expect(lookups).not.toHaveBeenCalled();
-			expect(store.read().tickets.map(({ assignee }) => assignee.name)).toStrictEqual(["Cy", "Bob"]);
+			expect(store.query((state) => state).tickets.map(({ assignee }) => assignee.name)).toStrictEqual(["Cy", "Bob"]);
 		});
 
 		it("pushes a spread draft item as a new item", () => {
 			const store = setup();
 
-			store.update((draft) => {
+			store.mutate((draft) => {
 				draft.tickets.push({ ...draft.tickets[0], assignee: { ...draft.tickets[0].assignee } });
 			});
 
-			expect(store.read().tickets.map(({ title }) => title)).toStrictEqual(["First", "Second", "First"]);
+			expect(store.query((state) => state).tickets.map(({ title }) => title)).toStrictEqual([
+				"First",
+				"Second",
+				"First",
+			]);
 		});
 	});
 
@@ -616,7 +634,7 @@ describe("Store", () => {
 				object({ boards: array(object({ comments: array(object({ key: string(), text: string() })) })) }),
 			);
 
-			store.update((draft) => {
+			store.mutate((draft) => {
 				draft.boards.push({ comments: [{ key: "public", text: "Hello" }] }, { comments: [] });
 			});
 
@@ -635,16 +653,16 @@ describe("Store", () => {
 				}),
 			);
 
-			store.update((draft) => {
+			store.mutate((draft) => {
 				draft.board.tickets.push({ title: "First", tags: ["red"], comments: [{ text: "Hello" }] });
 			});
-			store.update((draft) => {
+			store.mutate((draft) => {
 				draft.board.title = "Sprint";
 				draft.board.tickets[0].tags.unshift("green");
 				draft.board.tickets[0].comments[0].text = "Changed";
 				draft.board.tickets[0].comments.push({ text: "Added" });
 			});
-			expect(store.read().board).toStrictEqual({
+			expect(store.query((state) => state).board).toStrictEqual({
 				title: "Sprint",
 				tickets: [{ title: "First", tags: ["green", "red"], comments: [{ text: "Changed" }, { text: "Added" }] }],
 			});
@@ -653,39 +671,39 @@ describe("Store", () => {
 		it("treats fields named key as ordinary fields", () => {
 			const store = setupBoards();
 
-			store.update((draft) => {
+			store.mutate((draft) => {
 				draft.boards[0].comments[0].key = "edited";
 			});
-			expectTypeOf(store.read().boards[0].comments).toEqualTypeOf<
+			expectTypeOf(store.query((state) => state).boards[0].comments).toEqualTypeOf<
 				ReadonlyArray<{ readonly key: string; readonly text: string }>
 			>();
-			expect(store.read().boards[0].comments[0]).toStrictEqual({ key: "edited", text: "Hello" });
+			expect(store.query((state) => state).boards[0].comments[0]).toStrictEqual({ key: "edited", text: "Hello" });
 		});
 
 		it("moves an item between same-named collections", () => {
 			const store = setupBoards();
 
-			store.update((draft) => {
+			store.mutate((draft) => {
 				const comment = draft.boards[0].comments.pop();
 
 				if (comment) draft.boards[1].comments.push(comment);
 			});
-			expect(store.read().boards.map((board) => board.comments)).toStrictEqual([
+			expect(store.query((state) => state).boards.map((board) => board.comments)).toStrictEqual([
 				[],
 				[{ key: "public", text: "Hello" }],
 			]);
 		});
 
-		it("reads each collection once for a nested one-field update", () => {
+		it("reads each collection once for a nested one-field mutation", () => {
 			const store = setupBoards();
 			const lists = vi.spyOn(RGA.prototype, "current", "get");
 
-			store.update((draft) => {
+			store.mutate((draft) => {
 				draft.boards[0].comments[0].text = "Changed";
 			});
 
 			expect(lists).toHaveBeenCalledTimes(2);
-			expect(store.read().boards[0].comments[0].text).toBe("Changed");
+			expect(store.query((state) => state).boards[0].comments[0].text).toBe("Changed");
 		});
 	});
 
@@ -701,19 +719,19 @@ describe("Store", () => {
 			it("swaps two collections", () => {
 				const store = new Store(shape);
 
-				store.update((draft) => {
+				store.mutate((draft) => {
 					draft.a.push({ title: "A" });
 					draft.b.push({ title: "B" });
 				});
-				store.update((draft) => {
+				store.mutate((draft) => {
 					const a = draft.a;
 
 					draft.a = draft.b;
 					draft.b = a;
 				});
 
-				expect(titles(store.read().a)).toStrictEqual(["B"]);
-				expect(titles(store.read().b)).toStrictEqual(["A"]);
+				expect(titles(store.query((state) => state).a)).toStrictEqual(["B"]);
+				expect(titles(store.query((state) => state).b)).toStrictEqual(["A"]);
 			});
 		});
 
@@ -724,18 +742,18 @@ describe("Store", () => {
 			it("swaps two objects", () => {
 				const store = new Store(shape);
 
-				store.update((draft) => {
+				store.mutate((draft) => {
 					draft.x.name = "X";
 					draft.y.name = "Y";
 				});
-				store.update((draft) => {
+				store.mutate((draft) => {
 					const x = draft.x;
 
 					draft.x = draft.y;
 					draft.y = x;
 				});
 
-				expect(store.read()).toStrictEqual({ x: { name: "Y" }, y: { name: "X" } });
+				expect(store.query((state) => state)).toStrictEqual({ x: { name: "Y" }, y: { name: "X" } });
 			});
 		});
 
@@ -746,16 +764,16 @@ describe("Store", () => {
 			it("keeps the items of a collection that is moved and then cleared", () => {
 				const store = new Store(shape);
 
-				store.update((draft) => {
+				store.mutate((draft) => {
 					draft.tickets.push({ title: "A" }, { title: "B" });
 				});
-				store.update((draft) => {
+				store.mutate((draft) => {
 					draft.archive = draft.tickets;
 					draft.tickets = [];
 				});
 
-				expect(titles(store.read().archive)).toStrictEqual(["A", "B"]);
-				expect(store.read().tickets).toStrictEqual([]);
+				expect(titles(store.query((state) => state).archive)).toStrictEqual(["A", "B"]);
+				expect(store.query((state) => state).tickets).toStrictEqual([]);
 			});
 		});
 
@@ -766,18 +784,21 @@ describe("Store", () => {
 			it("swaps two objects with unread nested objects", () => {
 				const store = new Store(shape);
 
-				store.update((draft) => {
+				store.mutate((draft) => {
 					draft.x.child.name = "X";
 					draft.y.child.name = "Y";
 				});
-				store.update((draft) => {
+				store.mutate((draft) => {
 					const x = draft.x;
 
 					draft.x = draft.y;
 					draft.y = x;
 				});
 
-				expect(store.read()).toStrictEqual({ x: { child: { name: "Y" } }, y: { child: { name: "X" } } });
+				expect(store.query((state) => state)).toStrictEqual({
+					x: { child: { name: "Y" } },
+					y: { child: { name: "X" } },
+				});
 			});
 		});
 
@@ -788,61 +809,61 @@ describe("Store", () => {
 			it("swaps two objects with unread collections", () => {
 				const store = new Store(shape);
 
-				store.update((draft) => {
+				store.mutate((draft) => {
 					draft.x.items.push({ title: "X1" }, { title: "X2" });
 					draft.y.items.push({ title: "Y1" });
 				});
-				store.update((draft) => {
+				store.mutate((draft) => {
 					const x = draft.x;
 
 					draft.x = draft.y;
 					draft.y = x;
 				});
 
-				expect(titles(store.read().x.items)).toStrictEqual(["Y1"]);
-				expect(titles(store.read().y.items)).toStrictEqual(["X1", "X2"]);
+				expect(titles(store.query((state) => state).x.items)).toStrictEqual(["Y1"]);
+				expect(titles(store.query((state) => state).y.items)).toStrictEqual(["X1", "X2"]);
 			});
 		});
 
-		it("keeps an inner update's write that the outer recipe never read", () => {
+		it("keeps an inner mutation's write that the outer recipe never read", () => {
 			const store = setup();
 
-			store.update((outer) => {
-				store.update((inner) => {
+			store.mutate((outer) => {
+				store.mutate((inner) => {
 					inner.language = "cs";
 				});
 				outer.tickets[0].title = "Outer";
 			});
 
-			expect(store.read().language).toBe("cs");
-			expect(store.read().tickets[0].title).toBe("Outer");
+			expect(store.query((state) => state).language).toBe("cs");
+			expect(store.query((state) => state).tickets[0].title).toBe("Outer");
 		});
 
-		it("keeps the outer copy of a map it read before an inner update", () => {
+		it("keeps the outer copy of a map it read before an inner mutation", () => {
 			const store = setup();
 
-			store.update((outer) => {
+			store.mutate((outer) => {
 				expect(outer.language).toBe("en");
-				store.update((inner) => {
+				store.mutate((inner) => {
 					inner.language = "cs";
 				});
 				outer.tickets[0].title = "Outer";
 			});
 
-			expect(store.read().language).toBe("en");
+			expect(store.query((state) => state).language).toBe("en");
 		});
 
-		it("keeps the outer copy of an item an inner update removed after the outer recipe filled its collection", () => {
+		it("keeps the outer copy of an item an inner mutation removed after the outer recipe filled its collection", () => {
 			const store = setup();
 
-			store.update((outer) => {
+			store.mutate((outer) => {
 				outer.tickets.push({ title: "Third", assignee: { name: "Cid" } });
-				store.update((inner) => {
+				store.mutate((inner) => {
 					inner.tickets.splice(0, 1);
 				});
 			});
 
-			expect(store.read().tickets).toStrictEqual([
+			expect(store.query((state) => state).tickets).toStrictEqual([
 				{ title: "Second", assignee: { name: "Bob" } },
 				{ title: "First", assignee: { name: "Ann" } },
 				{ title: "Third", assignee: { name: "Cid" } },
@@ -855,7 +876,7 @@ describe("Store", () => {
 			const store = new Store(ticketsSchema);
 			const listener = listen(store);
 
-			store.update((draft) => {
+			store.mutate((draft) => {
 				draft.language = "cs";
 				draft.tickets.push({ title: "A" });
 			});
@@ -871,7 +892,7 @@ describe("Store", () => {
 			const encode = vi.spyOn(Codec.prototype, "encode");
 			const listener = listen(store);
 
-			store.update((draft) => {
+			store.mutate((draft) => {
 				draft.language = "cs";
 			});
 
@@ -883,15 +904,15 @@ describe("Store", () => {
 			expect(encode).toHaveBeenCalledOnce();
 		});
 
-		it("publishes one final snapshot per update and ignores returned values", () => {
+		it("publishes one final snapshot per mutation and ignores returned values", () => {
 			const store = setup();
 			const observed: unknown[] = [];
 			const listener = vi.fn(() => {
-				observed.push(store.read());
+				observed.push(store.query((state) => state));
 			});
 
 			store.onChange(listener);
-			store.update((draft) => {
+			store.mutate((draft) => {
 				draft.language = "cs";
 				draft.tickets[0].title = "Changed";
 
@@ -901,12 +922,12 @@ describe("Store", () => {
 				tickets: expect.objectContaining({ key: "tickets" }),
 				language: expect.objectContaining({ key: "language" }),
 			});
-			expect(observed).toStrictEqual([store.read()]);
-			expect(store.read().language).toBe("cs");
-			expect(store.read().tickets[0].title).toBe("Changed");
+			expect(observed).toStrictEqual([store.query((state) => state)]);
+			expect(store.query((state) => state).language).toBe("cs");
+			expect(store.query((state) => state).tickets[0].title).toBe("Changed");
 		});
 
-		it("delivers updates made by a listener as a separate notification", () => {
+		it("delivers mutations made by a listener as a separate notification", () => {
 			const store = setup();
 			const observed: string[][] = [];
 
@@ -916,12 +937,12 @@ describe("Store", () => {
 				observed.push(keys);
 
 				if (keys.includes("language")) {
-					store.update((draft) => {
+					store.mutate((draft) => {
 						draft.tickets.shift();
 					});
 				}
 			});
-			store.update((draft) => {
+			store.mutate((draft) => {
 				draft.language = "cs";
 			});
 			expect(observed).toStrictEqual([["language"], ["tickets"]]);
@@ -932,11 +953,11 @@ describe("Store", () => {
 			const listener = vi.fn();
 			const unsubscribe = store.onChange(listener);
 
-			store.update((draft) => {
+			store.mutate((draft) => {
 				draft.language = "cs";
 			});
 			unsubscribe();
-			store.update((draft) => {
+			store.mutate((draft) => {
 				draft.language = "de";
 			});
 
@@ -948,7 +969,7 @@ describe("Store", () => {
 			const unsubscribe = store.onChange(() => unsubscribe());
 			const second = listen(store);
 
-			store.update((draft) => {
+			store.mutate((draft) => {
 				draft.language = "cs";
 			});
 
@@ -962,12 +983,12 @@ describe("Store", () => {
 			const store = new Store(ticketsSchema);
 			const listener = listen(store);
 
-			remote.update((draft) => {
+			remote.mutate((draft) => {
 				draft.language = "cs";
 			});
 			store.merge("language", remote.encode().data.language);
 
-			expect(store.read().language).toBe("cs");
+			expect(store.query((state) => state).language).toBe("cs");
 			expect(listener).toHaveBeenCalledExactlyOnceWith({ language: expect.objectContaining({ key: "language" }) });
 		});
 
@@ -982,7 +1003,7 @@ describe("Store", () => {
 					"profile",
 				).encode(),
 			);
-			expect(store.read().profile).toStrictEqual({ name: "Ann", score: 5 });
+			expect(store.query((state) => state).profile).toStrictEqual({ name: "Ann", score: 5 });
 			expect(listener).toHaveBeenCalledOnce();
 		});
 
@@ -992,7 +1013,7 @@ describe("Store", () => {
 
 		it("ignores a merge into an unknown or inherited field or with another field's value", () => {
 			const store = new Store(ticketsSchema);
-			const before = store.read();
+			const before = store.query((state) => state);
 			const listener = listen(store);
 
 			store.merge("missing", store.encode().data.language);
@@ -1001,20 +1022,20 @@ describe("Store", () => {
 			store.merge("language", new LWWRegister("cs", "other", Time.now()).encode());
 
 			expect(listener).not.toHaveBeenCalled();
-			expect(store.read()).toBe(before);
+			expect(store.query((state) => state)).toBe(before);
 		});
 
 		it("keeps newer local values", () => {
 			const store = new Store(ticketsSchema);
 			const older = Time.now();
 
-			store.update((draft) => {
+			store.mutate((draft) => {
 				draft.language = "cs";
 			});
 			const listener = listen(store);
 
 			store.merge("language", new LWWRegister("de", "language", older).encode());
-			expect(store.read().language).toBe("cs");
+			expect(store.query((state) => state).language).toBe("cs");
 			expect(listener).not.toHaveBeenCalled();
 		});
 
@@ -1025,7 +1046,7 @@ describe("Store", () => {
 
 			store.merge("tickets", remote.encode());
 
-			expect(store.read().tickets).toStrictEqual([{ title: "", assignee: { name: "" } }]);
+			expect(store.query((state) => state).tickets).toStrictEqual([{ title: "", assignee: { name: "" } }]);
 			expect(now).not.toHaveBeenCalled();
 		});
 
@@ -1033,12 +1054,12 @@ describe("Store", () => {
 			const store = setup();
 			const stale = store.encode().data.tickets;
 
-			store.update((draft) => {
+			store.mutate((draft) => {
 				draft.tickets = draft.tickets.filter((item) => item.title !== "First");
 			});
 			store.merge("tickets", stale);
 
-			expect(store.read().tickets.map((item) => item.title)).toStrictEqual(["Second"]);
+			expect(store.query((state) => state).tickets.map((item) => item.title)).toStrictEqual(["Second"]);
 		});
 
 		it("removes an item that a remote replica removed", () => {
@@ -1046,12 +1067,12 @@ describe("Store", () => {
 			const store = new Store(assignedSchema);
 
 			store.merge("tickets", remote.encode().data.tickets);
-			remote.update((draft) => {
+			remote.mutate((draft) => {
 				draft.tickets = draft.tickets.filter((item) => item.title !== "First");
 			});
 			store.merge("tickets", remote.encode().data.tickets);
 
-			expect(store.read().tickets.map((item) => item.title)).toStrictEqual(["Second"]);
+			expect(store.query((state) => state).tickets.map((item) => item.title)).toStrictEqual(["Second"]);
 		});
 
 		describe("merging data saved by another schema", () => {
@@ -1062,12 +1083,12 @@ describe("Store", () => {
 				const older = new Store(object({ tickets: array(object({ title: string() })) }));
 				const store = new Store(current);
 
-				older.update((draft) => {
+				older.mutate((draft) => {
 					draft.tickets.push({ title: "Old" });
 				});
 				store.merge("tickets", older.encode().data.tickets);
 
-				expect(store.read().tickets).toStrictEqual([{ title: "Old", comments: [] }]);
+				expect(store.query((state) => state).tickets).toStrictEqual([{ title: "Old", comments: [] }]);
 			});
 
 			it("fills a field missing from a nested item", () => {
@@ -1076,12 +1097,14 @@ describe("Store", () => {
 				);
 				const store = new Store(current);
 
-				older.update((draft) => {
+				older.mutate((draft) => {
 					draft.tickets.push({ title: "Old", comments: [{ body: "Hi" }] });
 				});
 				store.merge("tickets", older.encode().data.tickets);
 
-				expect(store.read().tickets).toStrictEqual([{ title: "Old", comments: [{ body: "Hi", author: "" }] }]);
+				expect(store.query((state) => state).tickets).toStrictEqual([
+					{ title: "Old", comments: [{ body: "Hi", author: "" }] },
+				]);
 			});
 
 			it("keeps fields the schema does not declare on a new item", () => {
@@ -1090,7 +1113,7 @@ describe("Store", () => {
 				);
 				const store = new Store(current);
 
-				newer.update((draft) => {
+				newer.mutate((draft) => {
 					draft.tickets.push({ title: "New", comments: [], priority: 2 });
 				});
 				store.merge("tickets", newer.encode().data.tickets);
@@ -1104,12 +1127,12 @@ describe("Store", () => {
 				const older = new Store(object({ tickets: array(object({ title: string(), comments: string() })) }));
 				const store = new Store(current);
 
-				older.update((draft) => {
+				older.mutate((draft) => {
 					draft.tickets.push({ title: "First", comments: "none" }, { title: "Second", comments: "none" });
 				});
 				store.merge("tickets", older.encode().data.tickets);
 
-				expect(store.read().tickets.map(({ title }) => title)).toStrictEqual(["First", "Second"]);
+				expect(store.query((state) => state).tickets.map(({ title }) => title)).toStrictEqual(["First", "Second"]);
 			});
 
 			it("keeps local values when an older copy of the same item arrives", () => {
@@ -1124,7 +1147,9 @@ describe("Store", () => {
 				store.merge("tickets", new RGA([item], "tickets").encode());
 				store.merge("tickets", new RGA([stale], "tickets").encode());
 
-				expect(store.read().tickets).toStrictEqual([{ title: "New", comments: [{ body: "Hi", author: "Ann" }] }]);
+				expect(store.query((state) => state).tickets).toStrictEqual([
+					{ title: "New", comments: [{ body: "Hi", author: "Ann" }] },
+				]);
 			});
 		});
 	});
@@ -1133,7 +1158,7 @@ describe("Store", () => {
 		it("encodes every top-level field", () => {
 			const store = new Store(assignedSchema);
 
-			store.update((draft) => {
+			store.mutate((draft) => {
 				draft.language = "cs";
 			});
 

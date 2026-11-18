@@ -11,7 +11,7 @@ describe("useStore", () => {
 	it("reads the current snapshot and follows updates", () => {
 		const store = new Store(schema);
 
-		store.update((draft) => {
+		store.mutate((draft) => {
 			draft.language = "en";
 		});
 
@@ -20,7 +20,7 @@ describe("useStore", () => {
 		expect(result.current).toStrictEqual({ language: "en" });
 
 		act(() => {
-			store.update((draft) => {
+			store.mutate((draft) => {
 				draft.language = "cs";
 			});
 		});

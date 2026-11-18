@@ -6,16 +6,16 @@ import { useSyncExternalStoreWithSelector } from "use-sync-external-store/with-s
 
 import { equal } from "./equal";
 
-type Snapshot<Value> = {
-	readonly [Key in keyof Value]: Snapshot<Value[Key]>;
+type ReadonlyData<Value> = {
+	readonly [Key in keyof Value]: ReadonlyData<Value[Key]>;
 };
 
-type Update<Data> = (recipe: (draft: Data) => void) => void;
+type Mutate<Data> = (recipe: (draft: Data) => void) => void;
 
 export interface ReactStore<StoreSchema extends ObjectSchema<Record<string, Schema>>> {
 	store: Store<StoreSchema>;
-	useRead<Result>(selector: (data: Snapshot<InferStateType<StoreSchema>>) => Result): Result;
-	useUpdate(): Update<InferStateType<StoreSchema>>;
+	useQuery<Result>(selector: (data: ReadonlyData<InferStateType<StoreSchema>>) => Result): Result;
+	useMutation(): Mutate<InferStateType<StoreSchema>>;
 }
 
 export function createStore<StoreSchema extends ObjectSchema<Record<string, Schema>>>(
@@ -25,21 +25,23 @@ export function createStore<StoreSchema extends ObjectSchema<Record<string, Sche
 
 	const store = new Store(schema);
 
-	const getSnapshot = () => store.read();
+	// TODO: Query whole store data. Strive for selected data only.
+	const getSnapshot = () => store.query((data) => data);
 	const subscribe = (listener: () => void) => store.onChange(listener);
-	const update: Update<Data> = (recipe) => store.update(recipe);
+	const mutate: Mutate<Data> = (recipe) => store.mutate(recipe);
 
-	function useRead<Result>(selector: (data: Snapshot<Data>) => Result): Result {
-		const value = useSyncExternalStoreWithSelector(subscribe, getSnapshot, getSnapshot, selector, equal);
+	function useQuery<Result>(selector: (data: ReadonlyData<Data>) => Result): Result {
+		// TODO: Aim for plain useSyncExternalStore hook.
+		const result = useSyncExternalStoreWithSelector(subscribe, getSnapshot, getSnapshot, selector, equal);
 
-		useDebugValue(value);
+		useDebugValue(result);
 
-		return value;
+		return result;
 	}
 
-	function useUpdate(): Update<Data> {
-		return update;
+	function useMutation(): Mutate<Data> {
+		return mutate;
 	}
 
-	return { store, useRead, useUpdate };
+	return { store, useQuery, useMutation };
 }

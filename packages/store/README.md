@@ -16,12 +16,14 @@ import { Store } from "@nn/store";
 
 const store = new Store(object({ todos: array(object({ id: string(), title: string() })) }));
 
-store.update((draft) => {
+store.mutate((draft) => {
 	draft.todos.push({ id: "1", title: "Write README" });
 });
 
-store.read().todos;
+store.query((state) => state.todos);
 ```
+
+`query` runs the selector once and returns its result. To read again after a change, call it from an `onChange` listener.
 
 ### Listening for changes
 

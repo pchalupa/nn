@@ -4,7 +4,7 @@ import { createStore } from "@nn/react";
 import { SseSync } from "@nn/sse-sync";
 import { schema } from "example-schema";
 
-const { store, useRead, useUpdate } = createStore(schema);
+const { store, useQuery, useMutation } = createStore(schema);
 
 const persistence = new IndexDbSync(store, "example-react");
 const broadcast = new BroadcastSync(store, "example-react");
@@ -19,4 +19,4 @@ remote.connect();
 broadcast.connect();
 persistence.connect();
 
-export { store, useRead, useUpdate };
+export { store, useQuery, useMutation };

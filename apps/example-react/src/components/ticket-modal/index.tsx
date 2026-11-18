@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 
 import { statusLabels } from "../../i18n";
-import { useRead, useUpdate } from "../../store";
+import { useQuery, useMutation } from "../../store";
 import { Button } from "../button";
 import { Input } from "../input";
 import { Modal, type ModalHandle } from "../modal";
@@ -18,7 +18,7 @@ interface TicketModalProps {
 
 export const TicketModal = ({ id, onClose }: TicketModalProps) => {
 	const { t } = useTranslation();
-	const ticket = useRead((data) => {
+	const ticket = useQuery((data) => {
 		const selectedTicket = data.tickets.find((entry) => entry.id === id);
 
 		if (selectedTicket) {
@@ -34,8 +34,8 @@ export const TicketModal = ({ id, onClose }: TicketModalProps) => {
 			};
 		}
 	});
-	const users = useRead((data) => data.users.map((user) => ({ id: user.id, name: user.name })));
-	const updateStore = useUpdate();
+	const users = useQuery((data) => data.users.map((user) => ({ id: user.id, name: user.name })));
+	const mutate = useMutation();
 	const modalRef = useRef<ModalHandle>(null);
 	const form = useForm({ values: ticket, resetOptions: { keepDirtyValues: true } });
 
@@ -45,11 +45,11 @@ export const TicketModal = ({ id, onClose }: TicketModalProps) => {
 		const title = draft.title.trim();
 
 		if (!ticket) {
-			updateStore((data) => {
+			mutate((data) => {
 				data.tickets.push({ ...draft, id: crypto.randomUUID(), title, comments: [] });
 			});
 		} else {
-			updateStore((data) => {
+			mutate((data) => {
 				const item = data.tickets.find((entry) => entry.id === id);
 
 				if (item) {
@@ -65,7 +65,7 @@ export const TicketModal = ({ id, onClose }: TicketModalProps) => {
 	});
 
 	const handleDelete = () => {
-		updateStore((data) => {
+		mutate((data) => {
 			data.tickets = data.tickets.filter((entry) => entry.id !== id);
 		});
 

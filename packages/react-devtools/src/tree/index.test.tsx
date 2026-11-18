@@ -17,7 +17,7 @@ describe("Tree", () => {
 	it("shows every field on mount", () => {
 		const store = new Store(schema);
 
-		store.update((draft) => {
+		store.mutate((draft) => {
 			draft.language = "en";
 			draft.tickets.push(ticket);
 		});
@@ -31,7 +31,7 @@ describe("Tree", () => {
 		const store = new Store(schema);
 		const Writer = () => {
 			useLayoutEffect(() => {
-				store.update((draft) => {
+				store.mutate((draft) => {
 					draft.language = "cs";
 				});
 			}, []);
@@ -52,7 +52,7 @@ describe("Tree", () => {
 	it("follows live updates and keeps expansion", () => {
 		const store = new Store(schema);
 
-		store.update((draft) => {
+		store.mutate((draft) => {
 			draft.tickets.push(ticket);
 		});
 		render(<Tree store={store} />);
@@ -60,7 +60,7 @@ describe("Tree", () => {
 		fireEvent.click(screen.getByRole("treeitem", { name: /^0/ }));
 
 		act(() => {
-			store.update((draft) => {
+			store.mutate((draft) => {
 				draft.language = "cs";
 			});
 		});
@@ -74,7 +74,7 @@ describe("Tree", () => {
 	it("collapses branches initially and toggles them on click", () => {
 		const store = new Store(schema);
 
-		store.update((draft) => {
+		store.mutate((draft) => {
 			draft.tickets.push(ticket);
 		});
 		render(<Tree store={store} />);
@@ -108,7 +108,7 @@ describe("Tree", () => {
 		expect(screen.queryByRole("group")).toBeNull();
 
 		act(() => {
-			store.update((draft) => {
+			store.mutate((draft) => {
 				draft.tickets.push(ticket);
 			});
 		});
@@ -120,10 +120,10 @@ describe("Tree", () => {
 		const first = new Store(schema);
 		const second = new Store(schema);
 
-		first.update((draft) => {
+		first.mutate((draft) => {
 			draft.tickets.push(ticket);
 		});
-		second.update((draft) => {
+		second.mutate((draft) => {
 			draft.language = "cs";
 			draft.tickets.push(ticket);
 		});
@@ -140,7 +140,7 @@ describe("Tree", () => {
 	it("nests expanded rows as tree items one level deeper", () => {
 		const store = new Store(schema);
 
-		store.update((draft) => {
+		store.mutate((draft) => {
 			draft.tickets.push(ticket);
 		});
 		render(<Tree store={store} />);

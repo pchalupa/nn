@@ -7,7 +7,8 @@ import { TimestampMalformedError } from "./errors/timestamp-malformed-error";
 const TIMESTAMP_DELIMITER = "+" as const;
 const COUNTER_DIGITS = 5;
 const MAX_COUNTER = 16 ** COUNTER_DIGITS - 1;
-const TIMESTAMP_PATTERN = /^(.+)\+([0-9a-f]{5})\+([^+]+)$/;
+const TIMESTAMP_PATTERN =
+	/^((?:\d{4}|[+-]\d{6})-\d{2}-\d{2}T\d{2}:\d{2}(?::\d{2}(?:\.\d{3})?)?(?:Z|[+-]\d{2}:\d{2}))\+([0-9a-f]{5})\+([^+]+)$/;
 
 class GlobalTime {
 	/** Physical time in milliseconds */

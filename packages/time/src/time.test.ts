@@ -68,9 +68,32 @@ describe("Time", () => {
 		"1970-01-01T00:00:00.000Z+0000g+replica",
 		"1970-01-01T00:00:00.000Z+ggggg+replica",
 		"not-a-date+00001+replica",
+		"2024-01-01T12:00:00+00001+replica",
+		"2024-01-01T12:00:00.000+00001+replica",
+		"2024-01-01+00001+replica",
+		"Jan 1 2024 12:00 GMT+00001+replica",
+		"2024-01-01 12:00:00.000Z+00001+replica",
+		"2024-01-01T12:00:00.000z+00001+replica",
 	])("rejects malformed stored timestamp %s", (timestamp) => {
 		expect(() => Time.fromTimestamp(timestamp)).toThrow(TimestampMalformedError);
 	});
+
+	it.each([
+		["2024-11-10T13:39:10.776+01:00+00002+replica-id", Date.UTC(2024, 10, 10, 12, 39, 10, 776)],
+		["2024-11-10T12:39:10Z+00002+replica-id", Date.UTC(2024, 10, 10, 12, 39, 10)],
+		["2024-11-10T12:39Z+00002+replica-id", Date.UTC(2024, 10, 10, 12, 39)],
+	])("parses timestamp %s with an explicit zone", (timestamp, time) => {
+		expect(Time.fromTimestamp(timestamp).getTime()).toBe(time);
+	});
+
+	it.each([0, Date.UTC(2024, 10, 10, 12, 39, 10, 776), Date.UTC(10_000, 0, 1), Date.UTC(-1, 0, 1)])(
+		"parses every timestamp it formats from time %i",
+		(time) => {
+			const timestamp = new Time(time, 2, "replica-id").toString();
+
+			expect(Time.fromTimestamp(timestamp).getTime()).toBe(time);
+		},
+	);
 
 	it("compares by physical time, then counter, then replica id", () => {
 		expect(new Time(1, 0, "b").compare(new Time(0, 5, "a"))).toBeGreaterThan(0);

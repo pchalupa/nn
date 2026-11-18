@@ -3,12 +3,12 @@ import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 
 import { languageNames } from "../../i18n";
-import { useRead, useUpdate } from "../../store";
+import { useQuery, useMutation } from "../../store";
 
 export const LanguageSelector = () => {
 	const { i18n, t } = useTranslation();
-	const selectedLanguage = useRead((data) => data.language);
-	const updateStore = useUpdate();
+	const selectedLanguage = useQuery((data) => data.language);
+	const mutate = useMutation();
 
 	// TBD: This should happen on the i18n.ts module level. Component like this should not be responsible for this. Current blocker is missing imperative API for store.
 	useEffect(() => {
@@ -19,7 +19,7 @@ export const LanguageSelector = () => {
 		const nextLanguage = language.literals.find((code) => code === event.target.value);
 
 		if (nextLanguage) {
-			updateStore((draft) => {
+			mutate((draft) => {
 				draft.language = nextLanguage;
 			});
 		}

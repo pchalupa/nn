@@ -6,12 +6,12 @@ import { classNames } from "../components/button/index.styles";
 import { Divider } from "../components/divider";
 import { signIn } from "../modules/authentication/authentication";
 import { authenticated } from "../modules/authentication/session";
-import { useRead } from "../store";
+import { useQuery } from "../store";
 
 const SignIn = () => {
 	const { t } = useTranslation();
 	const navigate = useNavigate();
-	const accounts = useRead((data) => data.users);
+	const accounts = useQuery((data) => data.users);
 	const form = useForm();
 
 	const handleSubmit = form.handleSubmit(async () => {

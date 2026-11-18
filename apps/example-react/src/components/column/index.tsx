@@ -1,7 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import type { Status } from "example-schema";
 
-import { useRead } from "../../store";
+import { useQuery } from "../../store";
 import { Divider } from "../divider";
 import { Ticket } from "../ticket";
 import { Header } from "./parts/header";
@@ -12,7 +12,7 @@ interface ColumnProps {
 }
 
 export const Column = ({ title, status }: ColumnProps) => {
-	const tickets = useRead((data) =>
+	const tickets = useQuery((data) =>
 		data.tickets.reduce<Array<{ id: string; title: string; description: string; assignee?: string }>>(
 			(result, ticket) => {
 				if (ticket.status === status) {

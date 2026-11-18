@@ -14,7 +14,7 @@ import { createStore } from "@nn/react";
 import { array, object, string } from "@nn/schema";
 import { SseSync } from "@nn/sse-sync";
 
-export const { store, useRead, useUpdate } = createStore(
+export const { store, useQuery, useMutation } = createStore(
 	object({ todos: array(object({ id: string(), title: string() })) }),
 );
 

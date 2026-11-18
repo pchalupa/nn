@@ -17,21 +17,20 @@ store.onChange(review);
 async function review() {
 	const agentId = "example-description-reviewer";
 	const agentName = "Description reviewer";
-	const data = store.read();
+	const agentUser = store.query((state) => state.users.filter(({ id }) => id === agentId));
+	const assigned = store.query((state) => state.tickets.filter(({ assignee }) => assignee === agentId));
 
 	if (sync.connected) {
-		if (!data.users.some((user) => user.id === agentId)) {
-			store.update((draft) => {
+		if (!agentUser) {
+			store.mutate((draft) => {
 				draft.users.push({ id: agentId, name: agentName, passkeys: [] });
 			});
 		}
 
-		const assigned = data.tickets.filter(({ assignee }) => assignee === agentId);
-
 		for await (const { id, description } of assigned) {
 			const { text } = await descriptionReviewer.generate({ prompt: description.trim() });
 
-			store.update((draft) => {
+			store.mutate((draft) => {
 				const reviewTicket = draft.tickets.find((ticket) => ticket.id === id);
 
 				if (reviewTicket) {

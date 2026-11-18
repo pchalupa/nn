@@ -6,37 +6,37 @@ import { beforeAll, describe, expect, it, vi } from "vitest";
 
 import { TicketModal } from ".";
 import { i18n } from "../../i18n";
-import { useRead, useUpdate } from "../../store";
+import { useQuery, useMutation } from "../../store";
 
 const Titles = () => {
-	const titles = useRead((data) => data.tickets.map((ticket) => ticket.title));
+	const titles = useQuery((data) => data.tickets.map((ticket) => ticket.title));
 
 	return <output aria-label="titles">{titles.join(",")}</output>;
 };
 
 const Assignees = () => {
-	const assignees = useRead((data) => data.tickets.map((ticket) => ticket.assignee));
+	const assignees = useQuery((data) => data.tickets.map((ticket) => ticket.assignee));
 
 	return <output aria-label="assignees">{assignees.join(",")}</output>;
 };
 
 const AddUser = () => {
-	const updateStore = useUpdate();
+	const mutate = useMutation();
 
 	useEffect(() => {
-		updateStore((data) => {
+		mutate((data) => {
 			data.users.push({ id: "ann", name: "Ann", passkeys: [] });
 		});
-	}, [updateStore]);
+	}, [mutate]);
 
 	return null;
 };
 
 const AddCommentedTicket = () => {
-	const updateStore = useUpdate();
+	const mutate = useMutation();
 
 	useEffect(() => {
-		updateStore((data) => {
+		mutate((data) => {
 			data.tickets.push({
 				id: "commented",
 				title: "Commented",
@@ -46,7 +46,7 @@ const AddCommentedTicket = () => {
 				comments: [{ id: "first", author: "bob", createdAt: "2026-01-01T00:00:00.000Z", body: "Looks good" }],
 			});
 		});
-	}, [updateStore]);
+	}, [mutate]);
 
 	return null;
 };

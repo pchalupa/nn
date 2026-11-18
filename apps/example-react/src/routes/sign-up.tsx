@@ -7,19 +7,19 @@ import { Divider } from "../components/divider";
 import { Input } from "../components/input";
 import { signUp } from "../modules/authentication/authentication";
 import { authenticated } from "../modules/authentication/session";
-import { useUpdate } from "../store";
+import { useMutation } from "../store";
 
 const SignUp = () => {
 	const { t } = useTranslation();
 	const navigate = useNavigate();
-	const updateStore = useUpdate();
+	const mutate = useMutation();
 	const form = useForm({ defaultValues: { name: "" } });
 
 	const handleSubmit = form.handleSubmit(async ({ name }) => {
 		try {
 			const account = await signUp({ name: name.trim() });
 
-			updateStore((draft) => {
+			mutate((draft) => {
 				draft.users.push(account);
 			});
 			navigate({ to: "/" });

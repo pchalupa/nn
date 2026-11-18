@@ -9,11 +9,11 @@ import { SignOut } from "../components/sign-out";
 import { Skeleton } from "../components/skeleton";
 import { TicketModal } from "../components/ticket-modal";
 import { authenticated } from "../modules/authentication/session";
-import { useRead } from "../store";
+import { useQuery } from "../store";
 
 const Stats = () => {
 	const { t } = useTranslation();
-	const count = useRead((data) => data.tickets.length);
+	const count = useQuery((data) => data.tickets.length);
 
 	return <p className="text-center text-zinc-600">{t("tickets", { count })}</p>;
 };

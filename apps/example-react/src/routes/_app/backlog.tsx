@@ -1,10 +1,10 @@
 import { createFileRoute, Link, Outlet } from "@tanstack/react-router";
 
 import { Ticket } from "../../components/ticket";
-import { useRead } from "../../store";
+import { useQuery } from "../../store";
 
 const Backlog = () => {
-	const tickets = useRead((data) =>
+	const tickets = useQuery((data) =>
 		data.tickets.map((ticket) => ({
 			...ticket,
 			assignee: data.users.find((user) => user.id === ticket.assignee)?.name,

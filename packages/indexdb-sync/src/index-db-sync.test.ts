@@ -45,7 +45,7 @@ describe("IndexDbSync", () => {
 		const sync = new IndexDbSync(store, name);
 
 		try {
-			store.update((draft) => {
+			store.mutate((draft) => {
 				draft.language = "cs";
 			});
 			await new Promise((resolve) => setTimeout(resolve));
@@ -104,7 +104,7 @@ describe("IndexDbSync", () => {
 		const store = new Store(schema);
 		const indexDbSync = await connect(store, name);
 
-		expect(store.read().language).toBe("cs");
+		expect(store.query((state) => state).language).toBe("cs");
 
 		indexDbSync.dispose();
 	});
@@ -114,7 +114,7 @@ describe("IndexDbSync", () => {
 		const store = new Store(schema);
 		const indexDbSync = await connect(store, name);
 
-		store.update((draft) => {
+		store.mutate((draft) => {
 			draft.language = "cs";
 		});
 
@@ -131,7 +131,7 @@ describe("IndexDbSync", () => {
 		const first = new Store(schema);
 		const indexDbSync = await connect(first, name);
 
-		first.update((draft) => {
+		first.mutate((draft) => {
 			draft.language = "cs";
 		});
 
@@ -145,7 +145,7 @@ describe("IndexDbSync", () => {
 
 		await connect(second, name);
 
-		expect(second.read().language).toBe("cs");
+		expect(second.query((state) => state).language).toBe("cs");
 	});
 
 	it("reads and writes nothing when the database cannot be opened", async () => {
@@ -165,7 +165,7 @@ describe("IndexDbSync", () => {
 			expect(onError).toHaveBeenCalledOnce();
 		});
 
-		store.update((draft) => {
+		store.mutate((draft) => {
 			draft.language = "cs";
 		});
 
@@ -182,7 +182,7 @@ describe("IndexDbSync", () => {
 		await newer.init({ ...schema.properties, posts: {} });
 		newer.close();
 
-		store.update((draft) => {
+		store.mutate((draft) => {
 			draft.language = "cs";
 		});
 
@@ -207,7 +207,7 @@ describe("IndexDbSync", () => {
 			request.onerror = reject;
 		});
 
-		store.update((draft) => {
+		store.mutate((draft) => {
 			draft.language = "cs";
 		});
 

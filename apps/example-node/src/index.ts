@@ -25,7 +25,7 @@ try {
 			try {
 				const lines = readFileSync(join(root, file), "utf8").split("\n");
 
-				store.update((draft) => {
+				store.mutate((draft) => {
 					const ids = new Set(draft.tickets.map((ticket) => ticket.id));
 
 					for (const [index, line] of lines.entries()) {

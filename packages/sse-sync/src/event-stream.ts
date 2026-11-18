@@ -7,10 +7,13 @@ export interface EventStreamDelegate {
 }
 
 export class EventStream implements Delegatable<EventStreamDelegate> {
-	public delegate?: EventStreamDelegate;
+	private readonly url: URL;
 	private eventSource?: EventSource;
+	public delegate?: EventStreamDelegate;
 
-	constructor(private readonly url: URL) {}
+	constructor(url: URL) {
+		this.url = url;
+	}
 
 	public async open(signal: AbortSignal): Promise<void> {
 		const eventSource = (this.eventSource = new EventSource(this.url));

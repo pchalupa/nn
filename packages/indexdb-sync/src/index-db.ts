@@ -1,29 +1,27 @@
 import type { Encoded } from "@nn/entities/codable";
 import type { Delegatable } from "@nn/observable";
 
-enum Mode {
-	ReadOnly = "readonly",
-	ReadWrite = "readwrite",
-}
-
 export interface IndexDbDelegate {
 	indexDbDidChangeVersion(): void;
 	indexDbDidDelete(): void;
 }
 
 export class IndexDb implements Delegatable<IndexDbDelegate> {
-	public delegate?: IndexDbDelegate;
+	private name: string;
 	private indexDbDatabase?: IDBDatabase;
 	private transactions = new Map<string, IDBTransaction>();
+	public delegate?: IndexDbDelegate;
 
-	constructor(private readonly name = "nn-default") {}
+	constructor(name = "nn-default") {
+		this.name = name;
+	}
 
 	public async set(name: string, entry: Encoded): Promise<void> {
 		IndexDb.assertIndexDB(this.indexDbDatabase);
 
 		this.transactions.get(name)?.abort();
 
-		const transaction = this.indexDbDatabase.transaction(name, Mode.ReadWrite);
+		const transaction = this.indexDbDatabase.transaction(name, "readwrite");
 		const request = transaction.objectStore(name).put(entry, name);
 
 		this.transactions.set(name, transaction);
@@ -41,7 +39,7 @@ export class IndexDb implements Delegatable<IndexDbDelegate> {
 	public async get(name: string): Promise<Encoded | undefined> {
 		IndexDb.assertIndexDB(this.indexDbDatabase);
 
-		const transaction = this.indexDbDatabase.transaction(name, Mode.ReadOnly);
+		const transaction = this.indexDbDatabase.transaction(name, "readonly");
 
 		return await this.processRequest<Encoded | undefined>(transaction.objectStore(name).get(name));
 	}
@@ -49,7 +47,7 @@ export class IndexDb implements Delegatable<IndexDbDelegate> {
 	public async delete(key: string, typeName: string): Promise<void> {
 		IndexDb.assertIndexDB(this.indexDbDatabase);
 
-		const transaction = this.indexDbDatabase.transaction(typeName, Mode.ReadWrite);
+		const transaction = this.indexDbDatabase.transaction(typeName, "readwrite");
 
 		await this.processRequest(transaction.objectStore(typeName).delete(key));
 	}
@@ -57,7 +55,7 @@ export class IndexDb implements Delegatable<IndexDbDelegate> {
 	public async getAll(typeName: string): Promise<Encoded[]> {
 		IndexDb.assertIndexDB(this.indexDbDatabase);
 
-		const transaction = this.indexDbDatabase.transaction(typeName, Mode.ReadOnly);
+		const transaction = this.indexDbDatabase.transaction(typeName, "readonly");
 
 		return this.processRequest(transaction.objectStore(typeName).getAll());
 	}

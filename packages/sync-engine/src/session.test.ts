@@ -1,25 +1,28 @@
 import { describe, expect, it, vi } from "vitest";
 
-import { Session, type SessionDelegate, SessionEvent, SessionState } from "./session";
+import { Session, type SessionDelegate, type SessionEvent, type SessionState } from "./session";
+
+const states: SessionState[] = ["idle", "connecting", "connected", "disconnected", "disposed"];
+const events: SessionEvent[] = ["connect", "succeed", "fail", "drop", "reopen", "retry", "dispose"];
 
 const transitions: Array<[SessionState, SessionEvent, SessionState]> = [
-	[SessionState.Idle, SessionEvent.Connect, SessionState.Connecting],
-	[SessionState.Connecting, SessionEvent.Succeed, SessionState.Connected],
-	[SessionState.Connecting, SessionEvent.Fail, SessionState.Disconnected],
-	[SessionState.Connecting, SessionEvent.Drop, SessionState.Disconnected],
-	[SessionState.Connected, SessionEvent.Drop, SessionState.Disconnected],
-	[SessionState.Connected, SessionEvent.Reopen, SessionState.Connecting],
-	[SessionState.Disconnected, SessionEvent.Retry, SessionState.Connecting],
-	[SessionState.Idle, SessionEvent.Dispose, SessionState.Disposed],
-	[SessionState.Connecting, SessionEvent.Dispose, SessionState.Disposed],
-	[SessionState.Connected, SessionEvent.Dispose, SessionState.Disposed],
-	[SessionState.Disconnected, SessionEvent.Dispose, SessionState.Disposed],
+	["idle", "connect", "connecting"],
+	["connecting", "succeed", "connected"],
+	["connecting", "fail", "disconnected"],
+	["connecting", "drop", "disconnected"],
+	["connected", "drop", "disconnected"],
+	["connected", "reopen", "connecting"],
+	["disconnected", "retry", "connecting"],
+	["idle", "dispose", "disposed"],
+	["connecting", "dispose", "disposed"],
+	["connected", "dispose", "disposed"],
+	["disconnected", "dispose", "disposed"],
 ];
 
 describe("Session.transition", () => {
 	it.each(
-		Object.values(SessionState).flatMap((from) =>
-			Object.values(SessionEvent).map((event): [SessionState, SessionEvent, SessionState] => [
+		states.flatMap((from) =>
+			events.map((event): [SessionState, SessionEvent, SessionState] => [
 				from,
 				event,
 				transitions.find(([state, on]) => state === from && on === event)?.[2] ?? from,
@@ -341,12 +344,12 @@ describe("Session", () => {
 		session.dispose();
 
 		expect(records).toStrictEqual([
-			[SessionState.Connecting, SessionState.Connecting, 0],
-			[SessionState.Connected, SessionState.Connected, 1],
-			[SessionState.Disconnected, SessionState.Disconnected, 1],
-			[SessionState.Connecting, SessionState.Connecting, 1],
-			[SessionState.Connected, SessionState.Connected, 2],
-			[SessionState.Disposed, SessionState.Disposed, 2],
+			["connecting", "connecting", 0],
+			["connected", "connected", 1],
+			["disconnected", "disconnected", 1],
+			["connecting", "connecting", 1],
+			["connected", "connected", 2],
+			["disposed", "disposed", 2],
 		]);
 	});
 
@@ -381,7 +384,7 @@ describe("Session", () => {
 		};
 		const statesAfterDispose: SessionState[] = [];
 		const observer = vi.fn((state: SessionState) => {
-			if (state === SessionState.Connecting) {
+			if (state === "connecting") {
 				session.dispose();
 				statesAfterDispose.push(session.state);
 			}
@@ -393,9 +396,9 @@ describe("Session", () => {
 		session.changes.subscribe(laterObserver);
 		session.connect();
 
-		expect(statesAfterDispose).toStrictEqual([SessionState.Connecting]);
-		expect(observer.mock.calls).toStrictEqual([[SessionState.Connecting], [SessionState.Disposed]]);
-		expect(laterObserver.mock.calls).toStrictEqual([[SessionState.Connecting], [SessionState.Disposed]]);
+		expect(statesAfterDispose).toStrictEqual(["connecting"]);
+		expect(observer.mock.calls).toStrictEqual([["connecting"], ["disposed"]]);
+		expect(laterObserver.mock.calls).toStrictEqual([["connecting"], ["disposed"]]);
 		expect(delegate.sessionOpen).toHaveBeenCalledOnce();
 		expect(delegate.sessionOpen.mock.lastCall?.[1].aborted).toBe(true);
 		expect(delegate.sessionClose).toHaveBeenCalledOnce();

@@ -10,12 +10,11 @@ interface Snapshots {
 
 export class Draft {
 	private trackers = new Map<Entity, Tracker>();
+	private snapshots: Snapshots;
 	public readonly value: unknown;
 
-	constructor(
-		entity: Entity,
-		private readonly snapshots: Snapshots,
-	) {
+	constructor(entity: Entity, snapshots: Snapshots) {
+		this.snapshots = snapshots;
 		this.value = track(entity, undefined, this.trackers);
 	}
 

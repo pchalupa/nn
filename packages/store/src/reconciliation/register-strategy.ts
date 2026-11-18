@@ -5,7 +5,11 @@ import type { Time } from "@nn/time";
 import type { Strategy } from "./strategy";
 
 export class RegisterStrategy implements Strategy {
-	constructor(private defaultValue: unknown) {}
+	private defaultValue: unknown;
+
+	constructor(defaultValue: unknown) {
+		this.defaultValue = defaultValue;
+	}
 
 	public create(value: unknown, key: string, timestamp?: Time): LWWRegister<unknown> {
 		return new LWWRegister(value ?? this.defaultValue, key, timestamp);

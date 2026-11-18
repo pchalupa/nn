@@ -17,13 +17,15 @@ type ReadonlyData<Value> = {
 };
 
 export class Store<StateSchema extends ObjectSchema<Record<string, Schema>> = ObjectSchema<Record<string, Schema>>> {
-	private changes = new Observable<[Readonly<Record<string, Encoded>>]>();
-	private codec = new Codec();
 	private view = new View();
+	private codec = new Codec();
+	private changes = new Observable<[Readonly<Record<string, Encoded>>]>();
 	private reconciliationStrategy: MapStrategy;
 	private root: LWWMap<Record<string, Entity>>;
+	public readonly schema: StateSchema;
 
-	constructor(public readonly schema: StateSchema) {
+	constructor(schema: StateSchema) {
+		this.schema = schema;
 		this.reconciliationStrategy = createReconciliationStrategy(schema);
 		this.root = this.reconciliationStrategy.create(undefined, "state", Time.epoch());
 	}

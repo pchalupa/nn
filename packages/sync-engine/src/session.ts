@@ -1,23 +1,9 @@
 import type { Delegatable } from "@nn/observable";
 import { Observable } from "@nn/observable/observable";
 
-export enum SessionState {
-	Idle = "idle",
-	Connecting = "connecting",
-	Connected = "connected",
-	Disconnected = "disconnected",
-	Disposed = "disposed",
-}
+export type SessionState = "idle" | "connecting" | "connected" | "disconnected" | "disposed";
 
-export enum SessionEvent {
-	Connect = "connect",
-	Succeed = "succeed",
-	Fail = "fail",
-	Drop = "drop",
-	Reopen = "reopen",
-	Retry = "retry",
-	Dispose = "dispose",
-}
+export type SessionEvent = "connect" | "succeed" | "fail" | "drop" | "reopen" | "retry" | "dispose";
 
 export interface SessionDelegate {
 	sessionOpen(session: Session, signal: AbortSignal): Promise<void>;
@@ -29,7 +15,7 @@ export class Session implements Delegatable<SessionDelegate> {
 	public readonly changes: Observable<[SessionState]> = new Observable();
 	public delegate?: SessionDelegate;
 	private queue: SessionEvent[] = [];
-	private currentState = SessionState.Idle;
+	private currentState: SessionState = "idle";
 	private controller?: AbortController;
 
 	public get state(): SessionState {
@@ -37,43 +23,43 @@ export class Session implements Delegatable<SessionDelegate> {
 	}
 
 	public get idle(): boolean {
-		return this.currentState === SessionState.Idle;
+		return this.currentState === "idle";
 	}
 
 	public get connecting(): boolean {
-		return this.currentState === SessionState.Connecting;
+		return this.currentState === "connecting";
 	}
 
 	public get connected(): boolean {
-		return this.currentState === SessionState.Connected;
+		return this.currentState === "connected";
 	}
 
 	public get disconnected(): boolean {
-		return this.currentState === SessionState.Disconnected;
+		return this.currentState === "disconnected";
 	}
 
 	public get disposed(): boolean {
-		return this.currentState === SessionState.Disposed;
+		return this.currentState === "disposed";
 	}
 
 	public connect(): void {
-		this.dispatch(SessionEvent.Connect);
+		this.dispatch("connect");
 	}
 
 	public dispose(): void {
-		this.dispatch(SessionEvent.Dispose);
+		this.dispatch("dispose");
 	}
 
 	public drop(): void {
-		this.dispatch(SessionEvent.Drop);
+		this.dispatch("drop");
 	}
 
 	public reopen(): void {
-		this.dispatch(SessionEvent.Reopen);
+		this.dispatch("reopen");
 	}
 
 	public retry(): void {
-		this.dispatch(SessionEvent.Retry);
+		this.dispatch("retry");
 	}
 
 	private open(): void {
@@ -82,8 +68,8 @@ export class Session implements Delegatable<SessionDelegate> {
 		this.controller = controller;
 
 		Promise.resolve(this.delegate?.sessionOpen(this, controller.signal))
-			.then(() => controller.signal.aborted || this.dispatch(SessionEvent.Succeed))
-			.catch(() => controller.signal.aborted || this.dispatch(SessionEvent.Fail));
+			.then(() => controller.signal.aborted || this.dispatch("succeed"))
+			.catch(() => controller.signal.aborted || this.dispatch("fail"));
 	}
 
 	private close(): void {
@@ -107,11 +93,11 @@ export class Session implements Delegatable<SessionDelegate> {
 						this.currentState = to;
 
 						switch (to) {
-							case SessionState.Connecting:
+							case "connecting":
 								this.close();
 								this.open();
 								break;
-							case SessionState.Connected:
+							case "connected":
 								this.delegate?.sessionDidConnect(this);
 								break;
 							default:
@@ -128,27 +114,27 @@ export class Session implements Delegatable<SessionDelegate> {
 	}
 
 	public static transition(state: SessionState, event: SessionEvent): SessionState {
-		if (state === SessionState.Disposed) return state;
+		if (state === "disposed") return state;
 
-		if (event === SessionEvent.Dispose) return SessionState.Disposed;
+		if (event === "dispose") return "disposed";
 
 		switch (state) {
-			case SessionState.Idle:
-				return event === SessionEvent.Connect ? SessionState.Connecting : state;
-			case SessionState.Connecting:
-				if (event === SessionEvent.Succeed) return SessionState.Connected;
+			case "idle":
+				return event === "connect" ? "connecting" : state;
+			case "connecting":
+				if (event === "succeed") return "connected";
 
-				if (event === SessionEvent.Fail || event === SessionEvent.Drop) return SessionState.Disconnected;
-
-				return state;
-			case SessionState.Connected:
-				if (event === SessionEvent.Drop) return SessionState.Disconnected;
-
-				if (event === SessionEvent.Reopen) return SessionState.Connecting;
+				if (event === "fail" || event === "drop") return "disconnected";
 
 				return state;
-			case SessionState.Disconnected:
-				return event === SessionEvent.Retry ? SessionState.Connecting : state;
+			case "connected":
+				if (event === "drop") return "disconnected";
+
+				if (event === "reopen") return "connecting";
+
+				return state;
+			case "disconnected":
+				return event === "retry" ? "connecting" : state;
 		}
 	}
 }

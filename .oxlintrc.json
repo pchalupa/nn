@@ -25,7 +25,6 @@
 		"typescript/no-inferrable-types": "error",
 		"typescript/no-unnecessary-template-expression": "error",
 		"typescript/prefer-as-const": "error",
-		"typescript/prefer-enum-initializers": "error",
 		"typescript/consistent-type-imports": ["error", { "fixStyle": "inline-type-imports" }],
 		"typescript/no-import-type-side-effects": "error",
 		"typescript/no-extraneous-class": ["error", { "allowStaticOnly": true }],
@@ -36,6 +35,7 @@
 		"typescript/prefer-for-of": "error",
 		"typescript/no-dynamic-delete": "error",
 		"typescript/array-type": ["error", { "default": "array-simple" }],
+		"typescript/parameter-properties": "error",
 		"typescript/explicit-member-accessibility": [
 			"error",
 			{ "accessibility": "explicit", "overrides": { "constructors": "no-public" } }

@@ -7,7 +7,7 @@ import { Store } from "@nn/store";
 import { Time } from "@nn/time";
 import { afterEach, describe, expect, expectTypeOf, it, vi } from "vitest";
 
-import { SyncEngine, SyncState } from "./sync-engine";
+import { SyncEngine } from "./sync-engine";
 
 const schema = object({ tickets: array(object({ title: string() })), language: string() });
 
@@ -21,12 +21,12 @@ const transportMock = (entries: Record<string, unknown> = {}) => ({
 const engines: SyncEngine[] = [];
 
 class TestEngine extends SyncEngine {
-	constructor(
-		private readonly transport: ReturnType<typeof transportMock>,
-		store = new Store(schema),
-		connect = true,
-	) {
+	private transport: ReturnType<typeof transportMock>;
+
+	constructor(transport: ReturnType<typeof transportMock>, store = new Store(schema), connect = true) {
 		super(store);
+
+		this.transport = transport;
 		engines.push(this);
 
 		if (connect) this.session.connect();
@@ -62,8 +62,11 @@ class TestEngine extends SyncEngine {
 }
 
 class StreamEngine extends SyncEngine {
-	constructor(private readonly transport: ReturnType<typeof transportMock>) {
+	private readonly transport: ReturnType<typeof transportMock>;
+
+	constructor(transport: ReturnType<typeof transportMock>) {
 		super(new Store(schema));
+		this.transport = transport;
 		engines.push(this);
 		this.session.connect();
 	}
@@ -119,13 +122,13 @@ describe("SyncEngine", () => {
 		sync.connect();
 
 		expect(sync.connecting).toBe(true);
-		expect(listener.mock.calls).toStrictEqual([[SyncState.Connecting]]);
+		expect(listener.mock.calls).toStrictEqual([["connecting"]]);
 
 		await flush();
 
 		expect(store.read().language).toBe("cs");
 		expect(transport.push).toHaveBeenCalledWith("language", expect.objectContaining({ data: "cs" }));
-		expect(listener.mock.calls).toStrictEqual([[SyncState.Connecting], [SyncState.Connected]]);
+		expect(listener.mock.calls).toStrictEqual([["connecting"], ["connected"]]);
 	});
 
 	it("pushes edits made before connect", async () => {
@@ -160,7 +163,7 @@ describe("SyncEngine", () => {
 		await flush();
 
 		expect(onError).toHaveBeenCalledExactlyOnceWith(error);
-		expect(onStateChange.mock.calls).toStrictEqual([[SyncState.Connecting], [SyncState.Disconnected]]);
+		expect(onStateChange.mock.calls).toStrictEqual([["connecting"], ["disconnected"]]);
 	});
 
 	it("never connects an engine disposed before startup", async () => {
@@ -179,7 +182,7 @@ describe("SyncEngine", () => {
 	});
 
 	it("reads connecting right after the connection starts", () => {
-		expect(new StreamEngine(transportMock()).state).toBe(SyncState.Connecting);
+		expect(new StreamEngine(transportMock()).state).toBe("connecting");
 	});
 
 	it("tells state listeners about each transition until they unsubscribe", async () => {
@@ -191,7 +194,7 @@ describe("SyncEngine", () => {
 		off();
 		sync.dispose();
 
-		expect(listener.mock.calls).toStrictEqual([[SyncState.Connected]]);
+		expect(listener.mock.calls).toStrictEqual([["connected"]]);
 	});
 
 	it("retries from disconnected", async () => {
@@ -237,7 +240,7 @@ describe("SyncEngine", () => {
 		await flush();
 
 		expect(onError).toHaveBeenCalledExactlyOnceWith(error);
-		expect(onStateChange.mock.calls).toStrictEqual([[SyncState.Disconnected]]);
+		expect(onStateChange.mock.calls).toStrictEqual([["disconnected"]]);
 	});
 
 	it("pushes an edit even when an app change listener throws", async () => {
@@ -282,7 +285,7 @@ describe("SyncEngine", () => {
 
 		await flush();
 
-		expect(sync.state).toBe(SyncState.Connected);
+		expect(sync.state).toBe("connected");
 		expect(transport.push.mock.calls.map(([name]) => name)).toStrictEqual(["tickets", "language"]);
 	});
 
@@ -553,7 +556,7 @@ describe("SyncEngine", () => {
 		expect(transport.open).toHaveBeenCalledTimes(2);
 		expect(store.read().language).toBe("cs");
 		expect(transport.push.mock.calls.map(([name]) => name)).toStrictEqual(["tickets", "language"]);
-		expect(sync.state).toBe(SyncState.Connected);
+		expect(sync.state).toBe("connected");
 	});
 
 	it("pushes each change once after reopening", async () => {
@@ -621,7 +624,7 @@ describe("SyncEngine", () => {
 			sync.lose();
 			sync.lose();
 
-			expect(sync.state).toBe(SyncState.Disconnected);
+			expect(sync.state).toBe("disconnected");
 			expect(onError).not.toHaveBeenCalled();
 			expect(transport.close).toHaveBeenCalledOnce();
 
@@ -651,7 +654,7 @@ describe("SyncEngine", () => {
 			opening.reject(new Error("aborted"));
 			await flush();
 
-			expect(sync.state).toBe(SyncState.Disconnected);
+			expect(sync.state).toBe("disconnected");
 			expect(onError).not.toHaveBeenCalled();
 			expect(transport.pull).not.toHaveBeenCalled();
 		});

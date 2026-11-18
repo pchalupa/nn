@@ -7,14 +7,13 @@ import { SyncEngine } from "@nn/sync-engine";
 import { EventStream } from "./event-stream";
 
 export class SseSync extends SyncEngine {
+	private readonly url: URL;
 	private stream: EventStream;
 
-	constructor(
-		store: Store,
-		private readonly url: URL,
-	) {
+	constructor(store: Store, url: URL) {
 		super(store);
 
+		this.url = url;
 		this.stream = new EventStream(new URL(this.url.pathname.replace(/\/?$/, "/subscribe"), this.url));
 		this.stream.delegate = {
 			eventStreamDidReceive: (data) => {

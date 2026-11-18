@@ -30,19 +30,29 @@ export abstract class Tracker<
 >
 	implements ReadonlyTracker, ProxyHandler<object>
 {
+	public readonly entity: Source;
+	public readonly target: Target;
+	public readonly trackers: Map<Entity, Tracker>;
 	public readonly proxy: object;
 	public filled = false;
 	public written = false;
 	public modified = false;
+	private parent: Tracker | undefined;
+	private track: Track;
 	private children: Tracker[] | undefined;
 
 	constructor(
-		public readonly entity: Source,
-		public readonly target: Target,
-		private readonly parent: Tracker | undefined,
-		public readonly trackers: Map<Entity, Tracker>,
-		private readonly track: Track,
+		entity: Source,
+		target: Target,
+		parent: Tracker | undefined,
+		trackers: Map<Entity, Tracker>,
+		track: Track,
 	) {
+		this.entity = entity;
+		this.target = target;
+		this.parent = parent;
+		this.trackers = trackers;
+		this.track = track;
 		this.proxy = new Proxy(target, this);
 
 		trackers.set(entity, this);

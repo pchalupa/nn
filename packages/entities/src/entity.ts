@@ -20,13 +20,12 @@ export abstract class Entity<Value = unknown> implements Delegatable<EntityDeleg
 	private id: string;
 	// TODO: This should not be concert on entities. Consider moving it to state.
 	private changes = 0;
+	public readonly kind: string;
 	public delegate?: EntityDelegate;
 
-	constructor(
-		public readonly kind: string,
-		key?: string,
-	) {
-		this.id = key ?? ID.create();
+	constructor(kind: string, key: string = ID.create()) {
+		this.kind = kind;
+		this.id = key;
 	}
 
 	public get key(): string {

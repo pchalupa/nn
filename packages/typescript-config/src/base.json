@@ -9,6 +9,7 @@
 		"skipLibCheck": true,
 		"resolveJsonModule": true,
 		"isolatedModules": true,
+		"erasableSyntaxOnly": true,
 		"noUnusedLocals": true,
 		"incremental": true,
 		"tsBuildInfoFile": "${configDir}/node_modules/.cache/tsbuildinfo"

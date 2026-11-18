@@ -4,14 +4,14 @@ import type { Store } from "@nn/store";
 import { SyncEngine } from "@nn/sync-engine";
 
 export class BroadcastSync extends SyncEngine {
+	private name: string;
 	private channel?: BroadcastChannel;
 	private entries: Record<string, Encoded> = {};
 
-	constructor(
-		store: Store,
-		private readonly name = "nn-default",
-	) {
+	constructor(store: Store, name = "nn-default") {
 		super(store);
+
+		this.name = name;
 	}
 
 	protected async open(): Promise<void> {

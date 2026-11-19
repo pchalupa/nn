@@ -1,15 +1,14 @@
-import type { Encoded } from "@nn/entities/codable";
-import { isObject } from "@nn/guards/is-object";
-import type { Store } from "@nn/store";
 import { SyncEngine } from "@nn/sync-engine";
+import type { Replica } from "@nn/sync-engine/replica";
+
+import { type EntriesMessage, isEntriesMessage } from "./entries-message";
 
 export class BroadcastSync extends SyncEngine {
 	private name: string;
 	private channel?: BroadcastChannel;
-	private entries: Record<string, Encoded> = {};
 
-	constructor(store: Store, name = "nn-default") {
-		super(store);
+	constructor(replica: Replica, name = "nn-default") {
+		super(replica);
 
 		this.name = name;
 	}
@@ -17,8 +16,12 @@ export class BroadcastSync extends SyncEngine {
 	protected async open(): Promise<void> {
 		this.channel = new BroadcastChannel(this.name);
 		this.channel.onmessage = (event: MessageEvent<unknown>) => {
-			if (isObject(event.data) && event.data.type === "entries" && isObject(event.data.entries)) {
-				this.receive(event.data.entries);
+			if (isEntriesMessage(event.data)) {
+				try {
+					this.receive(event.data.entries);
+				} catch (error) {
+					this.errors.notify(error);
+				}
 			}
 		};
 	}
@@ -27,8 +30,9 @@ export class BroadcastSync extends SyncEngine {
 		this.channel?.close();
 	}
 
-	protected async push(name: string, entry: Encoded): Promise<void> {
-		this.entries[name] = entry;
-		this.channel?.postMessage({ type: "entries", entries: { [name]: entry } });
+	protected async push(name: string, entry: unknown): Promise<void> {
+		const message: EntriesMessage = { type: "entries", entries: { [name]: entry } };
+
+		this.channel?.postMessage(message);
 	}
 }

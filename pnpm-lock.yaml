@@ -493,15 +493,9 @@ importers:
 
   packages/broadcast-sync:
     dependencies:
-      '@nn/entities':
-        specifier: workspace:^
-        version: link:../entities
       '@nn/guards':
         specifier: workspace:^
         version: link:../guards
-      '@nn/store':
-        specifier: workspace:^
-        version: link:../store
       '@nn/sync-engine':
         specifier: workspace:^
         version: link:../sync-engine
@@ -512,6 +506,9 @@ importers:
       '@nn/schema':
         specifier: workspace:^
         version: link:../schema
+      '@nn/store':
+        specifier: workspace:^
+        version: link:../store
       '@nn/typescript-config':
         specifier: workspace:^
         version: link:../typescript-config
@@ -646,15 +643,9 @@ importers:
 
   packages/indexdb-sync:
     dependencies:
-      '@nn/entities':
-        specifier: workspace:^
-        version: link:../entities
       '@nn/observable':
         specifier: workspace:^
         version: link:../observable
-      '@nn/store':
-        specifier: workspace:^
-        version: link:../store
       '@nn/sync-engine':
         specifier: workspace:^
         version: link:../sync-engine
@@ -662,9 +653,15 @@ importers:
       '@nn/build-config':
         specifier: workspace:^
         version: link:../build-config
+      '@nn/entities':
+        specifier: workspace:^
+        version: link:../entities
       '@nn/schema':
         specifier: workspace:^
         version: link:../schema
+      '@nn/store':
+        specifier: workspace:^
+        version: link:../store
       '@nn/time':
         specifier: workspace:^
         version: link:../time
@@ -820,18 +817,12 @@ importers:
 
   packages/sse-sync:
     dependencies:
-      '@nn/entities':
-        specifier: workspace:^
-        version: link:../entities
       '@nn/guards':
         specifier: workspace:^
         version: link:../guards
       '@nn/observable':
         specifier: workspace:^
         version: link:../observable
-      '@nn/store':
-        specifier: workspace:^
-        version: link:../store
       '@nn/sync-engine':
         specifier: workspace:^
         version: link:../sync-engine
@@ -839,9 +830,15 @@ importers:
       '@nn/build-config':
         specifier: workspace:^
         version: link:../build-config
+      '@nn/entities':
+        specifier: workspace:^
+        version: link:../entities
       '@nn/schema':
         specifier: workspace:^
         version: link:../schema
+      '@nn/store':
+        specifier: workspace:^
+        version: link:../store
       '@nn/typescript-config':
         specifier: workspace:^
         version: link:../typescript-config
@@ -903,22 +900,22 @@ importers:
 
   packages/sync-engine:
     dependencies:
-      '@nn/entities':
-        specifier: workspace:^
-        version: link:../entities
       '@nn/observable':
         specifier: workspace:^
         version: link:../observable
-      '@nn/store':
-        specifier: workspace:^
-        version: link:../store
     devDependencies:
       '@nn/build-config':
         specifier: workspace:^
         version: link:../build-config
+      '@nn/entities':
+        specifier: workspace:^
+        version: link:../entities
       '@nn/schema':
         specifier: workspace:^
         version: link:../schema
+      '@nn/store':
+        specifier: workspace:^
+        version: link:../store
       '@nn/time':
         specifier: workspace:^
         version: link:../time

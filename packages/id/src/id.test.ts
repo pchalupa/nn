@@ -1,5 +1,6 @@
-import { ID } from "@nn/id";
 import { describe, expect, it } from "vitest";
+
+import { ID } from "./id";
 
 describe("ID", () => {
 	it("creates a UUID v4 string through the public API", () => {

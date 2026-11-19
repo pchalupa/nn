@@ -41,14 +41,13 @@
 		"test:watch": "vitest watch"
 	},
 	"dependencies": {
-		"@nn/entities": "workspace:^",
 		"@nn/guards": "workspace:^",
-		"@nn/store": "workspace:^",
 		"@nn/sync-engine": "workspace:^"
 	},
 	"devDependencies": {
 		"@nn/build-config": "workspace:^",
 		"@nn/schema": "workspace:^",
+		"@nn/store": "workspace:^",
 		"@nn/typescript-config": "workspace:^",
 		"tsdown": "catalog:",
 		"typescript": "catalog:",

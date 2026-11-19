@@ -1,4 +1,3 @@
-import type { Encoded } from "@nn/entities/codable";
 import { LWWMap } from "@nn/entities/kinds/lww-map";
 import { LWWRegister } from "@nn/entities/kinds/lww-register";
 import { RGA } from "@nn/entities/kinds/rga";
@@ -14,7 +13,7 @@ const schema = object({ tickets: array(object({ title: string() })), language: s
 const transportMock = (entries: Record<string, unknown> = {}) => ({
 	open: vi.fn<(signal: AbortSignal) => Promise<void>>().mockResolvedValue(undefined),
 	pull: vi.fn<(name: string) => Promise<unknown>>().mockImplementation(async (name) => entries[name]),
-	push: vi.fn<(name: string, entry: Encoded) => Promise<void>>().mockResolvedValue(undefined),
+	push: vi.fn<(name: string, entry: unknown) => Promise<void>>().mockResolvedValue(undefined),
 	close: vi.fn<() => void>(),
 });
 
@@ -56,7 +55,7 @@ class TestEngine extends SyncEngine {
 		return this.transport.pull(name);
 	}
 
-	protected push(name: string, entry: Encoded): Promise<void> {
+	protected push(name: string, entry: unknown): Promise<void> {
 		return this.transport.push(name, entry);
 	}
 }
@@ -79,7 +78,7 @@ class StreamEngine extends SyncEngine {
 		this.transport.close();
 	}
 
-	protected push(name: string, entry: Encoded): Promise<void> {
+	protected push(name: string, entry: unknown): Promise<void> {
 		return this.transport.push(name, entry);
 	}
 }

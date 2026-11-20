@@ -24,7 +24,7 @@ export abstract class SyncEngine {
 
 							if (signal.aborted) break;
 
-							if (value) this.replica.merge(name, value);
+							if (value !== undefined) this.replica.merge(name, value);
 						}
 					}
 				} catch (error) {

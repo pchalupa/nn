@@ -14,7 +14,7 @@ export class Codec {
 	}
 
 	/**
-	 * Decodes an untrusted value into a new, detached entity tree.
+	 * Decodes an untrusted value into a new entity tree.
 	 *
 	 * @throws {TypeError} When the value isn't a valid encoded entity.
 	 * @throws {TimestampMalformedError} When a timestamp can't be parsed.

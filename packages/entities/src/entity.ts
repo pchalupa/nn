@@ -13,9 +13,22 @@ export type InferValueType<Value> =
 		: Value;
 
 export interface EntityDelegate {
+	/** @param child Direct child the change bubbled up from, or `undefined` when `entity` itself changed. */
 	entityDidChange(entity: Entity, child?: Entity): void;
 }
 
+/**
+ * Base class of the replicated data types (CRDTs). Replicas change their own copies, and {@link Entity.merge} makes
+ * them converge.
+ *
+ * @example
+ * const local: Entity = new LWWMap({ title: new LWWRegister("Draft") }, "ticket");
+ * const remote = new Codec().decode(JSON.parse(message));
+ *
+ * local.delegate = { entityDidChange: (_entity, child) => console.log("changed", child?.key) };
+ * local.merge(remote);
+ * JSON.stringify(local); // '{"title":"…"}'
+ */
 export abstract class Entity<Value = unknown> implements Delegatable<EntityDelegate>, Encodable {
 	private id: string;
 	// TODO: This should not be concert on entities. Consider moving it to state.
@@ -35,6 +48,7 @@ export abstract class Entity<Value = unknown> implements Delegatable<EntityDeleg
 	public abstract get current(): Value;
 	public abstract set current(value: Value);
 
+	/** Merges a remote copy of this entity */
 	public abstract merge(remote: Entity): Entity;
 
 	public abstract encode(): Encoded;

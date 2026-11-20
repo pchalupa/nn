@@ -1,3 +1,11 @@
+/**
+ * Caches one value per weakly held key and recomputes it when the version changes.
+ *
+ * @example
+ * const cache = new VersionedCache<Entity, object>();
+ *
+ * cache.ensure(entity, entity.revision, (entity) => project(entity));
+ */
 export class VersionedCache<Key extends object, Value> {
 	private entries = new WeakMap<Key, { value: Value; version: number }>();
 

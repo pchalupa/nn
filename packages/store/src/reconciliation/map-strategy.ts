@@ -5,6 +5,7 @@ import { Time } from "@nn/time";
 
 import type { ReconcileContext, Strategy } from "./strategy";
 
+/** Reconciles object schemas into `LWWMap` entities. */
 export class MapStrategy implements Strategy {
 	private fields: ReadonlyMap<string, Strategy>;
 
@@ -26,7 +27,7 @@ export class MapStrategy implements Strategy {
 	public reconcile(entity: Entity, value: unknown, context: ReconcileContext): void {
 		const tracker = context.inspect(value);
 
-		if (tracker?.entity === entity && !tracker.modified) return;
+		if (tracker?.entity === entity && !tracker.dirty) return;
 
 		const target = tracker?.entity === entity ? tracker.target : value;
 
@@ -44,6 +45,7 @@ export class MapStrategy implements Strategy {
 		}
 	}
 
+	/** Adds missing schema fields with defaults stamped `Time.epoch()`, so they never win over real values */
 	public conform(remote: Entity): Entity {
 		if (LWWMap.is(remote)) {
 			const fields: Record<string, Entity> = { ...remote.current };

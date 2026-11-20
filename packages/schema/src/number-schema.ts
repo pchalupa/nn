@@ -1,5 +1,6 @@
 import { Schema } from "./schema";
 
+/** Schema of a number. */
 export class NumberSchema extends Schema<number> {
 	public override readonly type = "number" as const;
 

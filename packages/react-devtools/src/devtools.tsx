@@ -9,6 +9,7 @@ import { css } from "./styles/css";
 import { Tree } from "./tree";
 
 export interface DevtoolsProps {
+	/** Store to inspect */
 	store: Store;
 }
 

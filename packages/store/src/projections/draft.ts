@@ -1,21 +1,24 @@
 import { Entity } from "@nn/entities/entity";
 import { isObject } from "@nn/guards/is-object";
 
-import { track } from "./tracker";
 import { type ReadonlyTracker, Tracker } from "./tracker/tracker";
+import { Trackers } from "./tracker/trackers";
 
 interface Snapshots {
 	identify(value: object): Entity | undefined;
 }
 
+/**
+ * Lazy, proxy-based copy of the state that a `Store.mutate` recipe edits. One draft per `mutate` call.
+ */
 export class Draft {
-	private trackers = new Map<Entity, Tracker>();
+	private trackers = new Trackers();
 	private snapshots: Snapshots;
 	public readonly value: unknown;
 
 	constructor(entity: Entity, snapshots: Snapshots) {
 		this.snapshots = snapshots;
-		this.value = track(entity, undefined, this.trackers);
+		this.value = this.trackers.track(entity);
 	}
 
 	public inspect(value: unknown): ReadonlyTracker | undefined {
@@ -24,6 +27,7 @@ export class Draft {
 		if (tracker?.trackers === this.trackers) return tracker;
 	}
 
+	/** Maps draft proxies and `Store.query` results back to their entities */
 	public identify(value: object): Entity | undefined {
 		return Tracker.of(value)?.entity ?? this.snapshots.identify(value);
 	}
@@ -37,8 +41,7 @@ export class Draft {
 	}
 
 	public fill(entity: Entity): void {
-		if (!this.trackers.has(entity)) track(entity, undefined, this.trackers);
-
+		this.trackers.track(entity);
 		this.trackers.get(entity)?.fill();
 	}
 }

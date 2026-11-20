@@ -3,6 +3,12 @@ import type { Replica } from "@nn/sync-engine/replica";
 
 import { IndexDb } from "./index-db";
 
+/**
+ * Persists a replica in IndexedDB and loads it back on connect.
+ *
+ * @example
+ * new IndexDbSync(store, "my-app").connect();
+ */
 export class IndexDbSync extends SyncEngine {
 	private readonly indexDb: IndexDb;
 

@@ -16,6 +16,19 @@ type ReadonlyData<Value> = {
 	readonly [Key in keyof Value]: ReadonlyData<Value[Key]>;
 };
 
+/**
+ * State container
+ *
+ * @example
+ * const store = new Store(object({ language: enumeration("en", "cs"), tags: array(object({ name: string() })) }));
+ *
+ * store.mutate((state) => {
+ * 	state.language = "cs";
+ * 	state.tags.push({ name: "urgent" });
+ * });
+ *
+ * store.query((state) => state.tags.length); // 1
+ */
 export class Store<StateSchema extends ObjectSchema<Record<string, Schema>> = ObjectSchema<Record<string, Schema>>> {
 	private view = new View();
 	private codec = new Codec();
@@ -30,6 +43,13 @@ export class Store<StateSchema extends ObjectSchema<Record<string, Schema>> = Ob
 		this.root = this.reconciliationStrategy.create(undefined, "state", Time.epoch());
 	}
 
+	/**
+	 * Runs `selector` on the frozen state. Unchanged parts keep their reference between calls.
+	 *
+	 * @example
+	 * const language = store.query((state) => state.language);
+	 * const urgent = store.query((state) => state.tags.filter((tag) => tag.name === "urgent"));
+	 */
 	public query<Result>(selector: (state: ReadonlyData<InferStateType<StateSchema>>) => Result): Result {
 		// TODO: Avoid type cast
 		// oxlint-disable-next-line typescript/consistent-type-assertions
@@ -38,6 +58,14 @@ export class Store<StateSchema extends ObjectSchema<Record<string, Schema>> = Ob
 		return selector(state);
 	}
 
+	/**
+	 * Changes the state through a draft.
+	 *
+	 * @example
+	 * store.mutate((state) => {
+	 * 	state.tags = state.tags.filter((tag) => tag.name !== "urgent");
+	 * });
+	 */
 	public mutate(recipe: (draft: InferStateType<StateSchema>) => void): void {
 		const draft = new Draft(this.root, this.view);
 
@@ -54,10 +82,25 @@ export class Store<StateSchema extends ObjectSchema<Record<string, Schema>> = Ob
 		);
 	}
 
+	/**
+	 * Returns one encoded entry per root property in `data`.
+	 *
+	 * @example
+	 * localStorage.setItem("snapshot", JSON.stringify(store.encode().data));
+	 */
 	public encode(): Encoded<Record<string, Encoded>> {
 		return this.root.encode();
 	}
 
+	/**
+	 * Merges an encoded entry from another replica into the root property `name`.
+	 *
+	 * @throws {TypeError} When `value` isn't a valid encoded entity.
+	 * @throws {TimestampMalformedError} When a timestamp can't be parsed.
+	 *
+	 * @example
+	 * worker.onmessage = (event) => store.merge(event.data.name, event.data.entry);
+	 */
 	public merge(name: string, value: unknown): void {
 		const remote = this.codec.decode(value);
 
@@ -72,6 +115,14 @@ export class Store<StateSchema extends ObjectSchema<Record<string, Schema>> = Ob
 	}
 
 	// TODO: Changes are there only for sse-sync to push only changed root
+	/**
+	 * Calls `listener` after each change with the changed root properties as encoded entries.
+	 *
+	 * @example
+	 * const unsubscribe = store.onChange((changes) => {
+	 * 	socket.send(JSON.stringify(changes));
+	 * });
+	 */
 	public onChange(listener: (changes: Readonly<Record<string, Encoded>>) => void): Unsubscribe {
 		return this.changes.subscribe(listener);
 	}

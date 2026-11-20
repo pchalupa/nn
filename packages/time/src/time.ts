@@ -48,7 +48,12 @@ export class Time extends GlobalTime {
 		});
 	}
 
-	/** Orders this time against another. */
+	/**
+	 * Orders this time against another by physical time, counter, then replica id.
+	 *
+	 * @example
+	 * events.sort((left, right) => left.time.compare(right.time));
+	 */
 	public compare(other: Time): number {
 		if (this.time !== other.time) return this.time - other.time;
 
@@ -69,14 +74,28 @@ export class Time extends GlobalTime {
 		return new Time(0, 0, "00000000-0000-0000-0000-000000000000");
 	}
 
-	/** Returns the current time */
+	/**
+	 * Returns the current time, strictly after the previous one even within the same millisecond.
+	 *
+	 * @throws {CounterOverflowError} When the counter runs out before the wall clock moves forward.
+	 */
 	public static now(): Time {
 		GlobalTime.tick();
 
 		return new Time(GlobalTime.time, GlobalTime.counter);
 	}
 
-	/** Returns a time from a timestamp */
+	/**
+	 * Returns a time from a timestamp
+	 *
+	 * @throws {TimestampMalformedError} When the timestamp doesn't match the expected format.
+	 *
+	 * @example
+	 * const time = Time.fromTimestamp("2024-11-10T12:39:10.776Z+00002+9f1d0b07-7a3c-4d1e-9f52-6c2a4e8b1d30");
+	 *
+	 * time.getTime(); // 1731242350776
+	 * time.getCounter(); // 2
+	 */
 	public static fromTimestamp(timestamp: string): Time {
 		const [, physical, logical, replicaId] = timestamp.match(TIMESTAMP_PATTERN) ?? [];
 

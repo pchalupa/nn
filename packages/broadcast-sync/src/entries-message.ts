@@ -1,6 +1,7 @@
 import { isObject } from "@nn/guards/is-object";
 import { isPlainObject } from "@nn/guards/is-plain-object";
 
+/** Message `BroadcastSync` posts on its channel */
 export interface EntriesMessage {
 	type: "entries";
 	entries: Record<string, unknown>;

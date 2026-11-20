@@ -14,10 +14,35 @@ type Mutate<Data> = (recipe: (draft: Data) => void) => void;
 
 export interface ReactStore<StoreSchema extends ObjectSchema<Record<string, Schema>>> {
 	store: Store<StoreSchema>;
+	/**
+	 * Re-renders when the selected result changes.
+	 *
+	 * @example
+	 * const openTickets = useQuery((state) => state.tickets.filter((ticket) => ticket.status !== "done"));
+	 */
 	useQuery<Result>(selector: (data: ReadonlyData<InferStateType<StoreSchema>>) => Result): Result;
+	/**
+	 * Returns a stable `Store.mutate`.
+	 *
+	 * @example
+	 * const mutate = useMutation();
+	 *
+	 * const handleClick = () =>
+	 * 	mutate((state) => {
+	 * 		state.language = "cs";
+	 * 	});
+	 */
 	useMutation(): Mutate<InferStateType<StoreSchema>>;
 }
 
+/**
+ * Creates a `Store` with hooks bound to it. Call it once at module level.
+ *
+ * @example
+ * export const { store, useQuery, useMutation } = createStore(schema);
+ *
+ * new IndexDbSync(store, "my-app").connect();
+ */
 export function createStore<StoreSchema extends ObjectSchema<Record<string, Schema>>>(
 	schema: StoreSchema,
 ): ReactStore<StoreSchema> {

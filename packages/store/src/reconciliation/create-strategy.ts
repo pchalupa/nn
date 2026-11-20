@@ -11,6 +11,7 @@ import { MapStrategy } from "./map-strategy";
 import { RegisterStrategy } from "./register-strategy";
 import type { Strategy } from "./strategy";
 
+/** Maps schema types to strategies: object to `LWWMap`, array to `RGA`, everything else to `LWWRegister` */
 export function createReconciliationStrategy(schema: ObjectSchema<Record<string, Schema>>): MapStrategy;
 export function createReconciliationStrategy(schema: ArraySchema<Schema>): ListStrategy;
 export function createReconciliationStrategy(

@@ -2,6 +2,7 @@ const rules: string[] = [];
 
 let styleSheet: CSSStyleSheet | undefined;
 
+/** Adds rules to the shared devtools style sheet */
 export const css = (strings: TemplateStringsArray, ...values: unknown[]): void => {
 	rules.push(String.raw(strings, ...values));
 

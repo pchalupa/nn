@@ -5,6 +5,12 @@ import type { Replica } from "@nn/sync-engine/replica";
 
 import { EventStream } from "./event-stream";
 
+/**
+ * Syncs a replica with a server.
+ *
+ * @example
+ * new SseSync(store, new URL("/sync", location.origin)).connect();
+ */
 export class SseSync extends SyncEngine {
 	private readonly url: URL;
 	private stream: EventStream;

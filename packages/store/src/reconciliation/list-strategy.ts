@@ -7,6 +7,7 @@ import type { Time } from "@nn/time";
 
 import type { ReconcileContext, Strategy } from "./strategy";
 
+/** Reconciles array schemas into `RGA` entities */
 export class ListStrategy implements Strategy {
 	private items: Strategy;
 
@@ -28,6 +29,10 @@ export class ListStrategy implements Strategy {
 		return new RGA([], key);
 	}
 
+	/**
+	 * Reconciles only changed items when the list itself wasn't written. Otherwise it matches items, objects by
+	 * identity within this list and primitives by index, then removes, appends and reconciles.
+	 */
 	public reconcile(entity: Entity, value: unknown, context: ReconcileContext): void {
 		const tracker = context.inspect(value);
 		const drafted = tracker?.entity === entity;

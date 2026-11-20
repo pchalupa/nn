@@ -3,6 +3,7 @@ import { defineConfig, type UserConfig } from "tsdown";
 
 export type { UserConfig };
 
+/** Shared tsdown config. It writes the package `exports` from `entry`. */
 export function libraryConfig(entry: UserConfig["entry"]): UserConfig {
 	return defineConfig({
 		entry,
@@ -20,6 +21,7 @@ export function libraryConfig(entry: UserConfig["entry"]): UserConfig {
 	});
 }
 
+/** {@link libraryConfig} plus the React Compiler */
 export function reactLibraryConfig(entry: UserConfig["entry"]): UserConfig {
 	return defineConfig({
 		...libraryConfig(entry),

@@ -6,6 +6,8 @@
 
 Subclasses read the synced object from `this.replica` instead of `this.store`. `push(name, entry)` now types `entry` as `unknown`, because the engine treats entries as opaque. An override that still declares `entry: Encoded` keeps compiling.
 
+`pull` results other than `undefined` are now merged, so a stored `0`, `false`, `""` or `null` is no longer skipped.
+
 ```ts
 // Before
 protected async open(): Promise<void> {

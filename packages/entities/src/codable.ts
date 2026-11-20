@@ -7,7 +7,7 @@ import { LWWRegister } from "./lww-register";
 import { RGA } from "./rga";
 
 /**
- * JSON-safe form of an entity, as stored and sent between replicas.
+ * Encoded form of an entity, as stored and sent between replicas.
  *
  * @example
  * { key: "language", data: "en", metadata: { kind: "LWWRegister", timestamp: "2024-11-10T12:39:10.776Z+00002+…" } }

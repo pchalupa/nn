@@ -27,9 +27,10 @@ export interface ReactStore<StoreSchema extends ObjectSchema<Record<string, Sche
 	 * @example
 	 * const mutate = useMutation();
 	 *
-	 * mutate((state) => {
-	 * 	state.language = "cs";
-	 * });
+	 * const handleClick = () =>
+	 * 	mutate((state) => {
+	 * 		state.language = "cs";
+	 * 	});
 	 */
 	useMutation(): Mutate<InferStateType<StoreSchema>>;
 }

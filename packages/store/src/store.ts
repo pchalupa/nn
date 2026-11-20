@@ -96,6 +96,7 @@ export class Store<StateSchema extends ObjectSchema<Record<string, Schema>> = Ob
 	 * Merges an encoded entry from another replica into the root property `name`.
 	 *
 	 * @throws {TypeError} When `value` isn't a valid encoded entity.
+	 * @throws {TimestampMalformedError} When a timestamp can't be parsed.
 	 *
 	 * @example
 	 * worker.onmessage = (event) => store.merge(event.data.name, event.data.entry);

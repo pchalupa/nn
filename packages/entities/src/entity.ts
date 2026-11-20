@@ -48,7 +48,7 @@ export abstract class Entity<Value = unknown> implements Delegatable<EntityDeleg
 	public abstract get current(): Value;
 	public abstract set current(value: Value);
 
-	/** Merges a remote copy of this entity. Order and repetition of merges don't matter. */
+	/** Merges a remote copy of this entity */
 	public abstract merge(remote: Entity): Entity;
 
 	public abstract encode(): Encoded;

@@ -3,7 +3,7 @@ import type { RGA } from "@nn/entities/kinds/rga";
 
 import { Tracker } from "./tracker";
 
-/** Tracks a list in a draft. Reading `length` or a single index doesn't copy the whole list. */
+/** Tracks a list in a draft */
 export class ListTracker extends Tracker<RGA<Entity>, unknown[]> {
 	private items: readonly Entity[] | undefined;
 

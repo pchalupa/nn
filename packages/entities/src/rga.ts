@@ -107,7 +107,7 @@ export class RGA<Value extends Entity> extends Entity<Value[]> implements Entity
 		if (this.items.size !== size) this.didChange();
 	}
 
-	/** Tombstones the key, so no replica can add it back */
+	/** Removes the item and tombstones its key, so no replica can add it back */
 	public remove(key: string): void {
 		if (this.items.has(key)) {
 			this.detach(key);

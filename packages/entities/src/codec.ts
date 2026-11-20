@@ -2,7 +2,7 @@ import { assertDecodable, assertEncoded, type Encoded, entities } from "./codabl
 import type { Entity } from "./entity";
 
 /**
- * Converts entities to and from their JSON-safe {@link Encoded} form.
+ * Converts entities to and from their {@link Encoded} form.
  *
  * @example
  * const codec = new Codec();

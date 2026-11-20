@@ -68,7 +68,11 @@ export class LWWRegister<Value> extends Entity<Value> {
 	public static decode(encoded: Encoded): LWWRegister<unknown> {
 		LWWRegister.assertEncoded(encoded);
 
-		return new LWWRegister(encoded.data, encoded.key, Time.fromTimestamp(encoded.metadata.timestamp));
+		const timestamp = Time.fromTimestamp(encoded.metadata.timestamp);
+
+		Time.receive(timestamp);
+
+		return new LWWRegister(encoded.data, encoded.key, timestamp);
 	}
 
 	public static override is(entity: unknown): entity is LWWRegister<unknown> {

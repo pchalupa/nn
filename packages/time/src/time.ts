@@ -1,52 +1,13 @@
 import { InvalidatableCache } from "@nn/cache/invalidatable-cache";
-import { ID } from "@nn/id";
 
-import { CounterOverflowError } from "./errors/counter-overflow-error";
 import { TimestampMalformedError } from "./errors/timestamp-malformed-error";
+import { COUNTER_DIGITS, GlobalTime } from "./global-time";
 
 const TIMESTAMP_DELIMITER = "+" as const;
-const COUNTER_DIGITS = 5;
-const MAX_COUNTER = 16 ** COUNTER_DIGITS - 1;
 const TIMESTAMP_PATTERN =
 	/^((?:\d{4}|[+-]\d{6})-\d{2}-\d{2}T\d{2}:\d{2}(?::\d{2}(?:\.\d{3})?)?(?:Z|[+-]\d{2}:\d{2}))\+([0-9a-f]{5})\+([^+]+)$/;
 
-class GlobalTime {
-	/** Physical time in milliseconds */
-	protected static time = 0;
-	/** Logical time */
-	protected static counter = 0;
-	/** Identity of the replica this process stamps onto every time it mints */
-	protected static replicaId: string = ID.create();
-
-	/**
-	 * Moves the shared clock to the present, keeping the logical time inside the timestamp field.
-	 *
-	 * @throws {CounterOverflowError} When the logical time has nowhere left to grow.
-	 */
-	protected static tick(): void {
-		const currentTime = Date.now();
-
-		if (currentTime > GlobalTime.time) {
-			GlobalTime.time = currentTime;
-			GlobalTime.counter = 0;
-		} else {
-			if (GlobalTime.counter >= MAX_COUNTER) throw new CounterOverflowError(GlobalTime.counter + 1, MAX_COUNTER);
-
-			GlobalTime.counter++;
-		}
-	}
-}
-
-/**
- * Represents time using a Hybrid Logical Clock (HLC) model: physical time, a logical counter and a replica id.
- *
- * @example
- * const first = Time.now();
- * const second = Time.now();
- *
- * second.isAfter(first); // true, even within the same millisecond
- * Time.fromTimestamp(first.toString()).compare(first); // 0
- */
+/** Represents time using a Hybrid Logical Clock (HLC) model */
 export class Time extends GlobalTime {
 	/** Physical time in milliseconds */
 	private readonly time: number;

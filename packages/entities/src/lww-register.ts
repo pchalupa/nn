@@ -4,6 +4,16 @@ import { Time } from "@nn/time";
 import type { Encoded } from "./codable";
 import { Entity } from "./entity";
 
+/**
+ * Single value where the write with the later {@link Time} wins.
+ *
+ * @example
+ * const local = new LWWRegister("en", "language");
+ * const remote = new LWWRegister("cs", "language");
+ *
+ * local.merge(remote);
+ * local.current; // "cs", the later write
+ */
 export class LWWRegister<Value> extends Entity<Value> {
 	private value: Value;
 	public timestamp: Time;
@@ -19,6 +29,7 @@ export class LWWRegister<Value> extends Entity<Value> {
 		return "LWWRegister";
 	}
 
+	/** Stamps the value with `Time.now()` */
 	public set current(value: Value) {
 		this.value = value;
 		this.timestamp = Time.now();
@@ -29,6 +40,7 @@ export class LWWRegister<Value> extends Entity<Value> {
 		return this.value;
 	}
 
+	/** Keeps the later write. When the local write wins, it's copied into `remote` too. */
 	public merge(remote: LWWRegister<Value>): LWWRegister<Value> {
 		if (this.timestamp.isAfter(remote.timestamp)) {
 			remote.value = this.value;

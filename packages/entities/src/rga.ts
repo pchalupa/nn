@@ -6,6 +6,16 @@ import type { Decoder, Encoded } from "./codable";
 import { Entity, type EntityDelegate } from "./entity";
 
 // TODO!: Ordering is not converged yet; only removals are tombstoned.
+/**
+ * Replicated list of child entities. Removed keys are tombstoned, so a removal wins and the key can't come back.
+ * Ordering doesn't converge yet.
+ *
+ * @example
+ * const tags = new RGA([new LWWRegister("urgent")]);
+ *
+ * tags.push(new LWWRegister("backend"));
+ * tags.remove(tags.current[0].key);
+ */
 export class RGA<Value extends Entity> extends Entity<Value[]> implements EntityDelegate {
 	private items = new Map<string, Value>();
 	private cachedItems = new InvalidatableCache<Value[]>();
@@ -97,6 +107,7 @@ export class RGA<Value extends Entity> extends Entity<Value[]> implements Entity
 		if (this.items.size !== size) this.didChange();
 	}
 
+	/** Tombstones the key, so no replica can add it back */
 	public remove(key: string): void {
 		if (this.items.has(key)) {
 			this.detach(key);

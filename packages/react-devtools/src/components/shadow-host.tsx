@@ -7,6 +7,7 @@ interface ShadowHostProps {
 	children: ReactNode;
 }
 
+/** Isolates devtools styles from the app in a shadow root */
 export function ShadowHost({ children }: ShadowHostProps): ReactNode {
 	const [shadowRoot, setShadowRoot] = useState<ShadowRoot | null>(null);
 	const hostRef = useRef<HTMLDivElement>(null);

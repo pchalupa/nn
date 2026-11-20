@@ -18,6 +18,7 @@ export function libraryConfig(entry: UserConfig["entry"]): UserConfig {
 		exports: { devExports: true },
 		publint: true,
 		attw: { profile: "esm-only" },
+		outputOptions: { comments: { jsdoc: false } },
 	});
 }
 

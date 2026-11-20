@@ -4,6 +4,10 @@ import { LWWRegister } from "@nn/entities/kinds/lww-register";
 import { isArray } from "@nn/guards/is-array";
 import { isObject } from "@nn/guards/is-object";
 
+/**
+ * Frozen projections of the entity tree for `Store.query`, cached per entity by `revision`, so unchanged subtrees
+ * keep their reference.
+ */
 export class View {
 	private entities = new WeakMap<object, Entity>();
 	private cachedProjections = new VersionedCache<Entity, object>();

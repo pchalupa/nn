@@ -1,21 +1,21 @@
 import { Entity } from "@nn/entities/entity";
 import { isObject } from "@nn/guards/is-object";
 
-import { track } from "./tracker";
 import { type ReadonlyTracker, Tracker } from "./tracker/tracker";
+import { Trackers } from "./tracker/trackers";
 
 interface Snapshots {
 	identify(value: object): Entity | undefined;
 }
 
 export class Draft {
-	private trackers = new Map<Entity, Tracker>();
+	private trackers = new Trackers();
 	private snapshots: Snapshots;
 	public readonly value: unknown;
 
 	constructor(entity: Entity, snapshots: Snapshots) {
 		this.snapshots = snapshots;
-		this.value = track(entity, undefined, this.trackers);
+		this.value = this.trackers.track(entity);
 	}
 
 	public inspect(value: unknown): ReadonlyTracker | undefined {
@@ -37,8 +37,7 @@ export class Draft {
 	}
 
 	public fill(entity: Entity): void {
-		if (!this.trackers.has(entity)) track(entity, undefined, this.trackers);
-
+		this.trackers.track(entity);
 		this.trackers.get(entity)?.fill();
 	}
 }

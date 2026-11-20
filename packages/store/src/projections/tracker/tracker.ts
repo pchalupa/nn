@@ -1,7 +1,7 @@
 import type { Entity } from "@nn/entities/entity";
-import { LWWRegister } from "@nn/entities/kinds/lww-register";
-import { isArray } from "@nn/guards/is-array";
 import { isObject } from "@nn/guards/is-object";
+
+import type { Trackers } from "./trackers";
 
 export interface ReadonlyTracker {
 	readonly entity: Entity;
@@ -10,19 +10,10 @@ export interface ReadonlyTracker {
 	readonly changed: readonly ReadonlyTracker[];
 	readonly filled: boolean;
 	readonly written: boolean;
-	readonly modified: boolean;
+	readonly dirty: boolean;
 }
 
-export type Track = (entity: Entity, parent: Tracker) => unknown;
-
-const own = Symbol("draft tracker");
-const none: readonly Tracker[] = [];
-
-export function copy(value: unknown): unknown {
-	if (isArray(value)) return [...value];
-
-	return isObject(value) ? { ...value } : value;
-}
+const self = Symbol("draft tracker");
 
 export abstract class Tracker<
 	Source extends Entity = Entity,
@@ -32,88 +23,75 @@ export abstract class Tracker<
 {
 	public readonly entity: Source;
 	public readonly target: Target;
-	public readonly trackers: Map<Entity, Tracker>;
+	public readonly trackers: Trackers;
 	public readonly proxy: object;
 	public filled = false;
 	public written = false;
-	public modified = false;
+	public dirty = false;
 	private parent: Tracker | undefined;
-	private track: Track;
-	private children: Tracker[] | undefined;
+	private changes: Tracker[] = [];
 
-	constructor(
-		entity: Source,
-		target: Target,
-		parent: Tracker | undefined,
-		trackers: Map<Entity, Tracker>,
-		track: Track,
-	) {
+	constructor(entity: Source, target: Target, parent: Tracker | undefined, trackers: Trackers) {
 		this.entity = entity;
 		this.target = target;
 		this.parent = parent;
 		this.trackers = trackers;
-		this.track = track;
 		this.proxy = new Proxy(target, this);
-
-		trackers.set(entity, this);
-	}
-
-	public static of(value: unknown): Tracker | undefined {
-		const tracker: unknown = isObject(value) ? Reflect.get(value, own) : undefined;
-
-		return tracker instanceof Tracker ? tracker : undefined;
 	}
 
 	public get changed(): readonly Tracker[] {
-		return this.children ?? none;
+		return this.changes;
 	}
 
-	public get(_target: object, key: string | symbol, receiver: unknown): unknown {
-		if (key === own) return this;
+	public get(_target: object, key: string | symbol): unknown {
+		if (key === self) return this;
 
-		const value: unknown = Reflect.get(this.real(), key, receiver);
-
-		return this.pending(key, value) ? this.resolve(key, value) : value;
+		return this.settle(key);
 	}
 
 	public has(_target: object, key: string | symbol): boolean {
-		return Reflect.has(this.real(), key);
+		this.fill();
+
+		return Reflect.has(this.target, key);
 	}
 
 	public ownKeys(): ArrayLike<string | symbol> {
-		return Reflect.ownKeys(this.real());
+		this.fill();
+
+		return Reflect.ownKeys(this.target);
 	}
 
 	public getOwnPropertyDescriptor(_target: object, key: string | symbol): PropertyDescriptor | undefined {
-		const target = this.real();
-
 		this.settle(key);
 
-		return Reflect.getOwnPropertyDescriptor(target, key);
+		return Reflect.getOwnPropertyDescriptor(this.target, key);
 	}
 
 	public preventExtensions(): boolean {
-		const target = this.real();
+		this.fill();
 
-		for (const key of Object.keys(target)) this.settle(key);
+		for (const key of Object.keys(this.target)) this.settle(key);
 
-		return Reflect.preventExtensions(target);
+		return Reflect.preventExtensions(this.target);
 	}
 
 	public set(_target: object, key: string | symbol, value: unknown): boolean {
-		return Reflect.set(this.write(), key, value);
+		this.write();
+
+		return Reflect.set(this.target, key, value);
 	}
 
 	public deleteProperty(_target: object, key: string | symbol): boolean {
-		return Reflect.deleteProperty(this.write(), key);
+		this.write();
+
+		return Reflect.deleteProperty(this.target, key);
 	}
 
 	public defineProperty(_target: object, key: string | symbol, descriptor: PropertyDescriptor): boolean {
-		const target = this.write();
-
+		this.write();
 		this.settle(key);
 
-		return Reflect.defineProperty(target, key, descriptor);
+		return Reflect.defineProperty(this.target, key, descriptor);
 	}
 
 	public fill(): void {
@@ -125,56 +103,52 @@ export abstract class Tracker<
 
 	protected abstract seed(): void;
 
-	protected abstract pending(key: string | symbol, value: unknown): value is Entity;
+	protected abstract deferred(key: string | symbol, value: unknown): value is Entity;
 
-	protected placeholder(entity: Entity): unknown {
-		if (LWWRegister.is(entity)) return copy(entity.current);
-
-		return this.trackers.get(entity)?.proxy ?? entity;
+	protected track(entity: Entity): unknown {
+		return this.trackers.track(entity, this);
 	}
 
-	protected read(entity: Entity): unknown {
-		return this.trackers.get(entity)?.proxy ?? this.track(entity, this);
-	}
-
-	private settle(key: string | symbol): void {
-		const value: unknown = Reflect.get(this.target, key);
-
-		if (this.pending(key, value)) this.resolve(key, value);
-	}
-
-	private resolve(key: string | symbol, entity: Entity): unknown {
-		const value = this.read(entity);
-
-		Reflect.set(this.target, key, value);
-
-		return value;
-	}
-
-	private real(): object {
+	private settle(key: string | symbol): unknown {
 		this.fill();
 
-		return this.target;
+		const value: unknown = Reflect.get(this.target, key);
+
+		if (!this.deferred(key, value)) return value;
+
+		const resolved = this.track(value);
+
+		Reflect.set(this.target, key, resolved);
+
+		return resolved;
 	}
 
-	private write(): object {
-		const target = this.real();
-
+	private write(): void {
+		this.fill();
 		this.written = true;
 		this.mark();
-
-		return target;
 	}
 
 	private mark(): void {
-		if (!this.modified) {
-			this.modified = true;
-			this.parent?.adopt(this);
+		if (this.dirty) return;
+
+		this.dirty = true;
+
+		if (this.parent) {
+			this.parent.changes.push(this);
+			this.parent.mark();
 		}
 	}
 
-	private adopt(child: Tracker): void {
-		(this.children ??= []).push(child);
-		this.mark();
+	public static is(value: unknown): value is Tracker {
+		return value instanceof Tracker;
+	}
+
+	public static of(value: unknown): Tracker | undefined {
+		if (isObject(value)) {
+			const tracker: unknown = Reflect.get(value, self);
+
+			if (Tracker.is(tracker)) return tracker;
+		}
 	}
 }

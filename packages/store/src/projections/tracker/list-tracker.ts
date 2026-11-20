@@ -7,25 +7,25 @@ import { Tracker } from "./tracker";
 export class ListTracker extends Tracker<RGA<Entity>, unknown[]> {
 	private items: readonly Entity[] | undefined;
 
-	public override get(target: object, key: string | symbol, receiver: unknown): unknown {
+	public override get(target: object, key: string | symbol): unknown {
 		if (!this.filled) {
 			if (key === "length") return this.items?.length ?? this.entity.size;
 
 			if (this.isIndex(key)) {
 				const item = this.snapshot()[Number(key)];
 
-				if (item) return this.read(item);
+				if (item) return this.track(item);
 			}
 		}
 
-		return super.get(target, key, receiver);
+		return super.get(target, key);
 	}
 
 	protected seed(): void {
-		for (const item of this.snapshot()) this.target.push(this.placeholder(item));
+		for (const item of this.snapshot()) this.target.push(this.trackers.defer(item));
 	}
 
-	protected pending(key: string | symbol, value: unknown): value is Entity {
+	protected deferred(key: string | symbol, value: unknown): value is Entity {
 		return typeof value === "object" && this.isIndex(key) && this.items?.[Number(key)] === value;
 	}
 

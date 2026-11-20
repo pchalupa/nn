@@ -29,3 +29,15 @@ const timestamp = first.toString();
 
 const restored = Time.fromTimestamp(timestamp);
 ```
+
+### Receiving remote times
+
+Call `Time.receive` with every time received from another replica, so the next local time is after it even when the local wall clock is behind.
+
+```ts
+const remote = Time.fromTimestamp(message.timestamp);
+
+Time.receive(remote);
+
+Time.now().isAfter(remote); // true
+```

@@ -1,6 +1,7 @@
 import { Time } from "@nn/time";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
+import { Codec } from "./codec";
 import { LWWMap } from "./lww-map";
 import { LWWRegister } from "./lww-register";
 
@@ -267,5 +268,37 @@ describe("LWWRegister", () => {
 
 			expect(delegate.entityDidChange).toHaveBeenCalledExactlyOnceWith(registerA, undefined);
 		});
+	});
+
+	it("writes after a decoded register stamped ahead of the local clock", () => {
+		const remote = new LWWRegister<unknown>("cs", "language", new Time(Time.now().getTime() + 60_000, 3, "remote"));
+		const decoded = LWWRegister.decode(remote.encode());
+
+		decoded.current = "en";
+
+		expect(decoded.timestamp.isAfter(remote.timestamp)).toBe(true);
+		remote.merge(decoded);
+		expect(remote.current).toBe("en");
+	});
+
+	it("advances the clock for a register decoded inside a map", () => {
+		const ahead = new Time(Time.now().getTime() + 60_000, 3, "remote");
+		const map = new LWWMap({ language: new LWWRegister("cs", "language", ahead) }, "settings");
+
+		new Codec().decode(map.encode());
+
+		expect(Time.now().isAfter(ahead)).toBe(true);
+	});
+
+	it("leaves the clock alone when a timestamp is malformed", () => {
+		const malformed = { key: "language", data: "cs", metadata: { kind: "LWWRegister", timestamp: "not-a-time" } };
+		const before = Time.now();
+
+		expect(() => LWWRegister.decode(malformed)).toThrow(/malformed/);
+
+		const after = Time.now();
+
+		expect(after.getTime()).toBe(before.getTime());
+		expect(after.getCounter()).toBe(before.getCounter() + 1);
 	});
 });

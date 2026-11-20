@@ -1,5 +1,6 @@
-import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
+import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
+import { CounterOverflowError } from "./errors/counter-overflow-error";
 import { TimestampMalformedError } from "./errors/timestamp-malformed-error";
 import { Time } from "./time";
 
@@ -140,5 +141,81 @@ describe("Time", () => {
 		expect(format).not.toHaveBeenCalled();
 
 		format.mockRestore();
+	});
+
+	describe("receive", () => {
+		beforeEach(() => {
+			vi.setSystemTime(Date.now() + 3_600_000);
+		});
+
+		it("moves forward to a newer remote time", () => {
+			const remote = new Time(Date.now() + 60_000, 7, "remote");
+
+			Time.receive(remote);
+			const next = Time.now();
+
+			expect(next.getTime()).toBe(remote.getTime());
+			expect(next.getCounter()).toBe(8);
+			expect(next.isAfter(remote)).toBe(true);
+		});
+
+		it("ignores an older remote time", () => {
+			const ahead = new Time(Date.now() + 60_000, 7, "remote");
+
+			Time.receive(ahead);
+			Time.receive(new Time(Date.now() - 60_000, 7, "remote"));
+			Time.receive(Time.epoch());
+			const next = Time.now();
+
+			expect(next.getTime()).toBe(ahead.getTime());
+			expect(next.getCounter()).toBe(8);
+		});
+
+		it("ignores a lower counter within the same millisecond", () => {
+			Time.now();
+			Time.now();
+			const local = Time.now();
+
+			Time.receive(new Time(local.getTime(), 0, "remote"));
+			const next = Time.now();
+
+			expect(next.getTime()).toBe(local.getTime());
+			expect(next.getCounter()).toBe(local.getCounter() + 1);
+		});
+
+		it("takes the higher counter within the same millisecond", () => {
+			const local = Time.now();
+
+			Time.receive(new Time(local.getTime(), 41, "remote"));
+			const next = Time.now();
+
+			expect(next.getTime()).toBe(local.getTime());
+			expect(next.getCounter()).toBe(42);
+		});
+
+		it("receiving a local time only increments the counter", () => {
+			const local = Time.now();
+
+			Time.receive(local);
+			const next = Time.now();
+
+			expect(next.getTime()).toBe(local.getTime());
+			expect(next.getCounter()).toBe(local.getCounter() + 1);
+		});
+
+		it("resets the counter once the wall clock passes a received time", () => {
+			Time.receive(new Time(Date.now() + 60_000, 7, "remote"));
+			vi.advanceTimersByTime(60_001);
+			const next = Time.now();
+
+			expect(next.getTime()).toBe(Date.now());
+			expect(next.getCounter()).toBe(0);
+		});
+
+		it("throws when a received counter has nowhere left to grow", () => {
+			Time.receive(new Time(Date.now() + 60_000, 0xfffff, "remote"));
+
+			expect(() => Time.now()).toThrow(CounterOverflowError);
+		});
 	});
 });

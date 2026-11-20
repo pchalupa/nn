@@ -1,12 +1,13 @@
-import type { Encoded } from "@nn/entities/codable";
 import { LWWMap } from "@nn/entities/kinds/lww-map";
 import { LWWRegister } from "@nn/entities/kinds/lww-register";
 import { RGA } from "@nn/entities/kinds/rga";
+import { Observable } from "@nn/observable/observable";
 import { array, object, string } from "@nn/schema";
 import { Store } from "@nn/store";
 import { Time } from "@nn/time";
 import { afterEach, describe, expect, expectTypeOf, it, vi } from "vitest";
 
+import type { Replica } from "./replica";
 import { SyncEngine } from "./sync-engine";
 
 const schema = object({ tickets: array(object({ title: string() })), language: string() });
@@ -14,7 +15,7 @@ const schema = object({ tickets: array(object({ title: string() })), language: s
 const transportMock = (entries: Record<string, unknown> = {}) => ({
 	open: vi.fn<(signal: AbortSignal) => Promise<void>>().mockResolvedValue(undefined),
 	pull: vi.fn<(name: string) => Promise<unknown>>().mockImplementation(async (name) => entries[name]),
-	push: vi.fn<(name: string, entry: Encoded) => Promise<void>>().mockResolvedValue(undefined),
+	push: vi.fn<(name: string, entry: unknown) => Promise<void>>().mockResolvedValue(undefined),
 	close: vi.fn<() => void>(),
 });
 
@@ -23,8 +24,8 @@ const engines: SyncEngine[] = [];
 class TestEngine extends SyncEngine {
 	private transport: ReturnType<typeof transportMock>;
 
-	constructor(transport: ReturnType<typeof transportMock>, store = new Store(schema), connect = true) {
-		super(store);
+	constructor(transport: ReturnType<typeof transportMock>, replica: Replica = new Store(schema), connect = true) {
+		super(replica);
 
 		this.transport = transport;
 		engines.push(this);
@@ -56,7 +57,7 @@ class TestEngine extends SyncEngine {
 		return this.transport.pull(name);
 	}
 
-	protected push(name: string, entry: Encoded): Promise<void> {
+	protected push(name: string, entry: unknown): Promise<void> {
 		return this.transport.push(name, entry);
 	}
 }
@@ -79,12 +80,24 @@ class StreamEngine extends SyncEngine {
 		this.transport.close();
 	}
 
-	protected push(name: string, entry: Encoded): Promise<void> {
+	protected push(name: string, entry: unknown): Promise<void> {
 		return this.transport.push(name, entry);
 	}
 }
 
 const flush = () => new Promise((resolve) => setTimeout(resolve));
+
+const replicaMock = (data: Record<string, unknown> = {}) => {
+	const changes = new Observable<[Readonly<Record<string, unknown>>]>();
+	const replica: Replica = {
+		schema: { properties: { count: {}, enabled: {}, label: {} } },
+		encode: () => ({ data }),
+		merge: vi.fn<(name: string, value: unknown) => void>(),
+		onChange: (listener) => changes.subscribe(listener),
+	};
+
+	return { replica, change: (entries: Readonly<Record<string, unknown>>) => changes.notify(entries) };
+};
 
 const deferred = <T>() => {
 	let resolve: (value: T) => void = () => {};
@@ -689,6 +702,38 @@ describe("SyncEngine", () => {
 			expect(onError).toHaveBeenCalledExactlyOnceWith(error);
 			expect(transport.close).toHaveBeenCalledOnce();
 			expect(transport.push).not.toHaveBeenCalled();
+		});
+	});
+
+	describe("replicas", () => {
+		it("pushes entries under their record names", async () => {
+			const transport = transportMock();
+			const { replica, change } = replicaMock({ count: 1, enabled: true });
+
+			void new TestEngine(transport, replica);
+			await flush();
+
+			expect(transport.push.mock.calls).toStrictEqual([
+				["count", 1],
+				["enabled", true],
+			]);
+
+			transport.push.mockClear();
+			change({ label: "" });
+
+			expect(transport.push).toHaveBeenCalledExactlyOnceWith("label", "");
+		});
+
+		it("merges falsy pulled entries and skips missing ones", async () => {
+			const { replica } = replicaMock();
+
+			void new TestEngine(transportMock({ count: 0, enabled: false }), replica);
+			await flush();
+
+			expect(vi.mocked(replica.merge).mock.calls).toStrictEqual([
+				["count", 0],
+				["enabled", false],
+			]);
 		});
 	});
 });

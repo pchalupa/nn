@@ -1,37 +1,36 @@
-import type { Encoded } from "@nn/entities/codable";
-import type { Store } from "@nn/store";
 import { SyncEngine } from "@nn/sync-engine";
+import type { Replica } from "@nn/sync-engine/replica";
 
 import { IndexDb } from "./index-db";
 
 export class IndexDbSync extends SyncEngine {
-	private readonly repository: IndexDb;
+	private readonly indexDb: IndexDb;
 
-	constructor(store: Store, name = "nn-default") {
-		super(store);
+	constructor(replica: Replica, name = "nn-default") {
+		super(replica);
 
-		this.repository = new IndexDb(name);
-		this.repository.delegate = {
+		this.indexDb = new IndexDb(name);
+		this.indexDb.delegate = {
 			indexDbDidChangeVersion: () => this.session.reopen(),
 			indexDbDidDelete: () => this.session.drop(),
 		};
 	}
 
 	protected async open(signal: AbortSignal): Promise<void> {
-		await this.repository.init(this.store.schema.properties);
+		await this.indexDb.init(this.replica.schema.properties);
 
-		if (signal.aborted) this.repository.close();
+		if (signal.aborted) this.indexDb.close();
 	}
 
 	protected close(): void {
-		this.repository.close();
+		this.indexDb.close();
 	}
 
 	protected pull(name: string): Promise<unknown> {
-		return this.repository.get(name);
+		return this.indexDb.get(name);
 	}
 
-	protected push(name: string, entry: Encoded): Promise<void> {
-		return this.repository.set(name, entry);
+	protected push(name: string, entry: unknown): Promise<void> {
+		return this.indexDb.set(name, entry);
 	}
 }

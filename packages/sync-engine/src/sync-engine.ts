@@ -1,18 +1,17 @@
-import type { Encoded } from "@nn/entities/codable";
 import { Observable, type Unsubscribe } from "@nn/observable/observable";
-import type { Store } from "@nn/store";
 
+import type { Replica } from "./replica";
 import { Session, type SessionState } from "./session";
 
 export abstract class SyncEngine {
 	protected readonly session: Session = new Session();
 	protected readonly errors: Observable<[unknown]> = new Observable();
-	protected readonly store: Store;
+	protected readonly replica: Replica;
 
-	constructor(store: Store) {
-		this.store = store;
+	constructor(replica: Replica) {
+		this.replica = replica;
 
-		let unsubscribeFromStoreChanges: () => void | undefined;
+		let unsubscribeFromReplicaChanges: () => void | undefined;
 
 		this.session.delegate = {
 			sessionOpen: async (_session, signal) => {
@@ -20,12 +19,12 @@ export abstract class SyncEngine {
 					await this.open(signal);
 
 					if (!signal.aborted && this.pull) {
-						for (const key in this.store.schema.properties) {
-							const value = await this.pull(key);
+						for (const name in this.replica.schema.properties) {
+							const value = await this.pull(name);
 
 							if (signal.aborted) break;
 
-							if (value) this.store.merge(key, value);
+							if (value !== undefined) this.replica.merge(name, value);
 						}
 					}
 				} catch (error) {
@@ -36,15 +35,12 @@ export abstract class SyncEngine {
 				}
 			},
 			sessionDidConnect: () => {
-				const { data } = this.store.encode();
-				const entries = Object.values(data);
+				void this.send(this.replica.encode().data);
 
-				void this.send(entries);
-
-				unsubscribeFromStoreChanges = this.store.onChange((changes) => void this.send(Object.values(changes)));
+				unsubscribeFromReplicaChanges = this.replica.onChange((changes) => void this.send(changes));
 			},
 			sessionClose: () => {
-				unsubscribeFromStoreChanges?.();
+				unsubscribeFromReplicaChanges?.();
 				this.close();
 			},
 		};
@@ -97,21 +93,21 @@ export abstract class SyncEngine {
 	protected abstract open(signal: AbortSignal): Promise<void>;
 	protected abstract close(): void;
 	protected pull?(name: string): Promise<unknown>;
-	protected abstract push(name: string, entry: Encoded): Promise<void>;
+	protected abstract push(name: string, entry: unknown): Promise<void>;
 
 	protected receive(entries: Record<string, unknown>): void {
-		for (const name in this.store.schema.properties) {
+		for (const name in this.replica.schema.properties) {
 			if (Object.hasOwn(entries, name)) {
-				this.store.merge(name, entries[name]);
+				this.replica.merge(name, entries[name]);
 			}
 		}
 	}
 
-	private async send(entries: Encoded[]): Promise<void> {
+	private async send(entries: Readonly<Record<string, unknown>>): Promise<void> {
 		await Promise.all(
-			entries.map(async (entry) => {
+			Object.entries(entries).map(async ([name, entry]) => {
 				try {
-					await this.push(entry.key, entry);
+					await this.push(name, entry);
 				} catch (error) {
 					this.errors.notify(error);
 				}

@@ -1,8 +1,7 @@
-import type { Encoded } from "@nn/entities/codable";
 import { assertPlainObject } from "@nn/guards/assert-plain-object";
 import { assertString } from "@nn/guards/assert-string";
-import type { Store } from "@nn/store";
 import { SyncEngine } from "@nn/sync-engine";
+import type { Replica } from "@nn/sync-engine/replica";
 
 import { EventStream } from "./event-stream";
 
@@ -10,8 +9,8 @@ export class SseSync extends SyncEngine {
 	private readonly url: URL;
 	private stream: EventStream;
 
-	constructor(store: Store, url: URL) {
-		super(store);
+	constructor(replica: Replica, url: URL) {
+		super(replica);
 
 		this.url = url;
 		this.stream = new EventStream(new URL(this.url.pathname.replace(/\/?$/, "/subscribe"), this.url));
@@ -38,7 +37,7 @@ export class SseSync extends SyncEngine {
 		this.stream.close();
 	}
 
-	protected async push(name: string, entry: Encoded): Promise<void> {
+	protected async push(name: string, entry: unknown): Promise<void> {
 		const response = await fetch(new URL(this.url.pathname.replace(/\/?$/, "/push"), this.url), {
 			method: "POST",
 			headers: { "Content-Type": "application/json", Accept: "application/json" },

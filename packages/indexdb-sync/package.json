@@ -41,14 +41,14 @@
 		"test:watch": "vitest watch"
 	},
 	"dependencies": {
-		"@nn/entities": "workspace:^",
 		"@nn/observable": "workspace:^",
-		"@nn/store": "workspace:^",
 		"@nn/sync-engine": "workspace:^"
 	},
 	"devDependencies": {
 		"@nn/build-config": "workspace:^",
+		"@nn/entities": "workspace:^",
 		"@nn/schema": "workspace:^",
+		"@nn/store": "workspace:^",
 		"@nn/time": "workspace:^",
 		"@nn/typescript-config": "workspace:^",
 		"fake-indexeddb": "^6.2.6",

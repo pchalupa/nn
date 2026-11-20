@@ -157,4 +157,24 @@ describe("BroadcastSync", () => {
 
 		expect(store.query((state) => state)).toStrictEqual({ tickets: [], language: "" });
 	});
+
+	it("reports an entry that cannot be decoded and stays connected", async () => {
+		const name = crypto.randomUUID();
+		const { store, sync } = connect(name);
+		const onError = vi.fn();
+		const channel = new BroadcastChannel(name);
+
+		sync.onError(onError);
+		await vi.waitFor(() => expect(sync.connected).toBe(true));
+		// oxlint-disable-next-line unicorn/require-post-message-target-origin broadcast channels take no target origin
+		channel.postMessage({ type: "entries", entries: { language: {} } });
+
+		await vi.waitFor(() => {
+			expect(onError).toHaveBeenCalledExactlyOnceWith(expect.objectContaining({ message: "Invalid encoded entity." }));
+		});
+		channel.close();
+
+		expect(sync.connected).toBe(true);
+		expect(store.query((state) => state).language).toBe("");
+	});
 });

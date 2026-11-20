@@ -1,4 +1,3 @@
-import type { Encoded } from "@nn/entities/codable";
 import type { Delegatable } from "@nn/observable";
 
 export interface IndexDbDelegate {
@@ -16,7 +15,7 @@ export class IndexDb implements Delegatable<IndexDbDelegate> {
 		this.name = name;
 	}
 
-	public async set(name: string, entry: Encoded): Promise<void> {
+	public async set(name: string, entry: unknown): Promise<void> {
 		IndexDb.assertIndexDB(this.indexDbDatabase);
 
 		this.transactions.get(name)?.abort();
@@ -36,12 +35,12 @@ export class IndexDb implements Delegatable<IndexDbDelegate> {
 		await this.processRequest(request);
 	}
 
-	public async get(name: string): Promise<Encoded | undefined> {
+	public async get(name: string): Promise<unknown> {
 		IndexDb.assertIndexDB(this.indexDbDatabase);
 
 		const transaction = this.indexDbDatabase.transaction(name, "readonly");
 
-		return await this.processRequest<Encoded | undefined>(transaction.objectStore(name).get(name));
+		return await this.processRequest<unknown>(transaction.objectStore(name).get(name));
 	}
 
 	public async delete(key: string, typeName: string): Promise<void> {
@@ -52,7 +51,7 @@ export class IndexDb implements Delegatable<IndexDbDelegate> {
 		await this.processRequest(transaction.objectStore(typeName).delete(key));
 	}
 
-	public async getAll(typeName: string): Promise<Encoded[]> {
+	public async getAll(typeName: string): Promise<unknown[]> {
 		IndexDb.assertIndexDB(this.indexDbDatabase);
 
 		const transaction = this.indexDbDatabase.transaction(typeName, "readonly");
@@ -82,7 +81,7 @@ export class IndexDb implements Delegatable<IndexDbDelegate> {
 		if (!(database instanceof IDBDatabase)) throw new TypeError("Index DB is not initialized.");
 	}
 
-	public async init(schema: Record<string, unknown>): Promise<void> {
+	public async init(schema: Readonly<Record<string, unknown>>): Promise<void> {
 		const typeNames = Object.keys(schema);
 		let indexDbDatabase = await this.open(typeNames);
 

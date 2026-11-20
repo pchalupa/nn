@@ -1,10 +1,9 @@
-import type { Encoded } from "@nn/entities/codable";
 import { afterEach, beforeEach, describe, expect, expectTypeOf, it, vi } from "vitest";
 
 import { IndexDb, type IndexDbDelegate } from "./index-db";
 
 describe("IndexDb", () => {
-	const entry: Encoded = { key: "language", data: "cs", metadata: { kind: "register" } };
+	const entry = { key: "language", data: "cs", metadata: { kind: "register" } };
 
 	beforeEach(() => {
 		globalThis.indexedDB = new IDBFactory();
@@ -163,20 +162,20 @@ describe("IndexDb", () => {
 	it("stores, reads back and overwrites an entry under its name", async () => {
 		const indexDb = new IndexDb();
 
-		expectTypeOf(indexDb.set).parameter(1).toEqualTypeOf<Encoded>();
+		expectTypeOf(indexDb.set).parameter(1).toEqualTypeOf<unknown>();
 
 		await indexDb.init({ language: {} });
 
 		await indexDb.set("language", entry);
 		const stored = await indexDb.get("language");
 
-		expectTypeOf(stored).toEqualTypeOf<Encoded | undefined>();
+		expectTypeOf(stored).toEqualTypeOf<unknown>();
 		expect(stored).toStrictEqual(entry);
 
 		await indexDb.set("language", { ...entry, data: "en" });
 		const entries = await indexDb.getAll("language");
 
-		expectTypeOf(entries).toEqualTypeOf<Encoded[]>();
+		expectTypeOf(entries).toEqualTypeOf<unknown[]>();
 		expect(entries).toStrictEqual([{ ...entry, data: "en" }]);
 	});
 

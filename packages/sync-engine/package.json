@@ -26,11 +26,13 @@
 	"type": "module",
 	"exports": {
 		".": "./src/sync-engine.ts",
+		"./replica": "./src/replica.ts",
 		"./package.json": "./package.json"
 	},
 	"publishConfig": {
 		"exports": {
 			".": "./dist/index.js",
+			"./replica": "./dist/replica.js",
 			"./package.json": "./package.json"
 		}
 	},
@@ -41,13 +43,13 @@
 		"test:watch": "vitest watch"
 	},
 	"dependencies": {
-		"@nn/entities": "workspace:^",
-		"@nn/observable": "workspace:^",
-		"@nn/store": "workspace:^"
+		"@nn/observable": "workspace:^"
 	},
 	"devDependencies": {
 		"@nn/build-config": "workspace:^",
+		"@nn/entities": "workspace:^",
 		"@nn/schema": "workspace:^",
+		"@nn/store": "workspace:^",
 		"@nn/time": "workspace:^",
 		"@nn/typescript-config": "workspace:^",
 		"tsdown": "catalog:",

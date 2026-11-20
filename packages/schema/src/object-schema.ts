@@ -1,10 +1,6 @@
 import { type InferStateType, Schema } from "./schema";
 
-/**
- * Schema of an object with a fixed set of properties.
- *
- * @typeParam Properties Record of property names to their schemas.
- */
+/** Schema of an object with a fixed set of properties. */
 export class ObjectSchema<Properties extends Record<string, Schema>> extends Schema<{
 	[Key in keyof Properties]: InferStateType<Properties[Key]>;
 }> {

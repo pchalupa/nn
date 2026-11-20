@@ -2,9 +2,20 @@ export type Observer<Arguments extends unknown[] = []> = (...args: Arguments) =>
 
 export type Unsubscribe = () => void;
 
+/**
+ * Synchronous publish and subscribe for any number of observers.
+ *
+ * @example
+ * const changes = new Observable<[state: string]>();
+ * const unsubscribe = changes.subscribe((state) => console.log(state));
+ *
+ * changes.notify("connected"); // logs "connected"
+ * unsubscribe();
+ */
 export class Observable<Arguments extends unknown[] = []> {
 	private observers = new Set<Observer<Arguments>>();
 
+	/** Subscribing the same observer twice keeps one subscription */
 	public subscribe(observer: Observer<Arguments>): Unsubscribe {
 		this.observers.add(observer);
 
@@ -15,6 +26,7 @@ export class Observable<Arguments extends unknown[] = []> {
 		this.observers.delete(observer);
 	}
 
+	/** Calls every observer, then rethrows the first error any of them threw */
 	public notify(...args: Arguments): void {
 		const errors: unknown[] = [];
 

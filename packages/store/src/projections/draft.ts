@@ -8,6 +8,9 @@ interface Snapshots {
 	identify(value: object): Entity | undefined;
 }
 
+/**
+ * Lazy, proxy-based copy of the state that a `Store.mutate` recipe edits. One draft per `mutate` call.
+ */
 export class Draft {
 	private trackers = new Trackers();
 	private snapshots: Snapshots;
@@ -24,6 +27,7 @@ export class Draft {
 		if (tracker?.trackers === this.trackers) return tracker;
 	}
 
+	/** Maps draft proxies and `Store.query` results back to their entities */
 	public identify(value: object): Entity | undefined {
 		return Tracker.of(value)?.entity ?? this.snapshots.identify(value);
 	}

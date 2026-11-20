@@ -13,7 +13,7 @@ export class ListTracker extends Tracker<RGA<Entity>, unknown[]> {
 			if (this.isIndex(key)) {
 				const item = this.snapshot()[Number(key)];
 
-				if (item) return this.read(item);
+				if (item) return this.track(item);
 			}
 		}
 
@@ -24,7 +24,7 @@ export class ListTracker extends Tracker<RGA<Entity>, unknown[]> {
 		for (const item of this.snapshot()) this.target.push(this.trackers.defer(item));
 	}
 
-	protected pending(key: string | symbol, value: unknown): value is Entity {
+	protected deferred(key: string | symbol, value: unknown): value is Entity {
 		return typeof value === "object" && this.isIndex(key) && this.items?.[Number(key)] === value;
 	}
 

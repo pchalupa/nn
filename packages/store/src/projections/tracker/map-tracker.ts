@@ -17,7 +17,7 @@ export class MapTracker extends Tracker<LWWMap<Record<string, Entity>>, Record<s
 		}
 	}
 
-	protected pending(_key: string | symbol, value: unknown): value is Entity {
+	protected deferred(_key: string | symbol, value: unknown): value is Entity {
 		return Entity.is(value);
 	}
 }

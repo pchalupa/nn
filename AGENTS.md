@@ -7,6 +7,8 @@
 - `any` is prohibited. Type values of unknown shape as `unknown` and narrow them before use.
 - Prefer `if` statements over ternary operators.
 - Name files and directories in kebab-case. TanStack route files under `apps/example-react/src/routes` are exempt because their names define the routes.
-- Avoid code comments.
+- Document exported APIs with JSDoc: a one-line summary. Let names, signatures and types carry everything else.
+- Give internal code at most a one-line JSDoc summary for navigation.
+- Express intent through names and structure; reserve comments for JSDoc.
 - Add a Changeset for consumer-visible changes to public `@nn/*` packages. `example-react` is ignored by Changesets.
 - Never run `git commit` or post replies to PR comments unless the user explicitly asks for it.

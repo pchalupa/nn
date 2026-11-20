@@ -3,6 +3,7 @@ import type { RGA } from "@nn/entities/kinds/rga";
 
 import { Tracker } from "./tracker";
 
+/** Tracks a list in a draft */
 export class ListTracker extends Tracker<RGA<Entity>, unknown[]> {
 	private items: readonly Entity[] | undefined;
 

@@ -11,8 +11,12 @@ export interface ReconcileContext {
 	resolve(item: unknown, parent: unknown, key: string | number): unknown;
 }
 
+/** Write side of the store for one schema node. Strategies form a tree that mirrors the schema. */
 export interface Strategy {
+	/** Builds a new entity from a plain value, using schema defaults for missing values */
 	create(value: unknown, key: string, timestamp?: Time): Entity;
+	/** Applies a draft or plain value to an existing entity, changing only what differs */
 	reconcile(entity: Entity, value: unknown, context: ReconcileContext): void;
+	/** Adapts a decoded remote entity to the schema before it's merged */
 	conform(remote: Entity): Entity;
 }

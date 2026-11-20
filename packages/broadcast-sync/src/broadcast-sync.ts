@@ -3,6 +3,12 @@ import type { Replica } from "@nn/sync-engine/replica";
 
 import { type EntriesMessage, isEntriesMessage } from "./entries-message";
 
+/**
+ * Syncs replicas across browser tabs through a `BroadcastChannel`.
+ *
+ * @example
+ * new BroadcastSync(store, "my-app").connect();
+ */
 export class BroadcastSync extends SyncEngine {
 	private name: string;
 	private channel?: BroadcastChannel;

@@ -3,6 +3,16 @@ import { Observable, type Unsubscribe } from "@nn/observable/observable";
 import type { Replica } from "./replica";
 import { Session, type SessionState } from "./session";
 
+/**
+ * Base class for sync engines.
+ *
+ * @example
+ * const remote = new SseSync(store, new URL("/sync", location.origin));
+ *
+ * remote.onError((error) => console.error(error));
+ * addEventListener("online", () => remote.retry());
+ * remote.connect();
+ */
 export abstract class SyncEngine {
 	protected readonly session: Session = new Session();
 	protected readonly errors: Observable<[unknown]> = new Observable();
@@ -82,6 +92,12 @@ export abstract class SyncEngine {
 		this.session.dispose();
 	}
 
+	/**
+	 * @example
+	 * remote.onStateChange((state) => {
+	 * 	if (state === "disconnected") setTimeout(() => remote.retry(), 5_000);
+	 * });
+	 */
 	public onStateChange(listener: (state: SessionState) => void): Unsubscribe {
 		return this.session.changes.subscribe(listener);
 	}
@@ -91,10 +107,14 @@ export abstract class SyncEngine {
 	}
 
 	protected abstract open(signal: AbortSignal): Promise<void>;
+
 	protected abstract close(): void;
+
 	protected pull?(name: string): Promise<unknown>;
+
 	protected abstract push(name: string, entry: unknown): Promise<void>;
 
+	/** Merges received entries. Unknown names are ignored. */
 	protected receive(entries: Record<string, unknown>): void {
 		for (const name in this.replica.schema.properties) {
 			if (Object.hasOwn(entries, name)) {

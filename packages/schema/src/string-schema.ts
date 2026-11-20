@@ -1,5 +1,6 @@
 import { Schema } from "./schema";
 
+/** Schema of a string. */
 export class StringSchema extends Schema<string> {
 	public override readonly type = "string" as const;
 

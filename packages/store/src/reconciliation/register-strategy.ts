@@ -4,6 +4,7 @@ import type { Time } from "@nn/time";
 
 import type { Strategy } from "./strategy";
 
+/** Reconciles scalar schemas into `LWWRegister` entities */
 export class RegisterStrategy implements Strategy {
 	private defaultValue: unknown;
 
@@ -15,6 +16,7 @@ export class RegisterStrategy implements Strategy {
 		return new LWWRegister(value ?? this.defaultValue, key, timestamp);
 	}
 
+	/** Writes only when the value differs by `Object.is`, so unchanged values keep their timestamp */
 	public reconcile(entity: Entity, value: unknown): void {
 		if (LWWRegister.is(entity) && !Object.is(entity.current, value)) {
 			entity.current = value;

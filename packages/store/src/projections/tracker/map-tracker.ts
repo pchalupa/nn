@@ -3,6 +3,7 @@ import type { LWWMap } from "@nn/entities/kinds/lww-map";
 
 import { Tracker } from "./tracker";
 
+/** Tracks a map in a draft */
 export class MapTracker extends Tracker<LWWMap<Record<string, Entity>>, Record<string, unknown>> {
 	protected seed(): void {
 		const fields = this.entity.current;

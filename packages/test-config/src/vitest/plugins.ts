@@ -8,6 +8,7 @@ import type { Plugin } from "vitest/config";
 
 const bundledImport = /^import (?!type )[^;]*? from "((?:\.{1,2}\/|@nn\/)[^"]+)";$/gm;
 
+/** CodSpeed plus {@link bundleForBenchmark}, so benchmarks measure built code. */
 export function benchmarkPlugin(): Plugin[] {
 	return [codspeedPlugin(), bundleForBenchmark()];
 }

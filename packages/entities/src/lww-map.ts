@@ -4,6 +4,14 @@ import { isObject } from "@nn/guards/is-object";
 import type { Decoder, Encoded } from "./codable";
 import { Entity, type EntityDelegate } from "./entity";
 
+/**
+ * Map of named child entities. Each field merges with the remote field of the same name.
+ *
+ * @example
+ * const user = new LWWMap({ name: new LWWRegister("Ada"), age: new LWWRegister(36) });
+ *
+ * user.get("name")?.set(() => "Ada Lovelace");
+ */
 export class LWWMap<Fields extends Record<string, Entity>> extends Entity<Fields> implements EntityDelegate {
 	private fields: Fields;
 
@@ -47,6 +55,7 @@ export class LWWMap<Fields extends Record<string, Entity>> extends Entity<Fields
 		return Object.hasOwn(this.fields, name) ? this.fields[name] : undefined;
 	}
 
+	/** Merges fields by name. Fields only in `remote` are ignored. */
 	public merge(remote: LWWMap<Fields>): this {
 		for (const key in this.fields) {
 			const localField = this.fields[key];

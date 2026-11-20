@@ -9,7 +9,7 @@ export class MapTracker extends Tracker<LWWMap<Record<string, Entity>>, Record<s
 
 		for (const key in fields) {
 			Object.defineProperty(this.target, key, {
-				value: this.placeholder(fields[key]),
+				value: this.trackers.defer(fields[key]),
 				writable: true,
 				enumerable: true,
 				configurable: true,
@@ -17,7 +17,7 @@ export class MapTracker extends Tracker<LWWMap<Record<string, Entity>>, Record<s
 		}
 	}
 
-	protected pending(_key: string | symbol, value: unknown): value is Entity {
+	protected deferred(_key: string | symbol, value: unknown): value is Entity {
 		return Entity.is(value);
 	}
 }

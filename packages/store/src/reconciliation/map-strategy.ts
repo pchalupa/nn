@@ -26,7 +26,7 @@ export class MapStrategy implements Strategy {
 	public reconcile(entity: Entity, value: unknown, context: ReconcileContext): void {
 		const tracker = context.inspect(value);
 
-		if (tracker?.entity === entity && !tracker.modified) return;
+		if (tracker?.entity === entity && !tracker.dirty) return;
 
 		const target = tracker?.entity === entity ? tracker.target : value;
 

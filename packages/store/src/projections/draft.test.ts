@@ -180,7 +180,7 @@ describe("Draft", () => {
 		assertObject(found);
 		Reflect.set(found, "title", "Bo");
 
-		expect(draft.inspect(list)).toMatchObject({ modified: true, written: false, changed: [draft.inspect(found)] });
+		expect(draft.inspect(list)).toMatchObject({ dirty: true, written: false, changed: [draft.inspect(found)] });
 
 		Reflect.set(list, list.length, { title: "D", assignee: { name: "Ann" } });
 
@@ -218,10 +218,10 @@ describe("Draft", () => {
 		Reflect.set(assignee, "name", "Bo");
 
 		for (const value of [assignee, at(copy, "items", 1), at(copy, "items"), copy]) {
-			expect(draft.inspect(value)?.modified).toBe(true);
+			expect(draft.inspect(value)?.dirty).toBe(true);
 		}
 
-		expect(draft.inspect(at(copy, "items", 0))?.modified).toBe(false);
+		expect(draft.inspect(at(copy, "items", 0))?.dirty).toBe(false);
 		expect(items.current[1]?.encode()).toMatchObject({ data: { assignee: { data: { name: { data: "Ann" } } } } });
 	});
 

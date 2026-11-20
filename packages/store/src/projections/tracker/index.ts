@@ -6,6 +6,7 @@ import { ListTracker } from "./list-tracker";
 import { MapTracker } from "./map-tracker";
 import { copy, type Tracker } from "./tracker";
 
+/** Returns the draft value of `entity`: a tracked proxy for containers, a shallow copy for registers */
 export function track(
 	entity: Entity,
 	parent: Tracker | undefined,

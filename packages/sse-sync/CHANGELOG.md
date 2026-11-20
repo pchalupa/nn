@@ -1,5 +1,16 @@
 # @nn/sse-sync
 
+## 4.0.0
+
+### Major Changes
+
+- a2f189c: The engine's constructor takes any `Replica` from `@nn/sync-engine/replica` instead of a `Store`, and the package no longer depends on `@nn/store` or `@nn/entities` at runtime. Passing a `Store` works as before. Subclasses read the synced object from `this.replica` instead of `this.store`.
+
+### Patch Changes
+
+- Updated dependencies [a2f189c]
+  - @nn/sync-engine@6.0.0
+
 ## 3.1.4
 
 ### Patch Changes

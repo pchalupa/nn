@@ -5,6 +5,7 @@ export interface IndexDbDelegate {
 	indexDbDidDelete(): void;
 }
 
+/** Promise-based wrapper around one IndexedDB database. */
 export class IndexDb implements Delegatable<IndexDbDelegate> {
 	private name: string;
 	private indexDbDatabase?: IDBDatabase;

@@ -1,5 +1,6 @@
 import type { Unsubscribe } from "@nn/observable/observable";
 
+/** State a `SyncEngine` keeps in sync. */
 export interface Replica {
 	readonly schema: { readonly properties: Readonly<Record<string, unknown>> };
 

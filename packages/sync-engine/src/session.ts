@@ -1,6 +1,7 @@
 import type { Delegatable } from "@nn/observable";
 import { Observable } from "@nn/observable/observable";
 
+/** Connection state of a sync engine, see `Session.transition` for how it changes */
 export type SessionState = "idle" | "connecting" | "connected" | "disconnected" | "disposed";
 
 export type SessionEvent = "connect" | "succeed" | "fail" | "drop" | "reopen" | "retry" | "dispose";
@@ -11,6 +12,10 @@ export interface SessionDelegate {
 	sessionDidConnect(session: Session): void;
 }
 
+/**
+ * Connection state machine of a `SyncEngine`. Events that don't apply to the current state are ignored, and events
+ * dispatched during a state change are queued.
+ */
 export class Session implements Delegatable<SessionDelegate> {
 	public readonly changes: Observable<[SessionState]> = new Observable();
 	public delegate?: SessionDelegate;
@@ -113,6 +118,17 @@ export class Session implements Delegatable<SessionDelegate> {
 		}
 	}
 
+	/**
+	 * ```text
+	 * idle         --connect-->   connecting
+	 * connecting   --succeed-->   connected
+	 * connecting   --fail/drop--> disconnected
+	 * connected    --drop-->      disconnected
+	 * connected    --reopen-->    connecting
+	 * disconnected --retry-->     connecting
+	 * any          --dispose-->   disposed (final)
+	 * ```
+	 */
 	public static transition(state: SessionState, event: SessionEvent): SessionState {
 		if (state === "disposed") return state;
 

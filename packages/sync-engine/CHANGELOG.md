@@ -1,5 +1,27 @@
 # @nn/sync-engine
 
+## 6.0.0
+
+### Major Changes
+
+- a2f189c: `SyncEngine` syncs any object that matches the new `Replica` interface, exported from `@nn/sync-engine/replica`, instead of requiring a `Store`, so the package no longer depends on `@nn/store` or `@nn/entities`. A `Store` already matches `Replica`, so `new MySync(store)` works as before.
+
+  Subclasses read the synced object from `this.replica` instead of `this.store`. `push(name, entry)` now types `entry` as `unknown`, because the engine treats entries as opaque. An override that still declares `entry: Encoded` keeps compiling.
+
+  `pull` results other than `undefined` are now merged, so a stored `0`, `false`, `""` or `null` is no longer skipped.
+
+  ```ts
+  // Before
+  protected async open(): Promise<void> {
+  	await this.connection.subscribe(Object.keys(this.store.schema.properties));
+  }
+
+  // After
+  protected async open(): Promise<void> {
+  	await this.connection.subscribe(Object.keys(this.replica.schema.properties));
+  }
+  ```
+
 ## 5.0.1
 
 ### Patch Changes

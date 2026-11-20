@@ -1,6 +1,6 @@
 {
 	"name": "@nn/broadcast-sync",
-	"version": "4.1.4",
+	"version": "5.0.0",
 	"description": "Sync engine that shares a store between browsing contexts over a broadcast channel",
 	"keywords": [
 		"broadcast-channel",

@@ -7,15 +7,5 @@
 	"insertFinalNewline": true,
 	"sortImports": true,
 	"sortPackageJson": true,
-	"ignorePatterns": ["**/node_modules", "**/dist", "**/coverage", "**/examples/react/src/routeTree.gen.ts"],
-	"overrides": [
-		{
-			"files": ["examples/react/**"],
-			"options": {
-				"sortTailwindcss": {
-					"stylesheet": "./examples/react/src/main.css"
-				}
-			}
-		}
-	]
+	"ignorePatterns": ["**/node_modules", "**/dist", "**/coverage", "**/examples/react/src/routeTree.gen.ts"]
 }

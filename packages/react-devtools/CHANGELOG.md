@@ -1,5 +1,11 @@
 # @nn/react-devtools
 
+## 1.1.0
+
+### Minor Changes
+
+- f68bb96: `Devtools` accepts any object that matches the new `Inspectable` interface instead of requiring a `Store`, so the package no longer depends on `@nn/store`. A `Store` already matches `Inspectable`, so `<Devtools store={store} />` works as before.
+
 ## 1.0.1
 
 ### Patch Changes

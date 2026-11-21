@@ -1,16 +1,16 @@
-import type { Store } from "@nn/store";
 import { type ReactNode, useState } from "react";
 import { createPortal } from "react-dom";
 
 import { Button } from "./components/button";
 import { Drawer } from "./components/drawer";
 import { ShadowHost } from "./components/shadow-host";
+import type { Inspectable } from "./inspectable";
 import { css } from "./styles/css";
 import { Tree } from "./tree";
 
 export interface DevtoolsProps {
 	/** Store to inspect */
-	store: Store;
+	store: Inspectable;
 }
 
 export default function Devtools({ store }: DevtoolsProps): ReactNode {

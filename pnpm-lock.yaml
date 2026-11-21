@@ -756,18 +756,18 @@ importers:
       '@nn/guards':
         specifier: workspace:^
         version: link:../guards
-      '@nn/store':
-        specifier: 'workspace:'
-        version: link:../store
     devDependencies:
       '@nn/build-config':
         specifier: workspace:^
         version: link:../build-config
       '@nn/schema':
-        specifier: 'workspace:'
+        specifier: workspace:^
         version: link:../schema
+      '@nn/store':
+        specifier: workspace:^
+        version: link:../store
       '@nn/typescript-config':
-        specifier: 'workspace:'
+        specifier: workspace:^
         version: link:../typescript-config
       '@testing-library/react':
         specifier: ^16.3.3

@@ -2,6 +2,8 @@ import { createElement, type ReactNode, StrictMode, lazy, Suspense } from "react
 
 import type { DevtoolsProps } from "./devtools";
 
+export type { Inspectable } from "./inspectable";
+
 declare const process: { env: { NODE_ENV?: string } };
 
 const LazyDevtools = lazy(() => import("./devtools"));

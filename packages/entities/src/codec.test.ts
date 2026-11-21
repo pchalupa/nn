@@ -45,7 +45,7 @@ describe("Codec", () => {
 
 		decoded.merge(new RGA([new LWWRegister("a", "1")], "list"));
 
-		expect(decoded.find("1")).toBeUndefined();
+		expect(decoded.get("1")).toBeUndefined();
 	});
 
 	it("round-trips a map holding a list of maps", () => {

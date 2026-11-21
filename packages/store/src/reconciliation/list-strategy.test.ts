@@ -188,10 +188,18 @@ describe("ListStrategy", () => {
 			expect(local.current.map((item) => item.key)).toStrictEqual(["r2"]);
 		});
 
-		it("returns an entity of another kind unchanged", () => {
-			const register = new LWWRegister("A", "list", Time.now());
+		it("returns undefined for another kind", () => {
+			expect(items.conform(new LWWRegister("A", "list", Time.now()))).toBeUndefined();
+		});
 
-			expect(items.conform(register)).toBe(register);
+		it("drops items of another kind and keeps tombstones", () => {
+			const list = items.conform(
+				new RGA<Entity>([new LWWRegister("x", "r1", Time.now()), new LWWMap({}, "r2")], "list", ["r0"]),
+			);
+
+			assert(RGA.is(list));
+			expect(list.current.map((item) => item.key)).toStrictEqual(["r2"]);
+			expect(list.encode().metadata.tombstones).toStrictEqual(["r0"]);
 		});
 	});
 });

@@ -83,7 +83,7 @@ describe("createReconciliationStrategy", () => {
 		strategy.reconcile(entity, [draft], contextOf(entities));
 
 		expect(entity.current).toStrictEqual([second]);
-		expect(entity.find(first.key)).toBeUndefined();
+		expect(entity.get(first.key)).toBeUndefined();
 	});
 
 	it.each([

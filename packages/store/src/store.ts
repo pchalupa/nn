@@ -93,7 +93,8 @@ export class Store<StateSchema extends ObjectSchema<Record<string, Schema>> = Ob
 	}
 
 	/**
-	 * Merges an encoded entry from another replica into the root property `name`.
+	 * Merges an encoded entry from another replica into the root property `name`. An entry whose kind doesn't match the
+	 * schema is ignored.
 	 *
 	 * @throws {TypeError} When `value` isn't a valid encoded entity.
 	 * @throws {TimestampMalformedError} When a timestamp can't be parsed.
@@ -107,9 +108,10 @@ export class Store<StateSchema extends ObjectSchema<Record<string, Schema>> = Ob
 		this.commit(() => {
 			const entity = this.root.get(name);
 			const strategy = this.reconciliationStrategy.get(name);
+			const conformed = strategy?.conform(remote);
 
-			if (entity && strategy && remote.key === entity.key) {
-				entity.merge(strategy.conform(remote));
+			if (entity && conformed && remote.key === entity.key) {
+				entity.merge(conformed);
 			}
 		});
 	}

@@ -67,5 +67,9 @@ describe("RegisterStrategy", () => {
 
 			expect(strategy.conform(remote)).toBe(remote);
 		});
+
+		it("returns undefined for another kind", () => {
+			expect(strategy.conform(new LWWMap({}, "title"))).toBeUndefined();
+		});
 	});
 });

@@ -19,18 +19,18 @@ import { Entity, type EntityDelegate } from "./entity";
 export class RGA<Value extends Entity> extends Entity<Value[]> implements EntityDelegate {
 	private items = new Map<string, Value>();
 	private cachedItems = new InvalidatableCache<Value[]>();
-	private tombstones: Set<string>;
+	private tombstoned: Set<string>;
 
 	constructor(items: Value[] = [], key?: string, tombstones: Iterable<string> = []) {
 		super("RGA", key);
 
-		this.tombstones = new Set(tombstones);
+		this.tombstoned = new Set(tombstones);
 
 		for (const item of items) this.insert(item);
 	}
 
 	private insert(item: Value): void {
-		if (!this.tombstones.has(item.key)) {
+		if (!this.tombstoned.has(item.key)) {
 			const existing = this.items.get(item.key);
 
 			if (existing) existing.merge(item);
@@ -73,7 +73,7 @@ export class RGA<Value extends Entity> extends Entity<Value[]> implements Entity
 
 			if (next !== item) item.delegate = undefined;
 
-			if (!next) this.tombstones.add(key);
+			if (!next) this.tombstoned.add(key);
 		}
 
 		this.didChange();
@@ -83,19 +83,21 @@ export class RGA<Value extends Entity> extends Entity<Value[]> implements Entity
 		return this.items.size;
 	}
 
-	public map<Next extends Entity>(callback: (item: Value) => Next): RGA<Next> {
-		const items: Next[] = [];
+	/** Keys of removed items. */
+	public get tombstones(): ReadonlySet<string> {
+		return this.tombstoned;
+	}
 
-		for (const item of this.items.values()) items.push(callback(item));
-
-		return new RGA(items, this.key, this.tombstones);
+	public [Symbol.iterator](): IterableIterator<Value> {
+		return this.current.values();
 	}
 
 	public keys(): MapIterator<string> {
 		return this.items.keys();
 	}
 
-	public find(key: string): Value | undefined {
+	/** Returns the item with `key`, or `undefined` when it's missing or removed */
+	public get(key: string): Value | undefined {
 		return this.items.get(key);
 	}
 
@@ -111,17 +113,18 @@ export class RGA<Value extends Entity> extends Entity<Value[]> implements Entity
 	public remove(key: string): void {
 		if (this.items.has(key)) {
 			this.detach(key);
-			this.tombstones.add(key);
+			this.tombstoned.add(key);
 			this.didChange();
 		}
 	}
 
 	public merge(other: RGA<Value>): this {
-		const removed = other.tombstones.difference(this.tombstones);
+		const removed = other.tombstoned.difference(this.tombstoned);
 
-		for (const key of removed) this.detach(key);
-
-		this.tombstones = this.tombstones.union(removed);
+		for (const key of removed) {
+			this.detach(key);
+			this.tombstoned.add(key);
+		}
 
 		const size = this.items.size;
 
@@ -134,12 +137,13 @@ export class RGA<Value extends Entity> extends Entity<Value[]> implements Entity
 
 	public encode(): Encoded<Encoded[], { kind: string; tombstones: string[] }> {
 		const data: Encoded[] = [];
+		const tombstones = Array.from(this.tombstoned);
 
 		for (const item of this.items.values()) {
 			data.push(item.encode());
 		}
 
-		return { key: this.key, data, metadata: { kind: this.kind, tombstones: Array.from(this.tombstones) } };
+		return { key: this.key, data, metadata: { kind: this.kind, tombstones } };
 	}
 
 	public static decode(encoded: Encoded, decoder: Decoder): RGA<Entity> {

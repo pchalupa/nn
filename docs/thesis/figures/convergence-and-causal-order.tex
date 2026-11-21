@@ -1,0 +1,28 @@
+\begin{tikzpicture}[
+	thesis,
+	event/.style={thesis/label, text width=2cm},
+	state/.style={thesis/box, text width=3.1cm, minimum height=0.8cm, inner sep=4pt}
+]
+	\node[thesis/heading] at (3.4,0) {(a) SEC alone, separate objects};
+	\node[thesis/heading] at (10.6,0) {(b) Causal+};
+
+	\foreach \shift in {0,7.2} {
+		\begin{scope}[xshift=\shift cm]
+			\node at (1.6,-0.55) {Received by Bob};
+			\node at (4.9,-0.55) {Bob's visible state};
+			\draw[thesis/lifeline, ->] (0.2,-0.8) -- (0.2,-3.2);
+			\fill (0.2,-1.35) circle (1.5pt);
+			\fill (0.2,-2.65) circle (1.5pt);
+			\node[event] at (1.6,-1.35) {Comment $C$\\arrives first};
+			\node[event] at (1.6,-2.65) {Task $T$\\arrives later};
+			\draw[thesis/local, ->] (2.7,-1.35) -- (3.15,-1.35);
+			\draw[thesis/local, ->] (2.7,-2.65) -- (3.15,-2.65);
+		\end{scope}
+	}
+
+	\node[state] at (4.9,-1.35) {$C$ visible; $T$ missing\\Allowed by SEC alone};
+	\node[state] at (4.9,-2.65) {$T$ and $C$ visible};
+	\node[state] at (12.1,-1.35) {$C$ buffered, not visible\\Waiting for $T$};
+	\node[state] at (12.1,-2.65) {$T$ and $C$ visible};
+	\node[align=center] at (7,-3.55) {Time runs downward. Both executions end with the task and its comment visible.};
+\end{tikzpicture}

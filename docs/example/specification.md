@@ -5,7 +5,7 @@ date: 2026-11-04
 
 # Example app specification
 
-This describes what the example apps in `apps/` should do. It's a direction, not a contract. Details can change when there's a good reason, as long as the app keeps its purpose.
+This describes what the example apps in `examples/` should do. It's a direction, not a contract. Details can change when there's a good reason, as long as the app keeps its purpose.
 
 ## Purpose
 

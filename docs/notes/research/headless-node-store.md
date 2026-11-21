@@ -25,7 +25,7 @@ Evidence: [ID, lines 1–7](../../../packages/id/src/id.ts#L1-L7), [Time, lines 
 
 **Node-only type checking:** a core-only consumer passed with `lib: ES2022`, Node types, and bundler module resolution. Adding broadcast sync failed with `TS2315: Type 'MessageEvent' is not generic` at its `MessageEvent<unknown>` annotation. Runtime compatibility therefore does not yet mean the adapter compiles with a DOM-free TypeScript configuration. [Broadcast callback](../../../packages/broadcast-sync/src/broadcast-sync.ts#L19). On the tested Node launch, `fetch`, `crypto`, `AbortController`, and `BroadcastChannel` were available; `EventSource` and `indexedDB` were undefined. SSE needs a supplied compatible global implementation or verified deployment support.
 
-The React example is not a reusable headless entry point: its module attaches IndexedDB and broadcast sync immediately, reads `location.origin`, and registers global `online` and `document.visibilitychange` listeners. Its schema is currently private to that module. **Inference:** share the schema through a platform-neutral module when building a browser/Node pair. [Example store, lines 43–63](../../../apps/example-react/src/store.ts#L43-L63).
+The React example is not a reusable headless entry point: its module attaches IndexedDB and broadcast sync immediately, reads `location.origin`, and registers global `online` and `document.visibilitychange` listeners. Its schema is currently private to that module. **Inference:** share the schema through a platform-neutral module when building a browser/Node pair. [Example store, lines 43–63](../../../examples/react/src/store.ts#L43-L63).
 
 ## Reads, updates, and subscriptions
 

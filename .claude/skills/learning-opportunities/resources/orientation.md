@@ -34,7 +34,7 @@
 - `packages/sync-engine/src/sync-engine.ts` — abstract base for every sync engine (connect, pull, push, receive, errors) | read before touching `indexdb-sync`, `broadcast-sync` or `sse-sync`.
 - `packages/sse-sync/src/sse-sync.ts` — a complete concrete engine in ~50 lines | shows the four methods a transport has to supply.
 - `packages/react/src/index.ts` — `createStore` returning `store`, `useQuery`, `useMutation` | what app code actually imports.
-- `apps/example-react/src/store.ts` — wires one store to IndexedDB, BroadcastChannel and SSE sync | the real-world composition of the whole stack in 22 lines.
+- `examples/react/src/store.ts` — wires one store to IndexedDB, BroadcastChannel and SSE sync | the real-world composition of the whole stack in 22 lines.
 
 ## Core concepts
 
@@ -56,9 +56,9 @@
 
 ## Suggested exercise sequence
 
-1. **How an app assembles the stack.** Open `apps/example-react/src/store.ts` (22 lines) and read it top to bottom. Then explain in your own words: what each of the three sync engines (`IndexDbSync`, `BroadcastSync`, `SseSync`) is responsible for, why they're created separately from the store instead of being passed into it, and why the file calls `remote.retry()` on the `online` and `visibilitychange` events. If an engine's role is unclear, the package `description` fields in `packages/*/package.json` are a one-line hint.
+1. **How an app assembles the stack.** Open `examples/react/src/store.ts` (22 lines) and read it top to bottom. Then explain in your own words: what each of the three sync engines (`IndexDbSync`, `BroadcastSync`, `SseSync`) is responsible for, why they're created separately from the store instead of being passed into it, and why the file calls `remote.retry()` on the `online` and `visibilitychange` events. If an engine's role is unclear, the package `description` fields in `packages/*/package.json` are a one-line hint.
 
-2. **From schema to CRDTs.** Open `packages/store/src/reconciliation/create-strategy.ts` (46 lines) and read the bottom implementation of `createReconciliationStrategy`. Then open `apps/example-schema/src/index.ts` and pick the exported `schema`. Describe the tree of strategies, and therefore CRDT kinds, that the store would build for it: what backs `tickets`, what backs one ticket's `status`, and what backs `language`. Finish by saying in one sentence why a schema is required up front for this design to work.
+2. **From schema to CRDTs.** Open `packages/store/src/reconciliation/create-strategy.ts` (46 lines) and read the bottom implementation of `createReconciliationStrategy`. Then open `examples/schema/src/index.ts` and pick the exported `schema`. Describe the tree of strategies, and therefore CRDT kinds, that the store would build for it: what backs `tickets`, what backs one ticket's `status`, and what backs `language`. Finish by saying in one sentence why a schema is required up front for this design to work.
 
 ## Sources consulted
 
@@ -73,5 +73,5 @@
 - `packages/sync-engine/src/sync-engine.ts`, `session.ts` (first 60 lines)
 - `packages/sse-sync/src/sse-sync.ts`, `packages/react/src/index.ts`
 - Test names in `packages/store/src/store.test.ts` and `packages/sync-engine/src/sync-engine.test.ts`
-- `apps/example-react/src/store.ts`, `apps/example-schema/src/index.ts`, `apps/example-server/src/index.ts`
+- `examples/react/src/store.ts`, `examples/schema/src/index.ts`, `examples/server/src/index.ts`
 - `docs/decisions/` listing and `docs/decisions/ADR-13-attach-persistence-and-sync-from-outside-the-store.md`

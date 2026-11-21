@@ -1,6 +1,6 @@
 # Example app design system
 
-How to build UI in `apps/example-react` so it matches `docs/example/design.pen`. The `.pen` file is the source of truth. This document turns it into Tailwind v4 classes, so you can build without opening the file.
+How to build UI in `examples/react` so it matches `docs/example/design.pen`. The `.pen` file is the source of truth. This document turns it into Tailwind v4 classes, so you can build without opening the file.
 
 `design.pen` is encrypted. Read it only through the `pencil` MCP tools (`get_app_state`, then `execute` with `Get`, `GetVariables` and `TakeScreenshot`), never with `Read` or `grep`. Open it when you need a value this document leaves out, or to check a screen visually. When this document and the file disagree, the file wins; update this document.
 
@@ -15,7 +15,7 @@ How to build UI in `apps/example-react` so it matches `docs/example/design.pen`.
 
 ## Theme
 
-Put this in `apps/example-react/src/main.css`, after `@import "tailwindcss";`. It adds only colors, fonts and one shadow.
+Put this in `examples/react/src/main.css`, after `@import "tailwindcss";`. It adds only colors, fonts and one shadow.
 
 ```css
 @theme inline {

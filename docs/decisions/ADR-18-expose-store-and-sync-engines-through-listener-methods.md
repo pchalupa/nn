@@ -9,7 +9,7 @@ Amends [ADR-12](ADR-12-report-changes-to-a-single-delegate.md), [ADR-13](ADR-13-
 
 ## Context
 
-The [Node example](../../apps/example-node/src/index.ts) is the first app that drives a store and an engine without React. Writing it showed how much of the internals the public API leaks. It writes through `store.state.update(...)`, listens with `sseSync.session.changes.subscribe(...)`, reads `sseSync.session.disconnected`, and handles failures by assigning `sseSync.delegate = { syncEngineDidFail }`.
+The [Node example](../../examples/node/src/index.ts) is the first app that drives a store and an engine without React. Writing it showed how much of the internals the public API leaks. It writes through `store.state.update(...)`, listens with `sseSync.session.changes.subscribe(...)`, reads `sseSync.session.disconnected`, and handles failures by assigning `sseSync.delegate = { syncEngineDidFail }`.
 
 That exposes three internal layers. [`State`](../../packages/store/src/state.ts) and [`Session`](../../packages/sync-engine/src/session.ts) are implementation details that every caller has to reach through. The delegate slot from ADR-12 is a pattern most JavaScript developers don't know, and it holds one handler. A React component that wants to show a "sync failed" banner can't reach it, because the engine is attached once in a module.
 

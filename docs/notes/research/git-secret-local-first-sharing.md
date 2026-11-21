@@ -113,7 +113,7 @@ Current [`SyncEngine`](../../../packages/sync-engine/src/sync-engine.ts) pushes 
 
 **Proposed integration boundary:** encrypt serialized entities before remote transport; verify authorization and decrypt before decoding and merging. Encrypting a whole map under one key grants access to its encoded descendants. Selective sharing would therefore need independently encrypted units or finer-grained synchronization. This is an architectural implication, not an implemented security property.
 
-The example server's [`update`](../../../apps/example-server/src/services/db/db.ts) uses `Object.assign(db, data)`, replacing same-named fields. Wrapping that transport alone wouldn't preserve concurrent encrypted snapshots: authorized clients must decrypt and merge, while replication must retain concurrent updates until reconciliation. Blindly replacing one ciphertext with another isn't a CRDT merge.
+The example server's [`update`](../../../examples/server/src/services/db/db.ts) uses `Object.assign(db, data)`, replacing same-named fields. Wrapping that transport alone wouldn't preserve concurrent encrypted snapshots: authorized clients must decrypt and merge, while replication must retain concurrent updates until reconciliation. Blindly replacing one ciphertext with another isn't a CRDT merge.
 
 ## Recommendation and remaining questions
 

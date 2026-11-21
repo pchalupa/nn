@@ -110,11 +110,11 @@
 	},
 	"overrides": [
 		{
-			"files": ["**/apps/example-react/src/routes/**"],
+			"files": ["**/examples/react/src/routes/**"],
 			"rules": { "unicorn/filename-case": "off" }
 		},
 		{
-			"files": ["**/apps/**"],
+			"files": ["**/examples/**"],
 			"rules": { "oxc/no-map-spread": "off", "unicorn/no-array-reduce": "off" }
 		}
 	],
@@ -123,6 +123,6 @@
 		"**/dist",
 		"**/dev-dist",
 		"**/coverage",
-		"**/apps/example-react/src/routeTree.gen.ts"
+		"**/examples/react/src/routeTree.gen.ts"
 	]
 }

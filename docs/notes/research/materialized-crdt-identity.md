@@ -121,7 +121,7 @@ Add a key declaration to arrays of objects, for example `array(ticket).keyBy("id
 - `prepareRows` resolves `existing = collection.find(row[keyField])` instead of `identities.keyOf(row, collection)` ([`reconcile.ts:84-86`][nn-reconcile]). The duplicate check at L88 stays and becomes the guard against copy-and-push mistakes, as in loro-mirror's `Duplicate item id`.
 - Treat the key field as immutable. Changing it means remove plus insert, which mirrors how MST treats identifiers.
 
-**What it fixes.** Spread-replace, `structuredClone`, JSON round-trips, and rows rebuilt from server data all match correctly. `RowIdentity.clone`'s parallel walk and `normalize`'s `identities.copy` become unnecessary for keyed arrays. React gets a correct `key` for free. Today the example app models `ticket.id` as a separate `LWWRegister` beside a hidden RGA key, so it carries two identities for one row ([`apps/example-react/src/store.ts`][nn-example-store]).
+**What it fixes.** Spread-replace, `structuredClone`, JSON round-trips, and rows rebuilt from server data all match correctly. `RowIdentity.clone`'s parallel walk and `normalize`'s `identities.copy` become unnecessary for keyed arrays. React gets a correct `key` for free. Today the example app models `ticket.id` as a separate `LWWRegister` beside a hidden RGA key, so it carries two identities for one row ([`examples/react/src/store.ts`][nn-example-store]).
 
 **What it costs.** The key becomes visible, user-owned data. Two replicas that create rows with the same key are now the same row: `RGA` merges a second live row under a key into the first ([ADR-11](../../decisions/ADR-11-defer-the-ordering-crdt.md)). That is correct for UUIDs and surprising for natural keys such as an email address. It is also a public schema API change, so it needs a Changeset.
 
@@ -157,7 +157,7 @@ With keys, `prepareRows` can compute moves the same way loro-mirror and React do
 [nn-normalize]: ../../../packages/store/src/normalize.ts
 [nn-entities]: ../../../packages/store/src/entities.ts
 [nn-react]: ../../../packages/react/src/index.ts
-[nn-example-store]: ../../../apps/example-react/src/store.ts
+[nn-example-store]: ../../../examples/react/src/store.ts
 [am-merge]: https://automerge.org/docs/reference/under-the-hood/merge-rules/
 [am-lists]: https://automerge.org/docs/reference/documents/lists/
 [am-constants]: https://github.com/automerge/automerge/blob/5bae7757ef7b92c8cd6850def388f22767305ccb/javascript/src/constants.ts#L5

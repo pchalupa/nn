@@ -1,7 +1,7 @@
 {
 	"$schema": "https://unpkg.com/knip@6/schema.json",
 	"workspaces": {
-		"apps/example-server": {
+		"examples/server": {
 			"entry": ["src/index.ts", "api/*.ts!"]
 		},
 		"packages/build-config": {

@@ -1,5 +1,29 @@
 # @nn/entities
 
+## 5.0.0
+
+### Major Changes
+
+- 2f48d17: `RGA.find(key)` is renamed to `RGA.get(key)`, matching `LWWMap.get`, and `RGA.map` is removed. To derive a list that keeps the removed keys, build it from the items and `tombstones`.
+
+  ```ts
+  // Before
+  list.find(key);
+  list.map((item) => next(item));
+
+  // After
+  list.get(key);
+  new RGA(
+  	list.current.map((item) => next(item)),
+  	list.key,
+  	list.tombstones,
+  );
+  ```
+
+### Minor Changes
+
+- 2f48d17: `RGA` is iterable and exposes its removed keys as a read-only `tombstones` set. Iteration runs over the items present when it starts, so adding or removing items inside the loop is safe. `tombstones` is a live view that reflects later removals, including ones a merge brings in.
+
 ## 4.2.2
 
 ### Patch Changes

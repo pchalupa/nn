@@ -1,9 +1,11 @@
+import { Box, Select } from "@radix-ui/themes";
 import { language } from "example-schema";
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 
 import { languageNames } from "../../i18n";
 import { useQuery, useMutation } from "../../store";
+import { Field } from "../field";
 
 export const LanguageSelector = () => {
 	const { i18n, t } = useTranslation();
@@ -15,8 +17,8 @@ export const LanguageSelector = () => {
 		if (i18n.language !== selectedLanguage) i18n.changeLanguage(selectedLanguage);
 	}, [i18n, selectedLanguage]);
 
-	const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-		const nextLanguage = language.literals.find((code) => code === event.target.value);
+	const handleChange = (value: string) => {
+		const nextLanguage = language.literals.find((code) => code === value);
 
 		if (nextLanguage) {
 			mutate((draft) => {
@@ -26,20 +28,19 @@ export const LanguageSelector = () => {
 	};
 
 	return (
-		<label className="flex flex-col gap-y-1 px-4 py-2 text-xs text-zinc-600">
-			{t("language")}
-			<select
-				value={selectedLanguage}
-				onChange={handleChange}
-				className="rounded bg-zinc-700 px-2 py-1 text-sm text-zinc-200"
-				aria-label={t("language")}
-			>
-				{language.literals.map((code) => (
-					<option key={code} value={code}>
-						{languageNames[code]}
-					</option>
-				))}
-			</select>
-		</label>
+		<Box px="4" py="2">
+			<Field label={t("language")}>
+				<Select.Root size="1" value={selectedLanguage} onValueChange={handleChange}>
+					<Select.Trigger />
+					<Select.Content>
+						{language.literals.map((code) => (
+							<Select.Item key={code} value={code}>
+								{languageNames[code]}
+							</Select.Item>
+						))}
+					</Select.Content>
+				</Select.Root>
+			</Field>
+		</Box>
 	);
 };

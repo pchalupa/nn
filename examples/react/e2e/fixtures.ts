@@ -1,12 +1,12 @@
 import { once } from "node:events";
 
 import { serve } from "@hono/node-server";
-import { test as base, type Page } from "@playwright/test";
+import { test as base, type Locator, type Page } from "@playwright/test";
 import { createMemoryDatabase } from "example-server/memory-database";
 import { createMemoryEventBus } from "example-server/memory-event-bus";
 import { createServer } from "example-server/server";
 
-export { expect, type Page } from "@playwright/test";
+export { expect, type Locator, type Page } from "@playwright/test";
 
 export const test = base.extend<{ signedIn: boolean }>({
 	signedIn: [true, { option: true }],
@@ -64,4 +64,9 @@ export async function signUp(page: Page) {
 	await page.getByLabel("Name").fill("Jan Novak");
 	await page.getByRole("button", { name: "Sign up" }).click();
 	await page.waitForURL("/");
+}
+
+export async function choose(combobox: Locator, option: string) {
+	await combobox.click();
+	await combobox.page().getByRole("option", { name: option, exact: true }).click();
 }

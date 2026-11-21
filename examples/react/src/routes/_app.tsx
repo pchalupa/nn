@@ -1,12 +1,10 @@
-import { createFileRoute, Link, Outlet, redirect } from "@tanstack/react-router";
-import { Suspense, useState } from "react";
+import { Box, Button, Flex, Heading, Link, Separator, Text } from "@radix-ui/themes";
+import { createFileRoute, Link as RouterLink, Outlet, redirect } from "@tanstack/react-router";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 
-import { Button } from "../components/button";
-import { Divider } from "../components/divider";
 import { LanguageSelector } from "../components/language-selector";
 import { SignOut } from "../components/sign-out";
-import { Skeleton } from "../components/skeleton";
 import { TicketModal } from "../components/ticket-modal";
 import { authenticated } from "../modules/authentication/session";
 import { useQuery } from "../store";
@@ -15,39 +13,43 @@ const Stats = () => {
 	const { t } = useTranslation();
 	const count = useQuery((data) => data.tickets.length);
 
-	return <p className="text-center text-zinc-600">{t("tickets", { count })}</p>;
+	return (
+		<Text as="p" size="2" color="gray" align="center">
+			{t("tickets", { count })}
+		</Text>
+	);
 };
 
 const Navigation = () => {
 	const { t } = useTranslation();
 
 	return (
-		<div className="flex flex-col gap-y-2 px-4 py-2">
-			<Link to="/" className="text-zinc-400">
-				{t("board")}
+		<Flex direction="column" gap="2" px="4" py="2">
+			<Link asChild color="gray">
+				<RouterLink to="/">{t("board")}</RouterLink>
 			</Link>
-			<Link to="/backlog" className="text-zinc-400">
-				{t("backlog")}
+			<Link asChild color="gray">
+				<RouterLink to="/backlog">{t("backlog")}</RouterLink>
 			</Link>
-		</div>
+		</Flex>
 	);
 };
 
 const SideBar = () => (
-	<div className="min-h-screen w-1/4 max-w-32 min-w-28 bg-zinc-800">
-		<Link to="/">
-			<h1 className="p-4 text-center text-xl font-bold text-zinc-200">DBug</h1>
-		</Link>
-		<Skeleton width="w-3/4" height="h-6" className="mx-2">
-			<Stats />
-		</Skeleton>
-		<Skeleton width="w-3/4" height="h-14" className="mx-2">
-			<LanguageSelector />
-		</Skeleton>
-		<Divider />
+	<Box width="128px" flexShrink="0">
+		<Box p="4">
+			<Heading as="h1" size="5" align="center">
+				<Link asChild underline="none" highContrast>
+					<RouterLink to="/">DBug</RouterLink>
+				</Link>
+			</Heading>
+		</Box>
+		<Stats />
+		<LanguageSelector />
+		<Separator size="4" />
 		<Navigation />
 		<SignOut />
-	</div>
+	</Box>
 );
 
 const TopBar = () => {
@@ -58,24 +60,24 @@ const TopBar = () => {
 	const handleClose = () => setIsOpen(false);
 
 	return (
-		<header className="flex flex-row justify-end px-4 pt-4">
-			<Button text={t("create")} size="sm" onClick={handleOpen} />
-			{isOpen && (
-				<Suspense>
-					<TicketModal onClose={handleClose} />
-				</Suspense>
-			)}
-		</header>
+		<Flex asChild justify="end" px="4" pt="4">
+			<header>
+				<Button type="button" onClick={handleOpen}>
+					{t("create")}
+				</Button>
+				{isOpen && <TicketModal onClose={handleClose} />}
+			</header>
+		</Flex>
 	);
 };
 
 const AppLayout = () => (
 	<>
 		<SideBar />
-		<div className="flex flex-1 flex-col">
+		<Flex direction="column" flexGrow="1">
 			<TopBar />
 			<Outlet />
-		</div>
+		</Flex>
 	</>
 );
 

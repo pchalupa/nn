@@ -1,3 +1,4 @@
+import { Box, Button } from "@radix-ui/themes";
 import { useNavigate } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 
@@ -13,10 +14,10 @@ export const SignOut = () => {
 	};
 
 	return (
-		<div className="px-4 py-2">
-			<button type="button" className="text-xs text-zinc-400 hover:text-zinc-200" onClick={handleSignOut}>
+		<Box px="4" py="2">
+			<Button type="button" variant="ghost" color="gray" size="1" onClick={handleSignOut}>
 				{t("signOut")}
-			</button>
-		</div>
+			</Button>
+		</Box>
 	);
 };

@@ -1,20 +1,29 @@
-import { status } from "example-schema";
-import { useEffect, useRef } from "react";
-import { useForm } from "react-hook-form";
+import { Box, Button, Dialog, Flex, Select, TextArea, TextField, VisuallyHidden } from "@radix-ui/themes";
+import { type Comment, type Status, status } from "example-schema";
+import { Controller, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 
 import { statusLabels } from "../../i18n";
 import { useQuery, useMutation } from "../../store";
-import { Button } from "../button";
-import { Input } from "../input";
-import { Modal, type ModalHandle } from "../modal";
-import { TextArea } from "../text-area";
+import { Field } from "../field";
 import { Comments } from "./comments";
 
 interface TicketModalProps {
 	id?: string;
 	onClose: () => void;
 }
+
+interface TicketDraft {
+	title: string;
+	description: string;
+	status: Status;
+	assignee: string;
+	comments: Comment[];
+}
+
+const newTicket: TicketDraft = { title: "", description: "", status: "todo", assignee: "", comments: [] };
+
+const unassigned = "unassigned";
 
 export const TicketModal = ({ id, onClose }: TicketModalProps) => {
 	const { t } = useTranslation();
@@ -36,10 +45,15 @@ export const TicketModal = ({ id, onClose }: TicketModalProps) => {
 	});
 	const users = useQuery((data) => data.users.map((user) => ({ id: user.id, name: user.name })));
 	const mutate = useMutation();
-	const modalRef = useRef<ModalHandle>(null);
-	const form = useForm({ values: ticket, resetOptions: { keepDirtyValues: true } });
+	const form = useForm<TicketDraft>({
+		defaultValues: newTicket,
+		values: ticket,
+		resetOptions: { keepDirtyValues: true },
+	});
 
-	useEffect(() => modalRef.current?.open(), []);
+	const handleOpenChange = (open: boolean) => {
+		if (!open) onClose();
+	};
 
 	const handleSubmit = form.handleSubmit((draft) => {
 		const title = draft.title.trim();
@@ -73,53 +87,97 @@ export const TicketModal = ({ id, onClose }: TicketModalProps) => {
 	};
 
 	return (
-		<Modal ref={modalRef} onClose={onClose}>
-			<form className="flex flex-col gap-y-6" noValidate onSubmit={handleSubmit}>
-				<div className="flex flex-col gap-6 md:flex-row">
-					<div className="flex flex-1 flex-col gap-y-4">
-						<Input
-							label={t("title")}
-							size="lg"
-							{...form.register("title", { validate: (value) => value.trim() !== "" })}
-						/>
-						<TextArea label={t("description")} {...form.register("description")} />
-					</div>
-					<div className="flex w-full flex-col gap-y-4 rounded bg-zinc-900 p-4 md:w-64">
-						<label className="flex flex-col gap-y-1 text-xs font-medium text-zinc-400 uppercase">
-							{t("status")}
-							<select
-								className="rounded bg-zinc-700 px-2 py-1 text-sm text-zinc-200 normal-case"
-								{...form.register("status")}
+		<Dialog.Root open onOpenChange={handleOpenChange}>
+			<Dialog.Content maxWidth="768px" aria-describedby={undefined}>
+				<VisuallyHidden>
+					<Dialog.Title>{ticket?.title || t("create")}</Dialog.Title>
+				</VisuallyHidden>
+				<form noValidate onSubmit={handleSubmit}>
+					<Flex direction="column" gap="6">
+						<Flex direction={{ initial: "column", md: "row" }} gap="6">
+							<Flex direction="column" gap="4" flexGrow="1">
+								<Field label={t("title")}>
+									<TextField.Root size="3" {...form.register("title", { validate: (value) => value.trim() !== "" })} />
+								</Field>
+								<Field label={t("description")}>
+									<TextArea rows={5} resize="vertical" {...form.register("description")} />
+								</Field>
+							</Flex>
+							<Box
+								p="4"
+								width={{ initial: "100%", md: "256px" }}
+								flexShrink="0"
+								style={{ backgroundColor: "var(--gray-a2)", borderRadius: "var(--radius-3)" }}
 							>
-								{status.literals.map((option) => (
-									<option key={option} value={option}>
-										{t(statusLabels[option])}
-									</option>
-								))}
-							</select>
-						</label>
-						<label className="flex flex-col gap-y-1 text-xs font-medium text-zinc-400 uppercase">
-							{t("assignee")}
-							<select
-								className="rounded bg-zinc-700 px-2 py-1 text-sm text-zinc-200 normal-case"
-								{...form.register("assignee")}
-							>
-								<option value="">{t("unassigned")}</option>
-								{users.map((user) => (
-									<option key={user.id} value={user.id}>
-										{user.name}
-									</option>
-								))}
-							</select>
-						</label>
-					</div>
-				</div>
-				<div className="flex flex-row justify-end gap-x-2">
-					{ticket && <Button text={t("delete")} color="secondary" size="sm" onClick={handleDelete} />}
-					<Button text={t("save")} type="submit" size="sm" />
-				</div>
-			</form>
-			<Comments comments={ticket?.comments} />
-		</Modal>
+								<Flex direction="column" gap="4">
+									<Field label={t("status")}>
+										<Controller
+											control={form.control}
+											name="status"
+											render={({ field }) => (
+												<Select.Root
+													value={field.value}
+													onValueChange={(value) => {
+														const nextStatus = status.literals.find((option) => option === value);
+
+														if (nextStatus) field.onChange(nextStatus);
+													}}
+												>
+													<Select.Trigger ref={field.ref} />
+													<Select.Content>
+														{status.literals.map((option) => (
+															<Select.Item key={option} value={option}>
+																{t(statusLabels[option])}
+															</Select.Item>
+														))}
+													</Select.Content>
+												</Select.Root>
+											)}
+										/>
+									</Field>
+									<Field label={t("assignee")}>
+										<Controller
+											control={form.control}
+											name="assignee"
+											render={({ field }) => (
+												<Select.Root
+													value={field.value || unassigned}
+													onValueChange={(value) => {
+														if (value === unassigned) {
+															field.onChange("");
+														} else {
+															field.onChange(value);
+														}
+													}}
+												>
+													<Select.Trigger ref={field.ref} />
+													<Select.Content>
+														<Select.Item value={unassigned}>{t("unassigned")}</Select.Item>
+														{users.map((user) => (
+															<Select.Item key={user.id} value={user.id}>
+																{user.name}
+															</Select.Item>
+														))}
+													</Select.Content>
+												</Select.Root>
+											)}
+										/>
+									</Field>
+								</Flex>
+							</Box>
+						</Flex>
+						<Flex justify="end" gap="2">
+							{ticket && (
+								<Button type="button" variant="soft" color="gray" onClick={handleDelete}>
+									{t("delete")}
+								</Button>
+							)}
+							<Button type="submit">{t("save")}</Button>
+						</Flex>
+					</Flex>
+				</form>
+				<Comments comments={ticket?.comments} />
+			</Dialog.Content>
+		</Dialog.Root>
 	);
 };

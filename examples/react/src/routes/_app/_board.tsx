@@ -1,23 +1,21 @@
+import { Grid } from "@radix-ui/themes";
 import { createFileRoute, Outlet } from "@tanstack/react-router";
 import { status } from "example-schema";
 import { useTranslation } from "react-i18next";
 
 import { Column } from "../../components/column";
-import { Skeleton } from "../../components/skeleton";
 import { statusLabels } from "../../i18n";
 
 const Board = () => {
 	const { t } = useTranslation();
 
 	return (
-		<div className="flex h-full flex-1 flex-row gap-x-2 overflow-x-scroll p-4">
+		<Grid columns={`repeat(${status.literals.length}, minmax(200px, 1fr))`} gap="2" p="4" overflowX="auto">
 			{status.literals.map((literal) => (
-				<Skeleton key={literal} width="w-full" height="h-56">
-					<Column title={t(statusLabels[literal])} status={literal} />
-				</Skeleton>
+				<Column key={literal} title={t(statusLabels[literal])} status={literal} />
 			))}
 			<Outlet />
-		</div>
+		</Grid>
 	);
 };
 

@@ -1,10 +1,9 @@
+import { Card, Flex, Heading } from "@radix-ui/themes";
 import { Link } from "@tanstack/react-router";
 import type { Status } from "example-schema";
 
 import { useQuery } from "../../store";
-import { Divider } from "../divider";
 import { Ticket } from "../ticket";
-import { Header } from "./parts/header";
 
 interface ColumnProps {
 	title: string;
@@ -31,16 +30,25 @@ export const Column = ({ title, status }: ColumnProps) => {
 	);
 
 	return (
-		<section className="flex w-full min-w-50 flex-col gap-y-2 rounded bg-zinc-800 px-2 py-4">
-			<Header title={title} />
-			<Divider />
-			<div className="flex flex-col gap-y-2">
-				{tickets.map((data) => (
-					<Link key={data.id} to="/tickets/$ticketId" params={{ ticketId: data.id }} aria-label={data.title}>
-						<Ticket title={data.title} description={data.description} assignee={data.assignee} />
-					</Link>
-				))}
-			</div>
-		</section>
+		<Card>
+			<Flex direction="column" gap="2">
+				<Heading as="h3" size="2">
+					{title}
+				</Heading>
+				<Flex asChild direction="column" gap="2" m="0" p="0" style={{ listStyle: "none" }}>
+					<ul aria-label={title}>
+						{tickets.map((data) => (
+							<li key={data.id}>
+								<Card asChild>
+									<Link to="/tickets/$ticketId" params={{ ticketId: data.id }} aria-label={data.title}>
+										<Ticket title={data.title} description={data.description} assignee={data.assignee} />
+									</Link>
+								</Card>
+							</li>
+						))}
+					</ul>
+				</Flex>
+			</Flex>
+		</Card>
 	);
 };

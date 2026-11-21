@@ -1,9 +1,10 @@
+import { Flex } from "@radix-ui/themes";
 import { createRootRoute, Outlet } from "@tanstack/react-router";
 
 const RootComponent = () => (
-	<div className="flex flex-row bg-zinc-900">
+	<Flex minHeight="100vh">
 		<Outlet />
-	</div>
+	</Flex>
 );
 
 export const Route = createRootRoute({

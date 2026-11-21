@@ -1,0 +1,18 @@
+\begin{tikzpicture}[
+	thesis,
+	state/.style={thesis/box, text width=3.4cm, minimum height=0.8cm, inner sep=4pt}
+]
+	\node[thesis/label] at (6.5,0) {Same updates\\delivered at both replicas};
+	\node[thesis/label] at (11.7,0) {Later\\no new updates};
+	\node[anchor=east, align=right] at (4.1,-1.1) {Eventual\\consistency};
+	\node[anchor=east, align=right] at (4.1,-2.25) {Strong eventual\\consistency};
+
+	\node[state] (ec-start) at (6.5,-1.1) {States may differ};
+	\node[state] (ec-end) at (11.7,-1.1) {Equivalent states};
+	\draw[thesis/local, ->] (ec-start.east) -- (ec-end.west);
+	\node[state] (sec-start) at (6.5,-2.25) {Equivalent states};
+	\node[state] (sec-end) at (11.7,-2.25) {Equivalent states};
+	\draw[thesis/local, ->] (sec-start.east) -- (sec-end.west);
+
+	\node[align=center] at (8,-3.15) {Neither model guarantees that all recent updates have arrived.};
+\end{tikzpicture}

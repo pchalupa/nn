@@ -1,0 +1,110 @@
+\section{Consistency Models}
+\label{sec:consistency-models}
+
+When users access the same data, what guarantees can the application provide about what they see?
+A \emph{consistency model} specifies permitted observations: when writes become visible, how operations are ordered, and whether replicas agree after receiving the same updates.
+\parencite[Section~10.3]{understanding-distributed-systems}
+
+Neither architecture guarantees a particular consistency model on its own.
+A server-centred application can require coordination before completing an operation, whereas a local-first application must also allow supported operations to complete while disconnected.
+
+\subsection{Strong consistency and current shared state}
+
+Following \textcite[85]{understanding-distributed-systems}, \emph{strong consistency} means that operations behave as if there were a single copy of the data.
+Each operation appears to take effect at one instant between its invocation and completion.
+Once a write completes, its effects must be reflected in subsequent reads.\footnote{Vitillo identifies this guarantee as \emph{linearizability} on page~86.
+	This chapter uses \emph{strong consistency} in that sense.}
+
+In the server-centred task board, Alice changes a title from \enquote{Draft} to \enquote{Review}.
+If Bob reads it after her save completes, with no intervening writes, he must see \enquote{Review} (Figure~\ref{fig:strong-consistency-timeline}).
+The bars span each operation's invocation and completion.
+
+\begin{illustration}[htbp]
+	\centering
+	\caption{A read following a completed write under strong consistency, assuming no intervening writes}
+	\label{fig:strong-consistency-timeline}
+	\begingroup
+	\setstretch{1}
+	\input{figures/strong-consistency-timeline.tex}
+	\endgroup
+	\figuresource{Author's illustration based on \textcite[85]{understanding-distributed-systems} and \textcite[324--328]{designing-data-intensive-applications}.}
+\end{illustration}
+\FloatBarrier
+
+The guarantee must cover the entire read path, including caches and database replicas.
+\parencite[Section~10.3.1]{understanding-distributed-systems}
+
+\newpage
+\subsection{CAP theorem and offline availability}
+
+In the local-first version, Alice saves \enquote{Review} locally on her laptop while Bob's phone is disconnected.
+Bob's phone still holds \enquote{Draft}.
+Bob's phone can answer the read using its local copy, but that copy does not include Alice's completed write.
+Obtaining the current shared value requires communication, so the read cannot complete independently offline.
+This is the trade-off illustrated through a partitioned key-value store by \textcite[Chapter~6]{system-design-interview}.
+The \emph{CAP theorem} makes the limitation precise, using the following terms:
+\begin{itemize}
+	\item \emph{Consistency (C)} means strong consistency as defined above: operations behave as if performed on one copy, respecting real-time order.
+	\item \emph{Availability (A)} requires every request received by a non-failing node to eventually return a valid operation result.
+	\item \emph{Partition tolerance (P)} requires the guarantees to hold even when communication between parts of the system fails.
+\end{itemize}
+The CAP theorem states that during a network partition, a system cannot guarantee both strong consistency and availability.
+Preserving strong consistency may require delaying or rejecting operations.
+Keeping operations available on both sides of the partition instead means accepting that reads may return outdated values.
+Weaker guarantees, such as eventual consistency, remain possible.
+\parencites[336--338]{designing-data-intensive-applications}[Section~10.3.4]{understanding-distributed-systems}
+
+Local-first applications favour availability during disconnection, whereas server-centred applications can require coordination to preserve strong consistency.
+Neither architecture automatically determines the system's CAP guarantees.
+Even after communication resumes, synchronization takes time; \emph{eventual} does not specify a maximum delay.
+\parencite[Section~10.3]{understanding-distributed-systems}
+
+\subsection{Eventual and strong eventual consistency}
+
+Replicas may temporarily hold different data and still converge as updates are exchanged.
+Eventual consistency describes this guarantee in both server-centred and local-first applications.
+
+\textcite[Section~2.2, Definition~2]{conflict-free-replicated-data-types} define \emph{eventual consistency} through three properties:
+\begin{itemize}
+	\item \emph{Eventual delivery}: an update delivered at one correct replica eventually reaches all correct replicas.
+	\item \emph{Convergence}: correct replicas that have delivered the same updates eventually reach equivalent state.
+	\item \emph{Termination}: all method executions terminate.
+\end{itemize}
+A correct replica is one that has not crashed, and equivalent states return the same results to queries.
+
+\pagebreak
+\emph{Strong eventual consistency} (SEC) strengthens the convergence requirement as follows \parencite[Section~2.2, Definition~3]{conflict-free-replicated-data-types}:
+\begin{quote}
+	Correct replicas that have delivered the same updates have equivalent state.
+\end{quote}
+
+Replicas have equivalent states as soon as they have delivered the same updates, without further reconciliation.
+Here, the word \emph{strong} refers to convergence; SEC does not provide the freshness guarantee of the strong consistency model.
+Replicas can still hold different states while each has updates the other has not received.
+
+Figure~\ref{fig:eventual-consistency-convergence} compares the guarantees after both replicas have delivered the same updates, assuming no further updates arrive.
+Temporary disagreement is permitted under EC, but is not required.
+
+\begin{illustration}[htbp]
+	\centering
+	\caption{Convergence after two correct replicas have delivered the same updates}
+	\label{fig:eventual-consistency-convergence}
+	\begingroup
+	\setstretch{1}
+	\input{figures/eventual-consistency-convergence.tex}
+	\endgroup
+	\figuresource{Author's illustration based on \textcite[Section~2.2, Definitions~2--3]{conflict-free-replicated-data-types}.}
+\end{illustration}
+\FloatBarrier
+
+Local-first applications allow disconnected devices to accept changes independently.
+Synchronization must reconcile these changes when the devices reconnect.
+\parencite[Chapter~5]{designing-data-intensive-applications}
+
+CRDTs provide sufficient conditions for SEC through their update and merge rules, assuming eventual delivery and termination.
+This makes SEC particularly useful for local-first software: independently editable replicas can agree once they have received the same updates, without requiring server approval for each edit.
+\parencite[Section~2.3, Theorem~1]{conflict-free-replicated-data-types}
+
+Local-first architecture alone does not guarantee SEC.
+Convergence also does not ensure that the merged result preserves every user's intention or every business rule.
+\parencite[Section~11.2]{understanding-distributed-systems}

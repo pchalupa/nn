@@ -17,7 +17,11 @@ function createList() {
 describe("RGA", () => {
 	it("merges an equal list of 1,000 items", async ({ bench }) => {
 		const list = createList();
-		const remote = list.map((item) => new LWWRegister(item.current, item.key, item.timestamp));
+		const remote = new RGA(
+			list.current.map((item) => new LWWRegister(item.current, item.key, item.timestamp)),
+			list.key,
+			list.tombstones,
+		);
 
 		await bench("list.merge(remote)", () => list.merge(remote)).run(options);
 	});

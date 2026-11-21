@@ -17,6 +17,6 @@ export interface Strategy {
 	create(value: unknown, key: string, timestamp?: Time): Entity;
 	/** Applies a draft or plain value to an existing entity, changing only what differs */
 	reconcile(entity: Entity, value: unknown, context: ReconcileContext): void;
-	/** Adapts a decoded remote entity to the schema before it's merged */
-	conform(remote: Entity): Entity;
+	/** Adapts a decoded remote entity to the schema before it's merged, or returns `undefined` when its kind doesn't fit */
+	conform(remote: Entity): Entity | undefined;
 }

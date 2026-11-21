@@ -23,7 +23,7 @@ export class RegisterStrategy implements Strategy {
 		}
 	}
 
-	public conform(remote: Entity): Entity {
-		return remote;
+	public conform(remote: Entity): Entity | undefined {
+		if (LWWRegister.is(remote)) return remote;
 	}
 }

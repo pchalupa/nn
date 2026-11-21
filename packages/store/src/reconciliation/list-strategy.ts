@@ -80,10 +80,19 @@ export class ListStrategy implements Strategy {
 		}
 	}
 
-	public conform(remote: Entity): Entity {
-		if (RGA.is(remote)) return remote.map((item) => this.items.conform(item));
+	/** Drops items whose kind doesn't fit the item schema */
+	public conform(remote: Entity): Entity | undefined {
+		if (!RGA.is(remote)) return undefined;
 
-		return remote;
+		const items: Entity[] = [];
+
+		for (const item of remote) {
+			const conformed = this.items.conform(item);
+
+			if (conformed) items.push(conformed);
+		}
+
+		return new RGA(items, remote.key, remote.tombstones);
 	}
 
 	private match(list: RGA<Entity>, value: readonly unknown[], context: ReconcileContext): Array<Entity | undefined> {
@@ -105,6 +114,6 @@ export class ListStrategy implements Strategy {
 	private find(list: RGA<Entity>, item: object, context: ReconcileContext): Entity | undefined {
 		const previous = context.identify(item) ?? (Entity.is(item) ? item : undefined);
 
-		return previous !== undefined && list.find(previous.key) === previous ? previous : undefined;
+		return previous !== undefined && list.get(previous.key) === previous ? previous : undefined;
 	}
 }

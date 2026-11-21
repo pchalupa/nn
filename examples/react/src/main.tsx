@@ -1,4 +1,5 @@
 import { Devtools } from "@nn/react-devtools";
+import { Theme } from "@radix-ui/themes";
 import { createRouter, RouterProvider } from "@tanstack/react-router";
 import { StrictMode } from "react";
 import ReactDOM from "react-dom/client";
@@ -25,7 +26,9 @@ const router = createRouter({
 root.render(
 	<StrictMode>
 		<I18nextProvider i18n={i18n}>
-			<RouterProvider router={router} />
+			<Theme appearance="dark" accentColor="violet" grayColor="gray">
+				<RouterProvider router={router} />
+			</Theme>
 		</I18nextProvider>
 		<Devtools store={store} />
 	</StrictMode>,

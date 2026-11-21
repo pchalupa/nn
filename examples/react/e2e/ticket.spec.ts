@@ -1,10 +1,10 @@
-import { expect, type Page, test } from "./fixtures";
+import { choose, expect, type Page, test } from "./fixtures";
 
 const columnCards = (page: Page, column: string) =>
-	page.locator("section", { has: page.locator("h3", { hasText: column }) }).locator("article");
+	page.getByRole("list", { name: column, includeHidden: true }).getByRole("listitem", { includeHidden: true });
 
 const addTicket = async (page: Page) => {
-	const dialog = page.locator("dialog");
+	const dialog = page.getByRole("dialog");
 
 	await page.goto("/");
 	await page.getByRole("button", { name: "Create" }).click();
@@ -20,24 +20,24 @@ test.describe("Create ticket", () => {
 		await page.goto("/");
 		await page.getByRole("button", { name: "Create" }).click();
 
-		const dialog = page.locator("dialog");
+		const dialog = page.getByRole("dialog");
 
 		await expect(dialog).toBeVisible();
 		await expect(dialog.getByRole("textbox", { name: "Title" })).toHaveValue("");
-		await expect(dialog.getByRole("combobox", { name: "Status" })).toHaveValue("todo");
-		await expect(dialog.getByRole("combobox", { name: "Assignee" })).toHaveValue("");
+		await expect(dialog.getByRole("combobox", { name: "Status" })).toHaveText("To Do");
+		await expect(dialog.getByRole("combobox", { name: "Assignee" })).toHaveText("Unassigned");
 	});
 
 	test("should create a ticket with every field after saving", async ({ page }) => {
 		await page.goto("/");
 		await page.getByRole("button", { name: "Create" }).click();
 
-		const dialog = page.locator("dialog");
+		const dialog = page.getByRole("dialog");
 
 		await dialog.getByRole("textbox", { name: "Title" }).fill("Created");
 		await dialog.getByRole("textbox", { name: "Description" }).fill("Line one");
-		await dialog.getByRole("combobox", { name: "Status" }).selectOption("in-progress");
-		await dialog.getByRole("combobox", { name: "Assignee" }).selectOption({ label: "Jan Novak" });
+		await choose(dialog.getByRole("combobox", { name: "Status" }), "In Progress");
+		await choose(dialog.getByRole("combobox", { name: "Assignee" }), "Jan Novak");
 
 		await expect(columnCards(page, "In Progress")).toHaveCount(0);
 
@@ -56,33 +56,33 @@ test.describe("Create ticket", () => {
 		await page.goto("/");
 		await page.getByRole("button", { name: "Create" }).click();
 
-		const dialog = page.locator("dialog");
+		const dialog = page.getByRole("dialog");
 
 		await dialog.getByRole("textbox", { name: "Title" }).fill("Discarded");
 		await page.keyboard.press("Escape");
 
 		await expect(dialog).toBeHidden();
-		await expect(page.locator("article")).toHaveCount(0);
+		await expect(page.locator("li")).toHaveCount(0);
 	});
 
 	test("should not create a ticket without a title", async ({ page }) => {
 		await page.goto("/");
 		await page.getByRole("button", { name: "Create" }).click();
 
-		const dialog = page.locator("dialog");
+		const dialog = page.getByRole("dialog");
 
 		await dialog.getByRole("button", { name: "Save" }).click();
 
 		await expect(dialog.getByRole("textbox", { name: "Title" })).toBeFocused();
 		await expect(dialog).toBeVisible();
-		await expect(page.locator("article")).toHaveCount(0);
+		await expect(page.locator("li")).toHaveCount(0);
 	});
 
 	test("should create a ticket from the backlog", async ({ page }) => {
 		await page.goto("/backlog");
 		await page.getByRole("button", { name: "Create" }).click();
 
-		const dialog = page.locator("dialog");
+		const dialog = page.getByRole("dialog");
 
 		await dialog.getByRole("textbox", { name: "Title" }).fill("Backlog ticket");
 		await dialog.getByRole("button", { name: "Save" }).click();
@@ -155,7 +155,7 @@ test.describe("TicketModal", () => {
 	test("should create a ticket from an unknown ticket", async ({ page }) => {
 		await page.goto("/tickets/missing");
 
-		const dialog = page.locator("dialog");
+		const dialog = page.getByRole("dialog");
 
 		await expect(dialog.getByRole("textbox", { name: "Title" })).toHaveValue("");
 
@@ -206,8 +206,8 @@ test.describe("TicketModal editing", () => {
 
 		await dialog.getByRole("textbox", { name: "Title" }).fill("Renamed");
 		await dialog.getByRole("textbox", { name: "Description" }).fill("Line one");
-		await dialog.getByRole("combobox", { name: "Status" }).selectOption("done");
-		await dialog.getByRole("combobox", { name: "Assignee" }).selectOption({ label: "Jan Novak" });
+		await choose(dialog.getByRole("combobox", { name: "Status" }), "Done");
+		await choose(dialog.getByRole("combobox", { name: "Assignee" }), "Jan Novak");
 
 		await expect(columnCards(page, "To Do")).toHaveCount(1);
 
@@ -251,7 +251,7 @@ test.describe("TicketModal deleting", () => {
 		await page.goto("/");
 		await page.getByRole("button", { name: "Create" }).click();
 
-		await expect(page.locator("dialog").getByRole("button", { name: "Delete" })).toHaveCount(0);
+		await expect(page.getByRole("dialog").getByRole("button", { name: "Delete" })).toHaveCount(0);
 	});
 
 	test("should delete the ticket and close", async ({ page }) => {

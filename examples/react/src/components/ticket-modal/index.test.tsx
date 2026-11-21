@@ -1,3 +1,4 @@
+import { Theme } from "@radix-ui/themes";
 import { act, render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { type ReactNode, Suspense, useEffect } from "react";
@@ -55,12 +56,14 @@ describe("TicketModal", () => {
 	const user = userEvent.setup();
 
 	beforeAll(() => {
-		HTMLDialogElement.prototype.showModal = function showModal(this: HTMLDialogElement) {
-			this.open = true;
-		};
-		HTMLDialogElement.prototype.close = function close(this: HTMLDialogElement) {
-			this.open = false;
-			this.dispatchEvent(new Event("close"));
+		Element.prototype.hasPointerCapture = () => false;
+		Element.prototype.scrollIntoView = () => {};
+		globalThis.ResizeObserver = class {
+			public observe() {}
+
+			public unobserve() {}
+
+			public disconnect() {}
 		};
 	});
 
@@ -70,11 +73,13 @@ describe("TicketModal", () => {
 		await act(async () =>
 			render(
 				<I18nextProvider i18n={i18n}>
-					<Suspense fallback="fallback">
-						<TicketModal id={id} onClose={onClose} />
-						<Titles />
-						{children}
-					</Suspense>
+					<Theme>
+						<Suspense fallback="fallback">
+							<TicketModal id={id} onClose={onClose} />
+							<Titles />
+							{children}
+						</Suspense>
+					</Theme>
 				</I18nextProvider>,
 			),
 		);
@@ -85,10 +90,10 @@ describe("TicketModal", () => {
 	it("opens with an empty form", async () => {
 		const { dialog } = await setup();
 
-		expect(dialog).toHaveProperty("open", true);
+		expect(dialog).toBeDefined();
 		expect(screen.getByRole("textbox", { name: "Title" })).toHaveProperty("value", "");
-		expect(screen.getByRole("combobox", { name: "Status" })).toHaveProperty("value", "todo");
-		expect(screen.getByRole("combobox", { name: "Assignee" })).toHaveProperty("value", "");
+		expect(screen.getByRole("combobox", { name: "Status" }).textContent).toBe("To Do");
+		expect(screen.getByRole("combobox", { name: "Assignee" }).textContent).toBe("Unassigned");
 	});
 
 	it("assigns a user from the dropdown", async () => {
@@ -100,11 +105,11 @@ describe("TicketModal", () => {
 		);
 
 		await user.type(screen.getByRole("textbox", { name: "Title" }), "Assigned");
-		await screen.findByRole("option", { name: "Ann" });
-		await user.selectOptions(screen.getByRole("combobox", { name: "Assignee" }), "Ann");
+		await user.click(screen.getByRole("combobox", { name: "Assignee" }));
+		await user.click(await screen.findByRole("option", { name: "Ann" }));
 		await user.click(screen.getByRole("button", { name: "Save" }));
 
-		expect(screen.getByRole("status", { name: "assignees" }).textContent).toContain("ann");
+		expect(screen.getByRole("status", { name: "assignees", hidden: true }).textContent).toContain("ann");
 	});
 
 	it("creates a ticket and closes on save", async () => {
@@ -113,18 +118,18 @@ describe("TicketModal", () => {
 		await user.type(screen.getByRole("textbox", { name: "Title" }), "  Created  ");
 		await user.click(screen.getByRole("button", { name: "Save" }));
 
-		expect(screen.getByRole("status", { name: "titles" }).textContent).toContain("Created");
+		expect(screen.getByRole("status", { name: "titles", hidden: true }).textContent).toContain("Created");
 		expect(onClose).toHaveBeenCalledOnce();
 	});
 
 	it("does not create a ticket without a title", async () => {
 		const { onClose, dialog } = await setup();
-		const before = screen.getByRole("status", { name: "titles" }).textContent;
+		const before = screen.getByRole("status", { name: "titles", hidden: true }).textContent;
 
 		await user.click(screen.getByRole("button", { name: "Save" }));
 
-		expect(screen.getByRole("status", { name: "titles" }).textContent).toBe(before);
-		expect(dialog).toHaveProperty("open", true);
+		expect(screen.getByRole("status", { name: "titles", hidden: true }).textContent).toBe(before);
+		expect(dialog.isConnected).toBe(true);
 		expect(onClose).not.toHaveBeenCalled();
 	});
 
@@ -139,7 +144,7 @@ describe("TicketModal", () => {
 
 		await user.click(await screen.findByRole("button", { name: "Delete" }));
 
-		expect(screen.getByRole("status", { name: "titles" }).textContent).not.toContain("Commented");
+		expect(screen.getByRole("status", { name: "titles", hidden: true }).textContent).not.toContain("Commented");
 		expect(onClose).toHaveBeenCalledOnce();
 	});
 

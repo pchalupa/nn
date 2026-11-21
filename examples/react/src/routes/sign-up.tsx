@@ -1,10 +1,9 @@
-import { createFileRoute, Link, redirect, useNavigate } from "@tanstack/react-router";
+import { Button, Card, Flex, Heading, Link, Separator, Text, TextField } from "@radix-ui/themes";
+import { createFileRoute, Link as RouterLink, redirect, useNavigate } from "@tanstack/react-router";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 
-import { classNames } from "../components/button/index.styles";
-import { Divider } from "../components/divider";
-import { Input } from "../components/input";
+import { Field } from "../components/field";
 import { signUp } from "../modules/authentication/authentication";
 import { authenticated } from "../modules/authentication/session";
 import { useMutation } from "../store";
@@ -29,21 +28,33 @@ const SignUp = () => {
 	});
 
 	return (
-		<main className="flex min-h-screen flex-1 items-center justify-center">
-			<div className="flex w-80 flex-col gap-y-4 rounded bg-zinc-800 p-6">
-				<h1 className="text-center text-xl font-bold text-zinc-200">{t("welcome")}</h1>
-				<form className="flex flex-col gap-y-3" noValidate onSubmit={handleSubmit}>
-					<Input label={t("name")} autoComplete="name" {...form.register("name")} />
-					<button type="submit" className={classNames()} disabled={form.formState.isSubmitting}>
-						{t("signUp")}
-					</button>
-				</form>
-				<Divider />
-				<Link to="/sign-in" className="text-center text-sm text-zinc-400 hover:text-zinc-200">
-					{t("signIn")}
-				</Link>
-			</div>
-		</main>
+		<Flex asChild flexGrow="1" align="center" justify="center">
+			<main>
+				<Card size="3">
+					<Flex direction="column" gap="4" width="280px">
+						<Heading as="h1" size="5" align="center">
+							{t("welcome")}
+						</Heading>
+						<form noValidate onSubmit={handleSubmit}>
+							<Flex direction="column" gap="3">
+								<Field label={t("name")}>
+									<TextField.Root autoComplete="name" {...form.register("name")} />
+								</Field>
+								<Button type="submit" disabled={form.formState.isSubmitting}>
+									{t("signUp")}
+								</Button>
+							</Flex>
+						</form>
+						<Separator size="4" />
+						<Text as="p" size="2" align="center">
+							<Link asChild color="gray">
+								<RouterLink to="/sign-in">{t("signIn")}</RouterLink>
+							</Link>
+						</Text>
+					</Flex>
+				</Card>
+			</main>
+		</Flex>
 	);
 };
 

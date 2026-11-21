@@ -1,5 +1,4 @@
 import Babel from "@rolldown/plugin-babel";
-import TailwindCSS from "@tailwindcss/vite";
 import { tanstackRouter } from "@tanstack/router-plugin/vite";
 import { withRelatedProject } from "@vercel/related-projects";
 import React, { reactCompilerPreset } from "@vitejs/plugin-react";
@@ -19,7 +18,6 @@ export default defineConfig(({ mode }) => ({
 		tanstackRouter(),
 		React(),
 		Babel({ presets: [reactCompilerPreset({ target: "19" })] }),
-		TailwindCSS(),
 	],
 	oxc: {
 		target: "es2022",

@@ -31,7 +31,7 @@
 		"@changesets/cli": "^3.0.3",
 		"@cspell/dict-cs-cz": "^3.0.10",
 		"@stylistic/eslint-plugin": "^5.10.0",
-		"@vitest/coverage-v8": "catalog:",
+		"@vitest/coverage-v8": "^5.1.0",
 		"cspell": "^10.5.0",
 		"knip": "^6.45.1",
 		"oxfmt": "^0.78.0",

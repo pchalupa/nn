@@ -36,13 +36,13 @@
 		"test:watch": "vitest watch"
 	},
 	"dependencies": {
-		"@nn/guards": "workspace:^",
-		"@nn/store": "workspace:"
+		"@nn/guards": "workspace:^"
 	},
 	"devDependencies": {
 		"@nn/build-config": "workspace:^",
-		"@nn/schema": "workspace:",
-		"@nn/typescript-config": "workspace:",
+		"@nn/schema": "workspace:^",
+		"@nn/store": "workspace:^",
+		"@nn/typescript-config": "workspace:^",
 		"@testing-library/react": "^16.3.3",
 		"@types/react": "catalog:",
 		"@types/react-dom": "catalog:",

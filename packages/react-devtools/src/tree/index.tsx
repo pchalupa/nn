@@ -1,13 +1,13 @@
 import { isObject } from "@nn/guards/is-object";
-import type { Store } from "@nn/store";
 import type { ReactNode } from "react";
 
 import { useStore } from "../hooks/use-store";
+import type { Inspectable } from "../inspectable";
 import { css } from "../styles/css";
 import { TreeNode } from "./tree-node";
 
 export interface TreeProps {
-	store: Store;
+	store: Inspectable;
 }
 
 export function Tree({ store }: TreeProps): ReactNode {

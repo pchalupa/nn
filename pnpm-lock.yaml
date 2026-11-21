@@ -361,9 +361,6 @@ importers:
       react-i18next:
         specifier: ^18.0.2
         version: 18.0.2(@types/react@19.3.0)(i18next@27.2.1(typescript@7.0.2))(react@19.3.1)(typescript@7.0.2)
-      tailwind-variants:
-        specifier: ~4.0.2
-        version: 4.0.2
     devDependencies:
       '@babel/core':
         specifier: 'catalog:'
@@ -416,9 +413,6 @@ importers:
       jsdom:
         specifier: ^31.0.1
         version: 31.0.1
-      tailwindcss:
-        specifier: ~4.3.5
-        version: 4.3.5
       typescript:
         specifier: 'catalog:'
         version: 7.0.2
@@ -5916,13 +5910,6 @@ packages:
     resolution: {integrity: sha512-ot0WnXS9fgdkgIcePe6RHNk1WA8+muPa6cSjeR3V8K27q9BB1rTE3R1p7Hv0z1ZyAc8s6Vvv8DIyWf681MAt0w==}
     engines: {node: '>= 0.4'}
 
-  tailwind-variants@4.0.2:
-    resolution: {integrity: sha512-sZvOFkfe5LlYG/crRX5IvP3oUHmJPu+7WmrLQFvF0kCRq51C+lurlzFMm/jURG/5keT7VOJ/it0N3jkzYux85w==}
-    engines: {node: '>=16.9.x', pnpm: '>=7.x'}
-
-  tailwindcss@4.3.5:
-    resolution: {integrity: sha512-FcQk9BuffmEHJP2G0XmB2SplU1aLTI7j07Kunk+U74Ny+XiWOtzXz9aujFZ/avntw1e2cOv/3PkgzflQ7gX2vQ==}
-
   temp-dir@2.0.0:
     resolution: {integrity: sha512-aoBAniQmmwtcKp/7BzsH8Cxzv8OL736p7v1ihGb5e9DJ9kTwGWHrQrVB5+lfVDzfGrdRzXch+ig7LHaY1JTOrg==}
     engines: {node: '>=8'}
@@ -11369,10 +11356,6 @@ snapshots:
   strip-json-comments@5.0.3: {}
 
   supports-preserve-symlinks-flag@1.0.0: {}
-
-  tailwind-variants@4.0.2: {}
-
-  tailwindcss@4.3.5: {}
 
   temp-dir@2.0.0: {}
 

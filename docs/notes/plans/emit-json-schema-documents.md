@@ -51,7 +51,7 @@ Re-export the `JSONSchemaNode` type. A `./JSONSchema` subpath in `packages/schem
 
 ## Expected output
 
-For the schema in `apps/example-react/src/store.ts`:
+For the schema in `examples/react/src/store.ts`:
 
 ```json
 {
@@ -131,4 +131,4 @@ Assert whole documents with `toMatchInlineSnapshot`, the way `packages/store/src
 
 Then run `pnpm --filter @nn/schema ts:check` for a clean type signal. The root `pnpm ts:check` already fails on five pre-existing `Observable` errors in `@nn/store`, so it will not tell us much. Finish with `pnpm lint:check`, `pnpm format:check` and `pnpm spell:check`.
 
-For an end-to-end check, emit the schema from `apps/example-react/src/store.ts` and compare it with the document above. It exercises nesting, a reused titled schema (`user` appears in `users` and again as `ticket.assignee`), two arrays and descriptions in one go. Paste the result into a 2020-12 validator such as <https://www.jsonschemavalidator.net/> to confirm the document itself is well formed.
+For an end-to-end check, emit the schema from `examples/react/src/store.ts` and compare it with the document above. It exercises nesting, a reused titled schema (`user` appears in `users` and again as `ticket.assignee`), two arrays and descriptions in one go. Paste the result into a 2020-12 validator such as <https://www.jsonschemavalidator.net/> to confirm the document itself is well formed.

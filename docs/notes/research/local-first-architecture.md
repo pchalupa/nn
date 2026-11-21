@@ -746,7 +746,7 @@ These are patterns across the sources. Each one rests on the citations in §§1�
 
 ## 8. Where `@nn` sits, and the gaps this exposes
 
-Everything in this section was read from the working tree at `5031df0` (2026-11-09). Claims about the example server are about `apps/example-react/api/_server`, which is example code, not a published package.
+Everything in this section was read from the working tree at `5031df0` (2026-11-09). Claims about the example server are about `examples/react/api/_server`, which is example code, not a published package.
 
 ### 8.1 Layer mapping
 
@@ -834,7 +834,7 @@ None of the surveyed server-mediated systems have this property, for two differe
 
 **Multi-tab: every tab owns everything.**
 
-- The example wires `IndexDbSync`, `BroadcastSync` and `SseSync` into every tab ([`apps/example-react/src/store.ts`][nn-app-store]).
+- The example wires `IndexDbSync`, `BroadcastSync` and `SseSync` into every tab ([`examples/react/src/store.ts`][nn-app-store]).
 - Every tab therefore opens its own `EventSource`, pushes every field to the server on connect, and `put`s whole roots into the same IndexedDB keys.
 - The multi-tab lost-update window documented in [Persisting CRDT metadata](crdt-metadata-persistence.md) §4 is narrowed by `BroadcastSync`, because tabs merge each other's state and re-persist. It is not closed by a single owner.
 - This is the Replicache, Automerge Repo and Yjs pattern: every tab writes, and BroadcastChannel notifies (§5.3).
@@ -1011,11 +1011,11 @@ These were looked for and not found in a primary source, or found only in a seco
 [nn-idb]: ../../../packages/indexdb-sync/src/index-db.ts
 [nn-sse]: ../../../packages/sse-sync/src/sse-sync.ts
 [nn-bc]: ../../../packages/broadcast-sync/src/broadcast-sync.ts
-[nn-server]: ../../../apps/example-react/api/_server/routes/sync.ts
-[nn-memdb]: ../../../apps/example-react/api/_server/services/database/memory-database.ts
-[nn-redisdb]: ../../../apps/example-react/api/_server/services/database/redis-database.ts
-[nn-app-store]: ../../../apps/example-react/src/store.ts
-[nn-vite]: ../../../apps/example-react/vite.config.ts
+[nn-server]: ../../../examples/react/api/_server/routes/sync.ts
+[nn-memdb]: ../../../examples/react/api/_server/services/database/memory-database.ts
+[nn-redisdb]: ../../../examples/react/api/_server/services/database/redis-database.ts
+[nn-app-store]: ../../../examples/react/src/store.ts
+[nn-vite]: ../../../examples/react/vite.config.ts
 [nn-resources]: ../Resources.md
 [adr14]: ../../decisions/ADR-14-ship-indexeddb-persistence-as-one-sync-engine.md
 [adr15]: ../../decisions/ADR-15-stream-remote-changes-over-server-sent-events.md

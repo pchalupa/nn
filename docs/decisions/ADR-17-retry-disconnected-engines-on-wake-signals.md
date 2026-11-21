@@ -27,7 +27,7 @@ We will let a session leave `disconnected` with a new `retry` event. Engines don
 
 [`SseSync`](../../packages/sse-sync/src/sse-sync.ts) calls `session.drop()` when the browser closes the stream for good, and waits there. It references no browser globals, uses no timer, and doesn't watch the store.
 
-An app that wants to recover calls `sync.session.retry()` itself. The [example app](../../apps/example-react/src/store.ts) calls it when the store changes, on `online`, and when the tab becomes visible. While the engine is connecting or connected, the transition table ignores those calls. `session` stays public, as the code has had it since ADR-16 landed. ADR-16 says it is protected; the code is right and that text is stale.
+An app that wants to recover calls `sync.session.retry()` itself. The [example app](../../examples/react/src/store.ts) calls it when the store changes, on `online`, and when the tab becomes visible. While the engine is connecting or connected, the transition table ignores those calls. `session` stays public, as the code has had it since ADR-16 landed. ADR-16 says it is protected; the code is right and that text is stale.
 
 ## Alternatives considered
 

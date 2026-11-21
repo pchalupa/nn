@@ -110,12 +110,11 @@ describe("MapStrategy", () => {
 			expect(count.timestamp.toString()).toBe(Time.epoch().toString());
 		});
 
-		it("carries over fields the schema does not declare", () => {
-			const extra = new LWWRegister(true, "extra", Time.now());
-			const entity = strategy.conform(new LWWMap({ extra }, "item"));
+		it("drops fields the schema does not declare", () => {
+			const entity = strategy.conform(new LWWMap({ extra: new LWWRegister(true, "extra", Time.now()) }, "item"));
 
 			LWWMap.assert(entity);
-			expect(entity.get("extra")).toBe(extra);
+			expect(entity.get("extra")).toBeUndefined();
 		});
 
 		it("completes nested items", () => {
@@ -139,19 +138,42 @@ describe("MapStrategy", () => {
 			const comments = entity.get("comments");
 
 			assert(RGA.is(comments));
-			const comment = comments.find("c1");
+			const comment = comments.get("c1");
 
 			assert(LWWMap.is(comment));
 			expect(comment.get("body")?.current).toBe("");
 		});
 
-		it("returns an entity of another kind unchanged", () => {
-			const register = new LWWRegister("A", "item", Time.now());
-
-			expect(strategy.conform(register)).toBe(register);
+		it("returns undefined for another kind", () => {
+			expect(strategy.conform(new LWWRegister("A", "item", Time.now()))).toBeUndefined();
 		});
 
-		it("carries over undeclared fields inside a nested object", () => {
+		it("replaces a nested field of another kind", () => {
+			const nested = new MapStrategy(
+				new Map<string, Strategy>([
+					["title", new RegisterStrategy("")],
+					["comments", new ListStrategy(new MapStrategy(new Map([["body", new RegisterStrategy("")]])))],
+				]),
+			);
+			const entity = nested.conform(
+				new LWWMap(
+					{
+						title: new LWWRegister("A", "title", Time.now()),
+						comments: new LWWRegister("none", "comments", Time.now()),
+					},
+					"item",
+				),
+			);
+
+			LWWMap.assert(entity);
+			const comments = entity.get("comments");
+
+			RGA.assert(comments);
+			expect(comments.size).toBe(0);
+			expect(entity.get("title")?.current).toBe("A");
+		});
+
+		it("drops undeclared fields inside a nested object", () => {
 			const withAssignee = new MapStrategy(
 				new Map<string, Strategy>([["assignee", new MapStrategy(new Map([["name", new RegisterStrategy("")]]))]]),
 			);
@@ -168,15 +190,18 @@ describe("MapStrategy", () => {
 
 			LWWMap.assert(assignee);
 			expect(assignee.get("name")?.current).toBe("Ann");
-			expect(assignee.get("email")).toBe(email);
+			expect(assignee.get("email")).toBeUndefined();
 		});
 
-		it("carries over a declared field of another kind unchanged", () => {
-			const count = new LWWMap({}, "count");
-			const entity = strategy.conform(new LWWMap({ count }, "item"));
+		it("replaces a declared field of another kind with an epoch default", () => {
+			const entity = strategy.conform(new LWWMap({ count: new LWWMap({}, "count") }, "item"));
 
 			assert(LWWMap.is(entity));
-			expect(entity.get("count")).toBe(count);
+			const count = entity.get("count");
+
+			LWWRegister.assert(count);
+			expect(count.current).toBe(0);
+			expect(count.timestamp.toString()).toBe(Time.epoch().toString());
 		});
 
 		it("looks up a declared field strategy", () => {

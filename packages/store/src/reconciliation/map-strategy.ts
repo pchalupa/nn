@@ -45,25 +45,22 @@ export class MapStrategy implements Strategy {
 		}
 	}
 
-	/** Adds missing schema fields with defaults stamped `Time.epoch()`, so they never win over real values */
-	public conform(remote: Entity): Entity {
+	/**
+	 * Keeps only declared fields, filling missing ones and replacing ones of another kind.
+	 */
+	public conform(remote: Entity): Entity | undefined {
 		if (LWWMap.is(remote)) {
-			const fields: Record<string, Entity> = { ...remote.current };
+			const fields: Record<string, Entity> = {};
 
 			for (const [name, strategy] of this.fields) {
 				const remoteField = remote.get(name);
+				const conformed = remoteField ? strategy.conform(remoteField) : undefined;
 
-				if (remoteField === undefined) {
-					fields[name] = strategy.create(undefined, name, Time.epoch());
-				} else {
-					fields[name] = strategy.conform(remoteField);
-				}
+				fields[name] = conformed ?? strategy.create(undefined, name, Time.epoch());
 			}
 
 			return new LWWMap(fields, remote.key);
 		}
-
-		return remote;
 	}
 
 	public get(name: string): Strategy | undefined {

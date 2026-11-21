@@ -14,7 +14,9 @@ npm install @nn/store @nn/schema
 import { array, object, string } from "@nn/schema";
 import { Store } from "@nn/store";
 
-const store = new Store(object({ todos: array(object({ id: string(), title: string() })) }));
+const store = new Store(
+	object({ todos: array(object({ id: string(), title: string() })) }),
+);
 
 store.mutate((draft) => {
 	draft.todos.push({ id: "1", title: "Write README" });
@@ -45,10 +47,12 @@ Each store that uses the same schema is a replica. `encode()` returns the whole 
 const fromFirst = first.encode().data;
 const fromSecond = second.encode().data;
 
-for (const [name, entry] of Object.entries(fromSecond)) first.merge(name, entry);
-for (const [name, entry] of Object.entries(fromFirst)) second.merge(name, entry);
+for (const [name, entry] of Object.entries(fromSecond))
+	first.merge(name, entry);
+for (const [name, entry] of Object.entries(fromFirst))
+	second.merge(name, entry);
 ```
 
-When both replicas write the same value, the later write wins. Arrays merge as a union keyed by item. An item one replica added appears on both, but an item one replica removed comes back when a replica that still holds it merges, and the order of items can differ between replicas.
+When both replicas write the same value, the later write wins. Arrays merge as a union keyed by item. An item one replica added appears on both, but an item one replica removed comes back when a replica that still holds it merges, and the order of items can differ between replicas. When replicas use different schemas, fields the local schema doesn't declare are dropped, a value that changed between an object, an array and a single value keeps its local value, and array items that changed the same way are skipped.
 
 To keep a store in sync continuously, use a sync engine such as [`@nn/broadcast-sync`](https://github.com/pchalupa/nn/tree/main/packages/broadcast-sync) or [`@nn/sse-sync`](https://github.com/pchalupa/nn/tree/main/packages/sse-sync), or extend [`@nn/sync-engine`](https://github.com/pchalupa/nn/tree/main/packages/sync-engine).

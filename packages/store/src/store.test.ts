@@ -601,7 +601,7 @@ describe("Store", () => {
 
 		it("reconciles only the edited item after scanning the collection", () => {
 			const store = setup();
-			const lookups = vi.spyOn(RGA.prototype, "find");
+			const lookups = vi.spyOn(RGA.prototype, "get");
 
 			store.mutate((draft) => {
 				const found = draft.tickets.find((item) => item.title === "First");
@@ -1107,7 +1107,7 @@ describe("Store", () => {
 				]);
 			});
 
-			it("keeps fields the schema does not declare on a new item", () => {
+			it("drops fields the schema does not declare on a new item", () => {
 				const newer = new Store(
 					object({ tickets: array(object({ title: string(), comments: array(comment), priority: number() })) }),
 				);
@@ -1118,9 +1118,7 @@ describe("Store", () => {
 				});
 				store.merge("tickets", newer.encode().data.tickets);
 
-				expect(store.encode()).toMatchObject({
-					data: { tickets: { data: [{ data: { priority: { data: 2 } } }] } },
-				});
+				expect(store.query((state) => state).tickets).toStrictEqual([{ title: "New", comments: [] }]);
 			});
 
 			it("keeps every item when a nested field changed kind", () => {
@@ -1132,7 +1130,10 @@ describe("Store", () => {
 				});
 				store.merge("tickets", older.encode().data.tickets);
 
-				expect(store.query((state) => state).tickets.map(({ title }) => title)).toStrictEqual(["First", "Second"]);
+				expect(store.query((state) => state).tickets).toStrictEqual([
+					{ title: "First", comments: [] },
+					{ title: "Second", comments: [] },
+				]);
 			});
 
 			it("keeps local values when an older copy of the same item arrives", () => {
@@ -1150,6 +1151,94 @@ describe("Store", () => {
 				expect(store.query((state) => state).tickets).toStrictEqual([
 					{ title: "New", comments: [{ body: "Hi", author: "Ann" }] },
 				]);
+			});
+		});
+
+		describe("merging an entry of another kind", () => {
+			const setupLocalItem = () => {
+				const store = new Store(assignedSchema);
+				const item = createReconciliationStrategy(assignedTicket).create(
+					{ title: "Local", assignee: { name: "Ann" } },
+					"t1",
+				);
+
+				store.merge("tickets", new RGA([item], "tickets").encode());
+
+				return store;
+			};
+
+			it.each([
+				{ name: "language", entity: new LWWMap({}, "language") },
+				{ name: "tickets", entity: new LWWRegister("oops", "tickets", Time.now()) },
+			])("ignores a root entry $name of another kind", ({ name, entity }) => {
+				const store = setup();
+				const before = store.query((state) => state);
+				const listener = listen(store);
+
+				expect(() => store.merge(name, entity.encode())).not.toThrow();
+				expect(store.query((state) => state)).toBe(before);
+				expect(listener).not.toHaveBeenCalled();
+			});
+
+			it("merges an item whose undeclared field changed kind", () => {
+				const store = new Store(object({ tickets: array(object({ title: string(), note: string() })) }));
+				const listener = listen(store);
+				const first = new LWWMap(
+					{
+						title: new LWWRegister("A", "title", Time.now()),
+						note: new LWWRegister("n", "note", Time.now()),
+						extra: new LWWRegister("x", "extra", Time.now()),
+					},
+					"t1",
+				);
+				const second = new LWWMap(
+					{
+						title: new LWWRegister("B", "title", Time.now()),
+						note: new LWWRegister("m", "note", Time.now()),
+						extra: new LWWMap({}, "extra"),
+					},
+					"t1",
+				);
+
+				store.merge("tickets", new RGA([first], "tickets").encode());
+
+				expect(() => store.merge("tickets", new RGA([second], "tickets").encode())).not.toThrow();
+				expect(store.query((state) => state).tickets).toStrictEqual([{ title: "B", note: "m" }]);
+				expect(listener).toHaveBeenCalledTimes(2);
+			});
+
+			it("drops new list items of another kind", () => {
+				const store = new Store(assignedSchema);
+
+				store.merge("tickets", new RGA([new LWWRegister("oops", "r1", Time.now())], "tickets").encode());
+
+				expect(store.query((state) => state).tickets).toStrictEqual([]);
+			});
+
+			it("keeps a local item when a remote copy of it has another kind", () => {
+				const store = setupLocalItem();
+
+				expect(() =>
+					store.merge("tickets", new RGA([new LWWRegister("oops", "t1", Time.now())], "tickets").encode()),
+				).not.toThrow();
+				expect(store.query((state) => state).tickets).toStrictEqual([{ title: "Local", assignee: { name: "Ann" } }]);
+			});
+
+			it("merges the other fields of an item whose field changed kind", () => {
+				const store = setupLocalItem();
+				const listener = listen(store);
+				const remote = new LWWMap(
+					{
+						title: new LWWRegister("Renamed", "title", Time.now()),
+						assignee: new LWWRegister("Cy", "assignee", Time.now()),
+					},
+					"t1",
+				);
+
+				store.merge("tickets", new RGA([remote], "tickets").encode());
+
+				expect(store.query((state) => state).tickets).toStrictEqual([{ title: "Renamed", assignee: { name: "Ann" } }]);
+				expect(listener).toHaveBeenCalledOnce();
 			});
 		});
 	});

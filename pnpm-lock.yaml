@@ -371,9 +371,6 @@ importers:
       '@hono/node-server':
         specifier: ^2.1.9
         version: 2.1.9(hono@4.13.19)
-      '@nn/schema':
-        specifier: workspace:^
-        version: link:../../packages/schema
       '@playwright/test':
         specifier: ^1.65.1
         version: 1.65.1

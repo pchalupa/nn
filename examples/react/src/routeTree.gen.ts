@@ -13,10 +13,9 @@ import { Route as AppRouteImport } from './routes/_app'
 import { Route as SignInRouteImport } from './routes/sign-in'
 import { Route as SignUpRouteImport } from './routes/sign-up'
 import { Route as AppBoardRouteImport } from './routes/_app/_board'
-import { Route as AppBacklogRouteImport } from './routes/_app/backlog'
+import { Route as AppProfileRouteImport } from './routes/_app/profile'
 import { Route as AppBoardIndexRouteImport } from './routes/_app/_board.index'
 import { Route as AppBoardTicketsTicketIdRouteImport } from './routes/_app/_board.tickets.$ticketId'
-import { Route as AppBacklogTicketsTicketIdRouteImport } from './routes/_app/backlog.tickets.$ticketId'
 
 const AppRoute = AppRouteImport.update({
   id: '/_app',
@@ -36,9 +35,9 @@ const AppBoardRoute = AppBoardRouteImport.update({
   id: '/_board',
   getParentRoute: () => AppRoute,
 } as any)
-const AppBacklogRoute = AppBacklogRouteImport.update({
-  id: '/backlog',
-  path: '/backlog',
+const AppProfileRoute = AppProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
   getParentRoute: () => AppRoute,
 } as any)
 const AppBoardIndexRoute = AppBoardIndexRouteImport.update({
@@ -51,28 +50,20 @@ const AppBoardTicketsTicketIdRoute = AppBoardTicketsTicketIdRouteImport.update({
   path: '/tickets/$ticketId',
   getParentRoute: () => AppBoardRoute,
 } as any)
-const AppBacklogTicketsTicketIdRoute =
-  AppBacklogTicketsTicketIdRouteImport.update({
-    id: '/tickets/$ticketId',
-    path: '/tickets/$ticketId',
-    getParentRoute: () => AppBacklogRoute,
-  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof AppBoardIndexRoute
   '/sign-in': typeof SignInRoute
   '/sign-up': typeof SignUpRoute
-  '/backlog': typeof AppBacklogRouteWithChildren
+  '/profile': typeof AppProfileRoute
   '/tickets/$ticketId': typeof AppBoardTicketsTicketIdRoute
-  '/backlog/tickets/$ticketId': typeof AppBacklogTicketsTicketIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof AppBoardIndexRoute
   '/sign-in': typeof SignInRoute
   '/sign-up': typeof SignUpRoute
-  '/backlog': typeof AppBacklogRouteWithChildren
+  '/profile': typeof AppProfileRoute
   '/tickets/$ticketId': typeof AppBoardTicketsTicketIdRoute
-  '/backlog/tickets/$ticketId': typeof AppBacklogTicketsTicketIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -80,38 +71,24 @@ export interface FileRoutesById {
   '/sign-in': typeof SignInRoute
   '/sign-up': typeof SignUpRoute
   '/_app/_board': typeof AppBoardRouteWithChildren
-  '/_app/backlog': typeof AppBacklogRouteWithChildren
+  '/_app/profile': typeof AppProfileRoute
   '/_app/_board/': typeof AppBoardIndexRoute
   '/_app/_board/tickets/$ticketId': typeof AppBoardTicketsTicketIdRoute
-  '/_app/backlog/tickets/$ticketId': typeof AppBacklogTicketsTicketIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths:
-    | '/'
-    | '/sign-in'
-    | '/sign-up'
-    | '/backlog'
-    | '/tickets/$ticketId'
-    | '/backlog/tickets/$ticketId'
+  fullPaths: '/' | '/sign-in' | '/sign-up' | '/profile' | '/tickets/$ticketId'
   fileRoutesByTo: FileRoutesByTo
-  to:
-    | '/'
-    | '/sign-in'
-    | '/sign-up'
-    | '/backlog'
-    | '/tickets/$ticketId'
-    | '/backlog/tickets/$ticketId'
+  to: '/' | '/sign-in' | '/sign-up' | '/profile' | '/tickets/$ticketId'
   id:
     | '__root__'
     | '/_app'
     | '/sign-in'
     | '/sign-up'
     | '/_app/_board'
-    | '/_app/backlog'
+    | '/_app/profile'
     | '/_app/_board/'
     | '/_app/_board/tickets/$ticketId'
-    | '/_app/backlog/tickets/$ticketId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -150,11 +127,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppBoardRouteImport
       parentRoute: typeof AppRoute
     }
-    '/_app/backlog': {
-      id: '/_app/backlog'
-      path: '/backlog'
-      fullPath: '/backlog'
-      preLoaderRoute: typeof AppBacklogRouteImport
+    '/_app/profile': {
+      id: '/_app/profile'
+      path: '/profile'
+      fullPath: '/profile'
+      preLoaderRoute: typeof AppProfileRouteImport
       parentRoute: typeof AppRoute
     }
     '/_app/_board/': {
@@ -170,13 +147,6 @@ declare module '@tanstack/react-router' {
       fullPath: '/tickets/$ticketId'
       preLoaderRoute: typeof AppBoardTicketsTicketIdRouteImport
       parentRoute: typeof AppBoardRoute
-    }
-    '/_app/backlog/tickets/$ticketId': {
-      id: '/_app/backlog/tickets/$ticketId'
-      path: '/tickets/$ticketId'
-      fullPath: '/backlog/tickets/$ticketId'
-      preLoaderRoute: typeof AppBacklogTicketsTicketIdRouteImport
-      parentRoute: typeof AppBacklogRoute
     }
   }
 }
@@ -195,26 +165,14 @@ const AppBoardRouteWithChildren = AppBoardRoute._addFileChildren(
   AppBoardRouteChildren,
 )
 
-interface AppBacklogRouteChildren {
-  AppBacklogTicketsTicketIdRoute: typeof AppBacklogTicketsTicketIdRoute
-}
-
-const AppBacklogRouteChildren: AppBacklogRouteChildren = {
-  AppBacklogTicketsTicketIdRoute: AppBacklogTicketsTicketIdRoute,
-}
-
-const AppBacklogRouteWithChildren = AppBacklogRoute._addFileChildren(
-  AppBacklogRouteChildren,
-)
-
 interface AppRouteChildren {
   AppBoardRoute: typeof AppBoardRouteWithChildren
-  AppBacklogRoute: typeof AppBacklogRouteWithChildren
+  AppProfileRoute: typeof AppProfileRoute
 }
 
 const AppRouteChildren: AppRouteChildren = {
   AppBoardRoute: AppBoardRouteWithChildren,
-  AppBacklogRoute: AppBacklogRouteWithChildren,
+  AppProfileRoute: AppProfileRoute,
 }
 
 const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)

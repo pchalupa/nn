@@ -62,7 +62,7 @@ export const test = base.extend<{ signedIn: boolean }>({
 export async function signUp(page: Page) {
 	await page.goto("/sign-up");
 	await page.getByLabel("Name").fill("Jan Novak");
-	await page.getByRole("button", { name: "Sign up" }).click();
+	await page.getByRole("button", { name: "Continue with passkey" }).click();
 	await page.waitForURL("/");
 }
 

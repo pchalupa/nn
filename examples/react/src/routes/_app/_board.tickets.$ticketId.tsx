@@ -6,9 +6,9 @@ const BoardTicket = () => {
 	const { ticketId } = useParams({ from: "/_app/_board/tickets/$ticketId" });
 	const navigate = useNavigate();
 
-	const handleClose = () => navigate({ to: "/" });
+	const handleClose = () => navigate({ to: "/", search: true });
 
-	return <TicketModal id={ticketId} onClose={handleClose} />;
+	return <TicketModal key={ticketId} id={ticketId} onClose={handleClose} />;
 };
 
 export const Route = createFileRoute("/_app/_board/tickets/$ticketId")({

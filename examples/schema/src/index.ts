@@ -43,6 +43,7 @@ const ticket = object({
 	description: string(),
 	status,
 	assignee: string().describe("User id of the assignee."),
+	labels: array(string()).describe("Label names."),
 	comments: array(comment),
 })
 	.entitle("ticket")
@@ -52,5 +53,4 @@ export const schema = object({
 	users: array(user).describe("List of users"),
 	tickets: array(ticket).describe("List of tickets"),
 	language,
-	tags: array(object({ name: string() })),
 });

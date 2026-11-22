@@ -1,8 +1,10 @@
-import { Button, Card, Flex, Heading, Link, Separator, Text } from "@radix-ui/themes";
+import { KeyIcon } from "@phosphor-icons/react";
+import { Box, Button, Card, Flex, Heading, Link, Text } from "@radix-ui/themes";
 import { createFileRoute, Link as RouterLink, redirect, useNavigate } from "@tanstack/react-router";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 
+import { Brand } from "../components/brand";
 import { signIn } from "../modules/authentication/authentication";
 import { authenticated } from "../modules/authentication/session";
 import { useQuery } from "../store";
@@ -23,28 +25,49 @@ const SignIn = () => {
 	});
 
 	return (
-		<Flex asChild flexGrow="1" align="center" justify="center">
+		<Flex asChild flexGrow="1" align="center" justify="center" position="relative">
 			<main>
-				<Card size="3">
-					<Flex direction="column" gap="4" width="280px">
-						<Heading as="h1" size="5" align="center">
-							{t("welcome")}
-						</Heading>
-						<form noValidate onSubmit={handleSubmit}>
-							<Flex direction="column">
-								<Button type="submit" disabled={form.formState.isSubmitting}>
-									{t("signIn")}
-								</Button>
+				<Box position="absolute" top="6" left="7">
+					<Brand size="1" />
+				</Box>
+				<Box width="360px">
+					<Card size="3">
+						<Flex direction="column" gap="4">
+							<Flex direction="column" gap="1">
+								<Flex pb="2">
+									<Brand size="2" />
+								</Flex>
+								<Heading as="h1" size="4">
+									{t("signInTitle")}
+								</Heading>
+								<Text as="p" size="2" color="gray">
+									{t("signInBody")}
+								</Text>
 							</Flex>
-						</form>
-						<Separator size="4" />
-						<Text as="p" size="2" align="center">
-							<Link asChild color="gray">
-								<RouterLink to="/sign-up">{t("signUp")}</RouterLink>
-							</Link>
-						</Text>
-					</Flex>
-				</Card>
+							<form noValidate onSubmit={handleSubmit}>
+								<Flex direction="column" gap="2">
+									<Button type="submit" size="3" disabled={form.formState.isSubmitting}>
+										<KeyIcon size={16} />
+										{t("continueWithPasskey")}
+									</Button>
+									{form.formState.errors.root && (
+										<Text size="1" color="red">
+											{form.formState.errors.root.message}
+										</Text>
+									)}
+								</Flex>
+							</form>
+							<Flex justify="center" gap="1">
+								<Text size="1" color="gray">
+									{t("newHere")}
+								</Text>
+								<Link asChild size="1" weight="medium" underline="hover">
+									<RouterLink to="/sign-up">{t("createAccount")}</RouterLink>
+								</Link>
+							</Flex>
+						</Flex>
+					</Card>
+				</Box>
 			</main>
 		</Flex>
 	);

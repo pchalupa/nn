@@ -7,7 +7,7 @@ const RootComponent = () => {
 	useLanguageSync();
 
 	return (
-		<Flex height="100vh">
+		<Flex height="100dvh">
 			<Outlet />
 		</Flex>
 	);

@@ -90,20 +90,16 @@ The CLI detects your framework and writes files to the right place:
 **Next.js App Router** (`app/layout.tsx`):
 
 ```tsx
-import { Provider } from "@/components/ui/provider"
+import { Provider } from "@/components/ui/provider";
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
-  return (
-    <html lang="en" suppressHydrationWarning>
-      <body>
-        <Provider>{children}</Provider>
-      </body>
-    </html>
-  )
+export default function RootLayout({ children }: { children: React.ReactNode }) {
+	return (
+		<html lang="en" suppressHydrationWarning>
+			<body>
+				<Provider>{children}</Provider>
+			</body>
+		</html>
+	);
 }
 ```
 
@@ -114,29 +110,29 @@ generated provider file already has it.
 **Next.js Pages Router** (`pages/_app.tsx`):
 
 ```tsx
-import { Provider } from "@/components/ui/provider"
+import { Provider } from "@/components/ui/provider";
 
 export default function App({ Component, pageProps }) {
-  return (
-    <Provider>
-      <Component {...pageProps} />
-    </Provider>
-  )
+	return (
+		<Provider>
+			<Component {...pageProps} />
+		</Provider>
+	);
 }
 ```
 
 **Vite** (`src/main.tsx`):
 
 ```tsx
-import { Provider } from "./components/ui/provider"
+import { Provider } from "./components/ui/provider";
 
 createRoot(document.getElementById("root")!).render(
-  <StrictMode>
-    <Provider>
-      <App />
-    </Provider>
-  </StrictMode>,
-)
+	<StrictMode>
+		<Provider>
+			<App />
+		</Provider>
+	</StrictMode>,
+);
 ```
 
 ### Manual Provider (if CLI is unavailable)
@@ -145,18 +141,18 @@ If the CLI fails, create `components/ui/provider.tsx` manually and install
 `next-themes` separately:
 
 ```tsx
-"use client"
-import { ChakraProvider, defaultSystem } from "@chakra-ui/react"
-import { ThemeProvider } from "next-themes"
+"use client";
+import { ChakraProvider, defaultSystem } from "@chakra-ui/react";
+import { ThemeProvider } from "next-themes";
 
 export function Provider({ children }: { children: React.ReactNode }) {
-  return (
-    <ChakraProvider value={defaultSystem}>
-      <ThemeProvider attribute="class" disableTransitionOnChange>
-        {children}
-      </ThemeProvider>
-    </ChakraProvider>
-  )
+	return (
+		<ChakraProvider value={defaultSystem}>
+			<ThemeProvider attribute="class" disableTransitionOnChange>
+				{children}
+			</ThemeProvider>
+		</ChakraProvider>
+	);
 }
 ```
 
@@ -239,10 +235,10 @@ text correctly:
 
 ```tsx
 <Field.Root invalid={!!error} required>
-  <Field.Label>Email address</Field.Label>
-  <Input type="email" placeholder="you@example.com" />
-  <Field.ErrorText>{error}</Field.ErrorText>
-  <Field.HelpText>We'll never share your email.</Field.HelpText>
+	<Field.Label>Email address</Field.Label>
+	<Input type="email" placeholder="you@example.com" />
+	<Field.ErrorText>{error}</Field.ErrorText>
+	<Field.HelpText>We'll never share your email.</Field.HelpText>
 </Field.Root>
 ```
 
@@ -284,23 +280,23 @@ A component needs `"use client"` when it:
 ```tsx
 // Server Component — no directive needed
 export default function ProductCard({ name, price }: Props) {
-  return (
-    <Box p={4} borderWidth={1} rounded="md">
-      <Text fontWeight="bold">{name}</Text>
-      <Text color="fg.muted">{price}</Text>
-    </Box>
-  )
+	return (
+		<Box p={4} borderWidth={1} rounded="md">
+			<Text fontWeight="bold">{name}</Text>
+			<Text color="fg.muted">{price}</Text>
+		</Box>
+	);
 }
 
 // Client Component — needs the directive
-;("use client")
+("use client");
 export function AddToCartButton({ productId }: { productId: string }) {
-  const [added, setAdded] = useState(false)
-  return (
-    <Button onClick={() => setAdded(true)} colorPalette="blue">
-      {added ? "Added!" : "Add to cart"}
-    </Button>
-  )
+	const [added, setAdded] = useState(false);
+	return (
+		<Button onClick={() => setAdded(true)} colorPalette="blue">
+			{added ? "Added!" : "Add to cart"}
+		</Button>
+	);
 }
 ```
 
@@ -352,9 +348,10 @@ Produce:
 
 ```tsx
 // Good import style
-import { Box, Button, Field, Stack, Text } from "@chakra-ui/react"
+import { Box, Button, Field, Stack, Text } from "@chakra-ui/react";
+
 // Then local
-import { SomeLocalComponent } from "./SomeLocalComponent"
+import { SomeLocalComponent } from "./SomeLocalComponent";
 ```
 
 ---

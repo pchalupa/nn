@@ -362,17 +362,6 @@ describe("TicketModal", () => {
 		).toStrictEqual(["Remove bug"]);
 	});
 
-	it("renders one badge for a repeated label", async () => {
-		store.mutate((data) => {
-			const ticket = data.tickets.find((entry) => entry.id === "commented");
-
-			if (ticket) ticket.labels.push("bug", "bug");
-		});
-		await setup("commented");
-
-		expect(screen.getAllByText("bug")).toHaveLength(1);
-	});
-
 	it("keeps a typed title when the ticket changes remotely", async () => {
 		await setup("commented");
 

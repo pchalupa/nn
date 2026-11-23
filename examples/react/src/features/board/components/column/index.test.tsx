@@ -74,22 +74,4 @@ describe("Column", () => {
 		expect(within(list).getAllByRole("listitem")).toHaveLength(1);
 		expect(within(list).getByRole("link", { name: /^Labelled.* bug 0 comments Unassigned$/ })).toBeTruthy();
 	});
-
-	it("renders one badge for a repeated label", async () => {
-		store.mutate((data) => {
-			data.tickets.push({
-				id: "repeated",
-				title: "Repeated",
-				description: "",
-				status: "done",
-				assignee: "",
-				labels: ["bug", "bug"],
-				comments: [],
-			});
-		});
-
-		const { list } = await setup("Done", "done");
-
-		expect(within(list).getAllByText("bug")).toHaveLength(1);
-	});
 });

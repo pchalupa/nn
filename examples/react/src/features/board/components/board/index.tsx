@@ -9,7 +9,6 @@ import { MobileHeader } from "@/components/mobile-header";
 import { HeaderButton } from "@/components/mobile-header/parts/header-button";
 import { PageHeader } from "@/components/page-header";
 import { useUser } from "@/features/authentication/authentication";
-import { boardName } from "@/features/board/board-name";
 import { type BoardSearch, matchesBoardSearch } from "@/features/board/board-search";
 import { BoardFilters } from "@/features/board/components/board-filters";
 import { Column } from "@/features/board/components/column";
@@ -41,10 +40,10 @@ export const Board = ({ search, onNewTicket }: BoardProps) => {
 						<ListIcon size={20} />
 					</HeaderButton>
 				}
-				title={boardName}
+				title="nn"
 				subtitle={t("ticketCount", { count })}
 			/>
-			<PageHeader icon={<KanbanIcon size={16} color="var(--gray-a11)" />} title={boardName} count={count}>
+			<PageHeader icon={<KanbanIcon size={16} color="var(--gray-a11)" />} title="nn" count={count}>
 				<Button type="button" aria-label={t("newTicket")} onClick={handleNewTicket}>
 					<PlusIcon size={16} />
 					{t("newShort")}

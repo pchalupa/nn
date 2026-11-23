@@ -1,16 +1,14 @@
 import { Flex, Link as ThemeLink, Text } from "@radix-ui/themes";
-import type { LinkComponentProps } from "@tanstack/react-router";
+import { Link, type LinkComponentProps } from "@tanstack/react-router";
 import type { ReactNode } from "react";
-
-import type { NavAnchor } from "./parts/nav-anchor";
-import { NavLink } from "./parts/nav-link";
 
 /** Row height of a nav item: `"1"` is the 30px desktop row, `"2"` the 44px touch row. */
 export type NavItemSize = "1" | "2";
 
 const heights = { "1": "30px", "2": "44px" } as const;
 
-type NavItemProps = LinkComponentProps<typeof NavAnchor> & {
+type NavItemProps = LinkComponentProps<"a"> & {
+	active?: boolean;
 	size?: NavItemSize;
 	icon: ReactNode;
 	label: string;
@@ -20,8 +18,12 @@ type NavItemProps = LinkComponentProps<typeof NavAnchor> & {
 /** Renders a sidebar link row with icon, label and optional count. */
 export const NavItem = ({ size = "1", icon, label, count, active, ...link }: NavItemProps) => {
 	let background: string | undefined;
+	let current: "page" | undefined;
 
-	if (active) background = "var(--gray-a4)";
+	if (active) {
+		background = "var(--gray-a4)";
+		current = "page";
+	}
 
 	return (
 		<Flex
@@ -34,7 +36,7 @@ export const NavItem = ({ size = "1", icon, label, count, active, ...link }: Nav
 			style={{ borderRadius: "var(--radius-2)", background }}
 		>
 			<ThemeLink asChild underline="none" color="gray" highContrast={active}>
-				<NavLink {...link} active={active}>
+				<Link {...link} activeOptions={{ exact: true }} aria-current={current}>
 					{icon}
 					<Text size="2">{label}</Text>
 					{count !== undefined && (
@@ -42,7 +44,7 @@ export const NavItem = ({ size = "1", icon, label, count, active, ...link }: Nav
 							{count}
 						</Text>
 					)}
-				</NavLink>
+				</Link>
 			</ThemeLink>
 		</Flex>
 	);

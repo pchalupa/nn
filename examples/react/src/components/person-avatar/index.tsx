@@ -2,9 +2,9 @@ import { RobotIcon } from "@phosphor-icons/react";
 import { Avatar } from "@radix-ui/themes";
 
 import { colorFor } from "@/modules/color/label-color";
-import { initials } from "@/modules/text/initials";
 
 import type { AvatarSize } from "./avatar-size";
+import { initials } from "./initials";
 import { UnassignedAvatar } from "./parts/unassigned-avatar";
 
 /** Describes the person fields an avatar needs. */

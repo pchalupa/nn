@@ -1,54 +1,48 @@
-import { Card, Flex, Heading } from "@radix-ui/themes";
-import { Link } from "@tanstack/react-router";
-import type { Status } from "example-schema";
+import { Card, Flex, Reset, Text } from "@radix-ui/themes";
+import type { Status as TicketStatus } from "example-schema";
 
-import { useQuery } from "../../store";
-import { Ticket } from "../ticket";
+import { useUser } from "@/features/authentication/authentication";
+import { type BoardSearch, matchesBoardSearch } from "@/features/board/board-search";
+import { Status } from "@/features/board/components/status";
+import { TicketCard } from "@/features/board/components/ticket-card";
+import { useQuery } from "@/store";
 
 interface ColumnProps {
 	title: string;
-	status: Status;
+	status: TicketStatus;
+	search: BoardSearch;
 }
 
-export const Column = ({ title, status }: ColumnProps) => {
+/** Renders a board column with the tickets of one status that pass the board filters. */
+export const Column = ({ title, status, search }: ColumnProps) => {
+	const { id: userId } = useUser();
 	const tickets = useQuery((data) =>
-		data.tickets.reduce<Array<{ id: string; title: string; description: string; assignee?: string }>>(
-			(result, ticket) => {
-				if (ticket.status === status) {
-					result.push({
-						id: ticket.id,
-						title: ticket.title,
-						description: ticket.description,
-						assignee: data.users.find((user) => user.id === ticket.assignee)?.name,
-					});
-				}
-
-				return result;
-			},
-			[],
-		),
+		data.tickets.filter((ticket) => ticket.status === status && matchesBoardSearch(ticket, search, userId)),
 	);
 
 	return (
-		<Card>
-			<Flex direction="column" gap="2">
-				<Heading as="h3" size="2">
-					{title}
-				</Heading>
-				<Flex asChild direction="column" gap="2" m="0" p="0" style={{ listStyle: "none" }}>
-					<ul aria-label={title}>
-						{tickets.map((data) => (
-							<li key={data.id}>
-								<Card asChild>
-									<Link to="/tickets/$ticketId" params={{ ticketId: data.id }} aria-label={data.title}>
-										<Ticket title={data.title} description={data.description} assignee={data.assignee} />
-									</Link>
-								</Card>
-							</li>
-						))}
-					</ul>
-				</Flex>
-			</Flex>
-		</Card>
+		<Flex asChild direction="column" gap="2" minHeight="0">
+			<Card asChild size="1">
+				<section aria-label={title}>
+					<Flex align="center" gap="2" pl="2" pr="1" height="32px" flexShrink="0">
+						<Status status={status} />
+						<Text size="1" color="gray">
+							{tickets.length}
+						</Text>
+					</Flex>
+					<Flex asChild direction="column" gap="2" overflowY="auto" flexShrink="1">
+						<Reset>
+							<ul>
+								{tickets.map((ticket) => (
+									<li key={ticket.id}>
+										<TicketCard ticket={ticket} />
+									</li>
+								))}
+							</ul>
+						</Reset>
+					</Flex>
+				</section>
+			</Card>
+		</Flex>
 	);
 };

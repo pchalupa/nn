@@ -7,9 +7,10 @@ import { Suspense } from "react";
 import { I18nextProvider } from "react-i18next";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
+import { i18n } from "@/i18n";
+import { store } from "@/store";
+
 import { Board } from ".";
-import { i18n } from "../../../../i18n";
-import { store } from "../../../../store";
 
 const ticket = (id: string, title: string, status: Ticket["status"]): Ticket => ({
 	id,

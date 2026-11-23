@@ -12,12 +12,13 @@ import { Suspense } from "react";
 import { I18nextProvider } from "react-i18next";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { i18n } from "./i18n";
-import { signIn, signUp } from "./modules/authentication/authentication";
-import { Route as SignInRoute } from "./routes/sign-in";
-import { Route as SignUpRoute } from "./routes/sign-up";
+import { i18n } from "@/i18n";
+import { Route as SignInRoute } from "@/routes/sign-in";
+import { Route as SignUpRoute } from "@/routes/sign-up";
 
-vi.mock("./modules/authentication/authentication", () => ({ signIn: vi.fn(), signUp: vi.fn() }));
+import { signIn, signUp } from "./authentication";
+
+vi.mock("./authentication", () => ({ signIn: vi.fn(), signUp: vi.fn() }));
 
 const renderPage = async (component: RouteComponent | undefined) => {
 	const router = createRouter({ routeTree: createRootRoute({ component }), history: createMemoryHistory() });

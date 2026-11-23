@@ -6,10 +6,11 @@ import { Suspense } from "react";
 import { I18nextProvider } from "react-i18next";
 import { describe, expect, it } from "vitest";
 
+import type { BoardSearch } from "@/features/board/board-search";
+import { i18n } from "@/i18n";
+import { store } from "@/store";
+
 import { Column } from ".";
-import { i18n } from "../../../../i18n";
-import type { BoardSearch } from "../../board-search";
-import { store } from "../../../../store";
 
 describe("Column", () => {
 	const setup = async (title: string, status: Status, search: BoardSearch = {}) => {

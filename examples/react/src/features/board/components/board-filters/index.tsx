@@ -3,8 +3,8 @@ import { Button, Flex } from "@radix-ui/themes";
 import { useNavigate } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 
-import { type BoardSearch, withoutFilter } from "../../board-search";
-import { FilterChip } from "../../../../components/filter-chip";
+import { FilterChip } from "@/components/filter-chip";
+import { type BoardSearch, withoutFilter } from "@/features/board/board-search";
 
 interface BoardFiltersProps {
 	search: BoardSearch;

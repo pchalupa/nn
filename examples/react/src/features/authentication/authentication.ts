@@ -5,7 +5,8 @@ import {
 	startRegistration,
 } from "@simplewebauthn/browser";
 
-import { useQuery } from "../../store";
+import { useQuery } from "@/store";
+
 import { getSession, setSession } from "./session";
 
 interface Passkey {
@@ -78,7 +79,7 @@ export function useUser() {
 	const id = getSession();
 	const user = useQuery((data) => data.users.find((entry) => entry.id === id));
 
-	return { id, ...user };
+	return { id, user };
 }
 
 export function authenticated(): boolean {

@@ -4,18 +4,18 @@ import { type Status as TicketStatus, status } from "example-schema";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 
-import { statusLabels } from "../../../../i18n";
-import { useUser } from "../../../authentication/authentication";
-import { boardName } from "../../board-name";
-import { type BoardSearch, matchesBoardSearch } from "../../board-search";
-import { useQuery } from "../../../../store";
-import { ActionBar } from "../../../../components/action-bar";
-import { BoardFilters } from "../board-filters";
-import { Column } from "../column";
-import { Drawer } from "../../../navigation/components/drawer";
-import { MobileHeader } from "../../../../components/mobile-header";
-import { HeaderButton } from "../../../../components/mobile-header/header-button";
-import { PageHeader } from "../../../../components/page-header";
+import { ActionBar } from "@/components/action-bar";
+import { MobileHeader } from "@/components/mobile-header";
+import { HeaderButton } from "@/components/mobile-header/parts/header-button";
+import { PageHeader } from "@/components/page-header";
+import { useUser } from "@/features/authentication/authentication";
+import { boardName } from "@/features/board/board-name";
+import { type BoardSearch, matchesBoardSearch } from "@/features/board/board-search";
+import { BoardFilters } from "@/features/board/components/board-filters";
+import { Column } from "@/features/board/components/column";
+import { Drawer } from "@/features/navigation/components/drawer";
+import { statusLabels } from "@/i18n";
+import { useQuery } from "@/store";
 
 interface BoardProps {
 	search: BoardSearch;
@@ -64,12 +64,7 @@ export const Board = ({ search, onNewTicket }: BoardProps) => {
 					minHeight="0"
 				>
 					{status.literals.map((literal) => (
-						<Column
-							key={literal}
-							title={t(statusLabels[literal])}
-							status={literal}
-							search={search}
-						/>
+						<Column key={literal} title={t(statusLabels[literal])} status={literal} search={search} />
 					))}
 				</Grid>
 			</Flex>

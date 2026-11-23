@@ -2,7 +2,7 @@ import { XIcon } from "@phosphor-icons/react";
 import { Badge, IconButton } from "@radix-ui/themes";
 import { useTranslation } from "react-i18next";
 
-import { colorFor } from "../../../../modules/color/label-color";
+import { colorFor } from "@/modules/color/label-color";
 
 interface LabelProps {
 	name: string;

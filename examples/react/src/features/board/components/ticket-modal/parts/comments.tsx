@@ -3,9 +3,10 @@ import { useFormatForDisplay, useHotkey } from "@tanstack/react-hotkeys";
 import { type ChangeEvent, useId, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 
-import { useUser } from "../../../authentication/authentication";
-import { useMutation, useQuery } from "../../../../store";
-import { Caption } from "../../../../components/caption";
+import { Caption } from "@/components/caption";
+import { useUser } from "@/features/authentication/authentication";
+import { useMutation, useQuery } from "@/store";
+
 import { CommentItem } from "./comment-item";
 
 interface CommentsProps {

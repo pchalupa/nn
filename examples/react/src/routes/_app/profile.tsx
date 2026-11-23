@@ -5,7 +5,7 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import { MobileHeader } from "@/components/mobile-header";
-import { HeaderButton } from "@/components/mobile-header/header-button";
+import { HeaderButton } from "@/components/mobile-header/parts/header-button";
 import { PageHeader } from "@/components/page-header";
 import { Drawer } from "@/features/navigation/components/drawer";
 import { Identity } from "@/features/profile/components/identity";

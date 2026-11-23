@@ -5,7 +5,7 @@ import { useTranslation } from "react-i18next";
 
 import { useProfileForm } from "@/features/profile/use-profile-form";
 
-import { ProfileFields } from "./profile-fields";
+import { ProfileFields } from "./parts/profile-fields";
 
 /** Renders the form that edits the current user name and its Cancel and Save changes actions, a sticky bottom bar on mobile. */
 export const ProfileForm = () => {

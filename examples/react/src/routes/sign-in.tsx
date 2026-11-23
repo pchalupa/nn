@@ -1,17 +1,17 @@
-import { Button, Card, Flex, Heading, Link, Separator, Text } from "@radix-ui/themes";
-import { createFileRoute, Link as RouterLink, redirect, useNavigate } from "@tanstack/react-router";
-import { useForm } from "react-hook-form";
+import { createFileRoute, redirect, useNavigate } from "@tanstack/react-router";
+import { useForm, useFormState } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 
-import { signIn } from "../modules/authentication/authentication";
-import { authenticated } from "../modules/authentication/session";
-import { useQuery } from "../store";
+import { authenticated, signIn } from "@/features/authentication/authentication";
+import { AuthCard } from "@/features/authentication/components/auth-card";
+import { useQuery } from "@/store";
 
 const SignIn = () => {
 	const { t } = useTranslation();
 	const navigate = useNavigate();
 	const accounts = useQuery((data) => data.users);
 	const form = useForm();
+	const { errors, isSubmitting } = useFormState({ control: form.control });
 
 	const handleSubmit = form.handleSubmit(async () => {
 		try {
@@ -23,30 +23,15 @@ const SignIn = () => {
 	});
 
 	return (
-		<Flex asChild flexGrow="1" align="center" justify="center">
-			<main>
-				<Card size="3">
-					<Flex direction="column" gap="4" width="280px">
-						<Heading as="h1" size="5" align="center">
-							{t("welcome")}
-						</Heading>
-						<form noValidate onSubmit={handleSubmit}>
-							<Flex direction="column">
-								<Button type="submit" disabled={form.formState.isSubmitting}>
-									{t("signIn")}
-								</Button>
-							</Flex>
-						</form>
-						<Separator size="4" />
-						<Text as="p" size="2" align="center">
-							<Link asChild color="gray">
-								<RouterLink to="/sign-up">{t("signUp")}</RouterLink>
-							</Link>
-						</Text>
-					</Flex>
-				</Card>
-			</main>
-		</Flex>
+		<AuthCard
+			title={t("signInTitle")}
+			body={t("signInBody")}
+			switchText={t("newHere")}
+			switchLink={{ to: "/sign-up", label: t("createAccount") }}
+			submitting={isSubmitting}
+			error={errors.root?.message}
+			onSubmit={handleSubmit}
+		/>
 	);
 };
 

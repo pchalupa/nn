@@ -1,14 +1,14 @@
 import { createFileRoute, useNavigate, useParams } from "@tanstack/react-router";
 
-import { TicketModal } from "../../components/ticket-modal";
+import { TicketModal } from "@/features/board/components/ticket-modal";
 
 const BoardTicket = () => {
 	const { ticketId } = useParams({ from: "/_app/_board/tickets/$ticketId" });
 	const navigate = useNavigate();
 
-	const handleClose = () => navigate({ to: "/" });
+	const handleClose = () => navigate({ to: "/", search: true });
 
-	return <TicketModal id={ticketId} onClose={handleClose} />;
+	return <TicketModal key={ticketId} id={ticketId} onClose={handleClose} />;
 };
 
 export const Route = createFileRoute("/_app/_board/tickets/$ticketId")({

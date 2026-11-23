@@ -1,24 +1,30 @@
-import { Grid } from "@radix-ui/themes";
-import { createFileRoute, Outlet } from "@tanstack/react-router";
-import { status } from "example-schema";
-import { useTranslation } from "react-i18next";
+import { createFileRoute, Outlet, useSearch } from "@tanstack/react-router";
+import type { Status } from "example-schema";
+import { useRef } from "react";
 
-import { Column } from "../../components/column";
-import { statusLabels } from "../../i18n";
+import { useUser } from "@/features/authentication/authentication";
+import { draftForBoardSearch, validateBoardSearch } from "@/features/board/board-search";
+import { Board } from "@/features/board/components/board";
+import { TicketModal, type TicketModalHandle } from "@/features/board/components/ticket-modal";
 
-const Board = () => {
-	const { t } = useTranslation();
+const BoardPage = () => {
+	const search = useSearch({ from: "/_app/_board" });
+	const { id: userId } = useUser();
+	const ticketModal = useRef<TicketModalHandle>(null);
+
+	const handleNewTicket = (status: Status) =>
+		ticketModal.current?.open({ ...draftForBoardSearch(search, userId), status });
 
 	return (
-		<Grid columns={`repeat(${status.literals.length}, minmax(200px, 1fr))`} gap="2" p="4" overflowX="auto">
-			{status.literals.map((literal) => (
-				<Column key={literal} title={t(statusLabels[literal])} status={literal} />
-			))}
+		<>
+			<Board search={search} onNewTicket={handleNewTicket} />
+			<TicketModal ref={ticketModal} />
 			<Outlet />
-		</Grid>
+		</>
 	);
 };
 
 export const Route = createFileRoute("/_app/_board")({
-	component: Board,
+	validateSearch: validateBoardSearch,
+	component: BoardPage,
 });

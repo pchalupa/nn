@@ -41,6 +41,7 @@ try {
 									description: `${file}:${index + 1}`,
 									status: "todo",
 									assignee: "",
+									labels: [],
 									comments: [],
 								});
 							}

@@ -1,5 +1,5 @@
 import { TrashIcon } from "@phosphor-icons/react";
-import { AlertDialog, Button, Flex } from "@radix-ui/themes";
+import { AlertDialog, Button, Flex, Text } from "@radix-ui/themes";
 import { useTranslation } from "react-i18next";
 
 interface DeleteTicketProps {
@@ -13,9 +13,9 @@ export const DeleteTicket = ({ onConfirm }: DeleteTicketProps) => {
 	return (
 		<AlertDialog.Root>
 			<AlertDialog.Trigger>
-				<Button type="button" color="red">
+				<Button type="button" size={{ initial: "4", md: "2" }} color="red">
 					<TrashIcon size={16} />
-					{t("delete")}
+					<Text size="2">{t("delete")}</Text>
 				</Button>
 			</AlertDialog.Trigger>
 			<AlertDialog.Content maxWidth="400px">

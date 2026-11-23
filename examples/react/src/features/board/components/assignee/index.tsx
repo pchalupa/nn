@@ -1,8 +1,8 @@
 import { Flex, Text } from "@radix-ui/themes";
 import { useTranslation } from "react-i18next";
 
-import { PersonAvatar, type Person } from "../person-avatar";
-import { UnassignedAvatar } from "../person-avatar/unassigned-avatar";
+import { PersonAvatar, type Person } from "../../../../components/person-avatar";
+import { UnassignedAvatar } from "../../../../components/person-avatar/unassigned-avatar";
 
 interface AssigneeProps {
 	user?: Person;

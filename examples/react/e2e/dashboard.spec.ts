@@ -7,6 +7,31 @@ test.describe("Board", () => {
 	test("has one level-one heading", async ({ page }) => {
 		await expect(page.getByRole("heading", { level: 1 })).toHaveCount(1);
 	});
+
+	test("shows Backlog as the first of four columns", async ({ page }) => {
+		await expect(page.getByRole("region")).toHaveCount(4);
+		await expect(page.getByRole("region").first()).toHaveAccessibleName("Backlog");
+	});
+
+	test("labels the header button New and names it New ticket", async ({ page }) => {
+		const button = page.getByRole("button", { name: "New ticket", exact: true });
+
+		await expect(button).toHaveText("New");
+		await button.click();
+		await expect(page.getByRole("dialog").getByRole("combobox", { name: "Status" })).toHaveText("To do");
+	});
+
+	test("creates a ticket in the Backlog column", async ({ page }) => {
+		const backlog = page.getByRole("region", { name: "Backlog" });
+		const dialog = page.getByRole("dialog");
+
+		await backlog.getByRole("button", { name: "New ticket in Backlog" }).first().click();
+		await expect(dialog.getByRole("combobox", { name: "Status" })).toHaveText("Backlog");
+		await dialog.getByRole("textbox", { name: "Title" }).fill("Someday");
+		await dialog.getByRole("button", { name: "Create ticket" }).click();
+
+		await expect(backlog.getByRole("listitem")).toHaveCount(1);
+	});
 });
 
 test.describe("Column", () => {
@@ -36,7 +61,7 @@ test.describe("Column", () => {
 
 		await page.goto("/?label=gone");
 
-		for (const name of ["To do", "In progress", "Done"]) {
+		for (const name of ["Backlog", "To do", "In progress", "Done"]) {
 			await expect(page.getByRole("region", { name }).getByRole("listitem")).toHaveCount(0);
 		}
 

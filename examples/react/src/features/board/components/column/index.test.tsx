@@ -56,6 +56,7 @@ describe("Column", () => {
 					assignee: "",
 					labels: ["bug"],
 					comments: [],
+					links: [],
 				},
 				{
 					id: "plain",
@@ -65,6 +66,7 @@ describe("Column", () => {
 					assignee: "",
 					labels: [],
 					comments: [],
+					links: [],
 				},
 			);
 		});
@@ -72,6 +74,6 @@ describe("Column", () => {
 		const { list } = await setup("In progress", "in-progress", { label: "bug" });
 
 		expect(within(list).getAllByRole("listitem")).toHaveLength(1);
-		expect(within(list).getByRole("link", { name: /^Labelled.* bug 0 comments Unassigned$/ })).toBeTruthy();
+		expect(within(list).getByRole("link", { name: /^Labelled.* bug 0 0 Unassigned$/ })).toBeTruthy();
 	});
 });

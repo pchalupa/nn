@@ -43,6 +43,7 @@ try {
 									assignee: "",
 									labels: [],
 									comments: [],
+									links: [],
 								});
 							}
 						}

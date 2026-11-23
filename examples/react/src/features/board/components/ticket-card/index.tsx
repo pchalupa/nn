@@ -1,7 +1,6 @@
-import { ChatCircleIcon } from "@phosphor-icons/react";
-import { Card, Flex, Text, VisuallyHidden } from "@radix-ui/themes";
+import { ChatCircleIcon, LinkIcon } from "@phosphor-icons/react";
+import { Card, Flex, Text } from "@radix-ui/themes";
 import { Link } from "@tanstack/react-router";
-import { useTranslation } from "react-i18next";
 
 import { Assignee } from "@/features/board/components/assignee";
 import { Label } from "@/features/board/components/label-badge";
@@ -15,12 +14,12 @@ interface TicketCardProps {
 		assignee: string;
 		labels: readonly string[];
 		comments: readonly unknown[];
+		links: readonly unknown[];
 	};
 }
 
 /** Renders a board card linking to the ticket, keeping the current board filters. */
 export const TicketCard = ({ ticket }: TicketCardProps) => {
-	const { t } = useTranslation();
 	const assignee = useQuery((data) => data.users.find((user) => user.id === ticket.assignee));
 
 	return (
@@ -47,7 +46,12 @@ export const TicketCard = ({ ticket }: TicketCardProps) => {
 							<ChatCircleIcon size={12} color="var(--gray-a11)" />
 							<Text size="1" color="gray">
 								{ticket.comments.length}
-								<VisuallyHidden> {t("commentsLower", { count: ticket.comments.length })}</VisuallyHidden>
+							</Text>
+						</Flex>
+						<Flex align="center" gap="1">
+							<LinkIcon size={12} color="var(--gray-a11)" />
+							<Text size="1" color="gray">
+								{ticket.links.length}
 							</Text>
 						</Flex>
 						<Flex flexGrow="1" />

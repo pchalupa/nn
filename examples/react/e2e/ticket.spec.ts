@@ -1,4 +1,4 @@
-import { choose, expect, type Page, test } from "./fixtures";
+import { choose, expect, type Locator, type Page, test } from "./fixtures";
 
 const columnCards = (page: Page, column: string) =>
 	page.getByRole("region", { name: column, includeHidden: true }).getByRole("listitem", { includeHidden: true });
@@ -81,6 +81,44 @@ test.describe("Create ticket", () => {
 
 		await expect(dialog).toBeHidden();
 		await expect(columnCards(page, "To do")).toHaveText(/Shortcut/);
+	});
+
+	test("creates a ticket with a link", async ({ page }) => {
+		await page.goto("/");
+		await newTicket(page).click();
+
+		const dialog = page.getByRole("dialog");
+
+		await dialog.getByRole("textbox", { name: "Title" }).fill("Linked");
+		await dialog.getByRole("textbox", { name: "Links" }).fill("https://github.com/pchalupa/nn/pull/212");
+		await page.keyboard.press("Enter");
+
+		await expect(dialog).toBeVisible();
+		await expect(dialog.getByRole("link", { name: "PR #212" })).toBeVisible();
+
+		const verticalCenter = async (locator: Locator) => {
+			const box = await locator.boundingBox();
+
+			if (!box) throw new Error("Element is not rendered");
+
+			return box.y + box.height / 2;
+		};
+		const titleCenter = await verticalCenter(dialog.getByRole("link", { name: "PR #212" }));
+		const removeCenter = await verticalCenter(dialog.getByRole("button", { name: "Remove PR #212" }));
+
+		expect(Math.abs(titleCenter - removeCenter)).toBeLessThan(2);
+
+		await dialog.getByRole("button", { name: "Create ticket" }).click();
+
+		const card = columnCards(page, "To do");
+
+		await expect(dialog).toBeHidden();
+		await expect(card.getByRole("link")).toHaveAccessibleName(/ 0 1 Unassigned$/);
+
+		await page.reload();
+		await card.getByRole("link").click();
+
+		await expect(dialog.getByRole("link", { name: "PR #212" })).toBeVisible();
 	});
 
 	test("should not create a ticket without a title", async ({ page }) => {
@@ -295,6 +333,28 @@ test.describe("TicketModal editing", () => {
 		await page.reload();
 
 		await expect(card).toHaveText(/bug/);
+	});
+
+	test("adds a link to a ticket and shows the count on its card", async ({ page }) => {
+		const { dialog, card } = await openTicket(page);
+
+		await dialog.getByRole("textbox", { name: "Links" }).fill("https://github.com/pchalupa/nn/pull/212");
+		await page.keyboard.press("Enter");
+
+		await expect(dialog.getByRole("link", { name: "PR #212" })).toBeVisible();
+
+		await dialog.getByRole("button", { name: "Close" }).last().click();
+		await expect(dialog).toBeHidden();
+
+		await expect(card.getByRole("link")).toHaveAccessibleName(/ 0 1 Unassigned$/);
+
+		await page.reload();
+		await card.getByRole("link").click();
+
+		await expect(dialog.getByRole("link", { name: "PR #212" })).toHaveAttribute(
+			"href",
+			"https://github.com/pchalupa/nn/pull/212",
+		);
 	});
 });
 

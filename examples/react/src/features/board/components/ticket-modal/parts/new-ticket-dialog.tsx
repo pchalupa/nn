@@ -1,3 +1,4 @@
+import type { Link } from "example-schema";
 import { type SubmitEvent, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
@@ -25,6 +26,7 @@ export const NewTicketDialog = ({ initial, onClose }: NewTicketDialogProps) => {
 		assignee: defaults.assignee,
 		labels: defaults.labels,
 	});
+	const [links, setLinks] = useState<Link[]>([]);
 
 	const create = form.handleSubmit((texts) => {
 		mutate((data) => {
@@ -34,6 +36,7 @@ export const NewTicketDialog = ({ initial, onClose }: NewTicketDialogProps) => {
 				title: texts.title.trim(),
 				id: crypto.randomUUID(),
 				comments: [],
+				links,
 			});
 		});
 		onClose();
@@ -43,9 +46,21 @@ export const NewTicketDialog = ({ initial, onClose }: NewTicketDialogProps) => {
 
 	const handleChange: PropertyChange = (patch) => setProperties((current) => ({ ...current, ...patch }));
 
+	const handleAddLink = (link: Link) => setLinks((current) => [...current, link]);
+
+	const handleRemoveLink = (id: string) => setLinks((current) => current.filter((link) => link.id !== id));
+
 	return (
 		<TicketDialogShell title={t("newTicket")} onSubmit={handleSubmit} onClose={onClose}>
-			<TicketFields form={form} properties={properties} onChange={handleChange} autoFocus />
+			<TicketFields
+				form={form}
+				properties={properties}
+				onChange={handleChange}
+				links={links}
+				onAddLink={handleAddLink}
+				onRemoveLink={handleRemoveLink}
+				autoFocus
+			/>
 		</TicketDialogShell>
 	);
 };

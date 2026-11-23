@@ -35,6 +35,7 @@ const commented: Ticket = {
 	assignee: "",
 	labels: [],
 	comments: [{ id: "first", author: "bob", createdAt: "2026-01-01T00:00:00.000Z", body: "Looks good" }],
+	links: [],
 };
 
 const probe = (name: string) => screen.getByRole("status", { name, hidden: true }).textContent;
@@ -362,6 +363,64 @@ describe("TicketModal", () => {
 		expect(onClose).toHaveBeenCalledOnce();
 	});
 
+	const pullRequest = "https://github.com/pchalupa/nn/pull/212";
+
+	const storedLinks = (index: number) =>
+		store.query((data) => data.tickets[index]?.links.map((link) => ({ url: link.url, title: link.title })));
+
+	it("saves links of a new ticket only on Create ticket", async () => {
+		await setup();
+		const links = screen.getByRole("textbox", { name: "Links" });
+
+		await user.type(title(), "Created");
+		await user.type(links, `${pullRequest}{Enter}`);
+		await user.type(links, "https://example.com/spec.md{Enter}");
+		await user.click(screen.getByRole("button", { name: "Remove spec.md" }));
+
+		expect(screen.getByRole("link", { name: "PR #212" })).toBeDefined();
+		expect(screen.queryByRole("link", { name: "spec.md" })).toBeNull();
+		expect(probe("titles")).toBe("Commented");
+
+		await user.click(screen.getByRole("button", { name: "Create ticket" }));
+
+		expect(storedLinks(1)).toStrictEqual([{ url: pullRequest, title: "PR #212" }]);
+	});
+
+	it("creates a new ticket with Mod+Enter in the links input", async () => {
+		const { onClose } = await setup();
+
+		await user.type(title(), "Created");
+		await user.type(screen.getByRole("textbox", { name: "Links" }), ctrlEnter);
+
+		expect(probe("titles")).toBe("Commented,Created");
+		expect(onClose).toHaveBeenCalledOnce();
+	});
+
+	it("adds and removes links of a saved ticket immediately", async () => {
+		await setup("commented");
+
+		await user.type(screen.getByRole("textbox", { name: "Links" }), `${pullRequest}{Enter}`);
+
+		expect(storedLinks(0)).toStrictEqual([{ url: pullRequest, title: "PR #212" }]);
+
+		await user.click(screen.getByRole("button", { name: "Remove PR #212" }));
+
+		expect(screen.queryByRole("link", { name: "PR #212" })).toBeNull();
+		expect(storedLinks(0)).toStrictEqual([]);
+	});
+
+	it("keeps a link added remotely while adding another", async () => {
+		await setup("commented");
+		await changeTicket((ticket) => ticket.links.push({ id: "remote", url: pullRequest, title: "PR #212" }));
+
+		await user.type(screen.getByRole("textbox", { name: "Links" }), "https://example.com/spec.md{Enter}");
+
+		expect(store.query((data) => data.tickets[0]?.links.map((link) => link.id))).toStrictEqual([
+			"remote",
+			expect.any(String),
+		]);
+	});
+
 	it("creates a new ticket with Mod+Enter", async () => {
 		const { onClose } = await setup();
 
@@ -446,7 +505,9 @@ describe("TicketModal", () => {
 
 		const alert = await screen.findByRole("alertdialog", { name: "Delete ticket?" });
 
-		expect(within(alert).getByText("This removes the ticket on every device.")).toBeDefined();
+		expect(
+			within(alert).getByText("The ticket, its comments and links are removed on every device once they sync."),
+		).toBeDefined();
 
 		await user.click(within(alert).getByRole("button", { name: "Delete" }));
 
@@ -522,22 +583,23 @@ describe("TicketModal", () => {
 		const labelInputDisplay = () =>
 			displayClasses(screen.getByRole("textbox", { name: "Labels" }).closest(".rt-TextFieldRoot")?.parentElement);
 
-		it("renders every field once in reading order: title, properties, then description and comments", async () => {
+		it("renders every field once in reading order: title, properties, links, then description and comments", async () => {
 			const { dialog } = await setup("commented");
 			const fields = [
 				title(),
 				screen.getByRole("combobox", { name: "Status" }),
 				screen.getByRole("combobox", { name: "Assignee" }),
 				screen.getByRole("textbox", { name: "Labels" }),
+				screen.getByRole("textbox", { name: "Links" }),
 				description(),
 				screen.getByRole("textbox", { name: "Write a comment…" }),
 			];
 
 			expect(
 				within(dialog)
-					.getAllByText(/^(Title|Status|Assignee|Labels|Description|Comments · 1)$/)
+					.getAllByText(/^(Title|Status|Assignee|Labels|Links|Description|Comments · 1)$/)
 					.map((label) => label.textContent),
-			).toStrictEqual(["Title", "Status", "Assignee", "Labels", "Description", "Comments · 1"]);
+			).toStrictEqual(["Title", "Status", "Assignee", "Labels", "Links", "Description", "Comments · 1"]);
 			expect(
 				fields.every(
 					(field, index) =>
@@ -545,7 +607,7 @@ describe("TicketModal", () => {
 						Boolean(fields[index - 1]?.compareDocumentPosition(field) & Node.DOCUMENT_POSITION_FOLLOWING),
 				),
 			).toBe(true);
-			expect(screen.getAllByRole("textbox")).toHaveLength(4);
+			expect(screen.getAllByRole("textbox")).toHaveLength(5);
 		});
 
 		it("renders the mobile and the desktop header, each hidden on the other layout", async () => {

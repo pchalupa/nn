@@ -1,5 +1,5 @@
 import { Box, Flex, Grid, Select, Separator, TextArea, TextField } from "@radix-ui/themes";
-import { type Status as TicketStatus, status } from "example-schema";
+import { type Link, type Status as TicketStatus, status } from "example-schema";
 import type { ReactNode } from "react";
 import { type UseFormReturn, useFormState } from "react-hook-form";
 import { useTranslation } from "react-i18next";
@@ -13,6 +13,7 @@ import { useQuery } from "@/store";
 
 import { AssigneeOption } from "./assignee-option";
 import { LabelInput } from "./label-input";
+import { Links } from "./links";
 
 /** Ticket fields the modal edits. */
 export interface TicketDraft {
@@ -39,16 +40,22 @@ interface TicketFieldsProps {
 	properties: TicketProperties;
 	onChange: PropertyChange;
 	onTextBlur?: (name: TextFieldName) => void;
+	links: readonly Link[];
+	onAddLink: (link: Link) => void;
+	onRemoveLink: (id: string) => void;
 	autoFocus?: boolean;
 	children?: ReactNode;
 }
 
-/** Renders the editable ticket in reading order (title, property controls, then description and extra content), beside each other from `md` up and in one column below it. */
+/** Renders the editable ticket in reading order (title, property controls and links, then description and extra content), beside each other from `md` up and in one column below it. */
 export const TicketFields = ({
 	form,
 	properties,
 	onChange,
 	onTextBlur,
+	links,
+	onAddLink,
+	onRemoveLink,
 	autoFocus = false,
 	children,
 }: TicketFieldsProps) => {
@@ -143,6 +150,7 @@ export const TicketFields = ({
 					</Select.Content>
 				</Select.Root>
 				<LabelInput labels={properties.labels} onAdd={handleAddLabel} onRemove={handleRemoveLabel} />
+				<Links links={links} onAdd={onAddLink} onRemove={onRemoveLink} />
 			</Flex>
 			<Flex
 				gridArea="body"

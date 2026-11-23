@@ -1,4 +1,4 @@
-import { Dialog, Flex, VisuallyHidden } from "@radix-ui/themes";
+import { Dialog, Flex } from "@radix-ui/themes";
 import { useTranslation } from "react-i18next";
 
 import { SidebarContent } from "@/features/navigation/components/sidebar/parts/sidebar-content";
@@ -30,9 +30,7 @@ export const Drawer = ({ open, onOpenChange }: DrawerProps) => {
 					borderRight: "1px solid var(--gray-a6)",
 				}}
 			>
-				<VisuallyHidden>
-					<Dialog.Title>{t("menu")}</Dialog.Title>
-				</VisuallyHidden>
+				<Dialog.Title hidden>{t("menu")}</Dialog.Title>
 				<Flex direction="column" gap="1" py="3" px="2" minHeight="100%">
 					<SidebarContent size="2" onNavigate={handleNavigate} />
 				</Flex>

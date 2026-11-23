@@ -3,10 +3,10 @@ import { createFileRoute, redirect, useNavigate } from "@tanstack/react-router";
 import { useForm, useFormState } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 
-import { AuthCard } from "../features/authentication/components/auth-card";
-import { Field } from "../components/field";
-import { authenticated, signUp } from "../features/authentication/authentication";
-import { useMutation } from "../store";
+import { Field } from "@/components/field";
+import { authenticated, signUp } from "@/features/authentication/authentication";
+import { AuthCard } from "@/features/authentication/components/auth-card";
+import { useMutation } from "@/store";
 
 const SignUp = () => {
 	const { t } = useTranslation();

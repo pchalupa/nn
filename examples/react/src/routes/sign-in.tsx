@@ -2,9 +2,9 @@ import { createFileRoute, redirect, useNavigate } from "@tanstack/react-router";
 import { useForm, useFormState } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 
-import { AuthCard } from "../features/authentication/components/auth-card";
-import { authenticated, signIn } from "../features/authentication/authentication";
-import { useQuery } from "../store";
+import { authenticated, signIn } from "@/features/authentication/authentication";
+import { AuthCard } from "@/features/authentication/components/auth-card";
+import { useQuery } from "@/store";
 
 const SignIn = () => {
 	const { t } = useTranslation();

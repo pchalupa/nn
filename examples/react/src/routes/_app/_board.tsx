@@ -2,10 +2,10 @@ import { createFileRoute, Outlet, useSearch } from "@tanstack/react-router";
 import type { Status } from "example-schema";
 import { useRef } from "react";
 
-import { Board } from "../../features/board/components/board";
-import { TicketModal, type TicketModalHandle } from "../../features/board/components/ticket-modal";
-import { useUser } from "../../features/authentication/authentication";
-import { draftForBoardSearch, validateBoardSearch } from "../../features/board/board-search";
+import { useUser } from "@/features/authentication/authentication";
+import { draftForBoardSearch, validateBoardSearch } from "@/features/board/board-search";
+import { Board } from "@/features/board/components/board";
+import { TicketModal, type TicketModalHandle } from "@/features/board/components/ticket-modal";
 
 const BoardPage = () => {
 	const search = useSearch({ from: "/_app/_board" });

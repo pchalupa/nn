@@ -19,6 +19,9 @@ export default defineConfig(({ mode }) => ({
 		React(),
 		Babel({ presets: [reactCompilerPreset({ target: "19" })] }),
 	],
+	resolve: {
+		tsconfigPaths: true,
+	},
 	oxc: {
 		target: "es2022",
 	},

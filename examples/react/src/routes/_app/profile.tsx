@@ -4,13 +4,13 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 
-import { Drawer } from "../../features/navigation/components/drawer";
-import { MobileHeader } from "../../components/mobile-header";
-import { HeaderButton } from "../../components/mobile-header/header-button";
-import { PageHeader } from "../../components/page-header";
-import { Identity } from "../../features/profile/components/identity";
-import { ProfileForm } from "../../features/profile/components/profile-form";
-import { SignOutButton } from "../../features/profile/components/sign-out-button";
+import { MobileHeader } from "@/components/mobile-header";
+import { HeaderButton } from "@/components/mobile-header/header-button";
+import { PageHeader } from "@/components/page-header";
+import { Drawer } from "@/features/navigation/components/drawer";
+import { Identity } from "@/features/profile/components/identity";
+import { ProfileForm } from "@/features/profile/components/profile-form";
+import { SignOutButton } from "@/features/profile/components/sign-out-button";
 
 const Profile = () => {
 	const { t } = useTranslation();

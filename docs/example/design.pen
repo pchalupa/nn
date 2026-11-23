@@ -6789,7 +6789,7 @@
                   "id": "qfpBA",
                   "name": "Section Description",
                   "fill": "$gray-a11",
-                  "content": "Three statuses map to the three columns. Icons carry the color so the column chrome stays neutral.",
+                  "content": "Four statuses map to the four columns. Icons carry the color so the column chrome stays neutral.",
                   "lineHeight": "$line-height-2",
                   "fontFamily": "$default-font-family",
                   "fontSize": "$font-size-2",
@@ -6805,6 +6805,22 @@
               "gap": "$space-3",
               "alignItems": "center",
               "children": [
+                {
+                  "id": "p9eqc",
+                  "type": "ref",
+                  "ref": "asngs",
+                  "name": "Status Backlog",
+                  "descendants": {
+                    "FS6vf": {
+                      "icon": "circle-dotted",
+                      "fill": "$gray-11",
+                      "library": "phosphor"
+                    },
+                    "Z7OJR": {
+                      "content": "Backlog"
+                    }
+                  }
+                },
                 {
                   "type": "frame",
                   "id": "asngs",
@@ -10614,7 +10630,7 @@
               "width": "fill_container",
               "descendants": {
                 "NWlda": {
-                  "content": "11 tickets"
+                  "content": "14 tickets"
                 },
                 "zVprZ": {
                   "enabled": false
@@ -15526,7 +15542,7 @@
                   "id": "j2seU6",
                   "name": "Count",
                   "fill": "$gray-a11",
-                  "content": "11 tickets",
+                  "content": "14 tickets",
                   "lineHeight": "$line-height-1",
                   "fontFamily": "$default-font-family",
                   "fontSize": "$font-size-1",
@@ -16671,7 +16687,7 @@
                   "id": "oNwOM",
                   "name": "Count",
                   "fill": "$gray-a11",
-                  "content": "11 tickets",
+                  "content": "14 tickets",
                   "lineHeight": "$line-height-1",
                   "fontFamily": "$default-font-family",
                   "fontSize": "$font-size-1",
@@ -18127,14 +18143,46 @@
                   "fontWeight": "$font-weight-medium"
                 },
                 {
-                  "id": "eR6wm",
+                  "id": "t2XwJm",
                   "type": "ref",
                   "ref": "lPqj0",
                   "name": "Link PR",
-                  "width": "fill_container"
+                  "width": "fill_container",
+                  "descendants": {
+                    "ELZwU": {
+                      "type": "frame",
+                      "id": "H51V30",
+                      "name": "Meta",
+                      "gap": "$space-2",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "fPO2s",
+                          "name": "Text",
+                          "fill": "$gray-a10",
+                          "content": "#212",
+                          "lineHeight": "$line-height-1",
+                          "fontFamily": "$code-font-family",
+                          "fontSize": "$font-size-1",
+                          "fontWeight": "$font-weight-regular"
+                        },
+                        {
+                          "type": "icon",
+                          "id": "KHWRK",
+                          "name": "Remove",
+                          "width": 14,
+                          "height": 14,
+                          "icon": "x",
+                          "library": "phosphor",
+                          "fill": "$gray-11"
+                        }
+                      ]
+                    }
+                  }
                 },
                 {
-                  "id": "ATnHD",
+                  "id": "AJpV4",
                   "type": "ref",
                   "ref": "lPqj0",
                   "name": "Link Commit",
@@ -18149,7 +18197,52 @@
                       "content": "Add OR-Set for ticket labels"
                     },
                     "ELZwU": {
-                      "content": "a3f9c21"
+                      "type": "frame",
+                      "id": "waNpA",
+                      "name": "Meta",
+                      "gap": "$space-2",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "qGxEU",
+                          "name": "Text",
+                          "fill": "$gray-a10",
+                          "content": "a3f9c21",
+                          "lineHeight": "$line-height-1",
+                          "fontFamily": "$code-font-family",
+                          "fontSize": "$font-size-1",
+                          "fontWeight": "$font-weight-regular"
+                        },
+                        {
+                          "type": "icon",
+                          "id": "QfddY",
+                          "name": "Remove",
+                          "width": 14,
+                          "height": 14,
+                          "icon": "x",
+                          "library": "phosphor",
+                          "fill": "$gray-11"
+                        }
+                      ]
+                    }
+                  }
+                },
+                {
+                  "id": "rpGQI",
+                  "type": "ref",
+                  "ref": "XMw8n",
+                  "name": "Add Link",
+                  "width": "fill_container",
+                  "descendants": {
+                    "q1BQqr": {
+                      "icon": "link"
+                    },
+                    "DfhtQ": {
+                      "content": "Paste a URL or PR number…"
+                    },
+                    "Ow2nn/C3tVU": {
+                      "content": "↵"
                     }
                   }
                 }
@@ -18383,7 +18476,7 @@
                   "name": "Count",
                   "enabled": false,
                   "fill": "$gray-a11",
-                  "content": "11 tickets",
+                  "content": "14 tickets",
                   "lineHeight": "$line-height-1",
                   "fontFamily": "$default-font-family",
                   "fontSize": "$font-size-1",

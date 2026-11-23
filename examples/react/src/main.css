@@ -3,3 +3,66 @@
 body {
 	margin: 0;
 }
+
+@media (hover: hover) {
+	.nav-row:hover {
+		background-color: var(--gray-a4);
+	}
+}
+
+.ticket-dialog {
+	--dialog-content-padding: 0;
+}
+
+@media (width < 1024px) {
+	.desktop-card {
+		--card-padding: 0;
+		--card-border-width: 0px;
+		overflow: visible;
+		contain: none;
+	}
+
+	.desktop-card::before,
+	.desktop-card::after {
+		display: none;
+	}
+
+	.ticket-dialog {
+		position: fixed;
+		inset: 0;
+		margin: 0;
+		border-radius: 0;
+		background-color: var(--color-background);
+	}
+
+	.profile-stats {
+		border-top: 1px solid var(--gray-a6);
+		border-bottom: 1px solid var(--gray-a6);
+	}
+
+	.stat-number {
+		display: block;
+		color: var(--gray-12);
+	}
+
+	.profile-actions {
+		border-top: 1px solid var(--gray-a6);
+		background-color: var(--color-background);
+	}
+
+	.bar-ghost-button {
+		height: var(--space-8);
+		box-sizing: border-box;
+		margin: 0;
+	}
+}
+
+@media (min-width: 1024px) {
+	.ticket-dialog {
+		margin-bottom: calc(var(--space-6) - max(var(--space-6), 6vh));
+	}
+
+	.ticket-footer {
+		background-color: var(--gray-a2);
+	}
+}

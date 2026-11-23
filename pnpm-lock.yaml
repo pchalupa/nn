@@ -331,12 +331,18 @@ importers:
       '@nn/sse-sync':
         specifier: workspace:^
         version: link:../../packages/sse-sync
+      '@phosphor-icons/react':
+        specifier: ^2.1.10
+        version: 2.1.10(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
       '@radix-ui/themes':
         specifier: ^3.3.0
         version: 3.3.0(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
       '@simplewebauthn/browser':
         specifier: ^14.0.0
         version: 14.0.0
+      '@tanstack/react-hotkeys':
+        specifier: ~0.27.1
+        version: 0.27.1(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
       '@tanstack/react-router':
         specifier: ~1.170.46
         version: 1.170.46(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
@@ -2693,6 +2699,13 @@ packages:
     cpu: [x64]
     os: [win32]
 
+  '@phosphor-icons/react@2.1.10':
+    resolution: {integrity: sha512-vt8Tvq8GLjheAZZYa+YG/pW7HDbov8El/MANW8pOAz4eGxrwhnbfrQZq0Cp4q8zBEu8NIhHdnr+r8thnfRSNYA==}
+    engines: {node: '>=10'}
+    peerDependencies:
+      react: '>= 16.8'
+      react-dom: '>= 16.8'
+
   '@pinojs/redact@0.4.0':
     resolution: {integrity: sha512-k2ENnmBugE/rzQfEcdWHcCY+/FM3VLzH9cYEsbdsoqrvzAKRhUZeRNhAZvB8OitQJ1TBed3yqWtdjzS6wJKBwg==}
 
@@ -3857,6 +3870,17 @@ packages:
   '@tanstack/history@1.162.5':
     resolution: {integrity: sha512-w1+YvwmTkwt5n8yUqEH3IWZ9DsmorCZW/EQ3KYHnqEgIkOZpH54NvW6/Epq3Dzb8H0ifIeYX8PExvrNLIH5FIA==}
     engines: {node: '>=20.19'}
+
+  '@tanstack/hotkeys@0.33.0':
+    resolution: {integrity: sha512-xZ7A28qJ2YUq+bxhclEquxvM6LpwGMLUK0daiNC2hJ5frXHeGFdyjgG+Onz77ZwQw2XWHK5hLnWhQQ1vCZUkQQ==}
+    engines: {node: '>=20'}
+
+  '@tanstack/react-hotkeys@0.27.1':
+    resolution: {integrity: sha512-HFs7zakSgaO3FqOPp2HHJpeixKdWL+LLG0l2oMloyY24xbVfsOKD/8YN8QCD4sseujG0/muXVrB8v5io3f0tDw==}
+    engines: {node: '>=20'}
+    peerDependencies:
+      react: '>=18.0.0'
+      react-dom: '>=18.0.0'
 
   '@tanstack/react-router@1.170.46':
     resolution: {integrity: sha512-ez1iNIhsPjGlaDHg3BXWs67EWVIYzB2tbopEHYDESdkO7owgkGb5de52+5Kv2v1fxdkggcNzo35bdk4arTVGQw==}
@@ -8068,6 +8092,11 @@ snapshots:
   '@oxlint/binding-win32-x64-msvc@1.94.0':
     optional: true
 
+  '@phosphor-icons/react@2.1.10(react-dom@19.3.1(react@19.3.1))(react@19.3.1)':
+    dependencies:
+      react: 19.3.1
+      react-dom: 19.3.1(react@19.3.1)
+
   '@pinojs/redact@0.4.0': {}
 
   '@playwright/test@1.65.1':
@@ -9106,6 +9135,14 @@ snapshots:
       oxlint: 1.94.0
 
   '@tanstack/history@1.162.5': {}
+
+  '@tanstack/hotkeys@0.33.0': {}
+
+  '@tanstack/react-hotkeys@0.27.1(react-dom@19.3.1(react@19.3.1))(react@19.3.1)':
+    dependencies:
+      '@tanstack/hotkeys': 0.33.0
+      react: 19.3.1
+      react-dom: 19.3.1(react@19.3.1)
 
   '@tanstack/react-router@1.170.46(react-dom@19.3.1(react@19.3.1))(react@19.3.1)':
     dependencies:

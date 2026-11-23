@@ -17,6 +17,17 @@ jobs:
       - run: pnpm clutter:check
       - run: pnpm ts:check
       - run: pnpm test
+  react-doctor:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - uses: millionco/react-doctor@v2
+        with:
+          comment: false
+          project: "@nn/react-devtools,@nn/react,example-react"
   e2e:
     runs-on: ubuntu-latest
     timeout-minutes: 5

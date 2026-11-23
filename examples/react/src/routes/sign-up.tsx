@@ -1,18 +1,22 @@
-import { Button, Card, Flex, Heading, Link, Separator, Text, TextField } from "@radix-ui/themes";
-import { createFileRoute, Link as RouterLink, redirect, useNavigate } from "@tanstack/react-router";
-import { useForm } from "react-hook-form";
+import { TextField } from "@radix-ui/themes";
+import { createFileRoute, redirect, useNavigate } from "@tanstack/react-router";
+import { useForm, useFormState } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 
-import { Field } from "../components/field";
-import { signUp } from "../modules/authentication/authentication";
-import { authenticated } from "../modules/authentication/session";
-import { useMutation } from "../store";
+import { Field } from "@/components/field";
+import { authenticated, signUp } from "@/features/authentication/authentication";
+import { AuthCard } from "@/features/authentication/components/auth-card";
+import { useMutation } from "@/store";
 
 const SignUp = () => {
 	const { t } = useTranslation();
 	const navigate = useNavigate();
 	const mutate = useMutation();
 	const form = useForm({ defaultValues: { name: "" } });
+	const { errors, isSubmitting } = useFormState({ control: form.control });
+	let nameError: string | undefined;
+
+	if (errors.name) nameError = t("nameRequired");
 
 	const handleSubmit = form.handleSubmit(async ({ name }) => {
 		try {
@@ -28,33 +32,24 @@ const SignUp = () => {
 	});
 
 	return (
-		<Flex asChild flexGrow="1" align="center" justify="center">
-			<main>
-				<Card size="3">
-					<Flex direction="column" gap="4" width="280px">
-						<Heading as="h1" size="5" align="center">
-							{t("welcome")}
-						</Heading>
-						<form noValidate onSubmit={handleSubmit}>
-							<Flex direction="column" gap="3">
-								<Field label={t("name")}>
-									<TextField.Root autoComplete="name" {...form.register("name")} />
-								</Field>
-								<Button type="submit" disabled={form.formState.isSubmitting}>
-									{t("signUp")}
-								</Button>
-							</Flex>
-						</form>
-						<Separator size="4" />
-						<Text as="p" size="2" align="center">
-							<Link asChild color="gray">
-								<RouterLink to="/sign-in">{t("signIn")}</RouterLink>
-							</Link>
-						</Text>
-					</Flex>
-				</Card>
-			</main>
-		</Flex>
+		<AuthCard
+			title={t("signUpTitle")}
+			body={t("signUpBody")}
+			switchText={t("haveAccount")}
+			switchLink={{ to: "/sign-in", label: t("signIn") }}
+			submitting={isSubmitting}
+			error={errors.root?.message}
+			onSubmit={handleSubmit}
+		>
+			<Field label={t("name")} hint={t("nameHint")} error={nameError}>
+				<TextField.Root
+					size={{ initial: "3", md: "2" }}
+					autoComplete="name"
+					placeholder={t("namePlaceholder")}
+					{...form.register("name", { validate: (value) => value.trim() !== "" })}
+				/>
+			</Field>
+		</AuthCard>
 	);
 };
 

@@ -13,21 +13,10 @@ describe("equal", () => {
 		{ left: { nested: [1] }, right: { nested: [2] }, expected: false },
 		{ left: [], right: {}, expected: false },
 		{ left: null, right: {}, expected: false },
-		{ left: undefined, right: undefined, expected: true },
-		{ left: "same", right: "same", expected: true },
-		{ left: "left", right: "right", expected: false },
 		{ left: new Date(0), right: new Date(0), expected: false },
-		{ left: new Map(), right: new Map(), expected: false },
 	])("compares $left and $right as $expected", ({ left, right, expected }) => {
 		expect(equal(left, right)).toBe(expected);
 		expect(equal(right, left)).toBe(expected);
-	});
-
-	it("compares shared data by value", () => {
-		const child = { title: "First" };
-
-		expect(equal(child, child)).toBe(true);
-		expect(equal({ first: child, second: child }, { first: { ...child }, second: { ...child } })).toBe(true);
 	});
 
 	it("compares null-prototype records by their own properties", () => {

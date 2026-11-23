@@ -53,10 +53,11 @@ describe("authentication", () => {
 	});
 
 	describe("signUp", () => {
-		it("requests a discoverable passkey for the user", async () => {
+		it("requests a discoverable passkey for the user and stays signed out when cancelled", async () => {
 			vi.mocked(startRegistration).mockRejectedValue(cancelled);
 
 			await expect(signUp({ name: "Ada" })).rejects.toBe(cancelled);
+			expect(authenticated()).toBe(false);
 
 			expect(startRegistration).toHaveBeenCalledExactlyOnceWith({
 				optionsJSON: expect.objectContaining({
@@ -95,20 +96,14 @@ describe("authentication", () => {
 			await expect(signUp({ name: "Ada" })).rejects.toThrow("Missing public key");
 			expect(authenticated()).toBe(false);
 		});
-
-		it("throws when sign-up is cancelled", async () => {
-			vi.mocked(startRegistration).mockRejectedValue(cancelled);
-
-			await expect(signUp({ name: "Ada" })).rejects.toBe(cancelled);
-			expect(authenticated()).toBe(false);
-		});
 	});
 
 	describe("signIn", () => {
-		it("requests any passkey for this site", async () => {
+		it("requests any passkey for this site and stays signed out when cancelled", async () => {
 			vi.mocked(startAuthentication).mockRejectedValue(cancelled);
 
 			await expect(signIn([account])).rejects.toBe(cancelled);
+			expect(authenticated()).toBe(false);
 
 			expect(startAuthentication).toHaveBeenCalledExactlyOnceWith({
 				optionsJSON: expect.objectContaining({ rpId: "localhost", userVerification: "preferred" }),
@@ -124,26 +119,16 @@ describe("authentication", () => {
 			expect(authenticated()).toBe(true);
 		});
 
-		it("throws for an account that is not on this device", async () => {
+		it.each([
+			{ name: "an account that is not on this device", candidate: { ...account, id: crypto.randomUUID() } },
+			{
+				name: "a passkey that is not one of the account's passkeys",
+				candidate: { ...account, passkeys: [{ credentialId: "credential-2" }] },
+			},
+		])("throws for $name", async ({ candidate }) => {
 			vi.mocked(startAuthentication).mockResolvedValue(assertion);
 
-			await expect(signIn([{ ...account, id: crypto.randomUUID() }])).rejects.toBeInstanceOf(Error);
-			expect(authenticated()).toBe(false);
-		});
-
-		it("throws when the passkey is not one of the account's passkeys", async () => {
-			vi.mocked(startAuthentication).mockResolvedValue(assertion);
-
-			await expect(signIn([{ ...account, passkeys: [{ credentialId: "credential-2" }] }])).rejects.toThrow(
-				"Unknown passkey",
-			);
-			expect(authenticated()).toBe(false);
-		});
-
-		it("throws when the passkey prompt is cancelled", async () => {
-			vi.mocked(startAuthentication).mockRejectedValue(cancelled);
-
-			await expect(signIn([account])).rejects.toBe(cancelled);
+			await expect(signIn([candidate])).rejects.toThrow("Unknown passkey");
 			expect(authenticated()).toBe(false);
 		});
 	});

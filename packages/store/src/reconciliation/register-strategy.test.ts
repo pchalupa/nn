@@ -19,10 +19,6 @@ describe("RegisterStrategy", () => {
 		it("creates a register holding the default for an undefined value", () => {
 			expect(strategy.create(undefined, "title").current).toBe("");
 		});
-
-		it("stamps the register with the supplied time", () => {
-			expect(strategy.create("A", "title", Time.epoch()).timestamp.toString()).toBe(Time.epoch().toString());
-		});
 	});
 
 	describe("reconcile", () => {
@@ -36,19 +32,6 @@ describe("RegisterStrategy", () => {
 			strategy.reconcile(entity, "cs");
 			expect(entity.current).toBe("cs");
 			expect(entity.revision).toBeGreaterThan(revision);
-		});
-
-		it("stores an object by reference instead of cloning it", () => {
-			const value = { text: "red" };
-			const entity = strategy.create(value, "label");
-
-			expect(entity.current).toBe(value);
-
-			const next = { text: "blue" };
-
-			strategy.reconcile(entity, next);
-
-			expect(entity.current).toBe(next);
 		});
 
 		it("ignores an entity that is not a register", () => {

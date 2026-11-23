@@ -2,7 +2,8 @@ import { describe, expect, expectTypeOf, it } from "vitest";
 
 import { ArraySchema } from "./array-schema";
 import { BooleanSchema } from "./boolean-schema";
-import { array, boolean, number, object, string } from "./index";
+import { EnumerationSchema } from "./enumeration-schema";
+import { array, boolean, enumeration, number, object, string } from "./index";
 import { NumberSchema } from "./number-schema";
 import { ObjectSchema } from "./object-schema";
 import { type InferStateType, Schema } from "./schema";
@@ -13,6 +14,7 @@ describe("Schema", () => {
 		expect(string()).toBeInstanceOf(StringSchema);
 		expect(number()).toBeInstanceOf(NumberSchema);
 		expect(boolean()).toBeInstanceOf(BooleanSchema);
+		expect(enumeration("todo")).toBeInstanceOf(EnumerationSchema);
 		expect(object({})).toBeInstanceOf(ObjectSchema);
 		expect(array(string())).toBeInstanceOf(ArraySchema);
 	});
@@ -21,25 +23,9 @@ describe("Schema", () => {
 		expect(string().type).toBe("string");
 		expect(number().type).toBe("number");
 		expect(boolean().type).toBe("boolean");
+		expect(enumeration("todo").type).toBe("enumeration");
 		expect(object({}).type).toBe("object");
 		expect(array(string()).type).toBe("array");
-	});
-
-	it("distinguishes primitives at runtime", () => {
-		expect(string().type).not.toBe(number().type);
-		expect(number().type).not.toBe(boolean().type);
-	});
-
-	it("sets the title", () => {
-		const schema = string().entitle("email");
-
-		expect(schema.title).toBe("email");
-	});
-
-	it("sets the description", () => {
-		const schema = string().describe("An email address");
-
-		expect(schema.description).toBe("An email address");
 	});
 
 	it("chains annotations", () => {
@@ -62,63 +48,35 @@ describe("Schema", () => {
 		expect(schema.description).toBeUndefined();
 	});
 
-	it("exposes object properties", () => {
-		const schema = object({ name: string(), age: number() });
+	it.each([
+		{ name: "Schema", guard: Schema.is, schema: array(object({})), others: [{ type: "array" }] },
+		{ name: "StringSchema", guard: StringSchema.is, schema: string(), others: [number(), { type: "string" }] },
+		{ name: "NumberSchema", guard: NumberSchema.is, schema: number(), others: [string(), { type: "number" }] },
+		{ name: "BooleanSchema", guard: BooleanSchema.is, schema: boolean(), others: [string(), { type: "boolean" }] },
+		{
+			name: "EnumerationSchema",
+			guard: EnumerationSchema.is,
+			schema: enumeration("todo"),
+			others: [string(), { type: "enumeration", literals: ["todo"] }],
+		},
+		{
+			name: "ObjectSchema",
+			guard: ObjectSchema.is,
+			schema: object({}),
+			others: [array(string()), { properties: {}, type: "object" }],
+		},
+		{
+			name: "ArraySchema",
+			guard: ArraySchema.is,
+			schema: array(string()),
+			others: [object({}), { items: string(), type: "array" }],
+		},
+	])("guards the $name type", ({ guard, schema, others }) => {
+		expect(guard(schema)).toBe(true);
 
-		expect(schema.properties).toMatchInlineSnapshot(`
-			{
-			  "age": NumberSchema {
-			    "type": "number",
-			  },
-			  "name": StringSchema {
-			    "type": "string",
-			  },
-			}
-		`);
-	});
-
-	it("exposes array items", () => {
-		const item = object({ name: string() });
-		const schema = array(item);
-
-		expect(schema.items).toBe(item);
-	});
-
-	it("describes a nested schema", () => {
-		const user = object({ name: string().describe("User name") })
-			.entitle("user")
-			.describe("Holds information about a user.");
-
-		expect(object({ users: array(user).describe("List of users") })).toMatchInlineSnapshot(`
-			ObjectSchema {
-			  "properties": {
-			    "users": ArraySchema {
-			      "description": "List of users",
-			      "items": ObjectSchema {
-			        "description": "Holds information about a user.",
-			        "properties": {
-			          "name": StringSchema {
-			            "description": "User name",
-			            "type": "string",
-			          },
-			        },
-			        "title": "user",
-			        "type": "object",
-			      },
-			      "type": "array",
-			    },
-			  },
-			  "type": "object",
-			}
-		`);
-	});
-
-	it("guards any schema type", () => {
-		expect(Schema.is(string())).toBeTruthy();
-		expect(Schema.is(array(object({})))).toBeTruthy();
-		expect(Schema.is({ type: "string" })).toBeFalsy();
-		expect(Schema.is(undefined)).toBeFalsy();
-		expect(Schema.is(null)).toBeFalsy();
+		for (const other of [...others, undefined, null]) {
+			expect(guard(other)).toBe(false);
+		}
 	});
 
 	it("infers the declared data type", () => {

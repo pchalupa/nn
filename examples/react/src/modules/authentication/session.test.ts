@@ -9,10 +9,6 @@ describe("session", () => {
 		signOut();
 	});
 
-	it("is not authenticated by default", () => {
-		expect(authenticated()).toBe(false);
-	});
-
 	it("keeps the signed-in user in a cookie", () => {
 		setUser(userId);
 

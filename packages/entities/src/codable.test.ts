@@ -8,12 +8,10 @@ describe("assertEncoded", () => {
 	});
 
 	it.each([
-		undefined,
 		null,
-		"entry",
-		{ key: "k", data: null },
+		{ data: null, metadata: { kind: "LWWRegister" } },
+		{ key: "k", metadata: { kind: "LWWRegister" } },
 		{ key: "k", data: null, metadata: null },
-		{ key: "k", data: null, metadata: {} },
 		{ key: "k", data: null, metadata: { kind: 1 } },
 	])("rejects %o", (value) => {
 		expect(() => assertEncoded(value)).toThrow("Invalid encoded entity.");

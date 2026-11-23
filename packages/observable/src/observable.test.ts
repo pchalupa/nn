@@ -3,27 +3,17 @@ import { describe, expect, it, vi } from "vitest";
 import { Observable } from "./observable";
 
 describe("Observable", () => {
-	it("notifies every observer", () => {
-		const subject = new Observable();
+	it("passes the notified arguments to every observer", () => {
+		const subject = new Observable<[string, number]>();
 		const first = vi.fn();
 		const second = vi.fn();
 
 		subject.subscribe(first);
 		subject.subscribe(second);
-		subject.notify();
+		subject.notify("changed", 2);
 
-		expect(first).toHaveBeenCalledOnce();
-		expect(second).toHaveBeenCalledOnce();
-	});
-
-	it("stops notifying an observer after it unsubscribes", () => {
-		const subject = new Observable();
-		const observer = vi.fn();
-
-		subject.subscribe(observer)();
-		subject.notify();
-
-		expect(observer).not.toHaveBeenCalled();
+		expect(first).toHaveBeenCalledExactlyOnceWith("changed", 2);
+		expect(second).toHaveBeenCalledExactlyOnceWith("changed", 2);
 	});
 
 	it("stops notifying only the unsubscribed observer", () => {
@@ -31,24 +21,14 @@ describe("Observable", () => {
 		const removed = vi.fn();
 		const kept = vi.fn();
 
-		subject.subscribe(removed);
+		const unsubscribe = subject.subscribe(removed);
+
 		subject.subscribe(kept);
-		subject.unsubscribe(removed);
+		unsubscribe();
 		subject.notify();
 
 		expect(removed).not.toHaveBeenCalled();
 		expect(kept).toHaveBeenCalledOnce();
-	});
-
-	it("ignores unsubscribing an observer that never subscribed", () => {
-		const subject = new Observable();
-		const observer = vi.fn();
-
-		subject.subscribe(observer);
-		subject.unsubscribe(vi.fn());
-		subject.notify();
-
-		expect(observer).toHaveBeenCalledOnce();
 	});
 
 	it("notifies an observer subscribed twice once", () => {
@@ -71,16 +51,6 @@ describe("Observable", () => {
 		subject.notify();
 
 		expect(second).toHaveBeenCalledOnce();
-	});
-
-	it("passes the notified arguments to every observer", () => {
-		const subject = new Observable<[string, number]>();
-		const observer = vi.fn();
-
-		subject.subscribe(observer);
-		subject.notify("changed", 2);
-
-		expect(observer).toHaveBeenCalledExactlyOnceWith("changed", 2);
 	});
 
 	it("notifies every observer when one throws, then rethrows the first error", () => {

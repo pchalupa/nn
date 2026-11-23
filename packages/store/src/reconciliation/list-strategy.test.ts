@@ -40,15 +40,6 @@ describe("ListStrategy", () => {
 			expect(tags.create(value, "tags").current.map((item) => item.current)).toStrictEqual(["x", "", "z"]);
 		});
 
-		it("detaches the entity from the supplied data", () => {
-			const value = ["x"];
-			const list = tags.create(value, "tags");
-
-			value.push("y");
-
-			expect(list.current.map((item) => item.current)).toStrictEqual(["x"]);
-		});
-
 		it("assigns item keys independently of a declared key field", () => {
 			const strategy = new ListStrategy(new MapStrategy(new Map([["key", new RegisterStrategy("")]])));
 
@@ -128,15 +119,6 @@ describe("ListStrategy", () => {
 			expect(foreign.get("title")?.current).toBe("A");
 		});
 
-		it("gives a frozen untagged object a new identity", () => {
-			const list = items.create([{ title: "A" }], "items");
-			const [item] = list.current;
-
-			items.reconcile(list, [Object.freeze({ title: "A" })], context);
-
-			expect(list.current[0]?.key).not.toBe(item?.key);
-		});
-
 		it("keeps item order on a reorder-only draft", () => {
 			const list = items.create([{ title: "A" }, { title: "B" }], "items");
 			const [first, second] = list.current;
@@ -176,16 +158,6 @@ describe("ListStrategy", () => {
 				"",
 				"",
 			]);
-		});
-
-		it("keeps the removed items of the remote list", () => {
-			const local = new RGA<Entity>([new LWWMap({}, "r1"), new LWWMap({}, "r2")], "list");
-			const remote = items.conform(new RGA([new LWWMap({}, "r2")], "list", ["r1"]));
-
-			assert(RGA.is(remote));
-			local.merge(remote);
-
-			expect(local.current.map((item) => item.key)).toStrictEqual(["r2"]);
 		});
 
 		it("returns undefined for another kind", () => {

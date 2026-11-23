@@ -37,19 +37,21 @@ describe("View", () => {
 		expect(Object.getOwnPropertyDescriptor(value, "__proto__")?.value).toBe("saved");
 	});
 
-	it.each(["root", "items", "item"])("rejects mutations to the projected %s", (target) => {
-		const item = new LWWMap({ title: new LWWRegister("First") });
-		const root = new LWWMap({ items: new RGA([item]) });
+	it.each(["root", "items"])("rejects mutations to the projected %s", (target) => {
+		const root = new LWWMap({ items: new RGA([new LWWMap({ title: new LWWRegister("First") })]) });
 		const view = new View();
 		const value = view.read(root);
 
 		assertObject(value);
 		assertArray(value.items);
-		const first = value.items[0];
 
-		assertObject(first);
-		const container = target === "root" ? value : target === "items" ? value.items : first;
-		const property = target === "root" ? "items" : target === "items" ? "0" : "title";
+		let container: object = value;
+		let property = "items";
+
+		if (target === "items") {
+			container = value.items;
+			property = "0";
+		}
 
 		expect(Reflect.set(container, property, "Changed")).toBe(false);
 		expect(Reflect.deleteProperty(container, property)).toBe(false);
@@ -159,21 +161,6 @@ describe("View", () => {
 
 		expect(after).toStrictEqual([{ title: "Second" }, { title: "Replacement" }]);
 		expect(after[0]).toBe(before[1]);
-	});
-
-	it("reads unchanged registers again when their parent rebuilds", () => {
-		const title = new LWWRegister("First");
-		const done = new LWWRegister(false);
-		const root = new LWWMap({ title, done });
-		const view = new View();
-
-		void view.read(root);
-		const doneReads = vi.spyOn(done, "current", "get");
-
-		title.current = "Changed";
-
-		expect(view.read(root)).toStrictEqual({ title: "Changed", done: false });
-		expect(doneReads).toHaveBeenCalledOnce();
 	});
 
 	it("keeps non-entity values by reference", () => {

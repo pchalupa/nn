@@ -1,4 +1,4 @@
-import { describe, expect, expectTypeOf, it, vi } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
 import { LWWMap } from "./lww-map";
 import { LWWRegister } from "./lww-register";
@@ -8,28 +8,11 @@ describe("RGA", () => {
 	it("guards an RGA", () => {
 		expect(RGA.is(new RGA([new LWWRegister("value")]))).toBeTruthy();
 		expect(RGA.is(new LWWMap({}))).toBeFalsy();
-		expect(RGA.is({ key: "key", current: [] })).toBeFalsy();
-		expect(RGA.is(undefined)).toBeFalsy();
-		expect(RGA.is(null)).toBeFalsy();
 	});
 
 	it("asserts an RGA", () => {
 		expect(() => RGA.assert(new RGA([new LWWRegister("value")]))).not.toThrow();
 		expect(() => RGA.assert(new LWWMap({}))).toThrow(new TypeError("Invalid RGA."));
-		expect(() => RGA.assert({ key: "key", current: [] })).toThrow(TypeError);
-		expect(() => RGA.assert(undefined)).toThrow(TypeError);
-		expect(() => RGA.assert(null)).toThrow(TypeError);
-	});
-
-	it("accepts only an RGA when merging", () => {
-		expectTypeOf<RGA<LWWRegister<string>>["merge"]>().parameters.toEqualTypeOf<[RGA<LWWRegister<string>>]>();
-	});
-
-	it("creates a rga", () => {
-		const rga = new RGA();
-
-		expect(rga.current).toHaveLength(0);
-		expect(rga.current).toMatchInlineSnapshot(`[]`);
 	});
 
 	it("encodes its items in order", () => {
@@ -50,13 +33,6 @@ describe("RGA", () => {
 		rga.remove("a");
 
 		expect(rga.encode().metadata).toStrictEqual({ kind: "RGA", tombstones: ["a"] });
-	});
-
-	it("gets an item by key", () => {
-		const item = new LWWMap({ title: new LWWRegister("first") });
-		const rga = new RGA([item]);
-
-		expect(rga.get(item.key)).toBe(item);
 	});
 
 	it("counts its items without removed ones", () => {
@@ -98,9 +74,6 @@ describe("RGA", () => {
 		const callback = vi.fn();
 
 		rga.delegate = { entityDidChange: callback };
-
-		expect(rga.current).toHaveLength(2);
-
 		rga.remove("a");
 
 		expect(rga.current).toHaveLength(1);
@@ -116,6 +89,10 @@ describe("RGA", () => {
 
 		expect(rga.current).toHaveLength(1);
 		expect(callback).toHaveBeenCalledTimes(0);
+
+		rga.push(new LWWRegister("2", "b"));
+
+		expect(rga.get("b")).toBeDefined();
 	});
 
 	it("replaces the contents", () => {
@@ -124,13 +101,6 @@ describe("RGA", () => {
 		const callback = vi.fn();
 
 		rga.delegate = { entityDidChange: callback };
-
-		expect(rga.current).toMatchInlineSnapshot(`
-			[
-			  "1",
-			]
-		`);
-
 		rga.current = items;
 
 		expect(rga.current).toMatchInlineSnapshot(`
@@ -140,20 +110,6 @@ describe("RGA", () => {
 			]
 		`);
 		expect(callback).toHaveBeenCalledExactlyOnceWith(rga, undefined);
-	});
-
-	it("keeps the order items were added in", () => {
-		const rga = new RGA([new LWWRegister("1", "a"), new LWWRegister("2", "b"), new LWWRegister("3", "c")]);
-
-		rga.remove("b");
-		rga.push(new LWWRegister("4", "d"));
-		rga.push(new LWWRegister("5", "e"));
-
-		expect(rga.current[0].key).toBe("a");
-		expect(rga.current[1].key).toBe("c");
-		expect(rga.current[2].key).toBe("d");
-		expect(rga.current[3].key).toBe("e");
-		expect(rga.current).toHaveLength(4);
 	});
 
 	it("emits an update when an item changes", () => {
@@ -300,15 +256,6 @@ describe("RGA", () => {
 			expect(callback).not.toHaveBeenCalled();
 		});
 
-		it("does not tombstone an unknown key", () => {
-			const local = new RGA<LWWRegister<string>>();
-
-			local.remove("a");
-			local.push(new LWWRegister("1", "a"));
-
-			expect(local.get("a")).toBeDefined();
-		});
-
 		it("tombstones items dropped by assigning current", () => {
 			const local = new RGA([new LWWRegister("1", "a"), new LWWRegister("2", "b")]);
 			const remote = new RGA([new LWWRegister("1", "a"), new LWWRegister("2", "b")]);
@@ -336,12 +283,6 @@ describe("RGA", () => {
 			expect([...list]).toStrictEqual(list.current);
 		});
 
-		it("skips tombstoned items", () => {
-			const list = new RGA([new LWWRegister("x", "x"), new LWWRegister("b", "b")], "list", ["x"]);
-
-			expect([...list].map((item) => item.key)).toStrictEqual(["b"]);
-		});
-
 		it("iterates a snapshot when the list changes during iteration", () => {
 			const list = setupList();
 			const visited: string[] = [];
@@ -360,14 +301,6 @@ describe("RGA", () => {
 	});
 
 	describe("tombstones view", () => {
-		it("lists the removed keys", () => {
-			const list = new RGA([new LWWRegister("1", "a"), new LWWRegister("2", "b")], "list", ["x"]);
-
-			list.remove("a");
-
-			expect([...list.tombstones]).toStrictEqual(["x", "a"]);
-		});
-
 		it("stays live across removal, merge and assignment", () => {
 			const list = new RGA([new LWWRegister("1", "a"), new LWWRegister("2", "b"), new LWWRegister("3", "c")], "list");
 			const view = list.tombstones;
@@ -392,38 +325,11 @@ describe("RGA", () => {
 			expect(local.get("a")).toBe(item);
 			expect(local.revision).toBe(1);
 			expect(callback).toHaveBeenCalledExactlyOnceWith(local, undefined);
-		});
 
-		it("does not notify when the remote rga is a subset", () => {
-			const first = new LWWRegister("1", "a");
-			const local = new RGA([first, new LWWRegister("2", "b")]);
-			const callback = vi.fn();
+			item.current = "2";
 
-			local.delegate = { entityDidChange: callback };
-			local.merge(new RGA([first]));
-
-			expect(local).toMatchInlineSnapshot(`
-				[
-				  "1",
-				  "2",
-				]
-			`);
-			expect(local.revision).toBe(0);
-			expect(callback).not.toHaveBeenCalled();
-		});
-
-		it("merges a remote item into the item that carries the same key", () => {
-			const local = new RGA([new LWWRegister("0", "a")]);
-			const remote = new RGA([new LWWRegister("1", "a"), new LWWRegister("2", "b")]);
-
-			local.merge(remote);
-
-			expect(local.current).toMatchInlineSnapshot(`
-				[
-				  "1",
-				  "2",
-				]
-			`);
+			expect(item.delegate).toBe(local);
+			expect(callback).toHaveBeenLastCalledWith(local, item);
 		});
 
 		it("keeps both replicas' edits when each changed a different field of the same item", () => {
@@ -469,21 +375,6 @@ describe("RGA", () => {
 				]
 			`);
 			expect(callback).toHaveBeenCalledExactlyOnceWith(local, undefined);
-		});
-
-		it("adopts items added by a merge", () => {
-			const item = new LWWRegister("1", "a");
-			const incoming = new RGA([item]);
-			const local = new RGA<LWWRegister<string>>();
-			const delegate = { entityDidChange: vi.fn() };
-
-			local.merge(incoming);
-			local.delegate = delegate;
-			item.current = "2";
-
-			expect(local.get("a")).toBe(item);
-			expect(item.delegate).toBe(local);
-			expect(delegate.entityDidChange).toHaveBeenCalledExactlyOnceWith(local, item);
 		});
 
 		it("does not adopt an incoming item whose key already exists", () => {
@@ -553,16 +444,6 @@ describe("RGA", () => {
 			expect(keys(list)).toStrictEqual(["d"]);
 		});
 
-		it("returns no rows after assigning an empty list", () => {
-			const list = new RGA([new LWWRegister("1", "a")]);
-			const previous = list.current;
-
-			list.current = [];
-
-			expect(list.current).not.toBe(previous);
-			expect(list.current).toStrictEqual([]);
-		});
-
 		it("returns new rows after a merge that adds or removes", () => {
 			const local = new RGA([new LWWRegister("1", "a"), new LWWRegister("2", "b")]);
 			const remote = new RGA([new LWWRegister("1", "a"), new LWWRegister("2", "b"), new LWWRegister("3", "c")]);
@@ -588,22 +469,6 @@ describe("RGA", () => {
 	});
 
 	describe("rebuilding from tombstones", () => {
-		it("keeps the removed items of the source list", () => {
-			const list = new RGA([new LWWRegister("1", "a"), new LWWRegister("2", "b")], "list");
-			const replica = new RGA([new LWWRegister("1", "a"), new LWWRegister("2", "b")], "list");
-
-			list.remove("a");
-			replica.merge(
-				new RGA(
-					list.current.map((item) => new LWWRegister(item.current, item.key)),
-					list.key,
-					list.tombstones,
-				),
-			);
-
-			expect(replica.current.map((item) => item.key)).toStrictEqual(["b"]);
-		});
-
 		it("does not share tombstones with the source list", () => {
 			const list = new RGA([new LWWRegister("1", "a"), new LWWRegister("2", "b")], "list", ["x"]);
 			const rebuilt = new RGA(

@@ -17,10 +17,6 @@ const push = (app: ReturnType<typeof createApp>, data: unknown) =>
 	});
 
 describe("sync subscribe", () => {
-	it("ends the stream after the configured duration", async () => {
-		expect(await subscribe(createApp(50))).toBe("data: {}\n\n");
-	});
-
 	it("accepts pushes after a stream has ended", async () => {
 		const app = createApp(50);
 

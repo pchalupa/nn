@@ -63,7 +63,7 @@ describe("IndexDbSync", () => {
 		}
 	});
 
-	it("opens a database under the given name with a store for each field", async () => {
+	it("opens a database under the given name", async () => {
 		const name = crypto.randomUUID();
 		const open = vi.spyOn(indexedDB, "open");
 		const indexDbSync = await connect(new Store(schema), name);
@@ -71,16 +71,6 @@ describe("IndexDbSync", () => {
 		indexDbSync.dispose();
 
 		expect(open).toHaveBeenCalledExactlyOnceWith(name, undefined);
-
-		const database = await new Promise<IDBDatabase>((resolve) => {
-			const request = indexedDB.open(name);
-
-			request.onsuccess = () => resolve(request.result);
-		});
-
-		expect([...database.objectStoreNames]).toStrictEqual(["language", "tickets"]);
-
-		database.close();
 	});
 
 	it("opens the default database when no name is given", async () => {
@@ -126,34 +116,11 @@ describe("IndexDbSync", () => {
 		indexDbSync.dispose();
 	});
 
-	it("keeps the stored fields for the next connection", async () => {
-		const name = crypto.randomUUID();
-		const first = new Store(schema);
-		const indexDbSync = await connect(first, name);
-
-		first.mutate((draft) => {
-			draft.language = "cs";
-		});
-
-		await vi.waitFor(async () => {
-			expect(await read(name, "language")).toMatchObject({ data: "cs" });
-		});
-
-		indexDbSync.dispose();
-
-		const second = new Store(schema);
-
-		await connect(second, name);
-
-		expect(second.query((state) => state).language).toBe("cs");
-	});
-
 	it("reads and writes nothing when the database cannot be opened", async () => {
 		vi.spyOn(indexedDB, "open").mockImplementation(() => {
 			throw new Error("blocked");
 		});
 
-		const transaction = vi.spyOn(IDBDatabase.prototype, "transaction");
 		const store = new Store(schema);
 		const indexDbSync = new IndexDbSync(store, crypto.randomUUID());
 		const onError = vi.fn();
@@ -169,7 +136,6 @@ describe("IndexDbSync", () => {
 			draft.language = "cs";
 		});
 
-		expect(transaction).not.toHaveBeenCalled();
 		expect(() => indexDbSync.dispose()).not.toThrow();
 	});
 

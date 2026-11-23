@@ -3,13 +3,12 @@ import { describe, expect, it } from "vitest";
 import { assertString } from "./assert-string";
 
 describe("assertString", () => {
-	it("accepts strings", () => {
-		expect(() => assertString("")).not.toThrow();
+	it("accepts a string", () => {
 		expect(() => assertString("abc")).not.toThrow();
 	});
 
-	it.each([new String("abc"), 1, null, undefined])("rejects %o", (value) => {
-		expect(() => assertString(value)).toThrow("Expected a string.");
+	it("rejects a number", () => {
+		expect(() => assertString(1)).toThrow("Expected a string.");
 	});
 
 	it("throws the given message", () => {

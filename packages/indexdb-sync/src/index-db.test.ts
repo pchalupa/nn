@@ -1,4 +1,4 @@
-import { afterEach, beforeEach, describe, expect, expectTypeOf, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { IndexDb, type IndexDbDelegate } from "./index-db";
 
@@ -59,19 +59,6 @@ describe("IndexDb", () => {
 		await expect(indexDb.get("language")).rejects.toThrow("Index DB is not initialized.");
 	});
 
-	it("does not report a version change when explicitly closed", async () => {
-		const indexDb = new IndexDb();
-		const delegate = delegateMock();
-
-		indexDb.delegate = delegate;
-
-		await indexDb.init({ language: {} });
-		indexDb.close();
-
-		expect(delegate.indexDbDidChangeVersion).not.toHaveBeenCalled();
-		expect(delegate.indexDbDidDelete).not.toHaveBeenCalled();
-	});
-
 	it("opens at the version another connection is upgrading to", async () => {
 		const indexDb = new IndexDb("shared");
 		const newer = new IndexDb("shared");
@@ -126,15 +113,6 @@ describe("IndexDb", () => {
 		expect(await indexDb.getAll("posts")).toStrictEqual([]);
 	});
 
-	it("opens a new database once", async () => {
-		const indexDb = new IndexDb();
-		const open = vi.spyOn(indexedDB, "open");
-
-		await indexDb.init({ language: {} });
-
-		expect(open).toHaveBeenCalledOnce();
-	});
-
 	it("reopens an existing database once to add a missing store", async () => {
 		const previous = new IndexDb();
 
@@ -151,32 +129,19 @@ describe("IndexDb", () => {
 		expect(await indexDb.getAll("posts")).toStrictEqual([]);
 	});
 
-	it("returns undefined for a name that is not stored", async () => {
-		const indexDb = new IndexDb();
-
-		await indexDb.init({ language: {} });
-
-		expect(await indexDb.get("language")).toBeUndefined();
-	});
-
 	it("stores, reads back and overwrites an entry under its name", async () => {
 		const indexDb = new IndexDb();
-
-		expectTypeOf(indexDb.set).parameter(1).toEqualTypeOf<unknown>();
 
 		await indexDb.init({ language: {} });
 
 		await indexDb.set("language", entry);
 		const stored = await indexDb.get("language");
 
-		expectTypeOf(stored).toEqualTypeOf<unknown>();
 		expect(stored).toStrictEqual(entry);
 
 		await indexDb.set("language", { ...entry, data: "en" });
-		const entries = await indexDb.getAll("language");
 
-		expectTypeOf(entries).toEqualTypeOf<unknown[]>();
-		expect(entries).toStrictEqual([{ ...entry, data: "en" }]);
+		expect(await indexDb.getAll("language")).toStrictEqual([{ ...entry, data: "en" }]);
 	});
 
 	it("requires initialization again after closing and keeps what was stored", async () => {

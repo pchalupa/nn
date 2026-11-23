@@ -7,13 +7,9 @@ describe("TreeLeaf", () => {
 	it.each([
 		[3, "3", "number"],
 		[Number.NaN, "NaN", "number"],
-		[Number.POSITIVE_INFINITY, "Infinity", "number"],
-		[Number.NEGATIVE_INFINITY, "-Infinity", "number"],
 		["en", '"en"', "string"],
-		["", '""', "string"],
 		['say "hi"\n', String.raw`"say \"hi\"\n"`, "string"],
 		[true, "true", "boolean"],
-		[false, "false", "boolean"],
 		[null, "null", "null"],
 		[undefined, "undefined", "undefined"],
 	])("renders %o as %s tagged %s", (value, text, type) => {

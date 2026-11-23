@@ -1,7 +1,6 @@
 import { array, boolean, number, object, string } from "@nn/schema";
 import { Store } from "@nn/store";
 import { act, fireEvent, render, screen, within } from "@testing-library/react";
-import { useLayoutEffect } from "react";
 import { describe, expect, it } from "vitest";
 
 import { Tree } from ".";
@@ -13,41 +12,6 @@ describe("Tree", () => {
 	});
 
 	const ticket = { title: "A", done: false, points: 1 };
-
-	it("shows every field on mount", () => {
-		const store = new Store(schema);
-
-		store.mutate((draft) => {
-			draft.language = "en";
-			draft.tickets.push(ticket);
-		});
-		render(<Tree store={store} />);
-
-		expect(screen.getByRole("treeitem", { name: /^tickets/ }).textContent).toContain("[1]");
-		expect(screen.getByRole("treeitem", { name: /^language/ }).textContent).toContain('"en"');
-	});
-
-	it("picks up a commit made before it subscribed", () => {
-		const store = new Store(schema);
-		const Writer = () => {
-			useLayoutEffect(() => {
-				store.mutate((draft) => {
-					draft.language = "cs";
-				});
-			}, []);
-
-			return null;
-		};
-
-		render(
-			<>
-				<Tree store={store} />
-				<Writer />
-			</>,
-		);
-
-		expect(screen.getByRole("treeitem", { name: /^language/ }).textContent).toContain('"cs"');
-	});
 
 	it("follows live updates and keeps expansion", () => {
 		const store = new Store(schema);

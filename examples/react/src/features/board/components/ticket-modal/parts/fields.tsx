@@ -8,6 +8,7 @@ import { Caption } from "@/components/caption";
 import { Field } from "@/components/field";
 import { PersonAvatar } from "@/components/person-avatar";
 import { Status } from "@/features/board/components/status";
+import { addLabel, withoutLabel } from "@/features/board/labels";
 import { useQuery } from "@/store";
 
 import { AssigneeOption } from "./assignee-option";
@@ -28,34 +29,27 @@ export type TextFieldName = "title" | "description";
 /** Ticket fields that change through a control and save at once. */
 export type TicketProperties = Pick<TicketDraft, "status" | "assignee" | "labels">;
 
-/** Writes one change to a ticket property. */
-export interface PropertyChanges {
-	status: (status: TicketStatus) => void;
-	assignee: (assignee: string) => void;
-	addLabel: (label: string) => void;
-	removeLabel: (label: string) => void;
-}
+/** Writes new values of some ticket properties. */
+export type PropertyChange = (patch: Partial<TicketProperties>) => void;
 
 const unassigned = "unassigned";
 
 interface TicketFieldsProps {
 	form: UseFormReturn<TicketDraft>;
-	ticketId?: string;
 	properties: TicketProperties;
-	changes: PropertyChanges;
-	onTextBlur: (name: TextFieldName) => void;
-	autoFocus: boolean;
+	onChange: PropertyChange;
+	onTextBlur?: (name: TextFieldName) => void;
+	autoFocus?: boolean;
 	children?: ReactNode;
 }
 
 /** Renders the editable ticket in reading order (title, property controls, then description and extra content), beside each other from `md` up and in one column below it. */
 export const TicketFields = ({
 	form,
-	ticketId,
 	properties,
-	changes,
+	onChange,
 	onTextBlur,
-	autoFocus,
+	autoFocus = false,
 	children,
 }: TicketFieldsProps) => {
 	const { t } = useTranslation();
@@ -70,16 +64,25 @@ export const TicketFields = ({
 	const handleStatusChange = (value: string) => {
 		const nextStatus = status.literals.find((option) => option === value);
 
-		if (nextStatus) changes.status(nextStatus);
+		if (nextStatus) onChange({ status: nextStatus });
 	};
 
 	const handleAssigneeChange = (value: string) => {
 		if (value === unassigned) {
-			changes.assignee("");
+			onChange({ assignee: "" });
 		} else {
-			changes.assignee(value);
+			onChange({ assignee: value });
 		}
 	};
+
+	const handleAddLabel = (label: string) => {
+		const labels = [...properties.labels];
+
+		addLabel(labels, label);
+		onChange({ labels });
+	};
+
+	const handleRemoveLabel = (label: string) => onChange({ labels: withoutLabel(properties.labels, label) });
 
 	return (
 		<Grid
@@ -100,7 +103,7 @@ export const TicketFields = ({
 						autoFocus={autoFocus}
 						{...form.register("title", {
 							validate: (value) => value.trim() !== "",
-							onBlur: () => onTextBlur("title"),
+							onBlur: () => onTextBlur?.("title"),
 						})}
 					/>
 				</Field>
@@ -139,12 +142,7 @@ export const TicketFields = ({
 						))}
 					</Select.Content>
 				</Select.Root>
-				<LabelInput
-					labels={properties.labels}
-					onAdd={changes.addLabel}
-					onRemove={changes.removeLabel}
-					ticketId={ticketId}
-				/>
+				<LabelInput labels={properties.labels} onAdd={handleAddLabel} onRemove={handleRemoveLabel} />
 			</Flex>
 			<Flex
 				gridArea="body"
@@ -163,7 +161,7 @@ export const TicketFields = ({
 									"calc(var(--space-3) - var(--space-1) * 1.5 + 1px) calc(var(--space-3) - var(--space-2) + 1px)",
 								backgroundClip: "border-box",
 							}}
-							{...form.register("description", { onBlur: () => onTextBlur("description") })}
+							{...form.register("description", { onBlur: () => onTextBlur?.("description") })}
 						/>
 					</Flex>
 				</Field>

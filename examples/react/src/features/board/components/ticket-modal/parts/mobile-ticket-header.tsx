@@ -4,7 +4,6 @@ import { useTranslation } from "react-i18next";
 
 import { MobileHeader } from "@/components/mobile-header";
 import { HeaderButton } from "@/components/mobile-header/parts/header-button";
-import { boardName } from "@/features/board/board-name";
 
 interface MobileTicketHeaderProps {
 	ticketKey?: string;
@@ -27,7 +26,7 @@ export const MobileTicketHeader = ({ ticketKey }: MobileTicketHeaderProps) => {
 				</Dialog.Close>
 			}
 			title={ticketKey ?? t("newTicket")}
-			subtitle={boardName}
+			subtitle="nn"
 		>
 			{ticketKey !== undefined && (
 				<HeaderButton label={t("copyLink")} onClick={handleCopyLink}>

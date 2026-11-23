@@ -7,21 +7,19 @@ import { Caption } from "@/components/caption";
 import { Tag } from "@/components/tag";
 import { Label } from "@/features/board/components/label-badge";
 
-import { LabelSuggestions } from "./label-suggestions";
 import { useLabelText } from "./use-label-text";
 
 interface LabelInputProps {
 	labels: string[];
 	onAdd: (label: string) => void;
 	onRemove: (label: string) => void;
-	ticketId?: string;
 }
 
-/** Adds and removes a ticket's labels and suggests labels used on other tickets; below `md` the input and suggestions stay hidden until "+ Add label" reveals them. */
-export const LabelInput = ({ labels, onAdd, onRemove, ticketId }: LabelInputProps) => {
+/** Adds and removes a ticket's labels; below `md` the input stays hidden until "+ Add label" reveals it. */
+export const LabelInput = ({ labels, onAdd, onRemove }: LabelInputProps) => {
 	const { t } = useTranslation();
 	const inputId = useId();
-	const { text, setText, add, handleChange, handleKeyDown } = useLabelText(labels, onAdd);
+	const { text, setText, handleChange, handleKeyDown } = useLabelText(labels, onAdd);
 	const [revealed, setRevealed] = useState(false);
 	const groupRef = useRef<HTMLDivElement>(null);
 	const inputRef = useRef<HTMLInputElement>(null);
@@ -91,7 +89,6 @@ export const LabelInput = ({ labels, onAdd, onRemove, ticketId }: LabelInputProp
 					</Box>
 				</Flex>
 			</Flex>
-			<LabelSuggestions labels={labels} ticketId={ticketId} revealed={revealed} onAdd={add} />
 		</Flex>
 	);
 };

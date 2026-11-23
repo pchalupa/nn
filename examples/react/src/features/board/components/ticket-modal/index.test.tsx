@@ -329,39 +329,6 @@ describe("TicketModal", () => {
 		expect(probe("labels")).toBe("bug");
 	});
 
-	it("suggests up to three labels from other tickets", async () => {
-		store.mutate((data) => {
-			data.tickets.push({ ...structuredClone(commented), id: "other", labels: ["bug", "docs", "ui", "api", "perf"] });
-			const ticket = data.tickets.find((entry) => entry.id === "commented");
-
-			if (ticket) ticket.labels = ["docs"];
-		});
-		await setup("commented");
-
-		expect(screen.getByText("Suggested")).toBeDefined();
-		expect(screen.queryByRole("button", { name: "docs" })).toBeNull();
-		expect(screen.queryByRole("button", { name: "perf" })).toBeNull();
-
-		await user.click(screen.getByRole("button", { name: "bug" }));
-
-		expect(screen.getByRole("button", { name: "Remove bug" })).toBeDefined();
-		expect(screen.getByRole("button", { name: "perf" })).toBeDefined();
-	});
-
-	it("adds only the clicked suggestion over typed text", async () => {
-		store.mutate((data) => {
-			data.tickets.push({ ...structuredClone(commented), id: "other", labels: ["bug"] });
-		});
-		await setup("commented");
-
-		await user.type(screen.getByRole("textbox", { name: "Labels" }), "bu");
-		await user.click(screen.getByRole("button", { name: "bug" }));
-
-		expect(
-			screen.getAllByRole("button", { name: /^Remove / }).map((button) => button.getAttribute("aria-label")),
-		).toStrictEqual(["Remove bug"]);
-	});
-
 	it("keeps a typed title when the ticket changes remotely", async () => {
 		await setup("commented");
 
@@ -621,17 +588,11 @@ describe("TicketModal", () => {
 			expect(onClose).not.toHaveBeenCalled();
 		});
 
-		it("hides an empty revealed label input on blur and keeps focus in it for a suggestion", async () => {
-			store.mutate((data) => {
-				data.tickets.push({ ...structuredClone(commented), id: "other", labels: ["docs"] });
-			});
+		it("hides an empty revealed label input on blur", async () => {
 			await setup("commented");
 
 			await user.click(screen.getByRole("button", { name: "Add label" }));
-			await user.click(screen.getByRole("button", { name: "docs" }));
 
-			expect(probe("labels")).toBe("docs,docs");
-			expect(document.activeElement).toBe(screen.getByRole("textbox", { name: "Labels" }));
 			expect(labelInputDisplay()).toStrictEqual(["rt-r-display-block", "md:rt-r-display-block"]);
 
 			await user.click(title());

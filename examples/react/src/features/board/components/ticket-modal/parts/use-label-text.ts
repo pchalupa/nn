@@ -20,5 +20,5 @@ export function useLabelText(labels: string[], onAdd: (label: string) => void) {
 		setText("");
 	};
 
-	return { text, setText, add, handleChange, handleKeyDown };
+	return { text, setText, handleChange, handleKeyDown };
 }

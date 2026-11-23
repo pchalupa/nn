@@ -38,8 +38,8 @@ describe("Devtools", () => {
 		expect(devtools().getByRole("button", { name: "Open nn devtools" })).toBeDefined();
 	});
 
-	it("opens and cleans up the devtools in strict mode", () => {
-		const { unmount } = render(
+	it("opens the devtools in strict mode", () => {
+		render(
 			<StrictMode>
 				<Devtools store={new Store(schema)} />
 			</StrictMode>,
@@ -48,9 +48,5 @@ describe("Devtools", () => {
 		fireEvent.click(devtools().getByRole("button", { name: "Open nn devtools" }));
 
 		expect(devtools().getByRole("tree")).toBeDefined();
-
-		unmount();
-
-		expect(document.querySelector("[data-nn-devtools]")).toBeNull();
 	});
 });

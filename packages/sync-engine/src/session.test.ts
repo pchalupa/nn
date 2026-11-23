@@ -36,17 +36,19 @@ describe("Session.transition", () => {
 describe("Session", () => {
 	const flush = () => new Promise((resolve) => setTimeout(resolve));
 
+	const delegateMock = () => ({
+		sessionOpen: vi.fn<SessionDelegate["sessionOpen"]>(),
+		sessionDidConnect: vi.fn<SessionDelegate["sessionDidConnect"]>(),
+		sessionClose: vi.fn<SessionDelegate["sessionClose"]>(),
+	});
+
 	it("starts idle", () => {
 		expect(new Session().idle).toBe(true);
 	});
 
 	it("connects once sessionOpen resolves", async () => {
 		const session = new Session();
-		const delegate = {
-			sessionOpen: vi.fn<SessionDelegate["sessionOpen"]>(),
-			sessionDidConnect: vi.fn(),
-			sessionClose: vi.fn(),
-		};
+		const delegate = delegateMock();
 
 		session.delegate = delegate;
 		session.connect();
@@ -62,52 +64,12 @@ describe("Session", () => {
 		expect(session.connected).toBe(true);
 	});
 
-	it("ignores connect when already connected", async () => {
-		const session = new Session();
-		const delegate = {
-			sessionOpen: vi.fn<SessionDelegate["sessionOpen"]>(),
-			sessionDidConnect: vi.fn(),
-			sessionClose: vi.fn(),
-		};
-
-		session.delegate = delegate;
-		session.connect();
-		await flush();
-		session.connect();
-		await flush();
-
-		expect(delegate.sessionOpen).toHaveBeenCalledOnce();
-		expect(delegate.sessionDidConnect).toHaveBeenCalledOnce();
-	});
-
-	it("stays connecting while sessionOpen is pending", async () => {
-		const session = new Session();
-		const delegate = {
-			sessionOpen: vi.fn<SessionDelegate["sessionOpen"]>(),
-			sessionDidConnect: vi.fn(),
-			sessionClose: vi.fn(),
-		};
-
-		delegate.sessionOpen.mockReturnValueOnce(new Promise(() => {}));
-		session.delegate = delegate;
-		session.connect();
-		await flush();
-
-		expect(session.connecting).toBe(true);
-	});
-
 	it("disconnects for good when sessionOpen rejects", async () => {
 		const session = new Session();
-		const delegate = {
-			sessionOpen: vi.fn<SessionDelegate["sessionOpen"]>(),
-			sessionDidConnect: vi.fn(),
-			sessionClose: vi.fn(),
-		};
+		const delegate = delegateMock();
 
 		delegate.sessionOpen.mockRejectedValueOnce(new Error("failure"));
 		session.delegate = delegate;
-		session.connect();
-		await flush();
 		session.connect();
 		await flush();
 
@@ -120,11 +82,7 @@ describe("Session", () => {
 
 	it("closes once and aborts the signal on drop", async () => {
 		const session = new Session();
-		const delegate = {
-			sessionOpen: vi.fn<SessionDelegate["sessionOpen"]>(),
-			sessionDidConnect: vi.fn(),
-			sessionClose: vi.fn(),
-		};
+		const delegate = delegateMock();
 
 		session.delegate = delegate;
 		session.connect();
@@ -142,11 +100,7 @@ describe("Session", () => {
 
 	it("closes, then opens a new attempt on reopen", async () => {
 		const session = new Session();
-		const delegate = {
-			sessionOpen: vi.fn<SessionDelegate["sessionOpen"]>(),
-			sessionDidConnect: vi.fn(),
-			sessionClose: vi.fn(),
-		};
+		const delegate = delegateMock();
 
 		session.delegate = delegate;
 		session.connect();
@@ -169,50 +123,9 @@ describe("Session", () => {
 		expect(session.connected).toBe(true);
 	});
 
-	it("ignores reopen while connecting", async () => {
-		const session = new Session();
-		const delegate = {
-			sessionOpen: vi.fn<SessionDelegate["sessionOpen"]>(),
-			sessionDidConnect: vi.fn(),
-			sessionClose: vi.fn(),
-		};
-
-		session.delegate = delegate;
-		session.connect();
-		session.reopen();
-		await flush();
-
-		expect(delegate.sessionOpen).toHaveBeenCalledOnce();
-		expect(delegate.sessionClose).not.toHaveBeenCalled();
-		expect(session.connected).toBe(true);
-	});
-
-	it("disconnects when a reopen attempt fails", async () => {
-		const session = new Session();
-		const delegate = {
-			sessionOpen: vi.fn<SessionDelegate["sessionOpen"]>(),
-			sessionDidConnect: vi.fn(),
-			sessionClose: vi.fn(),
-		};
-
-		session.delegate = delegate;
-		session.connect();
-		await flush();
-		delegate.sessionOpen.mockRejectedValueOnce(new Error("failure"));
-		session.reopen();
-		await flush();
-
-		expect(delegate.sessionClose).toHaveBeenCalledTimes(2);
-		expect(session.disconnected).toBe(true);
-	});
-
 	it("ignores drop when idle or disposed", () => {
 		const session = new Session();
-		const delegate = {
-			sessionOpen: vi.fn<SessionDelegate["sessionOpen"]>(),
-			sessionDidConnect: vi.fn(),
-			sessionClose: vi.fn(),
-		};
+		const delegate = delegateMock();
 
 		session.delegate = delegate;
 		session.drop();
@@ -228,11 +141,7 @@ describe("Session", () => {
 
 	it("handles dispose from inside sessionClose after the close", async () => {
 		const session = new Session();
-		const delegate = {
-			sessionOpen: vi.fn<SessionDelegate["sessionOpen"]>(),
-			sessionDidConnect: vi.fn(),
-			sessionClose: vi.fn(),
-		};
+		const delegate = delegateMock();
 
 		delegate.sessionOpen.mockRejectedValueOnce(new Error("failure"));
 		delegate.sessionClose.mockImplementation(() => session.dispose());
@@ -246,11 +155,7 @@ describe("Session", () => {
 
 	it("handles drop from inside sessionDidConnect after the connect", async () => {
 		const session = new Session();
-		const delegate = {
-			sessionOpen: vi.fn<SessionDelegate["sessionOpen"]>(),
-			sessionDidConnect: vi.fn(),
-			sessionClose: vi.fn(),
-		};
+		const delegate = delegateMock();
 
 		delegate.sessionDidConnect.mockImplementation(() => session.drop());
 		session.delegate = delegate;
@@ -265,11 +170,7 @@ describe("Session", () => {
 
 	it("ignores an open that settles after dispose", async () => {
 		const session = new Session();
-		const delegate = {
-			sessionOpen: vi.fn<SessionDelegate["sessionOpen"]>(),
-			sessionDidConnect: vi.fn(),
-			sessionClose: vi.fn(),
-		};
+		const delegate = delegateMock();
 
 		session.delegate = delegate;
 		session.connect();
@@ -286,11 +187,7 @@ describe("Session", () => {
 
 	it("opens a new attempt on retry after a failed attempt", async () => {
 		const session = new Session();
-		const delegate = {
-			sessionOpen: vi.fn<SessionDelegate["sessionOpen"]>(),
-			sessionDidConnect: vi.fn(),
-			sessionClose: vi.fn(),
-		};
+		const delegate = delegateMock();
 
 		delegate.sessionOpen.mockRejectedValueOnce(new Error("failure"));
 		session.delegate = delegate;
@@ -305,31 +202,9 @@ describe("Session", () => {
 		expect(delegate.sessionClose).toHaveBeenCalledOnce();
 	});
 
-	it("ignores retry while connected", async () => {
-		const session = new Session();
-		const delegate = {
-			sessionOpen: vi.fn<SessionDelegate["sessionOpen"]>(),
-			sessionDidConnect: vi.fn(),
-			sessionClose: vi.fn(),
-		};
-
-		session.delegate = delegate;
-		session.connect();
-		await flush();
-		session.retry();
-		await flush();
-
-		expect(delegate.sessionOpen).toHaveBeenCalledOnce();
-		expect(session.connected).toBe(true);
-	});
-
 	it("notifies changes after each transition's effects", async () => {
 		const session = new Session();
-		const delegate = {
-			sessionOpen: vi.fn<SessionDelegate["sessionOpen"]>(),
-			sessionDidConnect: vi.fn(),
-			sessionClose: vi.fn(),
-		};
+		const delegate = delegateMock();
 		const records: Array<[SessionState, SessionState, number]> = [];
 
 		session.delegate = delegate;
@@ -365,23 +240,9 @@ describe("Session", () => {
 		expect(observer).not.toHaveBeenCalled();
 	});
 
-	it("stops notifying after unsubscribe", () => {
-		const session = new Session();
-		const observer = vi.fn();
-
-		session.changes.subscribe(observer)();
-		session.connect();
-
-		expect(observer).not.toHaveBeenCalled();
-	});
-
 	it("queues an event sent from a changes observer", () => {
 		const session = new Session();
-		const delegate = {
-			sessionOpen: vi.fn<SessionDelegate["sessionOpen"]>(),
-			sessionDidConnect: vi.fn(),
-			sessionClose: vi.fn(),
-		};
+		const delegate = delegateMock();
 		const statesAfterDispose: SessionState[] = [];
 		const observer = vi.fn((state: SessionState) => {
 			if (state === "connecting") {

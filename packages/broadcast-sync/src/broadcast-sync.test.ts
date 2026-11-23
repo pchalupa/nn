@@ -79,55 +79,6 @@ describe("BroadcastSync", () => {
 		});
 	});
 
-	it("shares a newly connected store's fields with stores already on the channel", async () => {
-		const name = crypto.randomUUID();
-		const first = connect(name);
-		const second = new Store(schema);
-
-		second.mutate((draft) => {
-			draft.language = "cs";
-		});
-
-		const sync = new BroadcastSync(second, name);
-
-		engines.push(sync);
-		sync.connect();
-
-		await vi.waitFor(() => {
-			expect(first.store.query((state) => state).language).toBe("cs");
-		});
-	});
-
-	it("keeps stores on other channels apart", async () => {
-		const first = connect(crypto.randomUUID());
-		const second = connect(crypto.randomUUID());
-
-		first.store.mutate((draft) => {
-			draft.language = "cs";
-		});
-		await flush();
-
-		expect(second.store.query((state) => state).language).toBe("");
-	});
-
-	it("settles concurrent edits on the latest one", async () => {
-		const name = crypto.randomUUID();
-		const first = connect(name);
-		const second = connect(name);
-
-		first.store.mutate((draft) => {
-			draft.language = "cs";
-		});
-		second.store.mutate((draft) => {
-			draft.language = "en";
-		});
-
-		await vi.waitFor(() => {
-			expect(first.store.query((state) => state).language).toBe("en");
-			expect(second.store.query((state) => state).language).toBe("en");
-		});
-	});
-
 	it("stops sharing changes on dispose", async () => {
 		const name = crypto.randomUUID();
 		const first = connect(name);

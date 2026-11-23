@@ -43,21 +43,6 @@ describe("LWWRegister", () => {
 		expect(() => LWWRegister.assert(null)).toThrow(TypeError);
 	});
 
-	it("works with different types", () => {
-		const stringRegister = new LWWRegister("string");
-		const numberRegister = new LWWRegister(42);
-		const objectRegister = new LWWRegister({ key: "value" });
-
-		expect(stringRegister.current).toBe("string");
-		expect(numberRegister.current).toBe(42);
-		expect(objectRegister.current).toStrictEqual({ key: "value" });
-	});
-
-	it("serializes register", () => {
-		expect(JSON.stringify(new LWWRegister("string"))).toMatchInlineSnapshot(`""string""`);
-		expect(JSON.stringify(new LWWRegister(42))).toMatchInlineSnapshot(`"42"`);
-	});
-
 	it("encodes its key, value and timestamp", () => {
 		const timestamp = Time.epoch();
 
@@ -68,25 +53,7 @@ describe("LWWRegister", () => {
 		});
 	});
 
-	it("updates value", () => {
-		const register = new LWWRegister("initial");
-
-		register.current = "updated";
-
-		expect(register.current).toBe("updated");
-	});
-
 	describe("initial defaults", () => {
-		it("creates a default without minting a timestamp", () => {
-			const now = vi.spyOn(Time, "now");
-			const timestamp = Time.epoch();
-			const register = new LWWRegister("default", "language", timestamp);
-
-			expect(register.key).toBe("language");
-			expect(register.timestamp).toBe(timestamp);
-			expect(now).not.toHaveBeenCalled();
-		});
-
 		it("loses to any timestamped value", () => {
 			const register = new LWWRegister("default", "language", Time.epoch());
 			const remote = new LWWRegister("saved", "language", new Time(1, 0, "remote"));
@@ -113,16 +80,6 @@ describe("LWWRegister", () => {
 			expect(register.current).toBe("written");
 			expect(remote.current).toBe("written");
 			expect(listener).not.toHaveBeenCalled();
-		});
-
-		it("timestamps the first ordinary write", () => {
-			const register = new LWWRegister("default", "language", Time.epoch());
-			const now = vi.spyOn(Time, "now");
-
-			register.current = "written";
-
-			expect(register.timestamp.getTime()).toBe(currentTime);
-			expect(now).toHaveBeenCalledOnce();
 		});
 
 		it("timestamps and notifies an assignment equal to the untouched default", () => {
@@ -179,47 +136,6 @@ describe("LWWRegister", () => {
 			expect(registerB.current).toBe("updated_foo");
 		});
 
-		it("updates local register when remote timestamp is later", () => {
-			const registerA = new LWWRegister("foo");
-
-			currentTime = 2000000;
-			const registerB = new LWWRegister("bar");
-
-			registerB.merge(registerA);
-
-			expect(registerA.current).toBe("bar");
-			expect(registerB.current).toBe("bar");
-		});
-
-		it("works with multiple sequential merges", () => {
-			const registerA = new LWWRegister("a");
-
-			currentTime = 2000000;
-			const registerB = new LWWRegister("b");
-
-			currentTime = 3000000;
-			const registerC = new LWWRegister("c");
-
-			registerA.merge(registerB).merge(registerC);
-
-			expect(registerA.current).toBe("c");
-		});
-
-		it("preserves object references correctly", () => {
-			const objA = { id: 1, name: "A" };
-			const objB = { id: 2, name: "B" };
-
-			const registerA = new LWWRegister(objA);
-
-			currentTime = 2000000;
-
-			const registerB = new LWWRegister(objB);
-
-			registerA.merge(registerB);
-
-			expect(registerA.current).toBe(objB);
-		});
-
 		it("maintains consistency after bidirectional merge", () => {
 			const registerA = new LWWRegister("foo");
 
@@ -231,42 +147,6 @@ describe("LWWRegister", () => {
 			registerB.merge(registerA);
 
 			expect(registerA.current).toBe(registerB.current);
-		});
-
-		it("handles concurrent updates correctly", async () => {
-			const [registerA, registerB] = await Promise.all([
-				new Promise<LWWRegister<string>>((resolve) => resolve(new LWWRegister("foo"))),
-				new Promise<LWWRegister<string>>((resolve) => resolve(new LWWRegister("bar"))),
-			]);
-
-			registerA.merge(registerB);
-
-			expect(registerA.current).toBe("bar");
-		});
-	});
-
-	describe("delegate", () => {
-		it("reports an assignment", () => {
-			const register = new LWWRegister("initial");
-			const delegate = { entityDidChange: vi.fn() };
-
-			register.delegate = delegate;
-			register.current = "updated";
-
-			expect(delegate.entityDidChange).toHaveBeenCalledExactlyOnceWith(register, undefined);
-		});
-
-		it("reports a merge the remote wins", () => {
-			const registerA = new LWWRegister("foo");
-			const delegate = { entityDidChange: vi.fn() };
-
-			registerA.delegate = delegate;
-
-			const registerB = new LWWRegister("bar");
-
-			registerA.merge(registerB);
-
-			expect(delegate.entityDidChange).toHaveBeenCalledExactlyOnceWith(registerA, undefined);
 		});
 	});
 

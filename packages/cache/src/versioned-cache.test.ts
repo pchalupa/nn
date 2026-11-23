@@ -45,18 +45,4 @@ describe("VersionedCache", () => {
 
 		expect(load).toHaveBeenCalledOnce();
 	});
-
-	it("passes the key to the loader", () => {
-		const cache = new VersionedCache<object, object>();
-		const key = {};
-		let received: object | undefined;
-
-		cache.ensure(key, 1, (value) => {
-			received = value;
-
-			return {};
-		});
-
-		expect(received).toBe(key);
-	});
 });

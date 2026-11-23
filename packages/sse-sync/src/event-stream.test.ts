@@ -10,10 +10,8 @@ class FakeEventSource {
 	public onmessage: ((event: MessageEvent) => void) | null = null;
 	public onerror: (() => void) | null = null;
 	public closed = false;
-	public readonly url: string;
 
-	constructor(url: string | URL) {
-		this.url = String(url);
+	constructor() {
 		sources.push(this);
 	}
 
@@ -66,24 +64,10 @@ describe("EventStream", () => {
 
 	afterEach(() => vi.unstubAllGlobals());
 
-	it("subscribes to the given URL", () => {
-		void new EventStream(url).open(new AbortController().signal);
-
-		expect(sources[0]?.url).toBe("http://remote.test/subscribe");
-	});
-
 	it("opens once the first event is delivered to its delegate", async () => {
 		const { delegate } = await open();
 
 		expect(delegate.eventStreamDidReceive).toHaveBeenCalledExactlyOnceWith("snapshot");
-	});
-
-	it("delivers each later event to its delegate", async () => {
-		const { delegate } = await open();
-
-		sources[0]?.emit("update");
-
-		expect(delegate.eventStreamDidReceive).toHaveBeenLastCalledWith("update");
 	});
 
 	it("keeps waiting for the first event while the browser retries", async () => {

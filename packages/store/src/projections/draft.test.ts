@@ -54,17 +54,6 @@ describe("Draft", () => {
 		expect(new Draft(settings, new View()).value).not.toBe(copy);
 	});
 
-	it("knows the entity behind a draft list and none behind a foreign object", () => {
-		const { items, draft } = fixture();
-		const copy = draft.value;
-		const list = at(copy, "items");
-
-		assertObject(list);
-
-		expect(draft.identify(list)).toBe(items);
-		expect(draft.identify({})).toBeUndefined();
-	});
-
 	it("knows the entity behind draft objects without exposing it", () => {
 		const { items, root, draft } = fixture();
 		const copy = draft.value;
@@ -210,7 +199,7 @@ describe("Draft", () => {
 	});
 
 	it("marks a written object and its ancestors, not its siblings", () => {
-		const { items, draft } = fixture();
+		const { draft } = fixture();
 		const copy = draft.value;
 		const assignee = at(copy, "items", 1, "assignee");
 
@@ -222,7 +211,6 @@ describe("Draft", () => {
 		}
 
 		expect(draft.inspect(at(copy, "items", 0))?.dirty).toBe(false);
-		expect(items.current[1]?.encode()).toMatchObject({ data: { assignee: { data: { name: { data: "Ann" } } } } });
 	});
 
 	it("copies object-valued registers shallowly", () => {

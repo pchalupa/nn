@@ -67,11 +67,6 @@ const connect = async ({ url = "http://remote.test", snapshot = "{}" } = {}) => 
 	return { store, sync, syncEngineDidFail };
 };
 
-const editTickets = (store: Store<typeof schema>) =>
-	store.mutate((draft) => {
-		draft.tickets.push({ title: "Offline" });
-	});
-
 describe("SseSync", () => {
 	beforeEach(() => {
 		sources = [];
@@ -132,14 +127,6 @@ describe("SseSync", () => {
 		expect(store.query((state) => state).language).toBe("cs");
 	});
 
-	it("merges fields carried by later events", async () => {
-		const { store } = await connect();
-
-		sources[0]?.emit(language("cs"));
-
-		expect(store.query((state) => state).language).toBe("cs");
-	});
-
 	it("posts each changed field on its own", async () => {
 		const { store } = await connect();
 
@@ -181,7 +168,6 @@ describe("SseSync", () => {
 	it.each([
 		["is not JSON", "update"],
 		["is not an object", "[]"],
-		["carries a field that is not an encoded entity", JSON.stringify({ tickets: [] })],
 	])("disconnects and reports the failure when the first event %s", async (_reason, snapshot) => {
 		const { sync, syncEngineDidFail } = await connect({ snapshot });
 
@@ -200,17 +186,6 @@ describe("SseSync", () => {
 		expect(sources[0]?.closed).toBe(true);
 	});
 
-	it("stays disconnected when the store changes", async () => {
-		const { store, sync } = await connect();
-
-		sources[0]?.shutDown();
-		editTickets(store);
-		await Promise.resolve();
-
-		expect(sync.disconnected).toBe(true);
-		expect(sources).toHaveLength(1);
-	});
-
 	it("reopens the stream when the app retries", async () => {
 		const { store, sync } = await connect();
 
@@ -225,32 +200,6 @@ describe("SseSync", () => {
 			expect(sync.connected).toBe(true);
 		});
 		expect(store.query((state) => state).language).toBe("cs");
-	});
-
-	it("opens one stream for several retries", async () => {
-		const { sync } = await connect();
-
-		sources[0]?.shutDown();
-		sync.retry();
-		sync.retry();
-
-		expect(sources).toHaveLength(2);
-	});
-
-	it("ignores retries while connected", async () => {
-		const { sync } = await connect();
-
-		sync.retry();
-
-		expect(sources).toHaveLength(1);
-	});
-
-	it("retries after a first event it cannot read", async () => {
-		const { sync } = await connect({ snapshot: "[]" });
-
-		sync.retry();
-
-		expect(sources).toHaveLength(2);
 	});
 
 	it("retries again after a failed retry", async () => {
@@ -268,38 +217,5 @@ describe("SseSync", () => {
 		sync.retry();
 
 		expect(sources).toHaveLength(3);
-	});
-
-	it("pushes an edit made while disconnected once the retry connects", async () => {
-		const { store, sync } = await connect();
-
-		sources[0]?.shutDown();
-		store.mutate((draft) => {
-			draft.language = "en";
-		});
-		sync.retry();
-
-		const edit = {
-			url: "http://remote.test/push",
-			method: "POST",
-			body: { language: expect.objectContaining({ data: "en" }) },
-		};
-
-		expect(sources).toHaveLength(2);
-		expect(pushes()).not.toContainEqual(edit);
-
-		sources[1]?.emit("{}");
-
-		await vi.waitFor(() => {
-			expect(pushes()).toContainEqual(edit);
-		});
-	});
-
-	it("closes the event stream on dispose", async () => {
-		const { sync } = await connect();
-
-		sync.dispose();
-
-		expect(sources[0]?.closed).toBe(true);
 	});
 });

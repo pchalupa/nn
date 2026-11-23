@@ -5,7 +5,7 @@ import { PersonAvatar } from "@/components/person-avatar";
 import { useUser } from "@/features/authentication/authentication";
 import { useQuery } from "@/store";
 
-import { Stat } from "./stat";
+import { Stat } from "./parts/stat";
 
 /** Shows the current user with activity stats: beside the name from `md` up, in a divided row below it on mobile. */
 export const Identity = () => {

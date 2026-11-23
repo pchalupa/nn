@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 
-import { useQuery } from "../../store";
+import { useQuery } from "@/store";
 
 /** Applies the language stored in the store to the interface. */
 export function useLanguageSync(): void {

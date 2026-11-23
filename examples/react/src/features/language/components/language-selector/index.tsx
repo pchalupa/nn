@@ -2,9 +2,9 @@ import { Select } from "@radix-ui/themes";
 import { language } from "example-schema";
 import { useTranslation } from "react-i18next";
 
-import { languageNames } from "../../../../i18n";
-import { useQuery, useMutation } from "../../../../store";
-import { Field } from "../../../../components/field";
+import { Field } from "@/components/field";
+import { languageNames } from "@/i18n";
+import { useQuery, useMutation } from "@/store";
 
 /** Renders the language field that stores the chosen interface language. */
 export const LanguageSelector = () => {

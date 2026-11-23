@@ -1,7 +1,7 @@
 import { Dialog, Flex, VisuallyHidden } from "@radix-ui/themes";
 import { useTranslation } from "react-i18next";
 
-import { SidebarContent } from "../sidebar/sidebar-content";
+import { SidebarContent } from "@/features/navigation/components/sidebar/parts/sidebar-content";
 
 interface DrawerProps {
 	open: boolean;

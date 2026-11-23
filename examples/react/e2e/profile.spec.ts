@@ -31,6 +31,19 @@ test.describe("Profile", () => {
 		await expect(page.getByRole("link", { name: "Jan Novak" })).toBeVisible();
 	});
 
+	test("keeps typed-but-unsaved text when resized to mobile", async ({ page }) => {
+		const name = page.getByRole("textbox", { name: "Name" });
+
+		await name.fill("Jana Novakova");
+		await page.setViewportSize({ width: 390, height: 844 });
+
+		await expect(page.getByRole("button", { name: "Open menu" })).toBeVisible();
+		await expect(page.getByRole("navigation")).toBeHidden();
+		await expect(name).toHaveValue("Jana Novakova");
+		await expect(page.getByRole("textbox", { name: "Name" })).toHaveCount(1);
+		await expect(page.locator('input[name="name"]')).toHaveCount(1);
+	});
+
 	test("signs out", async ({ page }) => {
 		await page.getByRole("button", { name: "Sign out" }).click();
 

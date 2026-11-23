@@ -1,7 +1,6 @@
-import { expect, type Page, test } from "./fixtures";
+import { choose, expect, type Page, test } from "./fixtures";
 
-const newTicket = (page: Page) =>
-	page.getByRole("region", { name: "To do" }).getByRole("button", { name: "New ticket in To do" }).first();
+const newTicket = (page: Page) => page.getByRole("button", { name: "New ticket", exact: true });
 
 test.describe("Board", () => {
 	test("has one level-one heading", async ({ page }) => {
@@ -25,8 +24,8 @@ test.describe("Board", () => {
 		const backlog = page.getByRole("region", { name: "Backlog" });
 		const dialog = page.getByRole("dialog");
 
-		await backlog.getByRole("button", { name: "New ticket in Backlog" }).first().click();
-		await expect(dialog.getByRole("combobox", { name: "Status" })).toHaveText("Backlog");
+		await newTicket(page).click();
+		await choose(dialog.getByRole("combobox", { name: "Status" }), "Backlog");
 		await dialog.getByRole("textbox", { name: "Title" }).fill("Someday");
 		await dialog.getByRole("button", { name: "Create ticket" }).click();
 

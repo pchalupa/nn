@@ -9,7 +9,7 @@ test.beforeEach(async ({ page }) => {
 const createTicket = async (page: Page, title: string) => {
 	const dialog = page.getByRole("dialog");
 
-	await page.getByRole("button", { name: /^New ticket in / }).click();
+	await page.getByRole("button", { name: "New ticket" }).click();
 	await dialog.getByRole("textbox", { name: "Title" }).fill(title);
 	await dialog.getByRole("button", { name: "Create ticket" }).click();
 	await expect(dialog).toBeHidden();
@@ -51,48 +51,19 @@ test.describe("Mobile board", () => {
 		await expect(clear).toBeHidden();
 	});
 
-	test("switches status tabs and creates a ticket in the active status", async ({ page }) => {
+	test("scrolls the four columns sideways and creates a to-do ticket", async ({ page }) => {
 		await createTicket(page, "Planned");
 		await expect(page.getByRole("region", { name: "To do" }).getByRole("listitem")).toHaveCount(1);
 
-		await page.getByRole("radio", { name: /^In progress/ }).click();
+		const done = page.getByRole("region", { name: "Done" });
 
-		const inProgress = page.getByRole("region", { name: "In progress" });
+		await expect(page.getByRole("region")).toHaveCount(4);
+		await expect(done).not.toBeInViewport();
 
-		await expect(page.getByRole("region", { name: "To do" })).toBeHidden();
-		await expect(inProgress.getByRole("listitem")).toHaveCount(0);
+		await done.scrollIntoViewIfNeeded();
 
-		await page.getByRole("button", { name: "New ticket in In progress" }).click();
-		await expect(page.getByRole("dialog").getByRole("combobox", { name: "Status" })).toHaveText("In progress");
-		await page.getByRole("dialog").getByRole("textbox", { name: "Title" }).fill("Started");
-		await page.getByRole("dialog").getByRole("button", { name: "Create ticket" }).click();
-
-		await expect(inProgress.getByRole("listitem")).toHaveCount(1);
-
-		await expect(inProgress).toHaveText(/Started/);
-		await page.getByRole("radio", { name: /^Backlog/ }).click();
-		await expect(page.getByRole("region", { name: "Backlog" }).getByRole("listitem")).toHaveCount(0);
-	});
-
-	test("fits four content-width status tabs and shows the icon on the selected one", async ({ page }) => {
-		await createTicket(page, "Counted");
-
-		const tabs = page.getByRole("radiogroup", { name: "Status" });
-
-		await expect(tabs.getByRole("radio")).toHaveCount(4);
-		expect((await tabs.boundingBox())?.width).toBeLessThanOrEqual(358);
-		expect(await tabs.evaluate((element) => element.scrollWidth <= element.clientWidth)).toBe(true);
-
-		const widths = await tabs.getByRole("radio").evaluateAll((radios) => radios.map((radio) => radio.clientWidth));
-
-		expect(new Set(widths).size).toBeGreaterThan(1);
-		await expect(tabs.locator("svg")).toHaveCount(1);
-		await expect(tabs.getByRole("radio", { name: /^To do/ }).locator("svg")).toHaveCount(1);
-
-		await tabs.getByRole("radio", { name: /^Done/ }).click();
-
-		await expect(tabs.locator("svg")).toHaveCount(1);
-		await expect(tabs.getByRole("radio", { name: /^Done/ }).locator("svg")).toHaveCount(1);
+		await expect(done).toBeInViewport();
+		expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(390);
 	});
 
 	test("adds labels from + Add label on the full-screen ticket", async ({ page }) => {
@@ -127,16 +98,17 @@ test.describe("Mobile board", () => {
 		await expect(dialog).toBeVisible();
 		await expect.poll(() => dialog.boundingBox()).toStrictEqual({ x: 0, y: 0, width: 390, height: 844 });
 
+		const status = await dialog.getByRole("combobox", { name: "Status" }).boundingBox();
+		const description = await dialog.getByRole("textbox", { name: "Description" }).boundingBox();
+
+		expect(status?.y).toBeLessThan(description?.y ?? 0);
+
 		await choose(dialog.getByRole("combobox", { name: "Status" }), "Done");
 		await dialog.getByRole("button", { name: "Back" }).click();
 
 		await expect(dialog).toBeHidden();
 		await expect(page).toHaveURL("/");
 		await expect(page.getByRole("region", { name: "To do" }).getByRole("listitem")).toHaveCount(0);
-		await expect(page.getByRole("radio", { name: /^Done/ })).toHaveText(/1/);
-
-		await page.getByRole("radio", { name: /^Done/ }).click();
-
 		await expect(page.getByRole("region", { name: "Done" }).getByRole("listitem")).toHaveText([/Moving/]);
 	});
 });

@@ -3,11 +3,7 @@ import { choose, expect, type Page, test } from "./fixtures";
 const columnCards = (page: Page, column: string) =>
 	page.getByRole("region", { name: column, includeHidden: true }).getByRole("listitem", { includeHidden: true });
 
-const newTicket = (page: Page, column = "To do") =>
-	page
-		.getByRole("region", { name: column })
-		.getByRole("button", { name: `New ticket in ${column}` })
-		.first();
+const newTicket = (page: Page) => page.getByRole("button", { name: "New ticket", exact: true });
 
 const addTicket = async (page: Page) => {
 	const dialog = page.getByRole("dialog");
@@ -192,14 +188,15 @@ test.describe("TicketModal", () => {
 
 		await expect(dialog).toBeHidden();
 		await expect(page).toHaveURL(/\/$/);
-		await expect(columnCards(page, "To do")).toHaveText(/Recovered/);
+		await expect(columnCards(page, "Backlog")).toHaveText(/Recovered/);
 	});
 
 	test("should keep a ticket created in a filtered board", async ({ page }) => {
 		const dialog = page.getByRole("dialog");
 
 		await page.goto("/?label=bug");
-		await newTicket(page, "In progress").click();
+		await newTicket(page).click();
+		await choose(dialog.getByRole("combobox", { name: "Status" }), "In progress");
 		await dialog.getByRole("textbox", { name: "Title" }).fill("Filtered");
 		await dialog.getByRole("button", { name: "Create ticket" }).click();
 

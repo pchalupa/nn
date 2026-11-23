@@ -8,6 +8,8 @@ export type Ticket = InferStateType<typeof ticket>;
 
 export type Comment = InferStateType<typeof comment>;
 
+export type Link = InferStateType<typeof link>;
+
 export const status = enumeration("backlog", "todo", "in-progress", "done");
 
 export const language = enumeration("en", "cs");
@@ -37,6 +39,14 @@ const comment = object({
 	.entitle("comment")
 	.describe("A ticket comment.");
 
+const link = object({
+	id: string(),
+	url: string(),
+	title: string().describe("Short name shown instead of the URL."),
+})
+	.entitle("link")
+	.describe("A link attached to a ticket, such as a PR, a commit or a document.");
+
 const ticket = object({
 	id: string(),
 	title: string().describe("Ticket description."),
@@ -45,6 +55,7 @@ const ticket = object({
 	assignee: string().describe("User id of the assignee."),
 	labels: array(string()).describe("Label names."),
 	comments: array(comment),
+	links: array(link),
 })
 	.entitle("ticket")
 	.describe("Holds information about a ticket.");

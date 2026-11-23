@@ -20,6 +20,7 @@ const ticket = (id: string, title: string, status: Ticket["status"]): Ticket => 
 	assignee: "",
 	labels: [],
 	comments: [],
+	links: [],
 });
 
 describe("Board", () => {

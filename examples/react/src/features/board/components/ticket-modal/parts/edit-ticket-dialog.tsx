@@ -1,4 +1,4 @@
-import type { Ticket } from "example-schema";
+import type { Link, Ticket } from "example-schema";
 import { type SubmitEvent, useEffect, useEffectEvent } from "react";
 import { useForm } from "react-hook-form";
 
@@ -29,6 +29,12 @@ export const EditTicketDialog = ({ id, onClose }: EditTicketDialogProps) => {
 			};
 		}
 	});
+	const links = useQuery(
+		(data) =>
+			data.tickets
+				.find((item) => item.id === id)
+				?.links.map((link) => ({ id: link.id, url: link.url, title: link.title })) ?? [],
+	);
 	const mutate = useMutation();
 	const form = useForm<TicketDraft>({ values: ticket, resetOptions: { keepDirtyValues: true } });
 
@@ -81,6 +87,13 @@ export const EditTicketDialog = ({ id, onClose }: EditTicketDialogProps) => {
 
 	const handleChange: PropertyChange = (patch) => update((item) => Object.assign(item, patch));
 
+	const handleAddLink = (link: Link) => update((item) => item.links.push(link));
+
+	const handleRemoveLink = (linkId: string) =>
+		update((item) => {
+			item.links = item.links.filter((link) => link.id !== linkId);
+		});
+
 	const handleDelete = () =>
 		mutate((data) => {
 			data.tickets = data.tickets.filter((entry) => entry.id !== id);
@@ -96,7 +109,15 @@ export const EditTicketDialog = ({ id, onClose }: EditTicketDialogProps) => {
 			onClose={handleClose}
 			onDelete={handleDelete}
 		>
-			<TicketFields form={form} properties={ticket} onChange={handleChange} onTextBlur={saveText}>
+			<TicketFields
+				form={form}
+				properties={ticket}
+				onChange={handleChange}
+				links={links}
+				onAddLink={handleAddLink}
+				onRemoveLink={handleRemoveLink}
+				onTextBlur={saveText}
+			>
 				<Comments ticketId={id} />
 			</TicketFields>
 		</TicketDialogShell>

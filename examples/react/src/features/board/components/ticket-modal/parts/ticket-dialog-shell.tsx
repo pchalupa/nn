@@ -1,4 +1,4 @@
-import { Box, Dialog, Flex, Separator, VisuallyHidden } from "@radix-ui/themes";
+import { Box, Dialog, Flex, Separator } from "@radix-ui/themes";
 import { useHotkey } from "@tanstack/react-hotkeys";
 import { type ReactNode, type SubmitEvent, useState } from "react";
 
@@ -44,9 +44,7 @@ export const TicketDialogShell = ({
 				aria-describedby={undefined}
 				className="ticket-dialog"
 			>
-				<VisuallyHidden>
-					<Dialog.Title>{title}</Dialog.Title>
-				</VisuallyHidden>
+				<Dialog.Title hidden>{title}</Dialog.Title>
 				<Flex asChild direction="column" height="100%">
 					<form ref={setForm} noValidate onSubmit={onSubmit}>
 						<MobileTicketHeader ticketKey={ticketKey} />

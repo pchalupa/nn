@@ -1,8 +1,8 @@
 import { Flex } from "@radix-ui/themes";
 import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
 
-import { Sidebar } from "../components/sidebar";
-import { authenticated } from "../modules/authentication/session";
+import { Sidebar } from "../features/navigation/components/sidebar";
+import { authenticated } from "../features/authentication/authentication";
 
 const AppLayout = () => (
 	<Flex flexGrow="1" minWidth="0">

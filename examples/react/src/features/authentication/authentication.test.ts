@@ -7,8 +7,8 @@ import {
 } from "@simplewebauthn/browser";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { signIn, signUp } from "./authentication";
-import { authenticated, signOut } from "./session";
+import { authenticated, signIn, signUp } from "./authentication";
+import { clearSession } from "./session";
 
 vi.mock(import("@simplewebauthn/browser"), async (importOriginal) => ({
 	...(await importOriginal()),
@@ -49,7 +49,7 @@ describe("authentication", () => {
 	afterEach(() => {
 		vi.mocked(startAuthentication).mockReset();
 		vi.mocked(startRegistration).mockReset();
-		signOut();
+		clearSession();
 	});
 
 	describe("signUp", () => {

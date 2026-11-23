@@ -1,7 +1,7 @@
 import { Flex } from "@radix-ui/themes";
 import { createRootRoute, Outlet } from "@tanstack/react-router";
 
-import { useLanguageSync } from "../modules/language/use-language-sync";
+import { useLanguageSync } from "../features/language/use-language-sync";
 
 const RootComponent = () => {
 	useLanguageSync();

@@ -5,7 +5,8 @@ import {
 	startRegistration,
 } from "@simplewebauthn/browser";
 
-import { setUser } from "./session";
+import { useQuery } from "../../store";
+import { getSession, setSession } from "./session";
 
 interface Passkey {
 	credentialId: string;
@@ -43,7 +44,7 @@ export async function signUp({ name }: { name: string }): Promise<Account> {
 	if (response.publicKey && response.publicKeyAlgorithm) {
 		const passkey = { credentialId, publicKey: response.publicKey, algorithm: response.publicKeyAlgorithm };
 
-		setUser(id);
+		setSession(id);
 
 		return { id, name, passkeys: [passkey] };
 	}
@@ -67,7 +68,19 @@ export async function signIn(
 		const account = accounts.find((candidate) => candidate.id === userId);
 
 		if (account && account.passkeys.some((passkey) => passkey.credentialId === credentialId)) {
-			setUser(account.id);
+			setSession(account.id);
 		} else throw new Error("Unknown passkey");
 	}
+}
+
+/** Returns the signed-in user's id and record. */
+export function useUser() {
+	const id = getSession();
+	const user = useQuery((data) => data.users.find((entry) => entry.id === id));
+
+	return { id, ...user };
+}
+
+export function authenticated(): boolean {
+	return getSession() !== undefined;
 }

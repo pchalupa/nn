@@ -10,7 +10,7 @@ import { createServer } from "example-server/server";
 export { expect, type Locator, type Page } from "@playwright/test";
 
 /** Options for opening another device in the same test. */
-export interface OpenDeviceOptions {
+interface OpenDeviceOptions {
 	passkeysFrom?: Page;
 	signedIn?: boolean;
 }
@@ -26,7 +26,7 @@ const connections = new WeakMap<BrowserContext, Set<Socket>>();
 
 export const test = base.extend<{ signedIn: boolean; remote: { port: number }; openDevice: OpenDevice }>({
 	signedIn: [true, { option: true }],
-	remote: async (_, use) => {
+	remote: async ({ browserName: _browserName }, use) => {
 		const server = serve({
 			fetch: createServer(createMemoryDatabase(), createMemoryEventBus()).fetch,
 			port: 0,
@@ -155,7 +155,7 @@ function authenticatorOf(page: Page) {
 }
 
 /** Copies passkeys from one device to another, like a passkey synced through iCloud or Google. */
-export async function copyPasskeys(from: Page, to: Page) {
+async function copyPasskeys(from: Page, to: Page) {
 	const source = authenticatorOf(from);
 	const target = authenticatorOf(to);
 	const { credentials } = await source.client.send("WebAuthn.getCredentials", {
@@ -185,7 +185,7 @@ export async function signUp(page: Page) {
 }
 
 /** Signs in with a passkey already on the device, retrying until the account has synced. */
-export async function signIn(page: Page) {
+async function signIn(page: Page) {
 	await page.goto("/sign-in");
 
 	const button = page.getByRole("button", { name: "Continue with passkey" });

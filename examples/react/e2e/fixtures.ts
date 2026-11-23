@@ -26,7 +26,7 @@ const connections = new WeakMap<BrowserContext, Set<Socket>>();
 
 export const test = base.extend<{ signedIn: boolean; remote: { port: number }; openDevice: OpenDevice }>({
 	signedIn: [true, { option: true }],
-	remote: async ({}, use) => {
+	remote: async (_, use) => {
 		const server = serve({
 			fetch: createServer(createMemoryDatabase(), createMemoryEventBus()).fetch,
 			port: 0,

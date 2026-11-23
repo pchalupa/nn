@@ -2,8 +2,6 @@ import { CaretRightIcon, KanbanIcon, LinkIcon, XIcon } from "@phosphor-icons/rea
 import { Button, Dialog, Flex, IconButton, Text } from "@radix-ui/themes";
 import { useTranslation } from "react-i18next";
 
-import { boardName } from "@/features/board/board-name";
-
 interface TicketHeaderProps {
 	ticketKey?: string;
 }
@@ -18,7 +16,7 @@ export const TicketHeader = ({ ticketKey }: TicketHeaderProps) => {
 		<Flex align="center" gap="2" height="52px" pl="4" pr="3">
 			<KanbanIcon size={16} color="var(--gray-a11)" />
 			<Text size="2" weight="medium" color="gray">
-				{boardName}
+				nn
 			</Text>
 			{ticketKey !== undefined && (
 				<>

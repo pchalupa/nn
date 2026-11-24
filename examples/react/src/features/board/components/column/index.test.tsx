@@ -1,21 +1,35 @@
+import { DndContext } from "@dnd-kit/core";
 import { Theme } from "@radix-ui/themes";
 import { createMemoryHistory, createRootRoute, createRouter, RouterProvider } from "@tanstack/react-router";
 import { act, render, screen, within } from "@testing-library/react";
-import type { Status } from "example-schema";
+import type { Status, Ticket } from "example-schema";
 import { Suspense } from "react";
 import { I18nextProvider } from "react-i18next";
 import { describe, expect, it } from "vitest";
 
-import type { BoardSearch } from "@/features/board/board-search";
 import { i18n } from "@/i18n";
-import { store } from "@/store";
 
 import { Column } from ".";
 
+const ticket = (id: string, title: string): Ticket => ({
+	id,
+	title,
+	description: "",
+	status: "in-progress",
+	assignee: "",
+	labels: [],
+	comments: [],
+	links: [],
+});
+
 describe("Column", () => {
-	const setup = async (title: string, status: Status, search: BoardSearch = {}) => {
+	const setup = async (title: string, status: Status, tickets: Ticket[] = []) => {
 		const routeTree = createRootRoute({
-			component: () => <Column title={title} status={status} search={search} />,
+			component: () => (
+				<DndContext>
+					<Column title={title} status={status} tickets={tickets} />
+				</DndContext>
+			),
 		});
 		const router = createRouter({ routeTree, history: createMemoryHistory() });
 
@@ -45,59 +59,16 @@ describe("Column", () => {
 		expect(within(list).queryAllByRole("listitem")).toHaveLength(0);
 	});
 
-	it("shows only tickets matching the label filter", async () => {
-		store.mutate((data) => {
-			data.tickets.push(
-				{
-					id: "labelled",
-					title: "Labelled",
-					description: "",
-					status: "in-progress",
-					priority: "low",
-					assignee: "",
-					labels: ["bug"],
-					comments: [],
-					links: [],
-				},
-				{
-					id: "plain",
-					title: "Plain",
-					description: "",
-					status: "in-progress",
-					priority: "low",
-					assignee: "",
-					labels: [],
-					comments: [],
-					links: [],
-				},
-			);
-		});
+	it("renders a draggable card per ticket in the given order", async () => {
+		const { list } = await setup("In progress", "in-progress", [ticket("a", "First"), ticket("b", "Second")]);
+		const links = within(list).getAllByRole("link");
 
-		const { list } = await setup("In progress", "in-progress", { label: "bug" });
-
-		expect(within(list).getAllByRole("listitem")).toHaveLength(1);
-		expect(within(list).getByRole("link", { name: /^Labelled.* bug 0 0 Priority: Low Unassigned$/ })).toBeTruthy();
-	});
-
-	it("names the priority on the card", async () => {
-		store.mutate((data) => {
-			data.tickets = [
-				{
-					id: "high",
-					title: "High",
-					description: "",
-					status: "done",
-					priority: "high",
-					assignee: "",
-					labels: [],
-					comments: [],
-					links: [],
-				},
-			];
-		});
-
-		const { list } = await setup("Done", "done");
-
-		expect(within(list).getByRole("img", { name: "Priority: High" })).toBeTruthy();
+		expect(within(list).getAllByRole("listitem")).toHaveLength(2);
+		expect(links.map((link) => link.textContent)).toStrictEqual([
+			expect.stringMatching(/^First/),
+			expect.stringMatching(/^Second/),
+		]);
+		expect(links.every((link) => link.getAttribute("aria-describedby")?.startsWith("DndDescribedBy"))).toBe(true);
+		expect(links.every((link) => link.getAttribute("draggable") === "false")).toBe(true);
 	});
 });

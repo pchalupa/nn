@@ -34,7 +34,7 @@ It should stay small and easy to maintain. A mobile app and a Next.js app will c
 
 ### Tickets
 
-- A ticket has a title, a description, a status and an optional assignee.
+- A ticket has a title, a description, a status, a priority and an optional assignee.
 - Tickets can be created, opened, edited and deleted.
 - An open ticket has its own URL.
 - A ticket can have labels, like `bug`, `docs` or a package name. Labels can be added and removed.

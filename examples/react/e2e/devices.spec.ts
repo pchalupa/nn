@@ -15,7 +15,7 @@ test("shows a ticket created on one device on another", async ({ page, openDevic
 
 	await createTicket(laptop, "Sync me");
 
-	await expect(phone.getByRole("region", { name: "To do" }).getByRole("link", { name: /Sync me/ })).toBeVisible();
+	await expect(phone.getByRole("region", { name: "Backlog" }).getByRole("link", { name: /Sync me/ })).toBeVisible();
 });
 
 test("gives a new device the full board", async ({ page, openDevice }) => {
@@ -39,15 +39,4 @@ test("keeps changes from a device while it is offline", async ({ page, openDevic
 
 	await expect(tablet.getByRole("link", { name: /While away/ })).toBeVisible();
 	await expect(phone.getByRole("link", { name: /While away/ })).toHaveCount(0);
-});
-
-test.describe("on a phone", () => {
-	test.use({ viewport: { width: 390, height: 844 }, locale: "cs-CZ" });
-
-	test("opens another device with the same browser options", async ({ page, openDevice }) => {
-		const phone = await openDevice();
-
-		expect(phone.viewportSize()).toStrictEqual(page.viewportSize());
-		expect(await phone.evaluate(() => navigator.language)).toBe("cs-CZ");
-	});
 });

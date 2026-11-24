@@ -2,6 +2,8 @@ import { array, enumeration, type InferStateType, number, object, string } from 
 
 export type Status = InferStateType<typeof status>;
 
+export type Priority = InferStateType<typeof priority>;
+
 export type Language = InferStateType<typeof language>;
 
 export type Ticket = InferStateType<typeof ticket>;
@@ -11,6 +13,8 @@ export type Comment = InferStateType<typeof comment>;
 export type Link = InferStateType<typeof link>;
 
 export const status = enumeration("backlog", "todo", "in-progress", "done");
+
+export const priority = enumeration("low", "medium", "high");
 
 export const language = enumeration("en", "cs");
 
@@ -52,6 +56,7 @@ const ticket = object({
 	title: string().describe("Ticket description."),
 	description: string(),
 	status,
+	priority,
 	assignee: string().describe("User id of the assignee."),
 	labels: array(string()).describe("Label names."),
 	comments: array(comment),

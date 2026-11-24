@@ -30,7 +30,7 @@ export const Board = ({ search, onNewTicket }: BoardProps) => {
 
 	const handleOpenMenu = () => setMenuOpen(true);
 
-	const handleNewTicket = () => onNewTicket("todo");
+	const handleNewTicket = () => onNewTicket("backlog");
 
 	return (
 		<>

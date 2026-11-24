@@ -17,6 +17,7 @@ const ticket = (id: string, title: string, status: Ticket["status"]): Ticket => 
 	title,
 	description: "",
 	status,
+	priority: "low",
 	assignee: "",
 	labels: [],
 	comments: [],
@@ -94,7 +95,7 @@ describe("Board", () => {
 		expect(within(screen.getByRole("region", { name: "To do" })).getByText("1")).toBeDefined();
 	});
 
-	it("creates a new to-do ticket from the desktop header and the mobile action bar", async () => {
+	it("creates a new backlog ticket from the desktop header and the mobile action bar", async () => {
 		const { onNewTicket } = await setup();
 		const buttons = await screen.findAllByRole("button", { name: "New ticket" });
 
@@ -104,7 +105,7 @@ describe("Board", () => {
 			await user.click(button);
 		}
 
-		expect(onNewTicket.mock.calls).toStrictEqual([["todo"], ["todo"]]);
+		expect(onNewTicket.mock.calls).toStrictEqual([["backlog"], ["backlog"]]);
 	});
 
 	it("opens the drawer from the menu and the Filter button", async () => {

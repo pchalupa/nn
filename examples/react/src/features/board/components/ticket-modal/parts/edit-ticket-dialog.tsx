@@ -24,6 +24,7 @@ export const EditTicketDialog = ({ id, onClose }: EditTicketDialogProps) => {
 				title: entry.title,
 				description: entry.description,
 				status: entry.status,
+				priority: entry.priority,
 				assignee: entry.assignee,
 				labels: [...entry.labels],
 			};

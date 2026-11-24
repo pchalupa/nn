@@ -1,5 +1,11 @@
 import { Box, Flex, Grid, Select, Separator, TextArea, TextField } from "@radix-ui/themes";
-import { type Link, type Status as TicketStatus, status } from "example-schema";
+import {
+	type Link,
+	type Priority as TicketPriority,
+	priority,
+	type Status as TicketStatus,
+	status,
+} from "example-schema";
 import type { ReactNode } from "react";
 import { type UseFormReturn, useFormState } from "react-hook-form";
 import { useTranslation } from "react-i18next";
@@ -7,6 +13,7 @@ import { useTranslation } from "react-i18next";
 import { Caption } from "@/components/caption";
 import { Field } from "@/components/field";
 import { PersonAvatar } from "@/components/person-avatar";
+import { Priority } from "@/features/board/components/priority";
 import { Status } from "@/features/board/components/status";
 import { addLabel, withoutLabel } from "@/features/board/labels";
 import { useQuery } from "@/store";
@@ -20,6 +27,7 @@ export interface TicketDraft {
 	title: string;
 	description: string;
 	status: TicketStatus;
+	priority: TicketPriority;
 	assignee: string;
 	labels: string[];
 }
@@ -28,7 +36,7 @@ export interface TicketDraft {
 export type TextFieldName = "title" | "description";
 
 /** Ticket fields that change through a control and save at once. */
-export type TicketProperties = Pick<TicketDraft, "status" | "assignee" | "labels">;
+export type TicketProperties = Pick<TicketDraft, "status" | "priority" | "assignee" | "labels">;
 
 /** Writes new values of some ticket properties. */
 export type PropertyChange = (patch: Partial<TicketProperties>) => void;
@@ -72,6 +80,12 @@ export const TicketFields = ({
 		const nextStatus = status.literals.find((option) => option === value);
 
 		if (nextStatus) onChange({ status: nextStatus });
+	};
+
+	const handlePriorityChange = (value: string) => {
+		const nextPriority = priority.literals.find((option) => option === value);
+
+		if (nextPriority) onChange({ priority: nextPriority });
 	};
 
 	const handleAssigneeChange = (value: string) => {
@@ -130,6 +144,18 @@ export const TicketFields = ({
 						{status.literals.map((option) => (
 							<Select.Item key={option} value={option}>
 								<Status status={option} />
+							</Select.Item>
+						))}
+					</Select.Content>
+				</Select.Root>
+				<Select.Root value={properties.priority} onValueChange={handlePriorityChange}>
+					<Field label={<Caption>{t("priority")}</Caption>} gap="2">
+						<Select.Trigger radius="large" />
+					</Field>
+					<Select.Content>
+						{priority.literals.map((option) => (
+							<Select.Item key={option} value={option}>
+								<Priority priority={option} />
 							</Select.Item>
 						))}
 					</Select.Content>

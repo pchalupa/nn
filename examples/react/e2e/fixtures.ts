@@ -7,7 +7,7 @@ import { createMemoryDatabase } from "example-server/memory-database";
 import { createMemoryEventBus } from "example-server/memory-event-bus";
 import { createServer } from "example-server/server";
 
-export { expect, type Locator, type Page } from "@playwright/test";
+export { expect, type Page } from "@playwright/test";
 
 /** Options for opening another device in the same test. */
 interface OpenDeviceOptions {
@@ -177,7 +177,7 @@ export async function setOnline(page: Page, online: boolean) {
 }
 
 /** Creates an account with a new passkey. */
-export async function signUp(page: Page) {
+async function signUp(page: Page) {
 	await page.goto("/sign-up");
 	await page.getByLabel("Name").fill("Jan Novak");
 	await page.getByRole("button", { name: "Continue with passkey" }).click();

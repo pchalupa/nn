@@ -16,6 +16,7 @@ const ticket = (id: string, title: string): Ticket => ({
 	title,
 	description: "",
 	status: "in-progress",
+	priority: "medium",
 	assignee: "",
 	labels: [],
 	comments: [],

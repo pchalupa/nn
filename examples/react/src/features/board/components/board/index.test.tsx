@@ -7,6 +7,7 @@ import { Suspense } from "react";
 import { I18nextProvider } from "react-i18next";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
+import type { BoardSearch } from "@/features/board/board-search";
 import { i18n } from "@/i18n";
 import { store } from "@/store";
 
@@ -44,10 +45,10 @@ describe("Board", () => {
 		});
 	});
 
-	const setup = async () => {
+	const setup = async (search: BoardSearch = {}) => {
 		const onNewTicket = vi.fn();
 		const routeTree = createRootRoute({
-			component: () => <Board search={{}} onNewTicket={onNewTicket} />,
+			component: () => <Board search={search} onNewTicket={onNewTicket} />,
 		});
 		const router = createRouter({ routeTree, history: createMemoryHistory() });
 
@@ -86,6 +87,22 @@ describe("Board", () => {
 			"Done",
 		]);
 		expect(screen.getAllByRole("listitem")).toHaveLength(3);
+	});
+
+	it("shows only tickets matching the label filter", async () => {
+		store.mutate((data) => {
+			data.tickets.push(
+				{ ...ticket("d", "Labelled", "in-progress"), labels: ["bug"] },
+				ticket("e", "Plain", "in-progress"),
+			);
+		});
+
+		await setup({ label: "bug" });
+
+		const column = await screen.findByRole("region", { name: "In progress" });
+
+		expect(within(column).getAllByRole("listitem")).toHaveLength(1);
+		expect(within(column).getByRole("link", { name: /^Labelled.* bug/ })).toBeTruthy();
 	});
 
 	it("counts tickets in each column header", async () => {

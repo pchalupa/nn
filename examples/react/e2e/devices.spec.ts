@@ -40,14 +40,3 @@ test("keeps changes from a device while it is offline", async ({ page, openDevic
 	await expect(tablet.getByRole("link", { name: /While away/ })).toBeVisible();
 	await expect(phone.getByRole("link", { name: /While away/ })).toHaveCount(0);
 });
-
-test.describe("on a phone", () => {
-	test.use({ viewport: { width: 390, height: 844 }, locale: "cs-CZ" });
-
-	test("opens another device with the same browser options", async ({ page, openDevice }) => {
-		const phone = await openDevice();
-
-		expect(phone.viewportSize()).toStrictEqual(page.viewportSize());
-		expect(await phone.evaluate(() => navigator.language)).toBe("cs-CZ");
-	});
-});

@@ -1,4 +1,4 @@
-import type { Language, Status } from "example-schema";
+import type { Language, Priority, Status } from "example-schema";
 import { createInstance } from "i18next";
 
 export const languageNames: Record<Language, string> = {
@@ -11,6 +11,12 @@ export const statusLabels: Record<Status, string> = {
 	todo: "todo",
 	"in-progress": "inProgress",
 	done: "done",
+};
+
+export const priorityLabels: Record<Priority, string> = {
+	low: "low",
+	medium: "medium",
+	high: "high",
 };
 
 const defaultLanguage: Language = "en";
@@ -73,6 +79,11 @@ const resources = {
 			signIn: "Sign in",
 			signOut: "Sign out",
 			status: "Status",
+			priority: "Priority",
+			priorityName: "Priority: {{priority}}",
+			low: "Low",
+			medium: "Medium",
+			high: "High",
 			title: "Title",
 			todo: "To do",
 			unassigned: "Unassigned",
@@ -154,6 +165,11 @@ const resources = {
 			signIn: "Přihlásit se",
 			signOut: "Odhlásit se",
 			status: "Stav",
+			priority: "Priorita",
+			priorityName: "Priorita: {{priority}}",
+			low: "Nízká",
+			medium: "Střední",
+			high: "Vysoká",
 			title: "Název",
 			todo: "K udělání",
 			unassigned: "Nepřiřazeno",

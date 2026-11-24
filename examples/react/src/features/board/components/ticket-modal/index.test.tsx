@@ -15,7 +15,12 @@ import type { TicketDraft } from "./parts/fields";
 
 const Probes = () => {
 	const tickets = useQuery((data) =>
-		data.tickets.map((ticket) => ({ title: ticket.title, assignee: ticket.assignee, labels: ticket.labels.join("|") })),
+		data.tickets.map((ticket) => ({
+			title: ticket.title,
+			assignee: ticket.assignee,
+			priority: ticket.priority,
+			labels: ticket.labels.join("|"),
+		})),
 	);
 
 	return (
@@ -23,6 +28,7 @@ const Probes = () => {
 			<output aria-label="titles">{tickets.map((ticket) => ticket.title).join(",")}</output>
 			<output aria-label="assignees">{tickets.map((ticket) => ticket.assignee).join(",")}</output>
 			<output aria-label="labels">{tickets.map((ticket) => ticket.labels).join(",")}</output>
+			<output aria-label="priorities">{tickets.map((ticket) => ticket.priority).join(",")}</output>
 		</>
 	);
 };
@@ -32,6 +38,7 @@ const commented: Ticket = {
 	title: "Commented",
 	description: "",
 	status: "todo",
+	priority: "low",
 	assignee: "",
 	labels: [],
 	comments: [{ id: "first", author: "bob", createdAt: "2026-01-01T00:00:00.000Z", body: "Looks good" }],
@@ -118,6 +125,7 @@ describe("TicketModal", () => {
 		expect(document.activeElement).toBe(title());
 		expect(screen.getByRole("combobox", { name: "Status" }).textContent).toBe("Backlog");
 		expect(screen.getByRole("combobox", { name: "Assignee" }).textContent).toBe("Unassigned");
+		expect(screen.getByRole("combobox", { name: "Priority" }).textContent).toBe("Low");
 	});
 
 	it("opens a new ticket with the given status", async () => {
@@ -159,6 +167,37 @@ describe("TicketModal", () => {
 		await user.click(await screen.findByRole("option", { name: "Ann" }));
 
 		expect(probe("assignees")).toBe("ann");
+	});
+
+	it("opens an existing ticket with its priority", async () => {
+		await changeTicket((ticket) => {
+			ticket.priority = "high";
+		});
+		await setup("commented");
+
+		expect(screen.getByRole("combobox", { name: "Priority" }).textContent).toBe("High");
+	});
+
+	it("saves the priority as soon as it changes", async () => {
+		await setup("commented");
+
+		await user.click(screen.getByRole("combobox", { name: "Priority" }));
+		await user.click(await screen.findByRole("option", { name: "High" }));
+
+		expect(store.query((data) => data.tickets[0]?.priority)).toBe("high");
+		expect(screen.getByRole("combobox", { name: "Priority" }).textContent).toBe("High");
+	});
+
+	it("lists priorities from Low to High", async () => {
+		await setup("commented");
+
+		await user.click(screen.getByRole("combobox", { name: "Priority" }));
+
+		expect((await screen.findAllByRole("option")).map((option) => option.textContent)).toStrictEqual([
+			"Low",
+			"Medium",
+			"High",
+		]);
 	});
 
 	it("shows avatars beside the assignee names", async () => {
@@ -361,6 +400,26 @@ describe("TicketModal", () => {
 		expect(probe("assignees")).toBe(",ann");
 		expect(store.query((data) => data.tickets[1]?.labels)).toStrictEqual(["bug"]);
 		expect(onClose).toHaveBeenCalledOnce();
+	});
+
+	it("creates a ticket with Low when the priority is left alone", async () => {
+		await setup();
+
+		await user.type(title(), "Created");
+		await user.click(screen.getByRole("button", { name: "Create ticket" }));
+
+		expect(probe("priorities")).toBe("low,low");
+	});
+
+	it("creates a ticket with the chosen priority", async () => {
+		await setup();
+
+		await user.type(title(), "Created");
+		await user.click(screen.getByRole("combobox", { name: "Priority" }));
+		await user.click(await screen.findByRole("option", { name: "Medium" }));
+		await user.click(screen.getByRole("button", { name: "Create ticket" }));
+
+		expect(probe("priorities")).toBe("low,medium");
 	});
 
 	const pullRequest = "https://github.com/pchalupa/nn/pull/212";

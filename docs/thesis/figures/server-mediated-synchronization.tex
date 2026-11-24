@@ -1,0 +1,19 @@
+\begin{tikzpicture}[
+	thesis,
+	replica/.style={thesis/store, minimum width=3.8cm, minimum height=0.75cm},
+	network/.style={thesis/network, <->}
+]
+	\draw[thesis/boundary] (0,0) rectangle (4.4,-1.5);
+	\draw[thesis/boundary] (6.4,0) rectangle (10.8,-1.5);
+	\node at (2.2,-0.3) {Alice's laptop};
+	\node at (8.6,-0.3) {Bob's phone};
+	\node[replica] (alice) at (2.2,-0.95) {Task-board replica\\Local reads and writes};
+	\node[replica] (bob) at (8.6,-0.95) {Task-board replica\\Local reads and writes};
+
+	\node[replica, minimum width=4.2cm] (server) at (5.4,-2.85)
+		{Synchronization server\\Stored copy};
+	\draw[network] (alice.south) -- (server.north west)
+		node[pos=0.65, left=0.15cm] {Exchange changes};
+	\draw[network] (bob.south) -- (server.north east)
+		node[pos=0.65, right=0.15cm] {Exchange changes};
+\end{tikzpicture}

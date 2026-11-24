@@ -15,7 +15,7 @@ test("shows a ticket created on one device on another", async ({ page, openDevic
 
 	await createTicket(laptop, "Sync me");
 
-	await expect(phone.getByRole("region", { name: "To do" }).getByRole("link", { name: /Sync me/ })).toBeVisible();
+	await expect(phone.getByRole("region", { name: "Backlog" }).getByRole("link", { name: /Sync me/ })).toBeVisible();
 });
 
 test("gives a new device the full board", async ({ page, openDevice }) => {

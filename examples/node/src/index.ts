@@ -40,6 +40,7 @@ try {
 									title,
 									description: `${file}:${index + 1}`,
 									status: "todo",
+									priority: "low",
 									assignee: "",
 									labels: [],
 									comments: [],

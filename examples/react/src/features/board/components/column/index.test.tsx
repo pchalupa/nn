@@ -53,6 +53,7 @@ describe("Column", () => {
 					title: "Labelled",
 					description: "",
 					status: "in-progress",
+					priority: "low",
 					assignee: "",
 					labels: ["bug"],
 					comments: [],
@@ -63,6 +64,7 @@ describe("Column", () => {
 					title: "Plain",
 					description: "",
 					status: "in-progress",
+					priority: "low",
 					assignee: "",
 					labels: [],
 					comments: [],
@@ -74,6 +76,28 @@ describe("Column", () => {
 		const { list } = await setup("In progress", "in-progress", { label: "bug" });
 
 		expect(within(list).getAllByRole("listitem")).toHaveLength(1);
-		expect(within(list).getByRole("link", { name: /^Labelled.* bug 0 0 Unassigned$/ })).toBeTruthy();
+		expect(within(list).getByRole("link", { name: /^Labelled.* bug 0 0 Priority: Low Unassigned$/ })).toBeTruthy();
+	});
+
+	it("names the priority on the card", async () => {
+		store.mutate((data) => {
+			data.tickets = [
+				{
+					id: "high",
+					title: "High",
+					description: "",
+					status: "done",
+					priority: "high",
+					assignee: "",
+					labels: [],
+					comments: [],
+					links: [],
+				},
+			];
+		});
+
+		const { list } = await setup("Done", "done");
+
+		expect(within(list).getByRole("img", { name: "Priority: High" })).toBeTruthy();
 	});
 });

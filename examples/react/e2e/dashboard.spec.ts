@@ -17,7 +17,7 @@ test.describe("Board", () => {
 
 		await expect(button).toHaveText("New");
 		await button.click();
-		await expect(page.getByRole("dialog").getByRole("combobox", { name: "Status" })).toHaveText("To do");
+		await expect(page.getByRole("dialog").getByRole("combobox", { name: "Status" })).toHaveText("Backlog");
 	});
 
 	test("creates a ticket in the Backlog column", async ({ page }) => {
@@ -37,7 +37,7 @@ test.describe("Column", () => {
 	test("should keep a created ticket after a reload", async ({ page }) => {
 		await page.goto("/");
 
-		const column = page.getByRole("region", { name: "To do" });
+		const column = page.getByRole("region", { name: "Backlog" });
 		const dialog = page.getByRole("dialog");
 
 		await expect(column.getByRole("listitem")).toHaveCount(0);
@@ -56,7 +56,7 @@ test.describe("Column", () => {
 		await newTicket(page).click();
 		await page.getByRole("dialog").getByRole("textbox", { name: "Title" }).fill("Unlabelled");
 		await page.getByRole("dialog").getByRole("button", { name: "Create ticket" }).click();
-		await expect(page.getByRole("region", { name: "To do" }).getByRole("listitem")).toHaveCount(1);
+		await expect(page.getByRole("region", { name: "Backlog" }).getByRole("listitem")).toHaveCount(1);
 
 		await page.goto("/?label=gone");
 
@@ -67,13 +67,13 @@ test.describe("Column", () => {
 		await page.getByRole("link", { name: "Board" }).click();
 
 		await expect(page).toHaveURL("/");
-		await expect(page.getByRole("region", { name: "To do" }).getByRole("listitem")).toHaveCount(1);
+		await expect(page.getByRole("region", { name: "Backlog" }).getByRole("listitem")).toHaveCount(1);
 	});
 
 	test("filters the board by label", async ({ page }) => {
 		const dialog = page.getByRole("dialog");
 		const navigation = page.getByRole("navigation");
-		const column = page.getByRole("region", { name: "To do" }).getByRole("listitem");
+		const column = page.getByRole("region", { name: "Backlog" }).getByRole("listitem");
 
 		await newTicket(page).click();
 		await dialog.getByRole("textbox", { name: "Title" }).fill("Labelled");

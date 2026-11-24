@@ -8,8 +8,6 @@ import { useMutation } from "@/store";
 import { type PropertyChange, TicketFields, type TicketDraft, type TicketProperties } from "./fields";
 import { TicketDialogShell } from "./ticket-dialog-shell";
 
-const emptyDraft: TicketDraft = { title: "", description: "", status: "backlog", assignee: "", labels: [] };
-
 interface NewTicketDialogProps {
 	initial?: Partial<TicketDraft>;
 	onClose: () => void;
@@ -19,10 +17,19 @@ interface NewTicketDialogProps {
 export const NewTicketDialog = ({ initial, onClose }: NewTicketDialogProps) => {
 	const { t } = useTranslation();
 	const mutate = useMutation();
-	const defaults = { ...emptyDraft, ...initial };
+	const defaults: TicketDraft = {
+		title: "",
+		description: "",
+		status: "backlog",
+		priority: "low",
+		assignee: "",
+		labels: [],
+		...initial,
+	};
 	const form = useForm<TicketDraft>({ defaultValues: defaults });
 	const [properties, setProperties] = useState<TicketProperties>({
 		status: defaults.status,
+		priority: defaults.priority,
 		assignee: defaults.assignee,
 		labels: defaults.labels,
 	});

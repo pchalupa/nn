@@ -51,9 +51,9 @@ test.describe("Mobile board", () => {
 		await expect(clear).toBeHidden();
 	});
 
-	test("scrolls the four columns sideways and creates a to-do ticket", async ({ page }) => {
+	test("scrolls the four columns sideways and creates a backlog ticket", async ({ page }) => {
 		await createTicket(page, "Planned");
-		await expect(page.getByRole("region", { name: "To do" }).getByRole("listitem")).toHaveCount(1);
+		await expect(page.getByRole("region", { name: "Backlog" }).getByRole("listitem")).toHaveCount(1);
 
 		const done = page.getByRole("region", { name: "Done" });
 
@@ -68,7 +68,7 @@ test.describe("Mobile board", () => {
 
 	test("adds labels from + Add label on the full-screen ticket", async ({ page }) => {
 		await createTicket(page, "Labelled");
-		await page.getByRole("region", { name: "To do" }).getByRole("link").click();
+		await page.getByRole("region", { name: "Backlog" }).getByRole("link").click();
 
 		const dialog = page.getByRole("dialog");
 		const input = dialog.getByRole("textbox", { name: "Labels" });
@@ -91,7 +91,7 @@ test.describe("Mobile board", () => {
 
 	test("opens a ticket full screen and returns to the board with its change", async ({ page }) => {
 		await createTicket(page, "Moving");
-		await page.getByRole("region", { name: "To do" }).getByRole("link").click();
+		await page.getByRole("region", { name: "Backlog" }).getByRole("link").click();
 
 		const dialog = page.getByRole("dialog");
 
@@ -108,7 +108,7 @@ test.describe("Mobile board", () => {
 
 		await expect(dialog).toBeHidden();
 		await expect(page).toHaveURL("/");
-		await expect(page.getByRole("region", { name: "To do" }).getByRole("listitem")).toHaveCount(0);
+		await expect(page.getByRole("region", { name: "Backlog" }).getByRole("listitem")).toHaveCount(0);
 		await expect(page.getByRole("region", { name: "Done" }).getByRole("listitem")).toHaveText([/Moving/]);
 	});
 });

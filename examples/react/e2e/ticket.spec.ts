@@ -14,7 +14,7 @@ const addTicket = async (page: Page) => {
 	await dialog.getByRole("button", { name: "Create ticket" }).click();
 	await expect(dialog).toBeHidden();
 
-	return { dialog, card: columnCards(page, "To do") };
+	return { dialog, card: columnCards(page, "Backlog") };
 };
 
 test.describe("Create ticket", () => {
@@ -26,7 +26,7 @@ test.describe("Create ticket", () => {
 
 		await expect(dialog).toBeVisible();
 		await expect(dialog.getByRole("textbox", { name: "Title" })).toHaveValue("");
-		await expect(dialog.getByRole("combobox", { name: "Status" })).toHaveText("To do");
+		await expect(dialog.getByRole("combobox", { name: "Status" })).toHaveText("Backlog");
 		await expect(dialog.getByRole("combobox", { name: "Assignee" })).toHaveText("Unassigned");
 	});
 
@@ -80,7 +80,7 @@ test.describe("Create ticket", () => {
 		await page.keyboard.press("ControlOrMeta+Enter");
 
 		await expect(dialog).toBeHidden();
-		await expect(columnCards(page, "To do")).toHaveText(/Shortcut/);
+		await expect(columnCards(page, "Backlog")).toHaveText(/Shortcut/);
 	});
 
 	test("creates a ticket with a link", async ({ page }) => {
@@ -110,10 +110,10 @@ test.describe("Create ticket", () => {
 
 		await dialog.getByRole("button", { name: "Create ticket" }).click();
 
-		const card = columnCards(page, "To do");
+		const card = columnCards(page, "Backlog");
 
 		await expect(dialog).toBeHidden();
-		await expect(card.getByRole("link")).toHaveAccessibleName(/ 0 1 Unassigned$/);
+		await expect(card.getByRole("link")).toHaveAccessibleName(/ 0 1 Priority: Low Unassigned$/);
 
 		await page.reload();
 		await card.getByRole("link").click();
@@ -276,7 +276,7 @@ test.describe("TicketModal editing", () => {
 
 		await choose(dialog.getByRole("combobox", { name: "Status" }), "Done");
 
-		await expect(columnCards(page, "To do")).toHaveCount(0);
+		await expect(columnCards(page, "Backlog")).toHaveCount(0);
 		await expect(columnCards(page, "Done")).toHaveCount(1);
 
 		await choose(dialog.getByRole("combobox", { name: "Assignee" }), "Jan Novak");
@@ -295,6 +295,20 @@ test.describe("TicketModal editing", () => {
 		await card.getByRole("link").click();
 
 		await expect(dialog.getByRole("textbox", { name: "Description" })).toHaveValue("Line one");
+	});
+
+	test("keeps a changed priority on the card after a reload", async ({ page }) => {
+		const { dialog, card } = await openTicket(page);
+
+		await choose(dialog.getByRole("combobox", { name: "Priority" }), "High");
+		await dialog.getByRole("button", { name: "Close" }).last().click();
+		await expect(dialog).toBeHidden();
+
+		await expect(card.getByRole("img", { name: "Priority: High" })).toBeVisible();
+
+		await page.reload();
+
+		await expect(card.getByRole("img", { name: "Priority: High" })).toBeVisible();
 	});
 
 	test("should not save an empty title", async ({ page }) => {
@@ -346,7 +360,7 @@ test.describe("TicketModal editing", () => {
 		await dialog.getByRole("button", { name: "Close" }).last().click();
 		await expect(dialog).toBeHidden();
 
-		await expect(card.getByRole("link")).toHaveAccessibleName(/ 0 1 Unassigned$/);
+		await expect(card.getByRole("link")).toHaveAccessibleName(/ 0 1 Priority: Low Unassigned$/);
 
 		await page.reload();
 		await card.getByRole("link").click();
@@ -411,15 +425,15 @@ test.describe("TicketModal deleting", () => {
 		const other = await page.context().newPage();
 
 		await other.goto("/");
-		await expect(columnCards(other, "To do")).toHaveCount(1);
+		await expect(columnCards(other, "Backlog")).toHaveCount(1);
 
 		await page.getByRole("link", { name: "todo" }).click();
 		await confirmDelete(page);
 		await expect(card).toHaveCount(0);
 
-		await expect(columnCards(other, "To do")).toHaveCount(0);
+		await expect(columnCards(other, "Backlog")).toHaveCount(0);
 		await other.reload();
 		await expect(newTicket(other)).toBeVisible();
-		await expect(columnCards(other, "To do")).toHaveCount(0);
+		await expect(columnCards(other, "Backlog")).toHaveCount(0);
 	});
 });

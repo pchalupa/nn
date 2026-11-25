@@ -1,0 +1,102 @@
+\section{Conflict-Free Replicated Data Types}
+\label{sec:conflict-free-replicated-data-types}
+
+Alice's laptop shows \enquote{Review} and Bob's phone shows \enquote{Ready} for the same task.
+Sending each device the other's title does not tell either device which one to display.
+If each simply adopts the incoming title, Alice ends up with \enquote{Ready} and Bob with \enquote{Review}: the titles have traded places, but the replicas still disagree.
+The two edits are \emph{concurrent} because each device saved its change before learning of the other's.
+
+\emph{Conflict-free replicated data types} (CRDTs) allow replicas to accept updates independently.
+Each type defines rules for applying local edits and incorporating remote changes, so replicas that have received the same updates agree on the result.
+Given eventual delivery and termination, this provides the strong eventual consistency described in Section~\ref{sec:consistency-models}.
+A server can carry the changes without deciding which edit to accept.
+\parencite[1--2]{crdt-overview}
+
+\subsection{How replicas synchronize}
+
+In \emph{state-based replication}, an edit changes the state of one replica.
+When that replica synchronizes, it sends a copy of its current state to a peer, which merges the received state with its own.
+A single state can therefore convey the effects of several local edits.
+\parencite[Section~2.1]{conflict-free-replicated-data-types}
+
+In \emph{operation-based replication}, the replica where an edit originates prepares a message describing the update.
+Each replica, including the originating replica, applies the update to its own state.
+In the model of \textcite[Section~2.4]{conflict-free-replicated-data-types}, delivery is reliable and respects causal order: an update is delivered before any update that depends on it.
+Concurrent updates may arrive in different orders, so applying them in either order must yield equivalent states.
+
+Figure~\ref{fig:replication-models} compares the two approaches for a set that supports additions only.
+Both replicas start empty, and replica A adds \(x\) and then \(y\).
+On the left, B receives the set \(\{x,y\}\) and merges it by taking the union; on the right, B applies the two additions.
+
+\begin{illustration}[htbp]
+	\centering
+	\caption{The same two additions under state-based and operation-based replication}
+	\label{fig:replication-models}
+	\input{figures/replication-models.tex}
+	\figuresource{Author's illustration adapted from \textcite[Section~2, Figures~1--2]{conflict-free-replicated-data-types}.}
+\end{illustration}
+\FloatBarrier
+
+\newpage
+\subsection{Registers}
+
+A register stores a value that can be read or replaced.
+A \emph{last-writer-wins register} (LWW register) also stores the timestamp of the write that assigned the value.
+In the state-based design, merging keeps the value--timestamp pair with the greater timestamp, while reading returns only the value.
+Timestamps must be unique and ordered consistently with causality: a write made after observing another must rank above it.
+Taking the maximum gives the same result in any merge order, and receiving a state twice has no further effect.
+\parencite[Section~3.2.1]{comprehensive-study-crdts}
+
+A \emph{hybrid logical clock} (HLC) combines a time component derived from wall clocks with a logical counter.
+Each replica incorporates the timestamps it receives into its clock.
+If its wall clock lags behind an observed write, the logical counter lets the replica give its next write a greater timestamp without waiting for physical time to catch up.
+\parencite[Section~3.3]{logical-physical-clocks}
+To order writes from different replicas, the register compares the time component first, then the counter, and finally the unique replica identifier if both HLC components match.
+
+\subsection{Sets}
+
+A replicated set needs a membership rule when one replica adds an element while another removes it.
+An \emph{observed-remove set} gives each addition a unique identifier.
+A removal cancels only those additions of the element that the removing replica has observed.
+The element remains present if at least one addition survives, so an addition concurrent with a removal wins.
+A remove-wins set makes the opposite choice for concurrent operations on the same element.
+Both rules permit replicas to agree; they give different answers to the membership query.
+\parencites[Section~3.3.5]{comprehensive-study-crdts}[3--5]{crdt-overview}
+
+\subsection{Sequences}
+
+A replicated sequence must preserve an order as well as record which elements are present.
+An index alone cannot identify an element across replicas because an insertion or deletion can shift its position.
+The \emph{Replicated Growable Array} (RGA) gives each inserted element a stable identifier and names its predecessor by identifier.
+Concurrent insertions after the same predecessor both survive, ordered by descending insertion timestamp.
+Deletion hides an element from reads but retains its identifier as a \emph{tombstone}, so a concurrent insertion can still locate its predecessor.
+\parencite[Section~3.5.1]{comprehensive-study-crdts}
+
+In Figure~\ref{fig:rga-tombstone}, \(C\) was inserted after \(B\).
+Deleting \(B\) changes the visible sequence without erasing the anchor for \(C\).
+\begin{illustration}[htbp]
+	\centering
+	\caption{An RGA retains a deleted element as an insertion anchor}
+	\label{fig:rga-tombstone}
+	\input{figures/rga-tombstone.tex}
+	\figuresource{Author's illustration based on \textcite[Section~3.5.1, Specification~19]{comprehensive-study-crdts}.}
+\end{illustration}
+\FloatBarrier
+
+\newpage
+\subsection{Resolving concurrent title edits}
+
+In the opening example, suppose Alice's laptop saves \enquote{Review} with timestamp \((100,0,A)\) and Bob's phone saves \enquote{Ready} with \((101,0,B)\), as shown in Figure~\ref{fig:lww-title-merge}.
+
+\begin{illustration}[htbp]
+	\centering
+	\caption{Concurrent title updates in a state-based LWW register}
+	\label{fig:lww-title-merge}
+	\input{figures/lww-title-merge.tex}
+	\figuresource{Author's illustration adapted from \textcite[Figure~7]{comprehensive-study-crdts}.}
+\end{illustration}
+\FloatBarrier
+
+Bob's write has the greater timestamp, so both replicas display \enquote{Ready}.
+This does not establish which user typed later in real time.
+The register discards Alice's concurrent rename.

@@ -5,7 +5,7 @@ on:
   pull_request:
 jobs:
   benchmark:
-    runs-on: ubuntu-24.04-arm
+    runs-on: codspeed-macro-arm64-graviton-ubuntu-22-04
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v7

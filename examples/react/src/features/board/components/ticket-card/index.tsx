@@ -12,6 +12,7 @@ import { priorityLabels } from "@/i18n";
 import { useQuery } from "@/store";
 
 interface TicketCardProps {
+	boardId: string;
 	ticket: {
 		id: string;
 		title: string;
@@ -24,13 +25,13 @@ interface TicketCardProps {
 }
 
 /** Renders a board card linking to the ticket, keeping the current board filters. */
-export const TicketCard = ({ ticket }: TicketCardProps) => {
+export const TicketCard = ({ boardId, ticket }: TicketCardProps) => {
 	const { t } = useTranslation();
 	const assignee = useQuery((data) => data.users.find((user) => user.id === ticket.assignee));
 
 	return (
 		<Card asChild size="1">
-			<Link to="/tickets/$ticketId" params={{ ticketId: ticket.id }} search={true}>
+			<Link to="/boards/$boardId/tickets/$ticketId" params={{ boardId, ticketId: ticket.id }} search={true}>
 				<Flex direction="column" gap="2">
 					<Flex justify="between" align="start" gap="2">
 						<Text size="2" weight="medium">

@@ -7,6 +7,7 @@ import { TicketHeader } from "./header";
 import { MobileTicketHeader } from "./mobile-ticket-header";
 
 interface TicketDialogShellProps {
+	boardName: string;
 	title: string;
 	ticketKey?: string;
 	onSubmit: (event: SubmitEvent<HTMLFormElement>) => void;
@@ -17,6 +18,7 @@ interface TicketDialogShellProps {
 
 /** Frames the ticket form in a dialog, full-screen below `md`, with the headers and footer, submitting on Mod+Enter. */
 export const TicketDialogShell = ({
+	boardName,
 	title,
 	ticketKey,
 	onSubmit,
@@ -47,9 +49,9 @@ export const TicketDialogShell = ({
 				<Dialog.Title hidden>{title}</Dialog.Title>
 				<Flex asChild direction="column" height="100%">
 					<form ref={setForm} noValidate onSubmit={onSubmit}>
-						<MobileTicketHeader ticketKey={ticketKey} />
+						<MobileTicketHeader boardName={boardName} ticketKey={ticketKey} />
 						<Box display={{ initial: "none", md: "block" }}>
-							<TicketHeader ticketKey={ticketKey} />
+							<TicketHeader boardName={boardName} ticketKey={ticketKey} />
 							<Separator size="4" color="gray" />
 						</Box>
 						{children}

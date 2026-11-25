@@ -7,16 +7,18 @@ import { FilterChip } from "@/components/filter-chip";
 import { type BoardSearch, withoutFilter } from "@/features/board/board-search";
 
 interface BoardFiltersProps {
+	boardId: string;
 	search: BoardSearch;
 	onOpenFilters: () => void;
 }
 
 /** Renders the mobile filters row, hidden from `md` up: a chip per active board filter and the Filter button. */
-export const BoardFilters = ({ search, onOpenFilters }: BoardFiltersProps) => {
+export const BoardFilters = ({ boardId, search, onOpenFilters }: BoardFiltersProps) => {
 	const { t } = useTranslation();
 	const navigate = useNavigate();
 
-	const clear = (filter: keyof BoardSearch) => navigate({ to: "/", search: withoutFilter(search, filter) });
+	const clear = (filter: keyof BoardSearch) =>
+		navigate({ to: "/boards/$boardId", params: { boardId }, search: withoutFilter(search, filter) });
 
 	return (
 		<Flex display={{ initial: "flex", md: "none" }} align="center" gap="2" wrap="wrap">

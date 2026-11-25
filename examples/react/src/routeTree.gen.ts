@@ -12,10 +12,11 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as AppRouteImport } from './routes/_app'
 import { Route as SignInRouteImport } from './routes/sign-in'
 import { Route as SignUpRouteImport } from './routes/sign-up'
-import { Route as AppBoardRouteImport } from './routes/_app/_board'
+import { Route as AppIndexRouteImport } from './routes/_app/index'
 import { Route as AppProfileRouteImport } from './routes/_app/profile'
-import { Route as AppBoardIndexRouteImport } from './routes/_app/_board.index'
-import { Route as AppBoardTicketsTicketIdRouteImport } from './routes/_app/_board.tickets.$ticketId'
+import { Route as AppBoardsBoardIdRouteImport } from './routes/_app/boards.$boardId'
+import { Route as AppBoardsBoardIdIndexRouteImport } from './routes/_app/boards.$boardId.index'
+import { Route as AppBoardsBoardIdTicketsTicketIdRouteImport } from './routes/_app/boards.$boardId.tickets.$ticketId'
 
 const AppRoute = AppRouteImport.update({
   id: '/_app',
@@ -31,8 +32,9 @@ const SignUpRoute = SignUpRouteImport.update({
   path: '/sign-up',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AppBoardRoute = AppBoardRouteImport.update({
-  id: '/_board',
+const AppIndexRoute = AppIndexRouteImport.update({
+  id: '/',
+  path: '/',
   getParentRoute: () => AppRoute,
 } as any)
 const AppProfileRoute = AppProfileRouteImport.update({
@@ -40,55 +42,79 @@ const AppProfileRoute = AppProfileRouteImport.update({
   path: '/profile',
   getParentRoute: () => AppRoute,
 } as any)
-const AppBoardIndexRoute = AppBoardIndexRouteImport.update({
+const AppBoardsBoardIdRoute = AppBoardsBoardIdRouteImport.update({
+  id: '/boards/$boardId',
+  path: '/boards/$boardId',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppBoardsBoardIdIndexRoute = AppBoardsBoardIdIndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => AppBoardRoute,
+  getParentRoute: () => AppBoardsBoardIdRoute,
 } as any)
-const AppBoardTicketsTicketIdRoute = AppBoardTicketsTicketIdRouteImport.update({
-  id: '/tickets/$ticketId',
-  path: '/tickets/$ticketId',
-  getParentRoute: () => AppBoardRoute,
-} as any)
+const AppBoardsBoardIdTicketsTicketIdRoute =
+  AppBoardsBoardIdTicketsTicketIdRouteImport.update({
+    id: '/tickets/$ticketId',
+    path: '/tickets/$ticketId',
+    getParentRoute: () => AppBoardsBoardIdRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
-  '/': typeof AppBoardIndexRoute
+  '/': typeof AppIndexRoute
   '/sign-in': typeof SignInRoute
   '/sign-up': typeof SignUpRoute
   '/profile': typeof AppProfileRoute
-  '/tickets/$ticketId': typeof AppBoardTicketsTicketIdRoute
+  '/boards/$boardId': typeof AppBoardsBoardIdRouteWithChildren
+  '/boards/$boardId/': typeof AppBoardsBoardIdIndexRoute
+  '/boards/$boardId/tickets/$ticketId': typeof AppBoardsBoardIdTicketsTicketIdRoute
 }
 export interface FileRoutesByTo {
-  '/': typeof AppBoardIndexRoute
   '/sign-in': typeof SignInRoute
   '/sign-up': typeof SignUpRoute
   '/profile': typeof AppProfileRoute
-  '/tickets/$ticketId': typeof AppBoardTicketsTicketIdRoute
+  '/': typeof AppIndexRoute
+  '/boards/$boardId': typeof AppBoardsBoardIdIndexRoute
+  '/boards/$boardId/tickets/$ticketId': typeof AppBoardsBoardIdTicketsTicketIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_app': typeof AppRouteWithChildren
   '/sign-in': typeof SignInRoute
   '/sign-up': typeof SignUpRoute
-  '/_app/_board': typeof AppBoardRouteWithChildren
   '/_app/profile': typeof AppProfileRoute
-  '/_app/_board/': typeof AppBoardIndexRoute
-  '/_app/_board/tickets/$ticketId': typeof AppBoardTicketsTicketIdRoute
+  '/_app/': typeof AppIndexRoute
+  '/_app/boards/$boardId': typeof AppBoardsBoardIdRouteWithChildren
+  '/_app/boards/$boardId/': typeof AppBoardsBoardIdIndexRoute
+  '/_app/boards/$boardId/tickets/$ticketId': typeof AppBoardsBoardIdTicketsTicketIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/sign-in' | '/sign-up' | '/profile' | '/tickets/$ticketId'
+  fullPaths:
+    | '/'
+    | '/sign-in'
+    | '/sign-up'
+    | '/profile'
+    | '/boards/$boardId'
+    | '/boards/$boardId/'
+    | '/boards/$boardId/tickets/$ticketId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/sign-in' | '/sign-up' | '/profile' | '/tickets/$ticketId'
+  to:
+    | '/sign-in'
+    | '/sign-up'
+    | '/profile'
+    | '/'
+    | '/boards/$boardId'
+    | '/boards/$boardId/tickets/$ticketId'
   id:
     | '__root__'
     | '/_app'
     | '/sign-in'
     | '/sign-up'
-    | '/_app/_board'
     | '/_app/profile'
-    | '/_app/_board/'
-    | '/_app/_board/tickets/$ticketId'
+    | '/_app/'
+    | '/_app/boards/$boardId'
+    | '/_app/boards/$boardId/'
+    | '/_app/boards/$boardId/tickets/$ticketId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -120,11 +146,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SignUpRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_app/_board': {
-      id: '/_app/_board'
-      path: ''
+    '/_app/': {
+      id: '/_app/'
+      path: '/'
       fullPath: '/'
-      preLoaderRoute: typeof AppBoardRouteImport
+      preLoaderRoute: typeof AppIndexRouteImport
       parentRoute: typeof AppRoute
     }
     '/_app/profile': {
@@ -134,45 +160,53 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppProfileRouteImport
       parentRoute: typeof AppRoute
     }
-    '/_app/_board/': {
-      id: '/_app/_board/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof AppBoardIndexRouteImport
-      parentRoute: typeof AppBoardRoute
+    '/_app/boards/$boardId': {
+      id: '/_app/boards/$boardId'
+      path: '/boards/$boardId'
+      fullPath: '/boards/$boardId'
+      preLoaderRoute: typeof AppBoardsBoardIdRouteImport
+      parentRoute: typeof AppRoute
     }
-    '/_app/_board/tickets/$ticketId': {
-      id: '/_app/_board/tickets/$ticketId'
+    '/_app/boards/$boardId/': {
+      id: '/_app/boards/$boardId/'
+      path: '/'
+      fullPath: '/boards/$boardId/'
+      preLoaderRoute: typeof AppBoardsBoardIdIndexRouteImport
+      parentRoute: typeof AppBoardsBoardIdRoute
+    }
+    '/_app/boards/$boardId/tickets/$ticketId': {
+      id: '/_app/boards/$boardId/tickets/$ticketId'
       path: '/tickets/$ticketId'
-      fullPath: '/tickets/$ticketId'
-      preLoaderRoute: typeof AppBoardTicketsTicketIdRouteImport
-      parentRoute: typeof AppBoardRoute
+      fullPath: '/boards/$boardId/tickets/$ticketId'
+      preLoaderRoute: typeof AppBoardsBoardIdTicketsTicketIdRouteImport
+      parentRoute: typeof AppBoardsBoardIdRoute
     }
   }
 }
 
-interface AppBoardRouteChildren {
-  AppBoardIndexRoute: typeof AppBoardIndexRoute
-  AppBoardTicketsTicketIdRoute: typeof AppBoardTicketsTicketIdRoute
+interface AppBoardsBoardIdRouteChildren {
+  AppBoardsBoardIdIndexRoute: typeof AppBoardsBoardIdIndexRoute
+  AppBoardsBoardIdTicketsTicketIdRoute: typeof AppBoardsBoardIdTicketsTicketIdRoute
 }
 
-const AppBoardRouteChildren: AppBoardRouteChildren = {
-  AppBoardIndexRoute: AppBoardIndexRoute,
-  AppBoardTicketsTicketIdRoute: AppBoardTicketsTicketIdRoute,
+const AppBoardsBoardIdRouteChildren: AppBoardsBoardIdRouteChildren = {
+  AppBoardsBoardIdIndexRoute: AppBoardsBoardIdIndexRoute,
+  AppBoardsBoardIdTicketsTicketIdRoute: AppBoardsBoardIdTicketsTicketIdRoute,
 }
 
-const AppBoardRouteWithChildren = AppBoardRoute._addFileChildren(
-  AppBoardRouteChildren,
-)
+const AppBoardsBoardIdRouteWithChildren =
+  AppBoardsBoardIdRoute._addFileChildren(AppBoardsBoardIdRouteChildren)
 
 interface AppRouteChildren {
-  AppBoardRoute: typeof AppBoardRouteWithChildren
   AppProfileRoute: typeof AppProfileRoute
+  AppIndexRoute: typeof AppIndexRoute
+  AppBoardsBoardIdRoute: typeof AppBoardsBoardIdRouteWithChildren
 }
 
 const AppRouteChildren: AppRouteChildren = {
-  AppBoardRoute: AppBoardRouteWithChildren,
   AppProfileRoute: AppProfileRoute,
+  AppIndexRoute: AppIndexRoute,
+  AppBoardsBoardIdRoute: AppBoardsBoardIdRouteWithChildren,
 }
 
 const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)

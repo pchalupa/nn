@@ -1,4 +1,4 @@
-import { createFileRoute, Outlet, useSearch } from "@tanstack/react-router";
+import { createFileRoute, Outlet, useParams, useSearch } from "@tanstack/react-router";
 import type { Status } from "example-schema";
 import { useRef } from "react";
 
@@ -8,7 +8,8 @@ import { Board } from "@/features/board/components/board";
 import { TicketModal, type TicketModalHandle } from "@/features/board/components/ticket-modal";
 
 const BoardPage = () => {
-	const search = useSearch({ from: "/_app/_board" });
+	const { boardId } = useParams({ from: "/_app/boards/$boardId" });
+	const search = useSearch({ from: "/_app/boards/$boardId" });
 	const { id: userId } = useUser();
 	const ticketModal = useRef<TicketModalHandle>(null);
 
@@ -17,14 +18,14 @@ const BoardPage = () => {
 
 	return (
 		<>
-			<Board search={search} onNewTicket={handleNewTicket} />
-			<TicketModal ref={ticketModal} />
+			<Board boardId={boardId} search={search} onNewTicket={handleNewTicket} />
+			<TicketModal ref={ticketModal} boardId={boardId} />
 			<Outlet />
 		</>
 	);
 };
 
-export const Route = createFileRoute("/_app/_board")({
+export const Route = createFileRoute("/_app/boards/$boardId")({
 	validateSearch: validateBoardSearch,
 	component: BoardPage,
 });

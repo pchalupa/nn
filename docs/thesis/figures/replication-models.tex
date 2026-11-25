@@ -1,0 +1,24 @@
+\begin{tikzpicture}[thesis]
+	\foreach \offset/\heading in {0/State-based,7.2/Operation-based}{
+		\begin{scope}[xshift=\offset cm]
+			\node[thesis/heading] at (2.7,1) {\heading};
+			\foreach \level/\replica in {0/A,-1.6/B}{
+				\node[anchor=east] at (0,\level) {\replica};
+				\draw[thesis/lifeline,->] (0,\level) -- (5.8,\level);
+			}
+			\foreach \pos/\itemname in {0.8/x,3/y}{
+				\fill (\pos,0) circle (1.7pt);
+				\node[above] at (\pos,0) {Add \(\itemname\)};
+			}
+		\end{scope}
+	}
+	\draw[thesis/divider] (6.4,1.15) -- (6.4,-2.25);
+	\draw[thesis/network,->] (3.3,0) -- node[right] {State \(\{x,y\}\)} (4.7,-1.6);
+	\node[below] at (4.7,-1.6) {Merge by union};
+	\begin{scope}[xshift=7.2cm]
+		\foreach \start/\endpos/\itemname in {0.8/2.2/x,3/4.4/y}{
+			\draw[thesis/network,->] (\start,0) -- node[right] {Add \(\itemname\)} (\endpos,-1.6);
+			\node[below] at (\endpos,-1.6) {Apply};
+		}
+	\end{scope}
+\end{tikzpicture}

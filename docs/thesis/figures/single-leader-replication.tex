@@ -1,0 +1,18 @@
+\begin{tikzpicture}[
+	thesis,
+	client/.style={thesis/participant, minimum width=2.8cm, minimum height=0.7cm},
+	replica/.style={thesis/store, minimum width=3.1cm, minimum height=0.8cm},
+	network/.style={thesis/network, ->}
+]
+	\node[client] (client) at (0,0) {Client};
+	\node[replica] (leader) at (0,-1.65) {Leader replica};
+	\node[replica] (follower-a) at (-2.6,-3.5) {Follower replica 1};
+	\node[replica] (follower-b) at (2.6,-3.5) {Follower replica 2};
+
+	\draw[network] (client.south) -- (leader.north)
+		node[midway, right=0.15cm] {Write};
+	\draw[network] (leader.south west) -- (follower-a.north)
+		node[midway, left=0.15cm] {Replicate};
+	\draw[network] (leader.south east) -- (follower-b.north)
+		node[midway, right=0.15cm] {Replicate};
+\end{tikzpicture}

@@ -1,0 +1,84 @@
+\section{Replication Topologies}
+\label{sec:replication-topologies}
+
+When Alice renames a task on her laptop, which replica accepts the edit, and how does the new title reach Bob's phone?
+In the server-centred task board, the application sends the write to a database leader.
+In the local-first task board, Alice's laptop can accept the edit while offline.
+
+A \emph{replication topology} describes the paths that changes follow between replicas.
+In single-leader replication, the leader sends accepted writes to its followers.
+Independently writable replicas can exchange their changes directly or through a synchronization server.
+A server can therefore occupy a central place in either topology, but only the database leader must accept each write.
+\parencites[152, 168, 175]{designing-data-intensive-applications}[173]{local-first-software}
+
+\subsection{Single-leader replication}
+
+In single-leader replication, one replica accepts writes and propagates them to the other replicas, called \emph{followers}.
+The followers apply changes in the leader's order and can serve read requests.
+Figure~\ref{fig:single-leader-replication} shows the write and replication paths.
+\parencite[181--182]{understanding-distributed-systems}
+
+In the server-centred task board, Alice's request to rename a task reaches the application server, which writes to the database leader.
+The leader propagates the accepted change to its followers.
+If the application cannot reach an available leader, it cannot complete the write through this replication model.
+\parencite[152--153, 168]{designing-data-intensive-applications}
+
+\begin{illustration}[htbp]
+	\centering
+	\caption{Single-leader replication}
+	\label{fig:single-leader-replication}
+	\begingroup
+	\setstretch{1}
+	\input{figures/single-leader-replication.tex}
+	\endgroup
+	\figuresource{Author's illustration adapted from \textcite[182, Figure~19.1]{understanding-distributed-systems}.}
+\end{illustration}
+\FloatBarrier
+
+The acknowledgement policy affects when the write can be reported as complete.
+With asynchronous replication, the leader does not wait for followers to acknowledge the change, so a follower may still return the previous task title.
+Synchronous replication waits for acknowledgements from the required followers, adding a dependency on their availability and response time.
+\parencite[182--183]{understanding-distributed-systems}
+
+\newpage
+\subsection{Independently writable replicas}
+
+Local-first editing requires devices to accept supported writes without reaching a remote leader.
+\textcite[170--171]{designing-data-intensive-applications} describes offline clients and collaborative editing as uses of asynchronous \emph{multi-leader replication}: each device accepts local changes and exchanges them with other replicas later.
+Accepting a local edit does not require coordination with other replicas before it completes.
+However, replicas still need shared rules for interpreting and reconciling the changes they later exchange.
+
+Suppose Alice's laptop and Bob's phone both hold a task titled \enquote{Draft}.
+While disconnected, Alice renames it to \enquote{Review}; independently, Bob renames it to \enquote{Ready}.
+Both changes are saved locally before either device learns about the other edit.
+The replicas must subsequently exchange these changes, but independent writing does not require a direct connection between every pair of devices.
+
+In a \emph{server-mediated star}, each client connects to a common synchronization server, as shown in Figure~\ref{fig:server-mediated-synchronization}.
+Alice can send her change to the server, which retains data for Bob to retrieve when his phone reconnects.
+This supports collaboration even when the devices are never online together.
+The local-first essay calls such supporting servers \enquote{cloud peers}.
+Their central position in the communication graph does not require clients to obtain approval for each local edit.
+If the server becomes unavailable, exchange through it is delayed while the clients can continue editing their local data.
+\parencite[173]{local-first-software}
+
+\begin{illustration}[htbp]
+	\centering
+	\caption{Server-mediated synchronization between independently writable replicas}
+	\label{fig:server-mediated-synchronization}
+	\begingroup
+	\setstretch{1}
+	\input{figures/server-mediated-synchronization.tex}
+	\endgroup
+	\figuresource{Author's illustration based on \textcite[173]{local-first-software}.}
+\end{illustration}
+\FloatBarrier
+
+With \emph{peer-to-peer communication}, devices exchange changes directly when a connection is available.
+Alice and Bob could synchronize over a local network without routing their changes through a remote storage server.
+However, the devices must discover one another and establish a connection; network configuration can make this difficult.
+Direct exchange also requires both peers to be reachable at the same time.
+A supporting server can retain data between connections, so direct peer links and server-mediated synchronization can be combined.
+\parencite[173]{local-first-software}
+
+Whether Alice and Bob exchange changes directly or through a server, their replicas must reconcile the independently edited titles.
+The communication topology determines the paths those changes follow, while the reconciliation rules determine the resulting state.

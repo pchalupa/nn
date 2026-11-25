@@ -1,0 +1,10 @@
+\begin{tikzpicture}[thesis, element/.style={thesis/box, minimum width=2.2cm, minimum height=0.8cm}]
+	\node[anchor=east] at (-1.4,0) {Stored elements};
+	\node[element] (a) at (0,0) {\(A\)};
+	\node[element,dashed] (b) at (3.2,0) {\(B\) (deleted)};
+	\node[element] (c) at (6.4,0) {\(C\)};
+	\draw[thesis/local,->] (a) -- (b);
+	\draw[thesis/local,->] (b) -- (c);
+	\node[anchor=east] at (-1.4,-1) {Query result};
+	\node at (0,-1) {\([A,C]\)};
+\end{tikzpicture}

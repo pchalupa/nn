@@ -1,0 +1,15 @@
+\begin{tikzpicture}[thesis, state/.style={thesis/box, minimum width=2.8cm, minimum height=0.7cm}]
+	\node[thesis/heading] at (0,0.7) {Local update \(u\)};
+	\node[thesis/heading] at (4.2,0.7) {Exchange states};
+	\node[thesis/heading] at (8.4,0.7) {After merge \(m\)};
+	\node[anchor=east] at (-1.65,0) {Alice};
+	\node[anchor=east] at (-1.65,-1.5) {Bob};
+	\node[state] (a) at (0,0) {Review, \((100,0,A)\)};
+	\node[state] (b) at (0,-1.5) {Ready, \((101,0,B)\)};
+	\node[state] (aa) at (8.4,0) {Ready, \((101,0,B)\)};
+	\node[state] (bb) at (8.4,-1.5) {Ready, \((101,0,B)\)};
+	\draw[thesis/local,->] (a.east) -- (aa.west);
+	\draw[thesis/local,->] (b.east) -- (bb.west);
+	\draw[thesis/network,->] (a.east) -- (bb.west);
+	\draw[thesis/network,->] (b.east) -- (aa.west);
+\end{tikzpicture}

@@ -9,12 +9,14 @@ import { type PropertyChange, TicketFields, type TicketDraft, type TicketPropert
 import { TicketDialogShell } from "./ticket-dialog-shell";
 
 interface NewTicketDialogProps {
+	boardId: string;
+	boardName: string;
 	initial?: Partial<TicketDraft>;
 	onClose: () => void;
 }
 
-/** Shows a form for a new ticket in a dialog and creates the ticket on submit. */
-export const NewTicketDialog = ({ initial, onClose }: NewTicketDialogProps) => {
+/** Shows a form for a new ticket in a dialog and creates the ticket on the board on submit. */
+export const NewTicketDialog = ({ boardId, boardName, initial, onClose }: NewTicketDialogProps) => {
 	const { t } = useTranslation();
 	const mutate = useMutation();
 	const defaults: TicketDraft = {
@@ -37,14 +39,16 @@ export const NewTicketDialog = ({ initial, onClose }: NewTicketDialogProps) => {
 
 	const create = form.handleSubmit((texts) => {
 		mutate((data) => {
-			data.tickets.push({
-				...texts,
-				...properties,
-				title: texts.title.trim(),
-				id: crypto.randomUUID(),
-				comments: [],
-				links,
-			});
+			data.boards
+				.find((board) => board.id === boardId)
+				?.tickets.push({
+					...texts,
+					...properties,
+					title: texts.title.trim(),
+					id: crypto.randomUUID(),
+					comments: [],
+					links,
+				});
 		});
 		onClose();
 	});
@@ -58,7 +62,7 @@ export const NewTicketDialog = ({ initial, onClose }: NewTicketDialogProps) => {
 	const handleRemoveLink = (id: string) => setLinks((current) => current.filter((link) => link.id !== id));
 
 	return (
-		<TicketDialogShell title={t("newTicket")} onSubmit={handleSubmit} onClose={onClose}>
+		<TicketDialogShell boardName={boardName} title={t("newTicket")} onSubmit={handleSubmit} onClose={onClose}>
 			<TicketFields
 				form={form}
 				properties={properties}

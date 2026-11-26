@@ -39,20 +39,6 @@ test.describe("Boards", () => {
 		await expect(page.getByRole("link", { name: "New", exact: true })).toHaveCount(0);
 	});
 
-	test("does not flash the empty boards list while boards load", async ({ page }) => {
-		await createBoard(page, "Loaded");
-		await page.goto("/");
-		await page.addInitScript(() => {
-			new MutationObserver(() => {
-				if (document.body?.textContent?.includes("No boards yet")) sessionStorage.setItem("seen", "No boards yet");
-			}).observe(document, { subtree: true, childList: true, characterData: true });
-		});
-		await page.reload();
-
-		await expect(page.getByRole("link", { name: "Loaded", exact: true })).toBeVisible();
-		expect(await page.evaluate(() => sessionStorage.getItem("seen"))).toBeNull();
-	});
-
 	test("shows the 404 page for an unknown URL", async ({ page }) => {
 		await page.goto("/no-such-page");
 

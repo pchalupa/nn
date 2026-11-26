@@ -14,15 +14,19 @@ export interface TicketModalHandle {
 
 interface TicketModalProps {
 	ref?: Ref<TicketModalHandle>;
+	boardId: string;
 	id?: string;
 	onClose?: () => void;
 }
 
-/** Shows the ticket with `id`, a new ticket form for an unknown `id`, or a new ticket once `open` is called through `ref`, until the modal closes or the shown ticket is deleted. */
-export const TicketModal = ({ ref, id, onClose }: TicketModalProps) => {
+/** Shows the ticket with `id` on board `boardId`, a new ticket form for an unknown `id`, or a new ticket once `open` is called through `ref`, until the modal closes or the shown ticket is deleted. */
+export const TicketModal = ({ ref, boardId, id, onClose }: TicketModalProps) => {
 	const [draft, setDraft] = useState<Partial<TicketDraft>>();
 	const [seen, setSeen] = useState(false);
-	const exists = useQuery((data) => data.tickets.some((ticket) => ticket.id === id));
+	const boardName = useQuery((data) => data.boards.find((board) => board.id === boardId)?.name ?? "");
+	const exists = useQuery(
+		(data) => data.boards.find((board) => board.id === boardId)?.tickets.some((ticket) => ticket.id === id) ?? false,
+	);
 	const deleted = seen && !exists;
 
 	if (exists && !seen) setSeen(true);
@@ -42,11 +46,15 @@ export const TicketModal = ({ ref, id, onClose }: TicketModalProps) => {
 
 	if (deleted) return null;
 
-	if (id !== undefined && exists) return <EditTicketDialog id={id} onClose={handleClose} />;
+	if (id !== undefined && exists) {
+		return <EditTicketDialog id={id} boardId={boardId} boardName={boardName} onClose={handleClose} />;
+	}
 
-	if (id !== undefined) return <NewTicketDialog onClose={handleClose} />;
+	if (id !== undefined) return <NewTicketDialog boardId={boardId} boardName={boardName} onClose={handleClose} />;
 
-	if (draft) return <NewTicketDialog initial={draft} onClose={handleClose} />;
+	if (draft) {
+		return <NewTicketDialog boardId={boardId} boardName={boardName} initial={draft} onClose={handleClose} />;
+	}
 
 	return null;
 };

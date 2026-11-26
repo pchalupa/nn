@@ -25,6 +25,7 @@ export interface CardTicket {
 }
 
 interface TicketCardProps {
+	boardId: string;
 	ticket: CardTicket;
 	ref?: Ref<HTMLAnchorElement>;
 	dragListeners?: DraggableSyntheticListeners;
@@ -32,7 +33,7 @@ interface TicketCardProps {
 }
 
 /** Renders a board card linking to the ticket, keeping the current board filters. */
-export const TicketCard = ({ ticket, ref, dragListeners, dragDescribedBy }: TicketCardProps) => {
+export const TicketCard = ({ boardId, ticket, ref, dragListeners, dragDescribedBy }: TicketCardProps) => {
 	const { t } = useTranslation();
 	const assignee = useQuery((data) => data.users.find((user) => user.id === ticket.assignee));
 
@@ -40,8 +41,8 @@ export const TicketCard = ({ ticket, ref, dragListeners, dragDescribedBy }: Tick
 		<Card asChild size="1">
 			<Link
 				ref={ref}
-				to="/tickets/$ticketId"
-				params={{ ticketId: ticket.id }}
+				to="/boards/$boardId/tickets/$ticketId"
+				params={{ boardId, ticketId: ticket.id }}
 				search={true}
 				draggable={false}
 				aria-describedby={dragDescribedBy}

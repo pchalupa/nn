@@ -7,13 +7,12 @@ import { useQuery } from "@/store";
 
 import { Stat } from "./parts/stat";
 
-/** Shows the current user with activity stats: beside the name from `md` up, in a divided row below it on mobile. */
+/** Shows the current user with the assigned count: beside the name from `md` up, in a divided row below it on mobile. */
 export const Identity = () => {
 	const { t } = useTranslation();
 	const { id: userId, user } = useUser();
-	const assignedCount = useQuery((data) => data.tickets.filter((ticket) => ticket.assignee === userId).length);
-	const commentCount = useQuery(
-		(data) => data.tickets.flatMap((ticket) => ticket.comments).filter((comment) => comment.author === userId).length,
+	const assignedCount = useQuery(
+		(data) => data.boards.flatMap((board) => board.tickets).filter((ticket) => ticket.assignee === userId).length,
 	);
 
 	return (
@@ -34,15 +33,12 @@ export const Identity = () => {
 			</Flex>
 			<Grid
 				gridArea="stats"
-				columns={{ initial: "2", md: "auto auto" }}
 				justify="start"
 				alignSelf={{ initial: "stretch", md: "start" }}
-				gapX={{ initial: "0", md: "3" }}
 				py={{ initial: "4", md: "0" }}
 				className="profile-stats"
 			>
 				<Stat i18nKey="assignedCount" count={assignedCount} />
-				<Stat i18nKey="commentCount" count={commentCount} />
 			</Grid>
 		</Grid>
 	);

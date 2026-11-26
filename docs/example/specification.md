@@ -25,6 +25,13 @@ It should stay small and easy to maintain. A mobile app and a Next.js app will c
 - An account created on one device can sign in on another device once the data has synced there.
 - Sign out.
 
+### Boards
+
+- There can be several boards. A board has a name and an optional description.
+- Boards can be created, renamed and deleted. Deleting a board deletes its tickets.
+- Each board has its own URL, and so does each of its tickets.
+- The boards list shows each board's ticket count, how much of it is done, and how its tickets split across statuses.
+
 ### Board
 
 - Three columns: **To do**, **In progress** and **Done**.
@@ -34,6 +41,7 @@ It should stay small and easy to maintain. A mobile app and a Next.js app will c
 
 ### Tickets
 
+- A ticket belongs to one board.
 - A ticket has a title, a description, a status, a priority and an optional assignee.
 - Tickets can be created, opened, edited and deleted.
 - An open ticket has its own URL.
@@ -53,7 +61,7 @@ Agents are first-class citizens, just like human users. An agent can use the boa
 
 ### Filters
 
-- The board can be filtered by label and by assignee, for example "assigned to me".
+- A board can be filtered by label and by assignee, for example "assigned to me".
 - Filters belong to the device and aren't synced.
 
 ## Local-first behavior

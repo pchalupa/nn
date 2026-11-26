@@ -8,13 +8,14 @@ import { Status } from "@/features/board/components/status";
 import type { CardTicket } from "@/features/board/components/ticket-card";
 
 interface ColumnProps {
+	boardId: string;
 	title: string;
 	status: TicketStatus;
 	tickets: readonly CardTicket[];
 }
 
 /** Renders a board column of draggable cards that also accepts cards dropped on its empty space. */
-export const Column = ({ title, status, tickets }: ColumnProps) => {
+export const Column = ({ boardId, title, status, tickets }: ColumnProps) => {
 	const { setNodeRef } = useDroppable({ id: status });
 
 	return (
@@ -32,7 +33,7 @@ export const Column = ({ title, status, tickets }: ColumnProps) => {
 							<ul>
 								<SortableContext items={tickets.map((ticket) => ticket.id)} strategy={verticalListSortingStrategy}>
 									{tickets.map((ticket) => (
-										<SortableTicket key={ticket.id} ticket={ticket} />
+										<SortableTicket key={ticket.id} boardId={boardId} ticket={ticket} />
 									))}
 								</SortableContext>
 							</ul>

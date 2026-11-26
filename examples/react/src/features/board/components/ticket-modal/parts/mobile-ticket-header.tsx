@@ -6,11 +6,12 @@ import { MobileHeader } from "@/components/mobile-header";
 import { HeaderButton } from "@/components/mobile-header/parts/header-button";
 
 interface MobileTicketHeaderProps {
+	boardName: string;
 	ticketKey?: string;
 }
 
 /** Renders the full-screen ticket header: Back, the key over the board name, and Copy link for a saved ticket. */
-export const MobileTicketHeader = ({ ticketKey }: MobileTicketHeaderProps) => {
+export const MobileTicketHeader = ({ boardName, ticketKey }: MobileTicketHeaderProps) => {
 	const { t } = useTranslation();
 
 	const handleCopyLink = () => navigator.clipboard.writeText(location.href);
@@ -26,7 +27,7 @@ export const MobileTicketHeader = ({ ticketKey }: MobileTicketHeaderProps) => {
 				</Dialog.Close>
 			}
 			title={ticketKey ?? t("newTicket")}
-			subtitle="nn"
+			subtitle={boardName}
 		>
 			{ticketKey !== undefined && (
 				<HeaderButton label={t("copyLink")} onClick={handleCopyLink}>

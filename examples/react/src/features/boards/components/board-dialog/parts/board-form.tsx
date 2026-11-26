@@ -1,15 +1,15 @@
 import { PlusIcon } from "@phosphor-icons/react";
 import { Button, Dialog, Flex, Grid, Text, TextArea, TextField } from "@radix-ui/themes";
+import type { Board } from "example-schema";
 import type { SubmitEvent } from "react";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 
 import { Field } from "@/components/field";
-import type { BoardDetails } from "@/features/boards/board-details";
 import { useMutation } from "@/store";
 
 interface BoardFormProps {
-	board?: BoardDetails;
+	board?: Pick<Board, "id" | "name" | "description">;
 	onDone: () => void;
 }
 

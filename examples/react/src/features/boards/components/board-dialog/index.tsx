@@ -1,8 +1,7 @@
 import { Dialog } from "@radix-ui/themes";
+import type { Board } from "example-schema";
 import { type Ref, useImperativeHandle, useState } from "react";
 import { useTranslation } from "react-i18next";
-
-import type { BoardDetails } from "@/features/boards/board-details";
 
 import { BoardForm } from "./parts/board-form";
 
@@ -14,7 +13,7 @@ export interface BoardDialogHandle {
 
 interface BoardDialogProps {
 	ref?: Ref<BoardDialogHandle>;
-	board?: BoardDetails;
+	board?: Pick<Board, "id" | "name" | "description">;
 }
 
 /** Shows the New board dialog, or the Rename board dialog for `board`, as a bottom sheet below `md`, once `open` is called through `ref`. */

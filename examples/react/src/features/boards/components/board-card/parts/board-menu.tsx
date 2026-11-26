@@ -1,12 +1,11 @@
 import { ArrowSquareOutIcon, DotsThreeIcon, LinkIcon, PencilSimpleIcon, TrashIcon } from "@phosphor-icons/react";
 import { DropdownMenu, IconButton } from "@radix-ui/themes";
 import { Link } from "@tanstack/react-router";
+import type { Board } from "example-schema";
 import { useTranslation } from "react-i18next";
 
-import type { BoardDetails } from "@/features/boards/board-details";
-
 interface BoardMenuProps {
-	board: BoardDetails;
+	board: Pick<Board, "id" | "name" | "description">;
 	onRename: () => void;
 	onDelete: () => void;
 }

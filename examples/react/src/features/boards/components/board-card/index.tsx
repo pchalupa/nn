@@ -1,10 +1,9 @@
 import { Box, Card, Flex, Heading, Text } from "@radix-ui/themes";
 import { Link } from "@tanstack/react-router";
+import type { Board, Status } from "example-schema";
 import { useRef } from "react";
 import { useTranslation } from "react-i18next";
 
-import type { BoardDetails } from "@/features/boards/board-details";
-import { boardProgress } from "@/features/boards/board-progress";
 import { BoardDialog, type BoardDialogHandle } from "@/features/boards/components/board-dialog";
 import { BoardMark } from "@/features/boards/components/board-mark";
 import { DeleteBoard, type DeleteBoardHandle } from "@/features/boards/components/delete-board";
@@ -14,16 +13,34 @@ import { BoardMenu } from "./parts/board-menu";
 import { ProgressBar } from "./parts/progress-bar";
 
 interface BoardCardProps {
-	board: BoardDetails;
+	board: Pick<Board, "id" | "name" | "description">;
 }
 
 /** Renders a board's card, linking to the board, with its progress and an actions menu. */
 export const BoardCard = ({ board }: BoardCardProps) => {
 	const { t } = useTranslation();
 	const mutate = useMutation();
-	const progress = useQuery((data) => boardProgress(data.boards.find((entry) => entry.id === board.id)?.tickets ?? []));
 	const renameDialog = useRef<BoardDialogHandle>(null);
 	const deleteDialog = useRef<DeleteBoardHandle>(null);
+	const { counts, total, percent } = useQuery((data) =>
+		(data.boards.find((entry) => entry.id === board.id)?.tickets ?? []).reduce<{
+			counts: Record<Status, number>;
+			total: number;
+			percent: number;
+		}>(
+			(progress, ticket) => {
+				const statusCounts = { ...progress.counts, [ticket.status]: progress.counts[ticket.status] + 1 };
+				const ticketCount = progress.total + 1;
+
+				return {
+					counts: statusCounts,
+					total: ticketCount,
+					percent: Math.round((statusCounts.done / ticketCount) * 100),
+				};
+			},
+			{ counts: { backlog: 0, todo: 0, "in-progress": 0, done: 0 }, total: 0, percent: 0 },
+		),
+	);
 
 	const handleRename = () => renameDialog.current?.open();
 
@@ -55,13 +72,13 @@ export const BoardCard = ({ board }: BoardCardProps) => {
 				<Flex direction="column" gap="2">
 					<Flex justify="between" gap="2">
 						<Text size="1" color="gray">
-							{t("ticketCount", { count: progress.total })}
+							{t("ticketCount", { count: total })}
 						</Text>
 						<Text size="1" color="gray">
-							{t("percentDone", { percent: progress.percent })}
+							{t("percentDone", { percent })}
 						</Text>
 					</Flex>
-					<ProgressBar counts={progress.counts} />
+					<ProgressBar counts={counts} />
 				</Flex>
 			</Flex>
 			<BoardDialog ref={renameDialog} board={board} />

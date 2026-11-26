@@ -199,6 +199,26 @@ async function signIn(page: Page) {
 	}).toPass({ timeout: 10_000 });
 }
 
+/** Creates a board from the boards list and opens it. */
+export async function createBoard(page: Page, name: string) {
+	const dialog = page.getByRole("dialog");
+
+	await page.goto("/");
+	await page.getByRole("button", { name: "New board" }).first().click();
+	await dialog.getByRole("textbox", { name: "Name" }).fill(name);
+	await dialog.getByRole("button", { name: "Create board" }).click();
+	await expect(dialog).toBeHidden();
+	await page.getByRole("link", { name, exact: true }).click();
+	await page.waitForURL("**/boards/*");
+}
+
+/** Opens a board from the boards list, waiting for it to sync to the device. */
+export async function openBoard(page: Page, name: string) {
+	await page.goto("/");
+	await page.getByRole("link", { name, exact: true }).click();
+	await page.waitForURL("**/boards/*");
+}
+
 /** Picks an option from a Radix select. */
 export async function choose(combobox: Locator, option: string) {
 	await combobox.click();

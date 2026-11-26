@@ -1,21 +1,30 @@
 import { Dialog, Flex } from "@radix-ui/themes";
+import { type Ref, useImperativeHandle, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import { SidebarContent } from "@/features/navigation/components/sidebar/parts/sidebar-content";
 
-interface DrawerProps {
-	open: boolean;
-	onOpenChange: (open: boolean) => void;
+/** Controls the drawer from its parent. */
+export interface DrawerHandle {
+	/** Opens the drawer. */
+	open: () => void;
 }
 
-/** Shows the sidebar content in a 300px left sheet over a scrim, closing when a link navigates. */
-export const Drawer = ({ open, onOpenChange }: DrawerProps) => {
-	const { t } = useTranslation();
+interface DrawerProps {
+	ref?: Ref<DrawerHandle>;
+}
 
-	const handleNavigate = () => onOpenChange(false);
+/** Shows the sidebar content in a 300px left sheet over a scrim once `open` is called through `ref`, closing when a link navigates. */
+export const Drawer = ({ ref }: DrawerProps) => {
+	const { t } = useTranslation();
+	const [open, setOpen] = useState(false);
+
+	useImperativeHandle(ref, () => ({ open: () => setOpen(true) }), []);
+
+	const handleNavigate = () => setOpen(false);
 
 	return (
-		<Dialog.Root open={open} onOpenChange={onOpenChange}>
+		<Dialog.Root open={open} onOpenChange={setOpen}>
 			<Dialog.Content
 				aria-describedby={undefined}
 				width="300px"

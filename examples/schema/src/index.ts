@@ -12,6 +12,8 @@ export type Comment = InferStateType<typeof comment>;
 
 export type Link = InferStateType<typeof link>;
 
+export type Board = InferStateType<typeof board>;
+
 export const status = enumeration("backlog", "todo", "in-progress", "done");
 
 export const priority = enumeration("low", "medium", "high");
@@ -65,8 +67,17 @@ const ticket = object({
 	.entitle("ticket")
 	.describe("Holds information about a ticket.");
 
+const board = object({
+	id: string(),
+	name: string(),
+	description: string(),
+	tickets: array(ticket).describe("Tickets on the board."),
+})
+	.entitle("board")
+	.describe("A board and the tickets on it.");
+
 export const schema = object({
 	users: array(user).describe("List of users"),
-	tickets: array(ticket).describe("List of tickets"),
+	boards: array(board).describe("List of boards"),
 	language,
 });

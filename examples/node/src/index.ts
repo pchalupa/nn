@@ -12,6 +12,8 @@ import { logger } from "./modules/logger";
 const store = new Store(schema);
 const sseSync = new SseSync(store, new URL(process.env.REMOTE_URL ?? ""));
 
+const todoBoardId = createHash("md5").update("board:todo").digest("hex");
+
 const root = fileURLToPath(new URL("../../../packages", import.meta.url));
 
 sseSync.onError((error) => logger.error({ err: error }, "Sync failed"));
@@ -26,7 +28,20 @@ try {
 				const lines = readFileSync(join(root, file), "utf8").split("\n");
 
 				store.mutate((draft) => {
-					const ids = new Set(draft.tickets.map((ticket) => ticket.id));
+					if (!draft.boards.some((board) => board.id === todoBoardId)) {
+						draft.boards.push({
+							id: todoBoardId,
+							name: "TODO",
+							description: "TODO comments in packages/.",
+							tickets: [],
+						});
+					}
+
+					const board = draft.boards.find((entry) => entry.id === todoBoardId);
+
+					if (!board) return;
+
+					const ids = new Set(board.tickets.map((ticket) => ticket.id));
 
 					for (const [index, line] of lines.entries()) {
 						const title = /\/\/ TODO: (.+)/.exec(line)?.[1]?.trim();
@@ -35,7 +50,7 @@ try {
 							const id = createHash("md5").update(`todo:${file}:${title}`).digest("hex");
 
 							if (!ids.has(id)) {
-								draft.tickets.push({
+								board.tickets.push({
 									id,
 									title,
 									description: `${file}:${index + 1}`,

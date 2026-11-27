@@ -1,4 +1,4 @@
-<img alt="Goodstate. State that survives the dark side. Local-first state for TypeScript." src="https://raw.githubusercontent.com/pchalupa/goodstate/main/docs/design/assets/readme-banner.png" width="836" />
+<img alt="Goodstate. State that survives the dark side. Local-first state for TypeScript." src="https://raw.githubusercontent.com/pchalupa/goodstate/main/docs/design/assets/readme-banner.jpg" width="836" />
 
 # Goodstate
 

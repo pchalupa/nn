@@ -136,7 +136,7 @@ The mission patch is a secondary emblem, for stickers, avatars, and celebrations
 
 The README is the main promotion surface, on GitHub and on npm. Only the branded parts are images. Everything else is real Markdown.
 
-1. Banner: one image for both themes, 1672 × 800 exported at 2×. Martian Night with a graded photo, a mono label (`LOCAL-FIRST STATE FOR TYPESCRIPT`), the wordmark, and "State that survives the dark side." Alt text repeats the tagline.
+1. Banner: one image for both themes, 1672 × 800 exported at 2× as JPEG at quality 85, since a photo as PNG weighs about 2 MB. Martian Night with a graded photo, a mono label (`LOCAL-FIRST STATE FOR TYPESCRIPT`), the wordmark, and "State that survives the dark side." Alt text repeats the tagline.
 2. Badges from shields.io with `labelColor=1C130C&color=FAF0DE`. Shields.io sets white text on any mid-tone color, and white on Mars Orange is 3.7:1, so badges carry no orange.
 3. Intro, quick start, and code in plain Markdown. GitHub's syntax colors are fine.
 4. Packages table and examples list in plain Markdown.

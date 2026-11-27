@@ -1,6 +1,6 @@
 {
 	"name": "@goodstate/cache",
-	"version": "7.0.1",
+	"version": "7.0.2",
 	"description": "Caches for values derived from other state",
 	"keywords": [
 		"cache",

@@ -1,5 +1,14 @@
 # @goodstate/indexdb-sync
 
+## 7.0.2
+
+### Patch Changes
+
+- 089a06c: Releases are now built and published by GitHub Actions with a provenance attestation, so npm shows which commit and workflow a version came from. Nothing in the API changed.
+- Updated dependencies [089a06c]
+  - @goodstate/observable@7.0.2
+  - @goodstate/sync-engine@7.0.2
+
 ## 7.0.1
 
 ### Patch Changes

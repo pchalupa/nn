@@ -1,6 +1,6 @@
 {
 	"name": "@goodstate/schema",
-	"version": "7.0.1",
+	"version": "7.0.2",
 	"description": "Typed schema builders that describe the shape of store state",
 	"keywords": [
 		"json-schema",

@@ -1,5 +1,11 @@
 # @goodstate/observable
 
+## 7.0.1
+
+### Patch Changes
+
+- 60eb15a: All `@goodstate/*` packages now share one version number and are released together. Install the same version of every `@goodstate/*` package you use. Nothing in the API changed.
+
 ## 4.0.0
 
 ### Major Changes

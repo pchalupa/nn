@@ -1,5 +1,14 @@
 # @goodstate/react-devtools
 
+## 7.0.1
+
+### Patch Changes
+
+- 60eb15a: All `@goodstate/*` packages now share one version number and are released together. Install the same version of every `@goodstate/*` package you use. Nothing in the API changed.
+- 60eb15a: `@goodstate/react-devtools` accepts any React 19 as a peer dependency. It used to ask for exactly `react@19.3.1` and `react-dom@19.3.1`, so installing it next to another React 19 version failed with a peer conflict.
+- Updated dependencies [60eb15a]
+  - @goodstate/guards@7.0.1
+
 ## 2.0.0
 
 ### Major Changes

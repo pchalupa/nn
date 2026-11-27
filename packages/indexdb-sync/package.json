@@ -1,6 +1,6 @@
 {
 	"name": "@goodstate/indexdb-sync",
-	"version": "6.0.0",
+	"version": "7.0.1",
 	"description": "Sync engine that persists a store to IndexedDB",
 	"keywords": [
 		"indexeddb",

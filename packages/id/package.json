@@ -1,6 +1,6 @@
 {
 	"name": "@goodstate/id",
-	"version": "0.3.0",
+	"version": "7.0.1",
 	"description": "Local ID generation",
 	"keywords": [
 		"id",

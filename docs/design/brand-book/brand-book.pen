@@ -2751,7 +2751,7 @@
                       "type": "image",
                       "opacity": 0.9,
                       "enabled": true,
-                      "url": "generated-1.png",
+                      "url": "generated.png",
                       "mode": "cover"
                     },
                     {
@@ -2788,6 +2788,35 @@
                   "padding": 40,
                   "justifyContent": "space_between",
                   "children": [
+                    {
+                      "type": "rectangle",
+                      "id": "gejmw",
+                      "layoutPosition": "absolute",
+                      "x": 733,
+                      "y": 184.5,
+                      "name": "Sign Cover",
+                      "fill": {
+                        "type": "gradient",
+                        "gradientType": "linear",
+                        "enabled": true,
+                        "rotation": 180,
+                        "size": {
+                          "height": 1
+                        },
+                        "colors": [
+                          {
+                            "color": "#1A1009",
+                            "position": 0
+                          },
+                          {
+                            "color": "#2B1A0E",
+                            "position": 1
+                          }
+                        ]
+                      },
+                      "width": 103,
+                      "height": 11.5
+                    },
                     {
                       "type": "frame",
                       "id": "h9A4K9",
@@ -5649,7 +5678,7 @@
                       "type": "image",
                       "opacity": 0.9,
                       "enabled": true,
-                      "url": "generated-1.png",
+                      "url": "generated.png",
                       "mode": "cover"
                     },
                     {
@@ -5686,6 +5715,35 @@
                   "padding": 40,
                   "justifyContent": "space_between",
                   "children": [
+                    {
+                      "type": "rectangle",
+                      "id": "vP0Am",
+                      "layoutPosition": "absolute",
+                      "x": 733,
+                      "y": 184.5,
+                      "name": "Sign Cover",
+                      "fill": {
+                        "type": "gradient",
+                        "gradientType": "linear",
+                        "enabled": true,
+                        "rotation": 180,
+                        "size": {
+                          "height": 1
+                        },
+                        "colors": [
+                          {
+                            "color": "#1A1009",
+                            "position": 0
+                          },
+                          {
+                            "color": "#2B1A0E",
+                            "position": 1
+                          }
+                        ]
+                      },
+                      "width": 103,
+                      "height": 11.5
+                    },
                     {
                       "type": "frame",
                       "id": "usDKN",

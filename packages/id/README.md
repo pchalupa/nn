@@ -1,17 +1,17 @@
-# @nn/id
+# @goodstate/id
 
 Local ID generation.
 
 ## Installation
 
 ```sh
-npm install @nn/id
+npm install @goodstate/id
 ```
 
 ## Usage
 
 ```ts
-import { ID } from "@nn/id";
+import { ID } from "@goodstate/id";
 
 const id = ID.create();
 ```

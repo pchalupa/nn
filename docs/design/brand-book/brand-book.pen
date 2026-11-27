@@ -1,5 +1,5 @@
 {
-  "version": "2.22",
+  "version": "2.25",
   "children": [
     {
       "type": "frame",
@@ -2751,12 +2751,12 @@
                       "type": "image",
                       "opacity": 0.9,
                       "enabled": true,
-                      "url": "generated.png",
+                      "url": "generated-1.png",
                       "mode": "cover"
                     },
                     {
                       "type": "color",
-                      "color": "#D0641F8C",
+                      "color": "#D9621E8C",
                       "enabled": true,
                       "blendMode": "color"
                     },
@@ -2784,7 +2784,6 @@
                       ]
                     }
                   ],
-                  "cornerRadius": 6,
                   "layout": "vertical",
                   "padding": 40,
                   "justifyContent": "space_between",
@@ -2795,24 +2794,14 @@
                       "name": "Banner Top",
                       "width": "fill_container",
                       "justifyContent": "space_between",
+                      "alignItems": "center",
                       "children": [
                         {
                           "type": "text",
                           "id": "lpYXv",
                           "name": "Mission Label",
                           "fill": "#FAF0DEB3",
-                          "content": "MISSION 001  ·  LOCAL-FIRST STATE FOR TYPESCRIPT",
-                          "fontFamily": "IBM Plex Mono",
-                          "fontSize": 12,
-                          "fontWeight": "normal",
-                          "letterSpacing": 1.5
-                        },
-                        {
-                          "type": "text",
-                          "id": "H5rCZ8",
-                          "name": "Go Status",
-                          "fill": "$phosphor",
-                          "content": "● GO FOR LAUNCH",
+                          "content": "LOCAL-FIRST STATE FOR TYPESCRIPT",
                           "fontFamily": "IBM Plex Mono",
                           "fontSize": 12,
                           "fontWeight": "normal",
@@ -2844,10 +2833,10 @@
                           "name": "Tagline",
                           "fill": "$suit-white",
                           "content": "State that survives the dark side.",
-                          "fontFamily": "IBM Plex Serif",
-                          "fontSize": 26,
+                          "fontFamily": "Michroma",
+                          "fontSize": 32,
                           "fontWeight": "normal",
-                          "fontStyle": "italic"
+                          "letterSpacing": -0.4
                         }
                       ]
                     },
@@ -2864,18 +2853,7 @@
                           "id": "ygSLh",
                           "name": "Telemetry",
                           "fill": "$mylar-gold",
-                          "content": "AOS 04:12:33  ·  STATE CONVERGED  ·  Δ 0",
-                          "fontFamily": "IBM Plex Mono",
-                          "fontSize": 12,
-                          "fontWeight": "normal",
-                          "letterSpacing": 1.5
-                        },
-                        {
-                          "type": "text",
-                          "id": "GdDHn",
-                          "name": "Fig Label",
-                          "fill": "#FAF0DE80",
-                          "content": "FIG. 01",
+                          "content": "STATE CONVERGED",
                           "fontFamily": "IBM Plex Mono",
                           "fontSize": 12,
                           "fontWeight": "normal",
@@ -4205,7 +4183,6 @@
                   "name": "Diagram Image",
                   "width": "fill_container",
                   "fill": "$space",
-                  "cornerRadius": 6,
                   "layout": "vertical",
                   "gap": 28,
                   "padding": 36,
@@ -4215,19 +4192,8 @@
                       "id": "jP9Cl",
                       "name": "Diagram Header",
                       "width": "fill_container",
-                      "justifyContent": "space_between",
+                      "justifyContent": "end",
                       "children": [
-                        {
-                          "type": "text",
-                          "id": "pvAAC",
-                          "name": "Fig",
-                          "fill": "#FAF0DE80",
-                          "content": "FIG. 02 — FLIGHT PLAN",
-                          "fontFamily": "IBM Plex Mono",
-                          "fontSize": 12,
-                          "fontWeight": "normal",
-                          "letterSpacing": 1.5
-                        },
                         {
                           "type": "text",
                           "id": "rsd75",
@@ -4297,7 +4263,7 @@
                               "fill": "#FAF0DE99",
                               "textGrowth": "fixed-width",
                               "width": "fill_container",
-                              "content": "Persists the store on the device. Nothing is lost when power cycles.",
+                              "content": "Persists the store on the device and restores it on load.",
                               "lineHeight": 1.45,
                               "fontFamily": "IBM Plex Sans",
                               "fontSize": 14,
@@ -4497,7 +4463,7 @@
                               "fill": "$space",
                               "content": "The spacecraft",
                               "fontFamily": "Michroma",
-                              "fontSize": 24,
+                              "fontSize": 32,
                               "fontWeight": "normal"
                             }
                           ]
@@ -5568,7 +5534,7 @@
                       "id": "YOeNe",
                       "name": "License Line",
                       "fill": "$suit-orange",
-                      "content": "MIT © STRV",
+                      "content": "MIT © Petr Chalupa",
                       "fontFamily": "IBM Plex Mono",
                       "fontSize": 12,
                       "fontWeight": "normal",
@@ -5683,12 +5649,12 @@
                       "type": "image",
                       "opacity": 0.9,
                       "enabled": true,
-                      "url": "generated.png",
+                      "url": "generated-1.png",
                       "mode": "cover"
                     },
                     {
                       "type": "color",
-                      "color": "#D0641F8C",
+                      "color": "#D9621E8C",
                       "enabled": true,
                       "blendMode": "color"
                     },
@@ -5716,7 +5682,6 @@
                       ]
                     }
                   ],
-                  "cornerRadius": 6,
                   "layout": "vertical",
                   "padding": 40,
                   "justifyContent": "space_between",
@@ -5727,24 +5692,14 @@
                       "name": "Banner Top",
                       "width": "fill_container",
                       "justifyContent": "space_between",
+                      "alignItems": "center",
                       "children": [
                         {
                           "type": "text",
                           "id": "qbZJZ",
                           "name": "Mission Label",
                           "fill": "#FAF0DEB3",
-                          "content": "MISSION 001  ·  LOCAL-FIRST STATE FOR TYPESCRIPT",
-                          "fontFamily": "IBM Plex Mono",
-                          "fontSize": 12,
-                          "fontWeight": "normal",
-                          "letterSpacing": 1.5
-                        },
-                        {
-                          "type": "text",
-                          "id": "A75sj",
-                          "name": "Go Status",
-                          "fill": "$phosphor",
-                          "content": "● GO FOR LAUNCH",
+                          "content": "LOCAL-FIRST STATE FOR TYPESCRIPT",
                           "fontFamily": "IBM Plex Mono",
                           "fontSize": 12,
                           "fontWeight": "normal",
@@ -5776,10 +5731,10 @@
                           "name": "Tagline",
                           "fill": "$suit-white",
                           "content": "State that survives the dark side.",
-                          "fontFamily": "IBM Plex Serif",
-                          "fontSize": 26,
+                          "fontFamily": "Michroma",
+                          "fontSize": 32,
                           "fontWeight": "normal",
-                          "fontStyle": "italic"
+                          "letterSpacing": -0.4
                         }
                       ]
                     },
@@ -5796,18 +5751,7 @@
                           "id": "rdBhF",
                           "name": "Telemetry",
                           "fill": "$mylar-gold",
-                          "content": "AOS 04:12:33  ·  STATE CONVERGED  ·  Δ 0",
-                          "fontFamily": "IBM Plex Mono",
-                          "fontSize": 12,
-                          "fontWeight": "normal",
-                          "letterSpacing": 1.5
-                        },
-                        {
-                          "type": "text",
-                          "id": "rKMpj",
-                          "name": "Fig Label",
-                          "fill": "#FAF0DE80",
-                          "content": "FIG. 01",
+                          "content": "STATE CONVERGED",
                           "fontFamily": "IBM Plex Mono",
                           "fontSize": 12,
                           "fontWeight": "normal",
@@ -7137,7 +7081,6 @@
                   "name": "Diagram Image",
                   "width": "fill_container",
                   "fill": "$space",
-                  "cornerRadius": 6,
                   "layout": "vertical",
                   "gap": 28,
                   "padding": 36,
@@ -7147,19 +7090,8 @@
                       "id": "OQKbK",
                       "name": "Diagram Header",
                       "width": "fill_container",
-                      "justifyContent": "space_between",
+                      "justifyContent": "end",
                       "children": [
-                        {
-                          "type": "text",
-                          "id": "m94zmo",
-                          "name": "Fig",
-                          "fill": "#FAF0DE80",
-                          "content": "FIG. 02 — FLIGHT PLAN",
-                          "fontFamily": "IBM Plex Mono",
-                          "fontSize": 12,
-                          "fontWeight": "normal",
-                          "letterSpacing": 1.5
-                        },
                         {
                           "type": "text",
                           "id": "WPqoJ",
@@ -7229,7 +7161,7 @@
                               "fill": "#FAF0DE99",
                               "textGrowth": "fixed-width",
                               "width": "fill_container",
-                              "content": "Persists the store on the device. Nothing is lost when power cycles.",
+                              "content": "Persists the store on the device and restores it on load.",
                               "lineHeight": 1.45,
                               "fontFamily": "IBM Plex Sans",
                               "fontSize": 14,
@@ -7429,7 +7361,7 @@
                               "fill": "$space",
                               "content": "The spacecraft",
                               "fontFamily": "Michroma",
-                              "fontSize": 24,
+                              "fontSize": 32,
                               "fontWeight": "normal"
                             }
                           ]
@@ -8500,7 +8432,7 @@
                       "id": "IfR6w",
                       "name": "License Line",
                       "fill": "$suit-orange",
-                      "content": "MIT © STRV",
+                      "content": "MIT © Petr Chalupa",
                       "fontFamily": "IBM Plex Mono",
                       "fontSize": 12,
                       "fontWeight": "normal",
@@ -8509,6 +8441,131 @@
                   ]
                 }
               ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "jNfRm",
+      "x": 4728,
+      "y": 0,
+      "name": "Goodstate Social Card",
+      "clip": true,
+      "width": 1280,
+      "height": 640,
+      "fill": [
+        "$space",
+        {
+          "type": "image",
+          "opacity": 0.9,
+          "enabled": true,
+          "url": "generated-6.png",
+          "mode": "cover"
+        },
+        {
+          "type": "color",
+          "color": "#D9621E8C",
+          "enabled": true,
+          "blendMode": "color"
+        },
+        {
+          "type": "gradient",
+          "gradientType": "linear",
+          "enabled": true,
+          "rotation": 270,
+          "size": {
+            "height": 1
+          },
+          "colors": [
+            {
+              "color": "#1C130CF5",
+              "position": 0
+            },
+            {
+              "color": "#1C130CD9",
+              "position": 0.5
+            },
+            {
+              "color": "#1C130CB3",
+              "position": 1
+            }
+          ]
+        }
+      ],
+      "layout": "vertical",
+      "padding": 64,
+      "justifyContent": "space_between",
+      "children": [
+        {
+          "type": "frame",
+          "id": "LTDub",
+          "name": "Banner Top",
+          "width": "fill_container",
+          "justifyContent": "space_between",
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "text",
+              "id": "rggVD",
+              "name": "Mission Label",
+              "fill": "#FAF0DEB3",
+              "content": "LOCAL-FIRST STATE FOR TYPESCRIPT",
+              "fontFamily": "IBM Plex Mono",
+              "fontSize": 16,
+              "fontWeight": "normal",
+              "letterSpacing": 1.5
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "Q4YPz8",
+          "name": "Banner Title",
+          "layout": "vertical",
+          "gap": 16,
+          "children": [
+            {
+              "type": "text",
+              "id": "W6EED4",
+              "name": "Wordmark",
+              "fill": "$suit-white",
+              "content": "GOODSTATE",
+              "fontFamily": "Michroma",
+              "fontSize": 120,
+              "fontWeight": "normal",
+              "letterSpacing": -1.5
+            },
+            {
+              "type": "text",
+              "id": "lQgTG",
+              "name": "Tagline",
+              "fill": "$suit-white",
+              "content": "State that survives the dark side.",
+              "fontFamily": "IBM Plex Sans",
+              "fontSize": 36,
+              "fontWeight": "500"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "fRLSo",
+          "name": "Banner Telemetry",
+          "width": "fill_container",
+          "justifyContent": "space_between",
+          "alignItems": "end",
+          "children": [
+            {
+              "type": "text",
+              "id": "tE6Oy",
+              "name": "Telemetry",
+              "fill": "$mylar-gold",
+              "content": "$ npm i @goodstate/react",
+              "fontFamily": "IBM Plex Mono",
+              "fontSize": 24,
+              "fontWeight": "normal"
             }
           ]
         }

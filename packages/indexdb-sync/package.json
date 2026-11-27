@@ -1,5 +1,5 @@
 {
-	"name": "@nn/indexdb-sync",
+	"name": "@goodstate/indexdb-sync",
 	"version": "5.0.0",
 	"description": "Sync engine that persists a store to IndexedDB",
 	"keywords": [
@@ -9,15 +9,15 @@
 		"persistence",
 		"sync"
 	],
-	"homepage": "https://github.com/pchalupa/nn/tree/main/packages/indexdb-sync#readme",
+	"homepage": "https://github.com/pchalupa/goodstate/tree/main/packages/indexdb-sync#readme",
 	"bugs": {
-		"url": "https://github.com/pchalupa/nn/issues"
+		"url": "https://github.com/pchalupa/goodstate/issues"
 	},
 	"license": "MIT",
 	"author": "pchalupa <chalupa.petr93@gmail.com> (https://github.com/pchalupa)",
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/pchalupa/nn.git",
+		"url": "git+https://github.com/pchalupa/goodstate.git",
 		"directory": "packages/indexdb-sync"
 	},
 	"files": [
@@ -41,16 +41,16 @@
 		"test:watch": "vitest watch"
 	},
 	"dependencies": {
-		"@nn/observable": "workspace:^",
-		"@nn/sync-engine": "workspace:^"
+		"@goodstate/observable": "workspace:^",
+		"@goodstate/sync-engine": "workspace:^"
 	},
 	"devDependencies": {
-		"@nn/build-config": "workspace:^",
-		"@nn/entities": "workspace:^",
-		"@nn/schema": "workspace:^",
-		"@nn/store": "workspace:^",
-		"@nn/time": "workspace:^",
-		"@nn/typescript-config": "workspace:^",
+		"@goodstate/build-config": "workspace:^",
+		"@goodstate/entities": "workspace:^",
+		"@goodstate/schema": "workspace:^",
+		"@goodstate/store": "workspace:^",
+		"@goodstate/time": "workspace:^",
+		"@goodstate/typescript-config": "workspace:^",
 		"fake-indexeddb": "^6.2.8",
 		"tsdown": "catalog:",
 		"typescript": "catalog:",

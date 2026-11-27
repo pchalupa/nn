@@ -1,4 +1,4 @@
-import { isString } from "@nn/guards/is-string";
+import { isString } from "@goodstate/guards/is-string";
 import type { ReactNode } from "react";
 
 import { Text } from "../components/text";
@@ -35,7 +35,9 @@ css`
 		color: var(--gs-syntax-string);
 	}
 	.value[data-type="number"],
-	.value[data-type="bigint"],
+	.value[data-type="bigint"] {
+		color: var(--gs-syntax-number);
+	}
 	.value[data-type="boolean"] {
 		color: var(--gs-syntax-keyword);
 	}

@@ -1,6 +1,6 @@
-import { LWWMap } from "@nn/entities/kinds/lww-map";
-import { LWWRegister } from "@nn/entities/kinds/lww-register";
-import { Time } from "@nn/time";
+import { LWWMap } from "@goodstate/entities/kinds/lww-map";
+import { LWWRegister } from "@goodstate/entities/kinds/lww-register";
+import { Time } from "@goodstate/time";
 import { assert, describe, expect, it } from "vitest";
 
 import { MapStrategy } from "./map-strategy";

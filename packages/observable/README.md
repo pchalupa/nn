@@ -1,11 +1,11 @@
-# @nn/observable
+# @goodstate/observable
 
 Observer and delegate primitives for change notification.
 
 ## Installation
 
 ```sh
-npm install @nn/observable
+npm install @goodstate/observable
 ```
 
 ## Usage
@@ -13,7 +13,7 @@ npm install @nn/observable
 `Observable` notifies every subscribed observer. `subscribe` returns a function that unsubscribes.
 
 ```ts
-import { Observable } from "@nn/observable/observable";
+import { Observable } from "@goodstate/observable/observable";
 
 const changes = new Observable<[string]>();
 
@@ -28,7 +28,7 @@ unsubscribe();
 `Delegatable` types an object that reports to a single delegate.
 
 ```ts
-import type { Delegatable } from "@nn/observable";
+import type { Delegatable } from "@goodstate/observable";
 
 interface TimerDelegate {
 	timerDidFire(timer: Timer): void;

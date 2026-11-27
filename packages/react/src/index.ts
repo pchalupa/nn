@@ -1,6 +1,6 @@
-import type { InferStateType, Schema } from "@nn/schema";
-import type { ObjectSchema } from "@nn/schema/object-schema";
-import { Store } from "@nn/store";
+import type { InferStateType, Schema } from "@goodstate/schema";
+import type { ObjectSchema } from "@goodstate/schema/object-schema";
+import { Store } from "@goodstate/store";
 import { useDebugValue } from "react";
 import { useSyncExternalStoreWithSelector } from "use-sync-external-store/with-selector";
 

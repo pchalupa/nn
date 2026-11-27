@@ -1,11 +1,11 @@
-# @nn/react
+# @goodstate/react
 
 [React](https://react.dev/) hooks for reading and updating a store.
 
 ## Installation
 
 ```sh
-npm install @nn/react @nn/schema
+npm install @goodstate/react @goodstate/schema
 ```
 
 ## Usage
@@ -13,12 +13,12 @@ npm install @nn/react @nn/schema
 `createStore` creates a store for a schema and returns hooks bound to it.
 
 ```tsx
-import { createStore } from "@nn/react";
-import { array, object, string } from "@nn/schema";
+import { createStore } from "@goodstate/react";
+import { array, object, string } from "@goodstate/schema";
 
-export const { store, useQuery, useMutation } = createStore(
-	object({ todos: array(object({ id: string(), title: string() })) }),
-);
+const schema = object({ todos: array(object({ id: string(), title: string() })) });
+
+export const { store, useQuery, useMutation } = createStore(schema);
 
 function TodoCount() {
 	const count = useQuery((data) => data.todos.length);

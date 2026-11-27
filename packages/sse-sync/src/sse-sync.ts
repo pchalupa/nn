@@ -1,7 +1,7 @@
-import { assertPlainObject } from "@nn/guards/assert-plain-object";
-import { assertString } from "@nn/guards/assert-string";
-import { SyncEngine } from "@nn/sync-engine";
-import type { Replica } from "@nn/sync-engine/replica";
+import { assertPlainObject } from "@goodstate/guards/assert-plain-object";
+import { assertString } from "@goodstate/guards/assert-string";
+import { SyncEngine } from "@goodstate/sync-engine";
+import type { Replica } from "@goodstate/sync-engine/replica";
 
 import { EventStream } from "./event-stream";
 

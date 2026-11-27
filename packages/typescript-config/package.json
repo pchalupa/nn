@@ -1,5 +1,5 @@
 {
-	"name": "@nn/typescript-config",
+	"name": "@goodstate/typescript-config",
 	"version": "1.0.1",
 	"private": true,
 	"description": "Shared TypeScript configuration",
@@ -8,15 +8,15 @@
 		"tsconfig",
 		"typescript"
 	],
-	"homepage": "https://github.com/pchalupa/nn/tree/main/packages/typescript-config#readme",
+	"homepage": "https://github.com/pchalupa/goodstate/tree/main/packages/typescript-config#readme",
 	"bugs": {
-		"url": "https://github.com/pchalupa/nn/issues"
+		"url": "https://github.com/pchalupa/goodstate/issues"
 	},
 	"license": "MIT",
 	"author": "pchalupa <chalupa.petr93@gmail.com> (https://github.com/pchalupa)",
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/pchalupa/nn.git",
+		"url": "git+https://github.com/pchalupa/goodstate.git",
 		"directory": "packages/typescript-config"
 	},
 	"type": "module",

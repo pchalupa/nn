@@ -1,6 +1,6 @@
 # Materialized views
 
-Researched 2026-09-25. Covers the classical database concept, the incremental-maintenance literature that grew out of it, and how the idea is being reused by client-side sync engines. The last section maps the concept onto `@nn/store`.
+Researched 2026-09-25. Covers the classical database concept, the incremental-maintenance literature that grew out of it, and how the idea is being reused by client-side sync engines. The last section maps the concept onto `@goodstate/store`.
 
 Each section carries its source URLs.
 
@@ -117,11 +117,11 @@ Sources: <https://docs.livestore.dev/overview/how-livestore-works/>, <https://el
 
 ---
 
-## 6. Where this lands for `@nn`
+## 6. Where this lands for `@goodstate`
 
-`@nn/store` already implements a materialized-view cache; it is just not named as one. Mapping the vocabulary onto the current code:
+`@goodstate/store` already implements a materialized-view cache; it is just not named as one. Mapping the vocabulary onto the current code:
 
-| Concept              | `@nn` today                                                                        |
+| Concept              | `@goodstate` today                                                                 |
 | -------------------- | ---------------------------------------------------------------------------------- |
 | View definition      | the selector `(state) => Observable` passed to `getSnapshotOf`                     |
 | Materialized result  | `Snapshot`, cached in `SnapshotManager`'s `WeakMap` keyed by the selector function |

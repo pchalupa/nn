@@ -1,8 +1,8 @@
-import { LWWMap } from "@nn/entities/kinds/lww-map";
-import { LWWRegister } from "@nn/entities/kinds/lww-register";
-import { RGA } from "@nn/entities/kinds/rga";
-import { assertArray } from "@nn/guards/assert-array";
-import { assertObject } from "@nn/guards/assert-object";
+import { LWWMap } from "@goodstate/entities/kinds/lww-map";
+import { LWWRegister } from "@goodstate/entities/kinds/lww-register";
+import { RGA } from "@goodstate/entities/kinds/rga";
+import { assertArray } from "@goodstate/guards/assert-array";
+import { assertObject } from "@goodstate/guards/assert-object";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { View } from "./view";

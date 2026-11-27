@@ -1,4 +1,4 @@
-# @nn/react
+# @goodstate/react
 
 ## 4.0.0
 

@@ -1,4 +1,4 @@
-# @nn/indexdb-sync
+# @goodstate/indexdb-sync
 
 ## 5.0.0
 

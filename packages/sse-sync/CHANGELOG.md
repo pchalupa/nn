@@ -1,4 +1,4 @@
-# @nn/sse-sync
+# @goodstate/sse-sync
 
 ## 4.0.0
 

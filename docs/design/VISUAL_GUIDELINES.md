@@ -4,7 +4,7 @@
 
 How Goodstate looks and sounds in the README, release posts and social cards, and internal tools. Tokens are in [`tokens.css`](tokens.css). Mermaid diagrams and their rules are in [`diagrams.md`](diagrams.md).
 
-The source of truth is the brand book, the _Goodstate Visual Identity Guidelines_ frame in [`brand-book/brand-book.pen`](brand-book/brand-book.pen). This guide follows it, with four deliberate departures, each marked **Departs from the book**: status names, small orange text, claims about data loss, and borrowed place names.
+The source of truth is the brand book, [`brand-book/brand-book.pen`](brand-book/brand-book.pen), with its _Goodstate Mood Board_, _Goodstate README_, _Goodstate README Dark_ and _Goodstate Social Card_ frames. Exported artwork is in [`assets/`](assets). This guide follows the book, with four deliberate departures, each marked **Departs from the book**: status names, small orange text, claims about data loss, and borrowed place names.
 
 The packages are published as `@goodstate/*`. Where the book shows `goodstate` or `goodstate/react`, use the scoped names.
 
@@ -136,7 +136,7 @@ The mission patch is a secondary emblem, for stickers, avatars, and celebrations
 
 The README is the main promotion surface, on GitHub and on npm. Only the branded parts are images. Everything else is real Markdown.
 
-1. Banner: a `<picture>` with light and dark sources, 1672 × 800 exported at 2×. Martian Night with a graded photo, a mono label row (`LOCAL-FIRST STATE FOR TYPESCRIPT`, `● GO FOR LAUNCH`), the wordmark, and "Cleared for offline." Alt text repeats the tagline.
+1. Banner: one image for both themes, 1672 × 800 exported at 2×. Martian Night with a graded photo, a mono label (`LOCAL-FIRST STATE FOR TYPESCRIPT`), the wordmark, and "State that survives the dark side." Alt text repeats the tagline.
 2. Badges from shields.io with `labelColor=1C130C&color=FAF0DE`. Shields.io sets white text on any mid-tone color, and white on Mars Orange is 3.7:1, so badges carry no orange.
 3. Intro, quick start, and code in plain Markdown. GitHub's syntax colors are fine.
 4. Packages table and examples list in plain Markdown.
@@ -144,7 +144,7 @@ The README is the main promotion surface, on GitHub and on npm. Only the branded
 Rules:
 
 - Three branded images at most, and never put essential information only in an image.
-- Use absolute image URLs (`raw.githubusercontent.com`), because npmjs.com doesn't reliably resolve relative paths or honor `<picture>`. Point them at a release tag, not `main`, so a published version's npm page keeps its images. The light image has to work alone.
+- Use absolute image URLs (`raw.githubusercontent.com`), because npmjs.com doesn't reliably resolve relative paths. Point them at `main`, so the banner needs no tag to load. An older version's npm page then shows the current banner, and breaks if the file moves.
 - GitHub strips `<style>` and `style` attributes, so bake colors and the image grade into the files.
 - Use native `> [!NOTE]` and `> [!WARNING]` callouts.
 
@@ -154,7 +154,7 @@ Release posts, social cards, stickers, and talk slides.
 
 - Release title: version plus one plain headline, optionally with a metaphor ("v1.4.0 — Flight recorder survives schema changes"). Under it, a mono label: `RELEASE · 2026-11-10 · @goodstate/indexdb-sync`. The body keeps the Changesets wording.
 - Social card sizes: 1280 × 640 for the GitHub social preview, 1200 × 630 for Open Graph, 1080 × 1080 for square posts.
-- Social card layout: Martian Night with a graded photo, a mono label row top-left with status top-right, the wordmark, the tagline in Plex Sans 500, and an install line in Bronze mono (`$ npm i @goodstate/react`). Keep a 64px safe margin. One idea per card, and no code smaller than 24px.
+- Social card layout: Martian Night with a graded photo, a mono label top-left, the wordmark, the tagline in Plex Sans 500, and an install line in Bronze mono (`$ npm i @goodstate/react`). Keep a 64px safe margin. One idea per card, and no code smaller than 24px.
 - Sticker: the mission patch, die-cut at 76mm.
 
 ### Photos
@@ -172,7 +172,7 @@ Grade every photo the same way, and bake the grade in for GitHub and social:
 2. `--gs-image-tint` (Mars Orange at 55%) in `color` blend mode.
 3. `--gs-image-scrim` wherever text sits on the photo. Sunlight text must reach 4.5:1 against the lightest area behind it.
 
-Every photo is a figure. Caption it bottom-left, 20px in: `FIG. NN — PLACE`, mono, Sunlight on a Night plate at 80% (`--gs-caption-bg`).
+A photo shown as a figure in docs gets a caption bottom-left, 20px in: `FIG. NN — PLACE`, mono, Sunlight on a Night plate at 80% (`--gs-caption-bg`). The README banner, the README diagram and the social card carry no figure label.
 
 Before you publish:
 
@@ -233,15 +233,15 @@ Write like a flight controller on the voice loop: short, exact, and unhurried. R
 
 Taglines:
 
-- Primary: "Cleared for offline.", set in Michroma.
+- Primary: "State that survives the dark side.", set in Michroma.
 - Essence headline: "Loss of signal is not loss of state."
-- Alternates, in Plex Sans 500: "State that survives the dark side.", "Every device, one trajectory.", "Good state, godspeed."
+- Alternates, in Plex Sans 500: "Cleared for offline.", "Every device, one trajectory.", "Good state, godspeed."
 
 Use one per surface.
 
 ## 8. Checklist
 
-- Every panel, figure, and photo has a mono label or caption.
+- Every panel and figure in docs has a mono label or caption. The README images and the social card have no figure label.
 - One Mars Orange fill per view, with Martian Night text on it.
 - Orange text under 24px on light backgrounds uses `#A3410E`.
 - Corners are square, there are no shadows, and rules separate things.

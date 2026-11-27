@@ -5,7 +5,7 @@
 			"source": "pchalupa/skills",
 			"sourceType": "github",
 			"skillPath": "skills/docs/adr-authoring/SKILL.md",
-			"computedHash": "1a2435723cfd56b08550c6b254b7d3beea4e31aef18945c722d2b2f64356867a"
+			"computedHash": "ced0b10951c4cc5f5bd02bcc0581de522fffc3ac7c38c5c243ef27a1d47e2df6"
 		},
 		"chakra-ui-builder": {
 			"source": "chakra-ui/chakra-ui",
@@ -36,7 +36,7 @@
 			"source": "mattpocock/skills",
 			"sourceType": "github",
 			"skillPath": "skills/engineering/research/SKILL.md",
-			"computedHash": "c8c1cba327a6f824b554cd978079a3dadd7406d73174f8fb9bfef58824691970"
+			"computedHash": "5d85b64ecceed6b3f6d5996dc8af07180be8d1ff11ef3d26eda2acff078fbd39"
 		}
 	}
 }

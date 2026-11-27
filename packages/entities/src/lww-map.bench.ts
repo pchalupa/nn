@@ -1,4 +1,4 @@
-import { Time } from "@nn/time";
+import { Time } from "@goodstate/time";
 import { describe, it } from "vitest";
 
 import { LWWMap } from "./lww-map";

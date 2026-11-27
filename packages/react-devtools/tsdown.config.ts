@@ -1,4 +1,4 @@
-import { reactLibraryConfig, type UserConfig } from "@nn/build-config/tsdown";
+import { reactLibraryConfig, type UserConfig } from "@goodstate/build-config/tsdown";
 
 const config: UserConfig = reactLibraryConfig({
 	index: "src/index.ts",

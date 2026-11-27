@@ -15,11 +15,11 @@
 		"start": "vite"
 	},
 	"dependencies": {
-		"@nn/broadcast-sync": "workspace:^",
-		"@nn/indexdb-sync": "workspace:^",
-		"@nn/react": "workspace:^",
-		"@nn/react-devtools": "workspace:^",
-		"@nn/sse-sync": "workspace:^",
+		"@goodstate/broadcast-sync": "workspace:^",
+		"@goodstate/indexdb-sync": "workspace:^",
+		"@goodstate/react": "workspace:^",
+		"@goodstate/react-devtools": "workspace:^",
+		"@goodstate/sse-sync": "workspace:^",
 		"@phosphor-icons/react": "^2.1.10",
 		"@radix-ui/themes": "^3.3.0",
 		"@simplewebauthn/browser": "^14.0.0",

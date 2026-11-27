@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { array, type InferStateType, object, string } from "@nn/schema";
+import { array, type InferStateType, object, string } from "@goodstate/schema";
 import { act, cleanup, render, screen } from "@testing-library/react";
 import { startTransition, Suspense, useState, type ReactNode } from "react";
 import { renderToString } from "react-dom/server";
@@ -39,7 +39,7 @@ const mount = async (ui: ReactNode) => {
 	};
 };
 
-describe("@nn/react", () => {
+describe("@goodstate/react", () => {
 	afterEach(() => {
 		cleanup();
 	});

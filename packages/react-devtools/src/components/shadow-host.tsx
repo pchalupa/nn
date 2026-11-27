@@ -25,7 +25,7 @@ export function ShadowHost({ children }: ShadowHostProps): ReactNode {
 	}, []);
 
 	return (
-		<div data-nn-devtools="" ref={hostRef}>
+		<div data-goodstate-devtools="" ref={hostRef}>
 			{shadowRoot && createPortal(<div data-devtools="">{children}</div>, shadowRoot)}
 		</div>
 	);

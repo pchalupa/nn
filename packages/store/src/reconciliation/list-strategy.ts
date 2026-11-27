@@ -1,9 +1,9 @@
-import { Entity } from "@nn/entities/entity";
-import { RGA } from "@nn/entities/kinds/rga";
-import { isArray } from "@nn/guards/is-array";
-import { isObject } from "@nn/guards/is-object";
-import { ID } from "@nn/id";
-import type { Time } from "@nn/time";
+import { Entity } from "@goodstate/entities/entity";
+import { RGA } from "@goodstate/entities/kinds/rga";
+import { isArray } from "@goodstate/guards/is-array";
+import { isObject } from "@goodstate/guards/is-object";
+import { ID } from "@goodstate/id";
+import type { Time } from "@goodstate/time";
 
 import type { ReconcileContext, Strategy } from "./strategy";
 

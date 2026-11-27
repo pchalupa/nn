@@ -1,8 +1,8 @@
 {
-	"name": "nn",
+	"name": "goodstate",
 	"version": "1.0.0",
 	"private": true,
-	"description": "",
+	"description": "Local-first state management for TypeScript",
 	"keywords": [],
 	"license": "MIT",
 	"author": "",

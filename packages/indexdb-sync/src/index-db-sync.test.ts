@@ -1,7 +1,7 @@
-import { LWWRegister } from "@nn/entities/kinds/lww-register";
-import { array, object, string } from "@nn/schema";
-import { Store } from "@nn/store";
-import { Time } from "@nn/time";
+import { LWWRegister } from "@goodstate/entities/kinds/lww-register";
+import { array, object, string } from "@goodstate/schema";
+import { Store } from "@goodstate/store";
+import { Time } from "@goodstate/time";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { IndexDb } from "./index-db";
@@ -80,7 +80,7 @@ describe("IndexDbSync", () => {
 
 		const databases = await indexedDB.databases();
 
-		expect(databases.map((database) => database.name)).toContain("nn-default");
+		expect(databases.map((database) => database.name)).toContain("goodstate-default");
 	});
 
 	it("restores each field from the database by name", async () => {

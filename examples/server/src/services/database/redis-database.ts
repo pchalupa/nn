@@ -5,7 +5,7 @@ export interface RedisHashClient {
 	hgetall(key: string): Promise<unknown>;
 }
 
-export function createRedisDatabase(client: RedisHashClient, key = "nn-example"): Database {
+export function createRedisDatabase(client: RedisHashClient, key = "goodstate-example"): Database {
 	return {
 		get: async () => {
 			const fields = (await client.hgetall(key)) ?? [];

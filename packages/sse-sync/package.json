@@ -1,5 +1,5 @@
 {
-	"name": "@nn/sse-sync",
+	"name": "@goodstate/sse-sync",
 	"version": "4.0.0",
 	"description": "Sync engine that keeps a store in sync with a server over server-sent events",
 	"keywords": [
@@ -10,15 +10,15 @@
 		"sse",
 		"sync"
 	],
-	"homepage": "https://github.com/pchalupa/nn/tree/main/packages/sse-sync#readme",
+	"homepage": "https://github.com/pchalupa/goodstate/tree/main/packages/sse-sync#readme",
 	"bugs": {
-		"url": "https://github.com/pchalupa/nn/issues"
+		"url": "https://github.com/pchalupa/goodstate/issues"
 	},
 	"license": "MIT",
 	"author": "pchalupa <chalupa.petr93@gmail.com> (https://github.com/pchalupa)",
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/pchalupa/nn.git",
+		"url": "git+https://github.com/pchalupa/goodstate.git",
 		"directory": "packages/sse-sync"
 	},
 	"files": [
@@ -42,16 +42,16 @@
 		"test:watch": "vitest watch"
 	},
 	"dependencies": {
-		"@nn/guards": "workspace:^",
-		"@nn/observable": "workspace:^",
-		"@nn/sync-engine": "workspace:^"
+		"@goodstate/guards": "workspace:^",
+		"@goodstate/observable": "workspace:^",
+		"@goodstate/sync-engine": "workspace:^"
 	},
 	"devDependencies": {
-		"@nn/build-config": "workspace:^",
-		"@nn/entities": "workspace:^",
-		"@nn/schema": "workspace:^",
-		"@nn/store": "workspace:^",
-		"@nn/typescript-config": "workspace:^",
+		"@goodstate/build-config": "workspace:^",
+		"@goodstate/entities": "workspace:^",
+		"@goodstate/schema": "workspace:^",
+		"@goodstate/store": "workspace:^",
+		"@goodstate/typescript-config": "workspace:^",
 		"tsdown": "catalog:",
 		"typescript": "catalog:",
 		"vitest": "catalog:"

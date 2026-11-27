@@ -5,7 +5,7 @@ import { createServer } from "../src/server.js";
 import { createRedisDatabase } from "../src/services/database/redis-database.js";
 import { createRedisEventBus } from "../src/services/database/redis-event-bus.js";
 
-const namespace = process.env.VERCEL_ENV === "preview" ? "nn-example-preview" : "nn-example";
+const namespace = process.env.VERCEL_ENV === "preview" ? "goodstate-example-preview" : "goodstate-example";
 
 const redis = Redis.fromEnv({ automaticDeserialization: false });
 

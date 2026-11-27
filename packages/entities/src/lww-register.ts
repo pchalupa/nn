@@ -1,5 +1,5 @@
-import { isString } from "@nn/guards/is-string";
-import { Time } from "@nn/time";
+import { isString } from "@goodstate/guards/is-string";
+import { Time } from "@goodstate/time";
 
 import type { Encoded } from "./codable";
 import { Entity } from "./entity";

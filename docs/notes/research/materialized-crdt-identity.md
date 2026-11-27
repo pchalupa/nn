@@ -11,12 +11,12 @@ Every system surveyed uses one of four bridges, and most combine two:
 
 1. **No snapshot at all: edit the live CRDT object.** Yjs, SyncedStore, Jazz, and Automerge inside `change()` hand out the CRDT node itself or a proxy bound to its object ID. Identity cannot be lost because the user never holds a copy. [Automerge proxy][am-proxy-objid] [SyncedStore array][ss-array-reassign] [Yjs `_item`][y-abstract-item]
 2. **A hidden ID stamped on the materialized object.** Automerge stamps every materialized object with a non-enumerable, non-writable `Symbol.for("_am_objectId")`. loro-mirror stamps a non-enumerable `$cid` string. Both are lost by `{...row}`, and loro-mirror had to reconfigure Immer to stop dropping it. [Automerge export cache][am-export-hidden] [loro-mirror Immer instance][lm-immer]
-3. **A reference-identity side table.** MobX-State-Tree reconciles a value against a node when `oldNode.snapshot === newValue`. That is the same idea as `@nn/store`'s `RowIdentity` WeakMap, and it shares the same weakness: any copy is a stranger. [MST `areSame`][mst-aresame]
+3. **A reference-identity side table.** MobX-State-Tree reconciles a value against a node when `oldNode.snapshot === newValue`. That is the same idea as `@goodstate/store`'s `RowIdentity` WeakMap, and it shares the same weakness: any copy is a stranger. [MST `areSame`][mst-aresame]
 4. **A key declared in the data, matched by a keyed diff.** MST's `types.identifier`, loro-mirror's `idSelector`, Legend-State's `id`/`key`/`_id` detection, TinyBase's row IDs, and React's `key` all match old and new items by a value the application can see. This is the only bridge that survives spreading, `structuredClone`, JSON round-trips, and rows rebuilt from scratch. It is also the only one that can detect a move, and therefore express one. [MST reconciliation docs][mst-reconcile-doc] [loro-mirror README][lm-readme-list] [Legend `findIDKey`][legend-findid] [React keys][react-keys]
 
-For `@nn/store`, the recommendation is to **let the schema declare a row key for arrays of objects and use its value as the `RGA` element key**. Keep `RowIdentity` only as a fallback for arrays without a declared key. Replace whole-state `structuredClone` with a copy-on-write draft. Make primitive arrays either diff-based or explicitly index-addressed. Details and trade-offs are in §8.
+For `@goodstate/store`, the recommendation is to **let the schema declare a row key for arrays of objects and use its value as the `RGA` element key**. Keep `RowIdentity` only as a fallback for arrays without a declared key. Replace whole-state `structuredClone` with a copy-on-write draft. Make primitive arrays either diff-based or explicitly index-addressed. Details and trade-offs are in §8.
 
-## 1. The problem in `@nn/store` today
+## 1. The problem in `@goodstate/store` today
 
 `State.read()` materializes each root field through [`View`][nn-view], and records the `RGA` element each row object came from in [`RowIdentity`][nn-rowidentity], a `WeakMap<object, { owner, key }>` ([`View.ts:36`][nn-view]). `State.update()` builds a draft with `RowIdentity.clone`, which runs `structuredClone` and then walks source and clone in parallel to copy identities onto the clones ([`RowIdentity.ts:30-47`][nn-rowidentity], [`State.ts:89`][nn-state]). `normalize` copies identities again onto its rebuilt objects ([`normalize.ts:21`][nn-normalize]). `prepareRows` then looks up each draft row: a hit reuses the element key, a miss mints a new UUID, and any order other than "survivors in old order, then additions" throws `unsupported("move")` ([`reconcile.ts:84-99`][nn-reconcile]). Arrays of primitives skip identity and match by index ([`reconcile.ts:56-62`][nn-reconcile]).
 
@@ -69,7 +69,7 @@ Two representations carry that ID:
 
 **Loro.** Every container has a deterministic `ContainerID`: `cid:root-${name}:${type}` for roots, and `cid:${counter}@${peer}:${type}` for containers created by an operation. "The ContainerID is not a random UUID but is deterministically generated based on the container's context." [Loro container ID docs][loro-cid] [`ContainerID` type][loro-dts] `getShallowValue()` materializes a level with nested containers replaced by their ID strings, and `doc.getContainerById(id)` resolves them back [(d.ts, `getShallowValue` / `getContainerById`)][loro-dts]. `toJsonWithReplacer` lets a caller see each `Container` during materialization [(d.ts)][loro-dts]. `LoroList.getIdAt(pos)` exposes an element's op ID [(d.ts)][loro-dts]. `LoroMovableList.move(from, to)` is a real move, which avoids the duplicates that delete plus insert causes under concurrency. [Loro list tutorial][loro-list] [Kleppmann, list move][move]
 
-**loro-mirror.** loro-mirror is the closest analogue to `@nn/store`: a schema, plain immutable state, `setState` with a new state or an Immer recipe, and a diff that turns state into Loro ops.
+**loro-mirror.** loro-mirror is the closest analogue to `@goodstate/store`: a schema, plain immutable state, `setState` with a new state or an Immer recipe, and a diff that turns state into Loro ops.
 
 - Each mirrored `LoroMap` gets a `$cid` property equal to its container ID. It "is never written back to Loro and is ignored by diffs/updates", and is "useful as a stable identifier (e.g., `schema.LoroList(map, x => x.$cid)`)". [README L155-L157][lm-readme-cid] It is installed with `Object.defineProperty(target, "$cid", { value })`, so it is non-enumerable and read-only ([`utils.ts` L189-L196][lm-definecid]).
 - Lists take an `idSelector`. "With an `idSelector`, Mirror performs minimal add/update/move/delete; without it, updates are by index." [README L66][lm-readme-list] `schema.LoroMovableList(itemSchema, idSelector)` "emits move ops on reorder". [README L102][lm-readme-list]
@@ -86,7 +86,7 @@ MST keeps a tree of live nodes. `getSnapshot` returns immutable, structurally sh
 - `areSame(oldNode, newValue)` returns true when the value is the same live node, **or** when `oldNode.snapshot === newValue`, which is reference identity with the node's own last snapshot. Failing both, it returns true when the value is a plain object of the right type with the same identifier attribute ([`array.ts` L604-L640][mst-aresame]).
 - The docs: "When applying snapshots, MST will always try to reuse existing object instances for snapshots with the same identifier (see `types.identifier`)." and "In arrays, items without an identifier are never reconciled." [MST reconciliation][mst-reconcile-doc]
 
-That is the closest published precedent to `@nn/store`: the snapshot-reference check is the `RowIdentity` WeakMap, and the identifier check is the schema-declared key recommended in §8. MST layers the two in that order.
+That is the closest published precedent to `@goodstate/store`: the snapshot-reference check is the `RowIdentity` WeakMap, and the identifier check is the schema-declared key recommended in §8. MST layers the two in that order.
 
 ## 6. Systems where identity is just data
 
@@ -106,12 +106,12 @@ That is the closest published precedent to `@nn/store`: the snapshot-reference c
 | --------------------------------------- | -------------------------- | ----------------------------- | --------------------------- | -------------------- | ------------------------------------------------------ | ------------------------------------------------------------------------- |
 | Live object / proxy                     | n/a (no copy)              | no: copy is a new object      | no                          | only with a move API | proxy per access; no plain snapshot during edits       | Yjs, SyncedStore, Automerge `change`, valtio-yjs, Jazz                    |
 | Hidden symbol / non-enumerable field    | no                         | no (yes if enumerable symbol) | no                          | yes, while intact    | free on read; library must control every copy          | Automerge snapshots, loro-mirror `$cid`                                   |
-| WeakMap side table (reference identity) | only with a parallel walk  | no                            | no                          | yes, while intact    | WeakMap entry per object; full walk per clone          | `@nn/store` `RowIdentity`, MST `oldNode.snapshot === newValue`            |
+| WeakMap side table (reference identity) | only with a parallel walk  | no                            | no                          | yes, while intact    | WeakMap entry per object; full walk per clone          | `@goodstate/store` `RowIdentity`, MST `oldNode.snapshot === newValue`     |
 | Declared key in the data + keyed diff   | yes                        | yes                           | yes                         | yes                  | key field in user data; uniqueness must be enforced    | MST `types.identifier`, loro-mirror `idSelector`, Legend, TinyBase, React |
 | Index / path patches                    | yes                        | yes                           | yes                         | no                   | none, but routes concurrent edits to the wrong element | immer-yjs, Immer patches, JSON Patch [RFC 6902][rfc6902]                  |
 | Sequence diff (LCS / Myers)             | yes                        | yes                           | yes                         | no (delete+insert)   | O(n·d) per array                                       | Jazz `applyDiff`, Automerge `updateText`                                  |
 
-## 8. What this means for `@nn/store`
+## 8. What this means for `@goodstate/store`
 
 ### Recommendation 1: a schema-declared row key becomes the element key
 
@@ -147,7 +147,7 @@ With keys, `prepareRows` can compute moves the same way loro-mirror and React do
 ### What not to do
 
 - **Hidden symbols or non-enumerable fields on snapshots.** `structuredClone` drops them (§1), so they would need the same transfer walk `RowIdentity` already does, and user spreads still lose them. loro-mirror shows how much hardening this needs even when the library owns the Immer instance.
-- **Live proxies instead of snapshots.** This conflicts with the frozen-snapshot contract that `@nn/react` relies on through `useSyncExternalStoreWithSelector` ([`packages/react/src/index.ts`][nn-react]), and SyncedStore shows the resulting restrictions: no index assignment and no reinsertion.
+- **Live proxies instead of snapshots.** This conflicts with the frozen-snapshot contract that `@goodstate/react` relies on through `useSyncExternalStoreWithSelector` ([`packages/react/src/index.ts`][nn-react]), and SyncedStore shows the resulting restrictions: no index assignment and no reinsertion.
 - **Path and index patches (Immer / JSON Patch) as the wire format.** They are fine as a local transport, but they must be resolved to element keys at prepare time, as Automerge does when it creates an operation. They should never be stored or synced in index form.
 
 [nn-state]: ../../../packages/store/src/state.ts

@@ -1,5 +1,5 @@
-import type { Entity } from "@nn/entities/entity";
-import type { Time } from "@nn/time";
+import type { Entity } from "@goodstate/entities/entity";
+import type { Time } from "@goodstate/time";
 
 import type { ReadonlyTracker } from "../projections/tracker/tracker";
 

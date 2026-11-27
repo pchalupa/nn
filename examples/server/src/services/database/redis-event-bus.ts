@@ -16,7 +16,7 @@ export interface RedisPubSubClient {
 	subscribe(channel: string): RedisSubscriber;
 }
 
-export function createRedisEventBus(client: RedisPubSubClient, channel = "nn-example"): EventBus {
+export function createRedisEventBus(client: RedisPubSubClient, channel = "goodstate-example"): EventBus {
 	return {
 		publish: async (data) => {
 			await client.publish(channel, JSON.stringify(data));

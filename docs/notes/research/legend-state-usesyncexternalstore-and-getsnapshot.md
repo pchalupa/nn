@@ -233,7 +233,7 @@ so the rename is currently an alias, and the compiler incompatibility is about t
 
 ---
 
-## 9. What this means for `@nn/store`
+## 9. What this means for `@goodstate/store`
 
 Legend State is the third answer to the question the Zustand/React Query note asked, and it is the one neither of those libraries considered:
 

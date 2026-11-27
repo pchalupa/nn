@@ -2,7 +2,7 @@ import { createBoard, expect, test } from "./fixtures";
 
 test.describe("Column", () => {
 	test("should keep a created ticket after a reload", async ({ page }) => {
-		await createBoard(page, "nn");
+		await createBoard(page, "Goodstate");
 
 		const column = page.getByRole("region", { name: "Backlog" });
 		const dialog = page.getByRole("dialog");

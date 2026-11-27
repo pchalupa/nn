@@ -13,7 +13,7 @@ This starts the server on http://localhost:3001. The local server keeps data in 
 
 ## Deployment
 
-The `nn-example-server` Vercel project deploys `api/sync.ts` with Root Directory set to `examples/server`. It keeps data in Upstash Redis. Production uses the `nn-example` key and channel, and every preview deployment shares `nn-example-preview`.
+The `goodstate-example-server` Vercel project deploys `api/sync.ts` with Root Directory set to `examples/server`. It keeps data in Upstash Redis. Production uses the `goodstate-example` key and channel, and every preview deployment shares `goodstate-example-preview`.
 
 ## Configuration
 

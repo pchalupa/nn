@@ -1,4 +1,4 @@
-import { createStore } from "@nn/react";
+import { createStore } from "@goodstate/react";
 import { Theme } from "@radix-ui/themes";
 import {
 	createMemoryHistory,
@@ -30,7 +30,7 @@ const ticket = (id: string, status: Ticket["status"]): Ticket => ({
 	links: [],
 });
 
-const nn = { id: "b1", name: "nn", description: "Sync engine and the example app." };
+const goodstate = { id: "b1", name: "Goodstate", description: "Sync engine and the example app." };
 
 const other = { id: "b2", name: "Other", description: "" };
 
@@ -53,7 +53,7 @@ describe("BoardCard", () => {
 		store.mutate((data) => {
 			data.boards = [
 				{
-					...nn,
+					...goodstate,
 					tickets: [ticket("t1", "todo"), ticket("t2", "done"), ticket("t3", "done"), ticket("t4", "in-progress")],
 				},
 				{ ...other, tickets: [ticket("t5", "todo")] },
@@ -62,7 +62,7 @@ describe("BoardCard", () => {
 	});
 
 	const setup = async () => {
-		const root = createRootRoute({ component: () => <BoardCard board={nn} /> });
+		const root = createRootRoute({ component: () => <BoardCard board={goodstate} /> });
 		const boardRoute = createRoute({ getParentRoute: () => root, path: "boards/$boardId" });
 		const router = createRouter({
 			routeTree: root.addChildren([boardRoute]),
@@ -80,7 +80,7 @@ describe("BoardCard", () => {
 		);
 	};
 
-	const openMenu = async () => user.click(await screen.findByRole("button", { name: "Actions for nn" }));
+	const openMenu = async () => user.click(await screen.findByRole("button", { name: "Actions for Goodstate" }));
 
 	it("drops a ticket added elsewhere to a board deleted here", async () => {
 		const remote = createStore(schema);

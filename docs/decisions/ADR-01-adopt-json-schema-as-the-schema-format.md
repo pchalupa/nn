@@ -7,7 +7,7 @@ date: 2026-09-21
 
 ## Context
 
-`@nn/schema` declares the shape of a store. Today it is a fluent builder (`string()`, `object()`, `array()`) that produces `Schema` objects, and the shape it describes lives only in TypeScript's type system through the `Infer` helper. TypeScript types are erased when the code compiles, so at runtime there is nothing to read.
+`@goodstate/schema` declares the shape of a store. Today it is a fluent builder (`string()`, `object()`, `array()`) that produces `Schema` objects, and the shape it describes lives only in TypeScript's type system through the `Infer` helper. TypeScript types are erased when the code compiles, so at runtime there is nothing to read.
 
 This library is local-first. Data sits in IndexedDB on the device, syncs between a user's devices, and has to survive the app being updated while old data is still on disk. Persistence, sync and schema migration all need to answer the same question at runtime: what shape is this data? A schema that only exists at compile time cannot answer it. To store a schema next to the data, compare it against the version that wrote that data, or send it to a server, the schema has to be data itself.
 
@@ -15,11 +15,11 @@ The schema format is a big part of this library's public surface. Everything sto
 
 ## Decision
 
-We will use [JSON Schema 2020-12](https://json-schema.org/draft/2020-12/schema) as the format `@nn/schema` describes data in. We pick an industry standard rather than inventing one, so the schemas we write are readable by tools we did not build.
+We will use [JSON Schema 2020-12](https://json-schema.org/draft/2020-12/schema) as the format `@goodstate/schema` describes data in. We pick an industry standard rather than inventing one, so the schemas we write are readable by tools we did not build.
 
 `packages/schema/src/schema.ts` speaks the spec's vocabulary: a schema's `type` is the JSON Schema type name (`"string"`, `"number"`, `"boolean"`, `"object"`, `"array"`), each type has its own class so a schema carries its type as data, and the annotations are the spec's `title` and `description`, set by `entitle()` and `describe()`. Composite schemas expose `properties` and `items`, which are spec keywords too.
 
-We will not validate data. `@nn/schema` describes structure, it does not assert it.
+We will not validate data. `@goodstate/schema` describes structure, it does not assert it.
 
 ## Alternatives considered
 

@@ -1,4 +1,4 @@
-import type { Delegatable } from "@nn/observable";
+import type { Delegatable } from "@goodstate/observable";
 
 export interface EventStreamDelegate {
 	eventStreamDidReceive(data: unknown): void;

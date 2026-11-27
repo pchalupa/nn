@@ -1,4 +1,4 @@
-import { Devtools } from "@nn/react-devtools";
+import { Devtools } from "@goodstate/react-devtools";
 import { Theme } from "@radix-ui/themes";
 import { createRouter, RouterProvider } from "@tanstack/react-router";
 import { StrictMode } from "react";

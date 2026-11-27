@@ -1,4 +1,4 @@
-# @nn/sync-engine
+# @goodstate/sync-engine
 
 ## 6.0.0
 

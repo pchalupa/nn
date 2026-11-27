@@ -1,6 +1,6 @@
-import type { Entity } from "@nn/entities/entity";
-import { LWWRegister } from "@nn/entities/kinds/lww-register";
-import type { Time } from "@nn/time";
+import type { Entity } from "@goodstate/entities/entity";
+import { LWWRegister } from "@goodstate/entities/kinds/lww-register";
+import type { Time } from "@goodstate/time";
 
 import type { Strategy } from "./strategy";
 

@@ -1,4 +1,4 @@
-import { expect, type Page, setOnline, test } from "./fixtures";
+import { createBoard, expect, openBoard, type Page, setOnline, test } from "./fixtures";
 
 const createTicket = async (page: Page, title: string) => {
 	const dialog = page.getByRole("dialog");
@@ -13,18 +13,23 @@ test("shows a ticket created on one device on another", async ({ page, openDevic
 	const laptop = page;
 	const phone = await openDevice({ passkeysFrom: laptop, signedIn: true });
 
+	await createBoard(laptop, "Goodstate");
+	await openBoard(phone, "Goodstate");
 	await createTicket(laptop, "Sync me");
 
 	await expect(phone.getByRole("region", { name: "Backlog" }).getByRole("link", { name: /Sync me/ })).toBeVisible();
 });
 
 test("gives a new device the full board", async ({ page, openDevice }) => {
+	await createBoard(page, "Goodstate");
 	await createTicket(page, "First");
 	await createTicket(page, "Second");
 	await createTicket(page, "Third");
 	await expect(page.getByText("3 tickets").filter({ visible: true })).toBeVisible();
 
 	const fresh = await openDevice({ passkeysFrom: page, signedIn: true });
+
+	await openBoard(fresh, "Goodstate");
 
 	await expect(fresh.getByRole("heading", { level: 1 })).toBeVisible();
 	await expect(fresh.getByText("3 tickets").filter({ visible: true })).toBeVisible();
@@ -34,6 +39,9 @@ test("keeps changes from a device while it is offline", async ({ page, openDevic
 	const phone = await openDevice({ passkeysFrom: page, signedIn: true });
 	const tablet = await openDevice({ passkeysFrom: page, signedIn: true });
 
+	await createBoard(page, "Goodstate");
+	await openBoard(phone, "Goodstate");
+	await openBoard(tablet, "Goodstate");
 	await setOnline(phone, false);
 	await createTicket(page, "While away");
 

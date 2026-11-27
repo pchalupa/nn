@@ -11,13 +11,15 @@ import { TicketDialogShell } from "./ticket-dialog-shell";
 
 interface EditTicketDialogProps {
 	id: string;
+	boardId: string;
+	boardName: string;
 	onClose: () => void;
 }
 
 /** Shows a saved ticket in a dialog that saves each edit as it happens. */
-export const EditTicketDialog = ({ id, onClose }: EditTicketDialogProps) => {
+export const EditTicketDialog = ({ id, boardId, boardName, onClose }: EditTicketDialogProps) => {
 	const ticket = useQuery((data) => {
-		const entry = data.tickets.find((item) => item.id === id);
+		const entry = data.boards.find((board) => board.id === boardId)?.tickets.find((item) => item.id === id);
 
 		if (entry) {
 			return {
@@ -32,8 +34,9 @@ export const EditTicketDialog = ({ id, onClose }: EditTicketDialogProps) => {
 	});
 	const links = useQuery(
 		(data) =>
-			data.tickets
-				.find((item) => item.id === id)
+			data.boards
+				.find((board) => board.id === boardId)
+				?.tickets.find((item) => item.id === id)
 				?.links.map((link) => ({ id: link.id, url: link.url, title: link.title })) ?? [],
 	);
 	const mutate = useMutation();
@@ -41,7 +44,7 @@ export const EditTicketDialog = ({ id, onClose }: EditTicketDialogProps) => {
 
 	const update = (change: (item: Ticket) => void) =>
 		mutate((data) => {
-			const item = data.tickets.find((entry) => entry.id === id);
+			const item = data.boards.find((board) => board.id === boardId)?.tickets.find((entry) => entry.id === id);
 
 			if (item) change(item);
 		});
@@ -97,13 +100,16 @@ export const EditTicketDialog = ({ id, onClose }: EditTicketDialogProps) => {
 
 	const handleDelete = () =>
 		mutate((data) => {
-			data.tickets = data.tickets.filter((entry) => entry.id !== id);
+			const board = data.boards.find((entry) => entry.id === boardId);
+
+			if (board) board.tickets = board.tickets.filter((entry) => entry.id !== id);
 		});
 
 	if (!ticket) return null;
 
 	return (
 		<TicketDialogShell
+			boardName={boardName}
 			title={ticket.title}
 			ticketKey={ticketKey(id)}
 			onSubmit={handleSubmit}
@@ -119,7 +125,7 @@ export const EditTicketDialog = ({ id, onClose }: EditTicketDialogProps) => {
 				onRemoveLink={handleRemoveLink}
 				onTextBlur={saveText}
 			>
-				<Comments ticketId={id} />
+				<Comments boardId={boardId} ticketId={id} />
 			</TicketFields>
 		</TicketDialogShell>
 	);

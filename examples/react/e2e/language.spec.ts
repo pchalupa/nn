@@ -5,11 +5,11 @@ test.describe("LanguageSelector", () => {
 		await page.goto("/profile");
 
 		await choose(page.getByRole("combobox", { name: "Language" }), "Čeština");
-		await expect(page.getByRole("link", { name: "Nástěnka" })).toBeVisible();
+		await expect(page.getByRole("link", { name: /^Nástěnky/ })).toBeVisible();
 
 		await page.reload();
 		await page.goto("/");
 
-		await expect(page.getByRole("navigation").getByRole("link", { name: "Nástěnka" })).toBeVisible();
+		await expect(page.getByRole("heading", { level: 1, name: "Nástěnky" })).toBeVisible();
 	});
 });

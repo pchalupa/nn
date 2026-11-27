@@ -10,13 +10,18 @@ import { useMutation, useQuery } from "@/store";
 import { CommentItem } from "./comment-item";
 
 interface CommentsProps {
+	boardId: string;
 	ticketId: string;
 }
 
 /** Lists a ticket's comments and posts a new one on Mod+Enter. */
-export const Comments = ({ ticketId }: CommentsProps) => {
+export const Comments = ({ boardId, ticketId }: CommentsProps) => {
 	const { t } = useTranslation();
-	const comments = useQuery((data) => data.tickets.find((ticket) => ticket.id === ticketId)?.comments ?? []);
+	const comments = useQuery(
+		(data) =>
+			data.boards.find((board) => board.id === boardId)?.tickets.find((ticket) => ticket.id === ticketId)?.comments ??
+			[],
+	);
 	const mutate = useMutation();
 	const { id: userId } = useUser();
 	const [body, setBody] = useState("");
@@ -32,7 +37,7 @@ export const Comments = ({ ticketId }: CommentsProps) => {
 		if (text === "") return;
 
 		mutate((data) => {
-			const ticket = data.tickets.find((entry) => entry.id === ticketId);
+			const ticket = data.boards.find((board) => board.id === boardId)?.tickets.find((entry) => entry.id === ticketId);
 
 			ticket?.comments.push({
 				id: crypto.randomUUID(),

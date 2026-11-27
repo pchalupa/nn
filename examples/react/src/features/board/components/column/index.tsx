@@ -8,16 +8,20 @@ import { TicketCard } from "@/features/board/components/ticket-card";
 import { useQuery } from "@/store";
 
 interface ColumnProps {
+	boardId: string;
 	title: string;
 	status: TicketStatus;
 	search: BoardSearch;
 }
 
-/** Renders a board column with the tickets of one status that pass the board filters. */
-export const Column = ({ title, status, search }: ColumnProps) => {
+/** Renders a board column with the board's tickets of one status that pass the board filters. */
+export const Column = ({ boardId, title, status, search }: ColumnProps) => {
 	const { id: userId } = useUser();
-	const tickets = useQuery((data) =>
-		data.tickets.filter((ticket) => ticket.status === status && matchesBoardSearch(ticket, search, userId)),
+	const tickets = useQuery(
+		(data) =>
+			data.boards
+				.find((board) => board.id === boardId)
+				?.tickets.filter((ticket) => ticket.status === status && matchesBoardSearch(ticket, search, userId)) ?? [],
 	);
 
 	return (
@@ -35,7 +39,7 @@ export const Column = ({ title, status, search }: ColumnProps) => {
 							<ul>
 								{tickets.map((ticket) => (
 									<li key={ticket.id}>
-										<TicketCard ticket={ticket} />
+										<TicketCard boardId={boardId} ticket={ticket} />
 									</li>
 								))}
 							</ul>

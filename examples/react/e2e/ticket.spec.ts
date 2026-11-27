@@ -1,4 +1,4 @@
-import { expect, type Page, test } from "./fixtures";
+import { createBoard, expect, openBoard, type Page, test } from "./fixtures";
 
 const columnCards = (page: Page, column: string) =>
 	page.getByRole("region", { name: column, includeHidden: true }).getByRole("listitem", { includeHidden: true });
@@ -8,7 +8,7 @@ const newTicket = (page: Page) => page.getByRole("button", { name: "New ticket",
 const addTicket = async (page: Page) => {
 	const dialog = page.getByRole("dialog");
 
-	await page.goto("/");
+	await createBoard(page, "Goodstate");
 	await newTicket(page).click();
 	await dialog.getByRole("textbox", { name: "Title" }).fill("todo");
 	await dialog.getByRole("button", { name: "Create ticket" }).click();
@@ -94,7 +94,7 @@ test.describe("TicketModal deleting", () => {
 		const { card } = await addTicket(page);
 		const other = await page.context().newPage();
 
-		await other.goto("/");
+		await openBoard(other, "Goodstate");
 		await expect(columnCards(other, "Backlog")).toHaveCount(1);
 
 		await page.getByRole("link", { name: "todo" }).click();

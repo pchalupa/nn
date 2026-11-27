@@ -3,11 +3,12 @@ import { Button, Dialog, Flex, IconButton, Text } from "@radix-ui/themes";
 import { useTranslation } from "react-i18next";
 
 interface TicketHeaderProps {
+	boardName: string;
 	ticketKey?: string;
 }
 
 /** Renders the modal header: the breadcrumb, Copy link for a saved ticket, and close. */
-export const TicketHeader = ({ ticketKey }: TicketHeaderProps) => {
+export const TicketHeader = ({ boardName, ticketKey }: TicketHeaderProps) => {
 	const { t } = useTranslation();
 
 	const handleCopyLink = () => navigator.clipboard.writeText(location.href);
@@ -16,7 +17,7 @@ export const TicketHeader = ({ ticketKey }: TicketHeaderProps) => {
 		<Flex align="center" gap="2" height="52px" pl="4" pr="3">
 			<KanbanIcon size={16} color="var(--gray-a11)" />
 			<Text size="2" weight="medium" color="gray">
-				Goodstate
+				{boardName}
 			</Text>
 			{ticketKey !== undefined && (
 				<>

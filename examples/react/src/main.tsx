@@ -5,6 +5,7 @@ import { StrictMode } from "react";
 import ReactDOM from "react-dom/client";
 import { I18nextProvider } from "react-i18next";
 
+import { NotFound } from "./components/not-found";
 import { i18n } from "./i18n";
 import { routeTree } from "./routeTree.gen";
 import { store } from "./store";
@@ -21,6 +22,7 @@ if (!app) throw new Error("No app root found!");
 const root = ReactDOM.createRoot(app);
 const router = createRouter({
 	routeTree,
+	defaultNotFoundComponent: NotFound,
 });
 
 root.render(

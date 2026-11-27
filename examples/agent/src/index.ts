@@ -18,7 +18,9 @@ async function review() {
 	const agentId = "example-description-reviewer";
 	const agentName = "Description reviewer";
 	const agentUser = store.query((state) => state.users.find(({ id }) => id === agentId));
-	const assigned = store.query((state) => state.tickets.filter(({ assignee }) => assignee === agentId));
+	const assigned = store.query((state) =>
+		state.boards.flatMap((board) => board.tickets).filter(({ assignee }) => assignee === agentId),
+	);
 
 	if (sync.connected) {
 		if (!agentUser) {
@@ -31,7 +33,7 @@ async function review() {
 			const { text } = await descriptionReviewer.generate({ prompt: description.trim() });
 
 			store.mutate((draft) => {
-				const reviewTicket = draft.tickets.find((ticket) => ticket.id === id);
+				const reviewTicket = draft.boards.flatMap((board) => board.tickets).find((ticket) => ticket.id === id);
 
 				if (reviewTicket) {
 					reviewTicket.assignee = "";

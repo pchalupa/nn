@@ -4,7 +4,7 @@ import { Trans } from "react-i18next";
 import { StatNumber } from "./stat-number";
 
 interface StatProps {
-	i18nKey: "assignedCount" | "commentCount";
+	i18nKey: "assignedCount";
 	count: number;
 }
 

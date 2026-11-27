@@ -1,11 +1,11 @@
-# @nn/entities
+# @goodstate/entities
 
 [Conflict-free replicated data types](https://crdt.tech/) that a store keeps its state in.
 
 ## Installation
 
 ```sh
-npm install @nn/entities
+npm install @goodstate/entities
 ```
 
 ## Usage
@@ -13,7 +13,7 @@ npm install @nn/entities
 A conflict-free replicated data type (CRDT) is a value that several replicas can change independently and later merge into the same result. `LWWRegister` holds a single value and keeps the last write.
 
 ```ts
-import { LWWRegister } from "@nn/entities/kinds/lww-register";
+import { LWWRegister } from "@goodstate/entities/kinds/lww-register";
 
 const local = new LWWRegister("draft");
 const remote = new LWWRegister("published");
@@ -28,9 +28,9 @@ local.current;
 `LWWMap` holds named entities and `RGA` holds an ordered list of them.
 
 ```ts
-import { LWWMap } from "@nn/entities/kinds/lww-map";
-import { LWWRegister } from "@nn/entities/kinds/lww-register";
-import { RGA } from "@nn/entities/kinds/rga";
+import { LWWMap } from "@goodstate/entities/kinds/lww-map";
+import { LWWRegister } from "@goodstate/entities/kinds/lww-register";
+import { RGA } from "@goodstate/entities/kinds/rga";
 
 const todos = new RGA([new LWWMap({ title: new LWWRegister("Write README") })]);
 
@@ -44,9 +44,9 @@ Items you take out with `remove` stay removed when replicas merge, and a removed
 `Codec` turns any entity into a serializable form and back.
 
 ```ts
-import type { Encoded } from "@nn/entities/codable";
-import { Codec } from "@nn/entities/codec";
-import { Entity } from "@nn/entities/entity";
+import type { Encoded } from "@goodstate/entities/codable";
+import { Codec } from "@goodstate/entities/codec";
+import { Entity } from "@goodstate/entities/entity";
 
 const codec = new Codec();
 const encoded: Encoded = codec.encode(todos);

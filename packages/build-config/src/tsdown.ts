@@ -14,7 +14,7 @@ export function libraryConfig(entry: UserConfig["entry"]): UserConfig {
 		sourcemap: true,
 		dts: true,
 		clean: true,
-		deps: { neverBundle: [/^@nn\//] },
+		deps: { neverBundle: [/^@goodstate\//] },
 		exports: { devExports: true },
 		publint: true,
 		attw: { profile: "esm-only" },

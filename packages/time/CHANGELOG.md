@@ -1,4 +1,4 @@
-# @nn/time
+# @goodstate/time
 
 ## 1.2.0
 

@@ -1,5 +1,5 @@
-import { array, boolean, number, object, string } from "@nn/schema";
-import { Store } from "@nn/store";
+import { array, boolean, number, object, string } from "@goodstate/schema";
+import { Store } from "@goodstate/store";
 import { act, fireEvent, render, screen, within } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 

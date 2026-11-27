@@ -1,5 +1,5 @@
-import { SyncEngine } from "@nn/sync-engine";
-import type { Replica } from "@nn/sync-engine/replica";
+import { SyncEngine } from "@goodstate/sync-engine";
+import type { Replica } from "@goodstate/sync-engine/replica";
 
 import { type EntriesMessage, isEntriesMessage } from "./entries-message";
 
@@ -13,7 +13,7 @@ export class BroadcastSync extends SyncEngine {
 	private name: string;
 	private channel?: BroadcastChannel;
 
-	constructor(replica: Replica, name = "nn-default") {
+	constructor(replica: Replica, name = "goodstate-default") {
 		super(replica);
 
 		this.name = name;

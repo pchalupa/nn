@@ -9,7 +9,7 @@ Amended by [ADR-17](ADR-17-retry-disconnected-engines-on-wake-signals.md): when 
 
 ## Context
 
-[ADR-13](ADR-13-attach-persistence-and-sync-from-outside-the-store.md) moved persistence and sync out of `Store` into engines that extend [`SyncEngine`](../../packages/sync-engine/src/sync-engine.ts), and said a remote engine would follow. It also kept `Repository` and `Remote` as separate interfaces, and expected the remote engine to sit on `Remote` the way `RepositorySync` sat on `Repository`. [ADR-14](ADR-14-ship-indexeddb-persistence-as-one-sync-engine.md) has since folded `Repository` into `@nn/indexdb-sync`.
+[ADR-13](ADR-13-attach-persistence-and-sync-from-outside-the-store.md) moved persistence and sync out of `Store` into engines that extend [`SyncEngine`](../../packages/sync-engine/src/sync-engine.ts), and said a remote engine would follow. It also kept `Repository` and `Remote` as separate interfaces, and expected the remote engine to sit on `Remote` the way `RepositorySync` sat on `Repository`. [ADR-14](ADR-14-ship-indexeddb-persistence-as-one-sync-engine.md) has since folded `Repository` into `@goodstate/indexdb-sync`.
 
 `Remote` had one implementation, `HttpRemote`, and no users since ADR-13 took it out of `Store`. [`BroadcastSync`](../../packages/broadcast-sync/src/broadcast-sync.ts), the second engine, owns its `BroadcastChannel` directly and has no transport interface underneath it.
 
@@ -17,11 +17,11 @@ The example server announced each push on a [server-sent events](https://develop
 
 ## Decision
 
-We will add [`SseSync`](../../packages/sse-sync/src/sse-sync.ts) in `@nn/sse-sync`. It opens an `EventSource` on `GET /subscribe` and calls `fetch` for `POST /push` itself, the way `BroadcastSync` owns its channel. Endpoints resolve under the base URL's path.
+We will add [`SseSync`](../../packages/sse-sync/src/sse-sync.ts) in `@goodstate/sse-sync`. It opens an `EventSource` on `GET /subscribe` and calls `fetch` for `POST /push` itself, the way `BroadcastSync` owns its channel. Endpoints resolve under the base URL's path.
 
 The event stream carries the data. Every event's `data` is a JSON object of encoded fields. On each connect the server sends every stored field as the first event, and then one event per push with the fields that push changed. The engine's `open()` waits for that first event, the bootstrap reads each field from it, and every later event is passed to `receive()`. Because a reconnect gets a fresh snapshot, the engine needs no reconnect logic of its own. The server registers a client for updates before it reads the snapshot, so an update that lands in between arrives just before a snapshot that already contains it. `GET /pull` is removed.
 
-We will delete `@nn/remote` and `@nn/http-remote`. They were never published, so nothing outside the repository depends on them. This supersedes ADR-13's decision to keep `Remote` as an interface, as ADR-14 did for `Repository`.
+We will delete `@goodstate/remote` and `@goodstate/http-remote`. They were never published, so nothing outside the repository depends on them. This supersedes ADR-13's decision to keep `Remote` as an interface, as ADR-14 did for `Repository`.
 
 ## Alternatives considered
 

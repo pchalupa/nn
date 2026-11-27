@@ -1,6 +1,6 @@
 # <app-name>
 
-<!-- One sentence: what the app does and which @nn packages it shows. -->
+<!-- One sentence: what the app does and which @goodstate packages it shows. -->
 
 ## Running
 

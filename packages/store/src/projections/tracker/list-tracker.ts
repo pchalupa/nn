@@ -1,5 +1,5 @@
-import type { Entity } from "@nn/entities/entity";
-import type { RGA } from "@nn/entities/kinds/rga";
+import type { Entity } from "@goodstate/entities/entity";
+import type { RGA } from "@goodstate/entities/kinds/rga";
 
 import { Tracker } from "./tracker";
 

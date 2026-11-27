@@ -1,17 +1,17 @@
-# @nn/cache
+# @goodstate/cache
 
 Caches for values derived from other state.
 
 ## Installation
 
 ```sh
-npm install @nn/cache
+npm install @goodstate/cache
 ```
 
 ## Usage
 
 ```ts
-import { InvalidatableCache } from "@nn/cache/invalidatable-cache";
+import { InvalidatableCache } from "@goodstate/cache/invalidatable-cache";
 
 const prices = [3, 5, 8];
 const cachedTotal = new InvalidatableCache<number>();
@@ -30,7 +30,7 @@ cachedTotal.ensure(total);
 Use `InvalidatableCache` when the owner knows the moments its source changes. Invalidate it in the method that makes the change.
 
 ```ts
-import { InvalidatableCache } from "@nn/cache/invalidatable-cache";
+import { InvalidatableCache } from "@goodstate/cache/invalidatable-cache";
 
 class List<Item> {
 	private items = new Map<string, Item>();
@@ -52,7 +52,7 @@ class List<Item> {
 Use `VersionedCache` when the value derives from an object that counts its own changes. It keeps one value per object, held in a [`WeakMap`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/WeakMap), and loads it again when the version differs from the stored one.
 
 ```ts
-import { VersionedCache } from "@nn/cache/versioned-cache";
+import { VersionedCache } from "@goodstate/cache/versioned-cache";
 
 interface Note {
 	text: string;

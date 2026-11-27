@@ -1,12 +1,12 @@
-import type { Encoded } from "@nn/entities/codable";
-import { Codec } from "@nn/entities/codec";
-import type { Entity } from "@nn/entities/entity";
-import { LWWMap } from "@nn/entities/kinds/lww-map";
-import { LWWRegister } from "@nn/entities/kinds/lww-register";
-import { RGA } from "@nn/entities/kinds/rga";
-import { ID } from "@nn/id";
-import { array, boolean, type InferStateType, number, object, string } from "@nn/schema";
-import { Time } from "@nn/time";
+import type { Encoded } from "@goodstate/entities/codable";
+import { Codec } from "@goodstate/entities/codec";
+import type { Entity } from "@goodstate/entities/entity";
+import { LWWMap } from "@goodstate/entities/kinds/lww-map";
+import { LWWRegister } from "@goodstate/entities/kinds/lww-register";
+import { RGA } from "@goodstate/entities/kinds/rga";
+import { ID } from "@goodstate/id";
+import { array, boolean, type InferStateType, number, object, string } from "@goodstate/schema";
+import { Time } from "@goodstate/time";
 import { afterEach, describe, expect, expectTypeOf, it, vi } from "vitest";
 
 import { createReconciliationStrategy } from "./reconciliation/create-strategy";

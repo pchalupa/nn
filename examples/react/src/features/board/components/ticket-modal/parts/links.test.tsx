@@ -9,7 +9,7 @@ import { i18n } from "@/i18n";
 
 import { Links } from "./links";
 
-const pullRequest = "https://github.com/pchalupa/nn/pull/212";
+const pullRequest = "https://github.com/pchalupa/goodstate/pull/212";
 
 describe("Links", () => {
 	const user = userEvent.setup();

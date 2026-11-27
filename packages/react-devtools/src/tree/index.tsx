@@ -1,4 +1,4 @@
-import { isObject } from "@nn/guards/is-object";
+import { isObject } from "@goodstate/guards/is-object";
 import type { ReactNode } from "react";
 
 import { useStore } from "../hooks/use-store";

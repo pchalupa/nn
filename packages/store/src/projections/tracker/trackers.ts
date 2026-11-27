@@ -1,8 +1,8 @@
-import type { Entity } from "@nn/entities/entity";
-import { LWWMap } from "@nn/entities/kinds/lww-map";
-import { RGA } from "@nn/entities/kinds/rga";
-import { isArray } from "@nn/guards/is-array";
-import { isObject } from "@nn/guards/is-object";
+import type { Entity } from "@goodstate/entities/entity";
+import { LWWMap } from "@goodstate/entities/kinds/lww-map";
+import { RGA } from "@goodstate/entities/kinds/rga";
+import { isArray } from "@goodstate/guards/is-array";
+import { isObject } from "@goodstate/guards/is-object";
 
 import { ListTracker } from "./list-tracker";
 import { MapTracker } from "./map-tracker";

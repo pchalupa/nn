@@ -16,7 +16,7 @@ export const TicketHeader = ({ ticketKey }: TicketHeaderProps) => {
 		<Flex align="center" gap="2" height="52px" pl="4" pr="3">
 			<KanbanIcon size={16} color="var(--gray-a11)" />
 			<Text size="2" weight="medium" color="gray">
-				nn
+				Goodstate
 			</Text>
 			{ticketKey !== undefined && (
 				<>

@@ -5,14 +5,14 @@ Local-first state management for TypeScript. You describe your state with a sche
 ## Quick start
 
 ```sh
-npm install @nn/react @nn/schema @nn/indexdb-sync @nn/sse-sync
+npm install @goodstate/react @goodstate/schema @goodstate/indexdb-sync @goodstate/sse-sync
 ```
 
 ```ts
-import { IndexDbSync } from "@nn/indexdb-sync";
-import { createStore } from "@nn/react";
-import { array, object, string } from "@nn/schema";
-import { SseSync } from "@nn/sse-sync";
+import { IndexDbSync } from "@goodstate/indexdb-sync";
+import { createStore } from "@goodstate/react";
+import { array, object, string } from "@goodstate/schema";
+import { SseSync } from "@goodstate/sse-sync";
 
 export const { store, useQuery, useMutation } = createStore(
 	object({ todos: array(object({ id: string(), title: string() })) }),

@@ -1,7 +1,7 @@
-import { LWWMap } from "@nn/entities/kinds/lww-map";
-import { LWWRegister } from "@nn/entities/kinds/lww-register";
-import { RGA } from "@nn/entities/kinds/rga";
-import { array, boolean, enumeration, number, object, string } from "@nn/schema";
+import { LWWMap } from "@goodstate/entities/kinds/lww-map";
+import { LWWRegister } from "@goodstate/entities/kinds/lww-register";
+import { RGA } from "@goodstate/entities/kinds/rga";
+import { array, boolean, enumeration, number, object, string } from "@goodstate/schema";
 import { describe, expect, expectTypeOf, it } from "vitest";
 
 import { createReconciliationStrategy } from "./create-strategy";

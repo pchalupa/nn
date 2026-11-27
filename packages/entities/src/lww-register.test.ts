@@ -1,4 +1,4 @@
-import { Time } from "@nn/time";
+import { Time } from "@goodstate/time";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { Codec } from "./codec";

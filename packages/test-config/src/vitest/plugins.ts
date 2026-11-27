@@ -2,11 +2,11 @@ import { readFileSync } from "node:fs";
 import { join, relative } from "node:path";
 
 import codspeedPlugin from "@codspeed/vitest-plugin";
-import { libraryConfig } from "@nn/build-config/tsdown";
+import { libraryConfig } from "@goodstate/build-config/tsdown";
 import { build } from "tsdown";
 import type { Plugin } from "vitest/config";
 
-const bundledImport = /^import (?!type )[^;]*? from "((?:\.{1,2}\/|@nn\/)[^"]+)";$/gm;
+const bundledImport = /^import (?!type )[^;]*? from "((?:\.{1,2}\/|@goodstate\/)[^"]+)";$/gm;
 
 /** CodSpeed plus {@link bundleForBenchmark}, so benchmarks measure built code. */
 export function benchmarkPlugin(): Plugin[] {
@@ -17,7 +17,7 @@ function bundleForBenchmark(): Plugin {
 	const bundled = new Map<string, string>();
 
 	return {
-		name: "nn:bundle-for-benchmark",
+		name: "goodstate:bundle-for-benchmark",
 		enforce: "pre",
 		async configureVitest({ project }) {
 			if (!project.config.benchmark.enabled) return;
@@ -34,7 +34,9 @@ function bundleForBenchmark(): Plugin {
 					if (resolution) {
 						let name = specifier;
 
-						if (!specifier.startsWith("@nn/")) name = relative(root, resolution.id).replace(/\.[cm]?[jt]sx?$/, "");
+						if (!specifier.startsWith("@goodstate/")) {
+							name = relative(root, resolution.id).replace(/\.[cm]?[jt]sx?$/, "");
+						}
 
 						entry[name] = resolution.id;
 						bundled.set(`${file}\0${specifier}`, join(outDir, `${name}.js`));
@@ -47,7 +49,7 @@ function bundleForBenchmark(): Plugin {
 					...libraryConfig(entry),
 					unbundle: false,
 					dts: false,
-					deps: { alwaysBundle: [/^@nn\//] },
+					deps: { alwaysBundle: [/^@goodstate\//] },
 					exports: false,
 					publint: false,
 					attw: false,

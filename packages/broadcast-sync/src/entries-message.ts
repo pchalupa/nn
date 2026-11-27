@@ -1,5 +1,5 @@
-import { isObject } from "@nn/guards/is-object";
-import { isPlainObject } from "@nn/guards/is-plain-object";
+import { isObject } from "@goodstate/guards/is-object";
+import { isPlainObject } from "@goodstate/guards/is-plain-object";
 
 /** Message `BroadcastSync` posts on its channel */
 export interface EntriesMessage {

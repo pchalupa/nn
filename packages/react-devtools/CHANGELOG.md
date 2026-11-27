@@ -1,4 +1,4 @@
-# @nn/react-devtools
+# @goodstate/react-devtools
 
 ## 1.1.0
 

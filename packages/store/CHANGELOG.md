@@ -1,4 +1,4 @@
-# @nn/store
+# @goodstate/store
 
 ## 5.0.1
 

@@ -1,6 +1,6 @@
 import { getHeapStatistics } from "node:v8";
 
-import { array, boolean, object, string } from "@nn/schema";
+import { array, boolean, object, string } from "@goodstate/schema";
 import { describe, expect, it } from "vitest";
 
 import { Store } from "./store";

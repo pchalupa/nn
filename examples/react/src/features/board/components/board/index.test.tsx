@@ -70,8 +70,8 @@ describe("Board", () => {
 		await setup();
 
 		expect((await screen.findAllByRole("heading", { level: 1 })).map((heading) => heading.textContent)).toStrictEqual([
-			"nn",
-			"nn",
+			"Goodstate",
+			"Goodstate",
 		]);
 		expect(screen.getAllByText("3 tickets")).toHaveLength(2);
 	});

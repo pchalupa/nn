@@ -7,11 +7,11 @@ date: 2026-10-31
 
 Amended by [ADR-18](ADR-18-expose-store-and-sync-engines-through-listener-methods.md): `Store` has one listener channel, `onChange`, which passes the changed fields encoded. Engines report failures through `onError` instead of a public delegate.
 
-Amended by [ADR-13](ADR-13-attach-persistence-and-sync-from-outside-the-store.md): `Store` no longer persists. Persistence moved to [`RepositorySync`](https://github.com/pchalupa/nn/blob/a67280fad54b78ae8c03d6c6608819e166f47ce2/packages/repository-sync/src/RepositorySync.ts), which observes changes through `store.changes`.
+Amended by [ADR-13](ADR-13-attach-persistence-and-sync-from-outside-the-store.md): `Store` no longer persists. Persistence moved to [`RepositorySync`](https://github.com/pchalupa/goodstate/blob/a67280fad54b78ae8c03d6c6608819e166f47ce2/packages/repository-sync/src/RepositorySync.ts), which observes changes through `store.changes`.
 
 ## Context
 
-[`EventEmitter`](https://github.com/pchalupa/nn/blob/10e9c363ea49d36d2102bbf37755d4924bbd7bd7/packages/event-emitter/src/EventEmitter.ts) supports many named events, each with many listeners. Every production use in nn has one event and one known consumer. Each [`Entity`](../../packages/entities/src/entity.ts) owned an emitter whose only listener was its parent [`LWWMap`](../../packages/entities/src/lww-map.ts) or [`RGA`](../../packages/entities/src/rga.ts), or [`State`](../../packages/store/src/state.ts) for a top-level field. `State` had one internal listener, [`Store`](../../packages/store/src/store.ts), which persists the changed entries. [`HttpRemote`](../../packages/http-remote/src/http-remote.ts) had an `update` event with no listener at all.
+[`EventEmitter`](https://github.com/pchalupa/goodstate/blob/10e9c363ea49d36d2102bbf37755d4924bbd7bd7/packages/event-emitter/src/EventEmitter.ts) supports many named events, each with many listeners. Every production use in Goodstate has one event and one known consumer. Each [`Entity`](../../packages/entities/src/entity.ts) owned an emitter whose only listener was its parent [`LWWMap`](../../packages/entities/src/lww-map.ts) or [`RGA`](../../packages/entities/src/rga.ts), or [`State`](../../packages/store/src/state.ts) for a top-level field. `State` had one internal listener, [`Store`](../../packages/store/src/store.ts), which persists the changed entries. [`HttpRemote`](../../packages/http-remote/src/http-remote.ts) had an `update` event with no listener at all.
 
 That shape cost one `Map` and one `Set` per entity, a closure per child, and a map of unsubscribe functions in every container. Each class also wrapped `on` and `off` in its own `subscribe`. The code read as if anyone might be listening when the consumer was always one known owner.
 
@@ -25,17 +25,17 @@ Apple's frameworks split the same problem the same way. A delegate serves the on
 
 We will report changes to a single delegate wherever a producer has one structural consumer. We'll keep a listener set only where many observers come and go.
 
-A class that reports to a delegate implements `Observable<Delegate>` from [`@nn/observable`](../../packages/observable/src/observable.ts), which is just a `delegate?: Delegate` slot. Each delegate interface lives next to the class that calls it and has exactly one method:
+A class that reports to a delegate implements `Observable<Delegate>` from [`@goodstate/observable`](../../packages/observable/src/observable.ts), which is just a `delegate?: Delegate` slot. Each delegate interface lives next to the class that calls it and has exactly one method:
 
-- `EntityDelegate.entityDidChange(entity, child?)` in `@nn/entities`. `entity` is the sender. `child` is the direct child whose change caused this one, or `undefined` when the entity changed itself.
-- `StateDelegate.stateDidChange(state, changed)` in `@nn/store`. `changed` holds the names of the changed top-level fields.
-- `RemoteDelegate.remoteDidUpdate(remote)` in `@nn/remote`.
+- `EntityDelegate.entityDidChange(entity, child?)` in `@goodstate/entities`. `entity` is the sender. `child` is the direct child whose change caused this one, or `undefined` when the entity changed itself.
+- `StateDelegate.stateDidChange(state, changed)` in `@goodstate/store`. `changed` holds the names of the changed top-level fields.
+- `RemoteDelegate.remoteDidUpdate(remote)` in `@goodstate/remote`.
 
 Every call means "did change": the sender passes itself first, and the new value is already readable when the call arrives. We don't use will-change calls.
 
 Assigning a delegate replaces the previous one, and assigning `undefined` detaches it. The setter never throws. `LWWMap` and `RGA` set themselves as the delegate of every child they add, and set the old child's delegate to `undefined` when they remove or replace it. When `RGA.merge` keeps an incoming row for a new key, the merging `RGA` takes that row over by assigning itself as its delegate.
 
-`State` is the delegate of the root map. It maps each top-level field entity to its name, so it can turn `entityDidChange(root, child)` into a field name. It throws a `TypeError` if a change arrives without a known field. `State` batches as described in [ADR-05](ADR-05-batch-store-notifications.md), then calls `stateDidChange`. `Store` is that delegate, and it starts persisting each changed entry. Only after that does `State` call its listeners. The listeners are a plain `Set<() => void>` behind `State.subscribe(listener)`, which `@nn/react` uses. They get no arguments, because React only needs to know when to read the snapshot again.
+`State` is the delegate of the root map. It maps each top-level field entity to its name, so it can turn `entityDidChange(root, child)` into a field name. It throws a `TypeError` if a change arrives without a known field. `State` batches as described in [ADR-05](ADR-05-batch-store-notifications.md), then calls `stateDidChange`. `Store` is that delegate, and it starts persisting each changed entry. Only after that does `State` call its listeners. The listeners are a plain `Set<() => void>` behind `State.subscribe(listener)`, which `@goodstate/react` uses. They get no arguments, because React only needs to know when to read the snapshot again.
 
 `Remote` exposes `connect()`, which opens the connection and returns the function that closes it. Each update goes to the delegate.
 
@@ -61,4 +61,4 @@ Detaching doesn't check who currently owns a child. If a row is ever shared betw
 
 Entities no longer allocate an emitter, and containers no longer keep unsubscribe maps. On 2026-10-31, `Store.bench.ts` measured 11–14% more throughput for nested updates at 100 and 10,000 rows. Tests now assert through a recording delegate, for example `{ entityDidChange: vi.fn() }`, which also checks the `child` argument.
 
-The unused `EventEmitter` class is removed, and the shared `Observable` and `Unsubscribe` types live in `@nn/observable`. The example server uses Node's built-in event emitter. The `Entity.subscribe` and Store-emitter mechanics described in ADR-05 and ADR-08 are replaced by this record. Their decisions about batching and single notifications still apply.
+The unused `EventEmitter` class is removed, and the shared `Observable` and `Unsubscribe` types live in `@goodstate/observable`. The example server uses Node's built-in event emitter. The `Entity.subscribe` and Store-emitter mechanics described in ADR-05 and ADR-08 are replaced by this record. Their decisions about batching and single notifications still apply.

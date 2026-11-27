@@ -1,4 +1,4 @@
-import { array, enumeration, type InferStateType, number, object, string } from "@nn/schema";
+import { array, enumeration, type InferStateType, number, object, string } from "@goodstate/schema";
 
 export type Status = InferStateType<typeof status>;
 

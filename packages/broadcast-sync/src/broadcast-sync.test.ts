@@ -1,5 +1,5 @@
-import { array, object, string } from "@nn/schema";
-import { Store } from "@nn/store";
+import { array, object, string } from "@goodstate/schema";
+import { Store } from "@goodstate/store";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { BroadcastSync } from "./broadcast-sync";
@@ -68,7 +68,7 @@ describe("BroadcastSync", () => {
 
 	it("uses the default channel when no name is given", async () => {
 		const first = connect();
-		const second = connect("nn-default");
+		const second = connect("goodstate-default");
 
 		first.store.mutate((draft) => {
 			draft.language = "cs";

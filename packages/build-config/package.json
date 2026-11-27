@@ -1,8 +1,8 @@
 {
-	"name": "@nn/build-config",
+	"name": "@goodstate/build-config",
 	"version": "0.0.0",
 	"private": true,
-	"description": "Shared tsdown configuration for @nn packages",
+	"description": "Shared tsdown configuration for @goodstate packages",
 	"license": "MIT",
 	"type": "module",
 	"exports": {
@@ -20,7 +20,7 @@
 		"tsdown": "catalog:"
 	},
 	"devDependencies": {
-		"@nn/typescript-config": "workspace:^",
+		"@goodstate/typescript-config": "workspace:^",
 		"typescript": "catalog:"
 	}
 }

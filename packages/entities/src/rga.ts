@@ -1,6 +1,6 @@
-import { InvalidatableCache } from "@nn/cache/invalidatable-cache";
-import { isArray } from "@nn/guards/is-array";
-import { isString } from "@nn/guards/is-string";
+import { InvalidatableCache } from "@goodstate/cache/invalidatable-cache";
+import { isArray } from "@goodstate/guards/is-array";
+import { isString } from "@goodstate/guards/is-string";
 
 import type { Decoder, Encoded } from "./codable";
 import { Entity, type EntityDelegate } from "./entity";

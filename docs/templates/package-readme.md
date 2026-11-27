@@ -1,13 +1,13 @@
-# @nn/<name>
+# @goodstate/<name>
 
 <!-- One sentence: what it does and when to reach for it. Use the `description` from package.json and change both together. Link the platform API or concept it names to its documentation, preferring MDN for web APIs. -->
 
 ## Installation
 
-<!-- Add packages the user must install alongside, such as @nn/store or @nn/schema. -->
+<!-- Add packages the user must install alongside, such as @goodstate/store or @goodstate/schema. -->
 
 ```sh
-npm install @nn/<name>
+npm install @goodstate/<name>
 ```
 
 ## Usage

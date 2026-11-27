@@ -1,4 +1,4 @@
-# @nn/broadcast-sync
+# @goodstate/broadcast-sync
 
 ## 5.0.0
 

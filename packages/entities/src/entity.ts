@@ -1,5 +1,5 @@
-import { ID } from "@nn/id";
-import type { Delegatable } from "@nn/observable";
+import { ID } from "@goodstate/id";
+import type { Delegatable } from "@goodstate/observable";
 
 import type { Encodable, Encoded } from "./codable";
 

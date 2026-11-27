@@ -1,6 +1,6 @@
 {
 	"$schema": "https://json.schemastore.org/tsconfig",
-	"display": "Nn",
+	"display": "Goodstate",
 	"extends": "./library.json",
 	"compilerOptions": {
 		"jsx": "react-jsx"

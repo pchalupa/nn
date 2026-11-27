@@ -1,4 +1,4 @@
-import { isObject } from "@nn/guards/is-object";
+import { isObject } from "@goodstate/guards/is-object";
 import type { ReactNode } from "react";
 
 import { css } from "../styles/css";
@@ -37,7 +37,7 @@ css`
 		overflow: hidden;
 		border: 0;
 		border-radius: 0;
-		color: var(--gs-syntax-text);
+		color: var(--gs-syntax-default);
 		background: transparent;
 		font: inherit;
 		font-variant-numeric: tabular-nums;
@@ -45,7 +45,7 @@ css`
 		text-overflow: ellipsis;
 		white-space: nowrap;
 		cursor: pointer;
-		transition: background-color var(--gs-duration-fast) var(--gs-ease);
+		transition: background-color var(--gs-duration) var(--gs-ease);
 	}
 	.tree-node[aria-level="1"]:not(:first-child) {
 		border-top: var(--gs-border-width) solid var(--gs-panel-border);
@@ -65,9 +65,9 @@ css`
 		width: 1.5ch;
 		color: var(--gs-syntax-comment);
 		text-align: center;
-		transition: transform var(--gs-duration-fast) var(--gs-ease);
+		transition: transform var(--gs-duration) var(--gs-ease);
 	}
 	.key {
-		color: var(--gs-syntax-text);
+		color: var(--gs-syntax-default);
 	}
 `;

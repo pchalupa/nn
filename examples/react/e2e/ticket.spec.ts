@@ -57,7 +57,7 @@ test.describe("TicketModal editing", () => {
 	test("adds a link to a ticket and keeps it after a reload", async ({ page }) => {
 		const { dialog, card } = await openTicket(page);
 
-		await dialog.getByRole("textbox", { name: "Links" }).fill("https://github.com/pchalupa/nn/pull/212");
+		await dialog.getByRole("textbox", { name: "Links" }).fill("https://github.com/pchalupa/goodstate/pull/212");
 		await page.keyboard.press("Enter");
 		await dialog.getByRole("button", { name: "Close" }).last().click();
 		await expect(dialog).toBeHidden();
@@ -67,7 +67,7 @@ test.describe("TicketModal editing", () => {
 
 		await expect(dialog.getByRole("link", { name: "PR #212" })).toHaveAttribute(
 			"href",
-			"https://github.com/pchalupa/nn/pull/212",
+			"https://github.com/pchalupa/goodstate/pull/212",
 		);
 	});
 });

@@ -1,5 +1,5 @@
-import { Entity } from "@nn/entities/entity";
-import type { LWWMap } from "@nn/entities/kinds/lww-map";
+import { Entity } from "@goodstate/entities/entity";
+import type { LWWMap } from "@goodstate/entities/kinds/lww-map";
 
 import { Tracker } from "./tracker";
 

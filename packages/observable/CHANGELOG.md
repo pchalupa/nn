@@ -1,4 +1,4 @@
-# @nn/observable
+# @goodstate/observable
 
 ## 3.1.0
 

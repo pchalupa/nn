@@ -1,4 +1,4 @@
-# @nn/guards
+# @goodstate/guards
 
 ## 0.4.0
 

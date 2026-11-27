@@ -1,5 +1,5 @@
-import { SseSync } from "@nn/sse-sync";
-import { Store } from "@nn/store";
+import { SseSync } from "@goodstate/sse-sync";
+import { Store } from "@goodstate/store";
 import { schema } from "example-schema";
 
 import { descriptionReviewer } from "./agents/description-reviewer";

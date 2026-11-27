@@ -51,7 +51,7 @@ A process that never calls `setReplicaId` is a new replica on every start. That 
 
 Adopting an identity after the first write is a silent mistake. The stamps already issued keep the old identity, so one session writes under two, and nothing reports it. We considered refusing a late adoption and rejected it: the guard needs state that exists only to police a call hosts make once, in a place they control, and the failure it catches is a boot-ordering bug that a host notices on its first merge.
 
-`Time` now depends on `@nn/id`, so importing it requires `crypto.randomUUID()` at module load rather than at first use. In a non-secure browser context this turns a first-write failure into an import failure.
+`Time` now depends on `@goodstate/id`, so importing it requires `crypto.randomUUID()` at module load rather than at first use. In a non-secure browser context this turns a first-write failure into an import failure.
 
 `RGA.outranks` keeps its key tiebreak. It is now reachable only through a restored or duplicated identity, and it keeps the order total when one occurs.
 

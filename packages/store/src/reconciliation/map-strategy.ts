@@ -1,7 +1,7 @@
-import type { Entity } from "@nn/entities/entity";
-import { LWWMap } from "@nn/entities/kinds/lww-map";
-import { isObject } from "@nn/guards/is-object";
-import { Time } from "@nn/time";
+import type { Entity } from "@goodstate/entities/entity";
+import { LWWMap } from "@goodstate/entities/kinds/lww-map";
+import { isObject } from "@goodstate/guards/is-object";
+import { Time } from "@goodstate/time";
 
 import type { ReconcileContext, Strategy } from "./strategy";
 

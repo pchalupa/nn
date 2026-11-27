@@ -1,6 +1,6 @@
 {
 	"$schema": "https://json.schemastore.org/tsconfig",
-	"display": "Nn",
+	"display": "Goodstate",
 	"extends": "./base.json",
 	"compilerOptions": {
 		"declaration": true,

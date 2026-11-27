@@ -1,11 +1,11 @@
-# @nn/sync-engine
+# @goodstate/sync-engine
 
 Base class for sync engines.
 
 ## Installation
 
 ```sh
-npm install @nn/sync-engine
+npm install @goodstate/sync-engine
 ```
 
 ## Usage
@@ -13,7 +13,7 @@ npm install @nn/sync-engine
 A sync engine keeps a replica in sync with something outside it, such as storage, another tab, or a server. Extend `SyncEngine` and implement how to open and close the connection and how to push a changed entry. Call `receive` with incoming entries to merge them into the replica.
 
 ```ts
-import { SyncEngine } from "@nn/sync-engine";
+import { SyncEngine } from "@goodstate/sync-engine";
 
 class LocalStorageSync extends SyncEngine {
 	protected async open(): Promise<void> {
@@ -52,10 +52,10 @@ sync.connect();
 
 ### Replica
 
-The engine syncs any object that matches the `Replica` interface from `@nn/sync-engine/replica`. A `Store` from [`@nn/store`](https://github.com/pchalupa/nn/tree/main/packages/store) matches it, so you can pass one directly. The engine doesn't import `@nn/store` or `@nn/entities`.
+The engine syncs any object that matches the `Replica` interface from `@goodstate/sync-engine/replica`. A `Store` from [`@goodstate/store`](https://github.com/pchalupa/goodstate/tree/main/packages/store) matches it, so you can pass one directly. The engine doesn't import `@goodstate/store` or `@goodstate/entities`.
 
 ```ts
-import type { Unsubscribe } from "@nn/observable/observable";
+import type { Unsubscribe } from "@goodstate/observable/observable";
 
 interface Replica {
 	readonly schema: { readonly properties: Readonly<Record<string, unknown>> };
@@ -82,7 +82,7 @@ interface Replica {
 
 If `open` or `pull` throws, the engine reports the error to `onError` and moves to the `"disconnected"` state. If `push` throws, the engine reports the error and stays connected.
 
-The built-in engines are complete examples: [`@nn/broadcast-sync`](https://github.com/pchalupa/nn/tree/main/packages/broadcast-sync) for push-only messaging, [`@nn/indexdb-sync`](https://github.com/pchalupa/nn/tree/main/packages/indexdb-sync) for storage with `pull`, and [`@nn/sse-sync`](https://github.com/pchalupa/nn/tree/main/packages/sse-sync) for a server connection.
+The built-in engines are complete examples: [`@goodstate/broadcast-sync`](https://github.com/pchalupa/goodstate/tree/main/packages/broadcast-sync) for push-only messaging, [`@goodstate/indexdb-sync`](https://github.com/pchalupa/goodstate/tree/main/packages/indexdb-sync) for storage with `pull`, and [`@goodstate/sse-sync`](https://github.com/pchalupa/goodstate/tree/main/packages/sse-sync) for a server connection.
 
 ### Observing the connection
 

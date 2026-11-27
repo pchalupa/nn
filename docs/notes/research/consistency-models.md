@@ -1,4 +1,4 @@
-# Consistency models in distributed systems: what each one forbids, which survive a partition, and where `@nn/store` sits
+# Consistency models in distributed systems: what each one forbids, which survive a partition, and where `@goodstate/store` sits
 
 Researched **2026-11-18** (some fetches ran past midnight into 2026-11-19). Every definition below was read in the paper or document that owns it. Where the only reachable copy was a course or university mirror of the published text, the table says so. Mirrors are reproductions, not secondary sources. Secondary sources are flagged where they are used.
 
@@ -37,7 +37,7 @@ Researched **2026-11-18** (some fetches ran past midnight into 2026-11-19). Ever
 
 **Vendor documentation**, fetched 2026-11-18 unless a commit is given: Azure Cosmos DB ([consistency levels][cosmos], page `updated_at` 2026-04-27; history in [MicrosoftDocs/azure-docs][cosmos-change]; TLA+ specs at [`tlaplus/azure-cosmos-tla@2cfd1c3`][cosmos-tla] and [`Azure/azure-cosmos-tla@a8357c9`][cosmos-tla-old]); Amazon DynamoDB ([read consistency][ddb-read], [global tables][ddb-global], [transactions][ddb-tx]); Apache Cassandra 5.0 docs ([Dynamo][cass-dynamo], [guarantees][cass-guarantees]) and trunk at `53c3561e`; Google Cloud Spanner ([TrueTime and external consistency][spanner-tt], [transactions][spanner-tx]); MongoDB ([causal consistency][mongo-causal], [read isolation][mongo-ric]); CockroachDB ([transaction layer][crdb-tx]); PowerSync ([consistency][ps-consistency], [prioritized sync][ps-priority]); Replicache ([consistency][rep-consistency], [how it works][rep-hiw], [push][rep-push]); Zero ([queries][zero-queries], [mutators][zero-mutators]); ElectricSQL (`website/docs` at [`3f9809f`][electric-docs]).
 
-**This repository** at `79bcd03` (2026-11-18), including the untracked `packages/store/src/query/`. Package versions: `@nn/store` 4.0.1, `@nn/entities` 4.2.1, `@nn/time` 1.1.2, `@nn/sync-engine` 5.0.0.
+**This repository** at `79bcd03` (2026-11-18), including the untracked `packages/store/src/query/`. Package versions: `@goodstate/store` 4.0.1, `@goodstate/entities` 4.2.1, `@goodstate/time` 1.1.2, `@goodstate/sync-engine` 5.0.0.
 
 Companions in this directory: [Hybrid Logical Clocks](hybrid-logical-clocks.md) (the clock and its missing receive rule), [CRDT deltas](crdt-deltas.md) (causal delta-merging, version vectors), [Array-like CRDTs](array-like-crdts.md) (why ordering needs causality-compatible IDs), [Persisting CRDT metadata](crdt-metadata-persistence.md) (multi-tab lost writes), [Local-first web architecture](local-first-architecture.md) (authority models, multi-tab coordination) and [Local-first software](local-first-software.md). This note does not repeat them; it covers the guarantees.
 
@@ -67,7 +67,7 @@ Companions in this directory: [Hybrid Logical Clocks](hybrid-logical-clocks.md) 
 
 **For local-first this boundary is the design space.** A local-first client _is_ its own replica, so every sticky-available model is reachable as long as one session stays on one replica. The ceiling for a last-writer-wins CRDT store is **causal+**. Strong eventual consistency is the floor that CRDTs give for free.
 
-**Where `@nn/store` sits today** (§6): replicas converge on register values and on which rows exist, which is strong eventual consistency for those, **provided** every replica's state eventually reaches every other. That proviso is weaker than it looks, because the example server replaces instead of merging. Row **order** does not converge, so lists are not SEC. Each tab is its own replica and session. Within a tab you get read-your-writes and monotonic reads. You do **not** get writes-follow-reads, because the clock has no receive rule, so a write made after reading a remote value can lose to that value. Without writes-follow-reads the store is neither causal nor causal+. A `mutate` that touches two top-level fields is pushed as two separate messages, so other replicas can see half of it. Across tabs and across reloads there are no session guarantees at all.
+**Where `@goodstate/store` sits today** (§6): replicas converge on register values and on which rows exist, which is strong eventual consistency for those, **provided** every replica's state eventually reaches every other. That proviso is weaker than it looks, because the example server replaces instead of merging. Row **order** does not converge, so lists are not SEC. Each tab is its own replica and session. Within a tab you get read-your-writes and monotonic reads. You do **not** get writes-follow-reads, because the clock has no receive rule, so a write made after reading a remote value can lose to that value. Without writes-follow-reads the store is neither causal nor causal+. A `mutate` that touches two top-level fields is pushed as two separate messages, so other replicas can see half of it. Across tabs and across reloads there are no session guarantees at all.
 
 **What it would take to reach causal+:** an HLC receive rule; shipping a commit's changed roots, plus the roots they depend on, as one unit; a server that joins instead of replacing; the deferred ordering CRDT; and one replica per browser profile (or a session token) if tabs should share a session. Anything stronger, such as uniqueness, invariants or linearizable reads, needs a coordinating authority. Those operations then stop working offline.
 
@@ -136,7 +136,7 @@ P4:          r(x)2  r(x)1      ← forbidden: P3 and P4 disagree on the order of
 
 **Causal memory.** Ahamad et al. build a causality order from program order plus a _writes-into_ order that links each read to the write it returned, and take the transitive closure. "A history H is causal if it has a causality order ⇝ such that CM: for each process p_i, there is a serialization S_i of A_{H+i w} that respects ⇝." [Ahamad et al. TR §4, pp. 4–5][ahamad95] Each process may see concurrent writes in its own order, so the P3/P4 history above **is** causal.
 
-Burckhardt and Viotti & Vukolić split causality into two axioms: **CausalVisibility** `hb ⊆ vis`, so you see everything that happened before what you see, and **CausalArbitration** `hb ⊆ ar`, so conflict resolution never puts an effect before its cause. [Viotti & Vukolić §3.5, Eq. 26][vv16] [Burckhardt, _Principles_ Fig. 5.1][poec14] The second axiom is the one `@nn` breaks (§6.4).
+Burckhardt and Viotti & Vukolić split causality into two axioms: **CausalVisibility** `hb ⊆ vis`, so you see everything that happened before what you see, and **CausalArbitration** `hb ⊆ ar`, so conflict resolution never puts an effect before its cause. [Viotti & Vukolić §3.5, Eq. 26][vv16] [Burckhardt, _Principles_ Fig. 5.1][poec14] The second axiom is the one `@goodstate` breaks (§6.4).
 
 ```text
 P1: w(x)1
@@ -153,7 +153,7 @@ The theorem's conditions matter:
 - It assumes reads may return all concurrent writes. COPS: "COPS's efficient last-writer-wins rule results in a causal+ but not RTC consistent system". [COPS §7][cops11]
 - It needs one-way convergence. "RTC is not the strongest always-available consistency semantics under two-way convergence". [CAC §5][cac11]
 
-**Observable causal consistency (OCC).** For stores of multi-value registers with invisible reads and op-driven messages, "an eventually consistent data store implementing MVRs cannot satisfy a consistency model strictly stronger than observable causal consistency (OCC)". Such stores must also send messages of `min{n−2, s−1} lg k` bits. [Attiya, Ellen, Morrison, abstract and Thm 12][aem15] This is scoped to MVRs, so it does not bind an LWW store such as `@nn`'s.
+**Observable causal consistency (OCC).** For stores of multi-value registers with invisible reads and op-driven messages, "an eventually consistent data store implementing MVRs cannot satisfy a consistency model strictly stronger than observable causal consistency (OCC)". Such stores must also send messages of `min{n−2, s−1} lg k` bits. [Attiya, Ellen, Morrison, abstract and Thm 12][aem15] This is scoped to MVRs, so it does not bind an LWW store such as `@goodstate`'s.
 
 **RTC and causal+ are incomparable.** COPS places RTC above causal+. Viotti & Vukolić disagree: "although [Lloyd et al., 2011] classifies real-time causal consistency as stronger than causal+ consistency, they are actually incomparable, as real-time causality — as defined in [Mahajan et al., 2011] — does not imply strong convergence." [Viotti & Vukolić §3.5, pp. 15–16][vv16] This note follows Viotti & Vukolić.
 
@@ -174,7 +174,7 @@ Terry et al. define a session as "an abstraction for the sequence of read and wr
 | Writes Follow Reads | "If Read R1 precedes Write W2 in a session and R1 is performed at server S1 at time t1, then, for any server S2, if W2 is in DB(S2) then any W1 in RelevantWrites(S1,t1,R1) is also in DB(S2) and WriteOrder(W1,W2)." | `(vis; so\|rd→wr) ⊆ ar` (25)  |
 | Monotonic Writes    | "If Write W1 precedes Write W2 in a session, then, for any server S2, if W2 in DB(S2) then W1 is also in DB(S2) and WriteOrder(W1,W2)."                                                                               | `so\|wr→wr ⊆ ar` (24)         |
 
-**The two columns are not the same.** Terry's monotonic writes and writes-follow-reads constrain both **propagation** ("W1 is also in DB(S2)") and **order** ("WriteOrder"). Terry even splits writes-follow-reads into WFRO (order only) and WFRP (propagation only). Viotti & Vukolić keep only the ordering half, as an arbitration constraint. A store can satisfy the Viotti form and violate the Terry form, which matters for `@nn` (§6.4).
+**The two columns are not the same.** Terry's monotonic writes and writes-follow-reads constrain both **propagation** ("W1 is also in DB(S2)") and **order** ("WriteOrder"). Terry even splits writes-follow-reads into WFRO (order only) and WFRP (propagation only). Viotti & Vukolić keep only the ordering half, as an arbitration constraint. A store can satisfy the Viotti form and violate the Terry form, which matters for `@goodstate` (§6.4).
 
 Other points from the paper:
 
@@ -210,7 +210,7 @@ Then the theorem every CRDT relies on: "Assuming eventual delivery and terminati
 
 On CAP: "A SEC replica is always available for both reads and writes, independently of network conditions." [RR-7687 §3.1][crdt-rr7687] The paper argues this; it does not prove it as a theorem.
 
-Viotti & Vukolić: `EVENTUALCONSISTENCY ≜ EVENTUALVISIBILITY ∧ NOCIRCULARCAUSALITY ∧ RVAL` (Eq. 14), and `STRONGCONVERGENCE ≜ ∀a,b ∈ H|rd : vis⁻¹(a)|wr = vis⁻¹(b)|wr ⇒ a.oval = b.oval` (Eq. 17). The second form is a statement about **reads**: two reads that saw the same writes return the same value. That is the version §6.3 checks `@nn`'s list order against. Gomes et al. mechanized the safety half of SEC in Isabelle and, note, assumed a causal broadcast network to do it. [Gomes et al. §4][gomes17]
+Viotti & Vukolić: `EVENTUALCONSISTENCY ≜ EVENTUALVISIBILITY ∧ NOCIRCULARCAUSALITY ∧ RVAL` (Eq. 14), and `STRONGCONVERGENCE ≜ ∀a,b ∈ H|rd : vis⁻¹(a)|wr = vis⁻¹(b)|wr ⇒ a.oval = b.oval` (Eq. 17). The second form is a statement about **reads**: two reads that saw the same writes return the same value. That is the version §6.3 checks `@goodstate`'s list order against. Gomes et al. mechanized the safety half of SEC in Isabelle and, note, assumed a causal broadcast network to do it. [Gomes et al. §4][gomes17]
 
 ```text
 R1 delivered {w(x)1, w(x)2} → x = 2
@@ -390,7 +390,7 @@ Two consequences matter for a local-first store:
 2. **"Session" ranges from Terry's four guarantees** (MongoDB) to two of them (Cosmos since 2023) to Vogels's RYW-only reading. Its scope ranges from a partition-bound token, to a client object, to a client group.
 3. **"Consistent prefix"** means a gap-free prefix of a global history in Spanner and the pre-2023 Cosmos docs. In current Cosmos it is indistinguishable from eventual for single documents.
 4. **"Repeatable read"** is SI in Spanner. Berenson et al. showed the two are incomparable.
-5. **The local-first engines that claim causal+ get it by giving up final local writes.** Replicache and PowerSync have a server authority and treat local writes as tentative. The causal order is the server's order of each client's mutations. COPS's causal+ is different: there, any replica accepts writes and resolves conflicts with a commutative handler. `@nn` sits on the COPS side of that line.
+5. **The local-first engines that claim causal+ get it by giving up final local writes.** Replicache and PowerSync have a server authority and treat local writes as tentative. The causal order is the server's order of each client's mutations. COPS's causal+ is different: there, any replica accepts writes and resolves conflicts with a commutative handler. `@goodstate` sits on the COPS side of that line.
 
 ---
 
@@ -430,7 +430,7 @@ Tab B:            push(r2)         then merges A's root → [r2, r1]
 Both delivered {r1, r2}; reads disagree, permanently.
 ```
 
-So `@nn` lists are SEC as sets and not as sequences. The fix is the deferred ordering phase of [ADR-03][adr03] and [ADR-11][adr11]. [Array-like CRDTs](array-like-crdts.md) explains why it needs causality-compatible element IDs. That links it to the receive rule in §6.4.
+So `@goodstate` lists are SEC as sets and not as sequences. The fix is the deferred ordering phase of [ADR-03][adr03] and [ADR-11][adr11]. [Array-like CRDTs](array-like-crdts.md) explains why it needs causality-compatible element IDs. That links it to the receive rule in §6.4.
 
 **Eventual delivery is conditional.** The transports:
 
@@ -514,13 +514,13 @@ In rough order of value per cost:
 5. **The ordering CRDT** ([ADR-03][adr03]). Needed for lists to be SEC as sequences. It depends on item 1, because RGA needs causality-compatible IDs.
 6. **Sessions that span tabs.** Two options:
    - One replica per browser profile, in a SharedWorker or a Web-Lock-elected leader. Every tab is then a client of the same replica, and stickiness holds by construction. This is the PowerSync, LiveStore and Jazz 2.0 pattern ([Local-first web architecture](local-first-architecture.md) §5.3).
-   - A **session token**, as Terry, MongoDB and Cosmos do. A tab records what it has written and seen, and another tab or a reload waits until its state covers the token before rendering. `@nn` has no version vector to put in a token. ADR-09 rejected vector clocks, and a register keeps only its winning stamp. So this needs a new per-replica summary, for example a map from replica to the highest stamp merged.
+   - A **session token**, as Terry, MongoDB and Cosmos do. A tab records what it has written and seen, and another tab or a reload waits until its state covers the token before rendering. `@goodstate` has no version vector to put in a token. ADR-09 rejected vector clocks, and a register keeps only its winning stamp. So this needs a new per-replica summary, for example a map from replica to the highest stamp merged.
 7. **Monotonic reads across reloads.** Gate first render on the IndexedDB bootstrap, which [ADR-13][adr13] deferred. Request `strict` durability if acknowledged writes must survive a crash.
 
 **What stays out of reach while writes are available offline:**
 
 - Uniqueness and other invariants, preventing lost update or write skew, linearizable reads, and snapshot isolation. All are unavailable [HAT §5.2][hat13] [G&L Thm 1][gl02] [CAC Thm 3.1][cac11].
-- The systems that offer them make local writes tentative and let a server decide (Replicache, PowerSync, Zero), giving up the finality of local writes `@nn` has today ([Local-first web architecture](local-first-architecture.md) §2).
+- The systems that offer them make local writes tentative and let a server decide (Replicache, PowerSync, Zero), giving up the finality of local writes `@goodstate` has today ([Local-first web architecture](local-first-architecture.md) §2).
 
 The choice can be made per operation. Brewer notes "the choice between C and A can occur many times within the same system at very fine granularity". [Brewer p. 24][brewer12]
 

@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import { describeLink, parseLinkInput } from "./links";
 
-const repo = "https://github.com/pchalupa/nn";
+const repo = "https://github.com/pchalupa/goodstate";
 
 describe("describeLink", () => {
 	it("describes a pull request by its number", () => {

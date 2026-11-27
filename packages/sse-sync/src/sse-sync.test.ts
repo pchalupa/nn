@@ -1,6 +1,6 @@
-import { LWWRegister } from "@nn/entities/kinds/lww-register";
-import { array, object, string } from "@nn/schema";
-import { Store } from "@nn/store";
+import { LWWRegister } from "@goodstate/entities/kinds/lww-register";
+import { array, object, string } from "@goodstate/schema";
+import { Store } from "@goodstate/store";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { SseSync } from "./sse-sync";

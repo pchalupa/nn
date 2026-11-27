@@ -22,11 +22,11 @@ export default function Devtools({ store }: DevtoolsProps): ReactNode {
 	return createPortal(
 		<ShadowHost>
 			{open ? (
-				<Drawer title="Store" label="nn devtools" onClose={handleClose}>
+				<Drawer title="Store" label="Goodstate DevTools" onClose={handleClose}>
 					<Tree store={store} />
 				</Drawer>
 			) : (
-				<Button text="DevTools" label="Open nn devtools" variant="floating" onClick={handleOpen} />
+				<Button text="DevTools" label="Open Goodstate DevTools" variant="floating" onClick={handleOpen} />
 			)}
 		</ShadowHost>,
 		document.body,
@@ -55,7 +55,7 @@ css`
 		--gs-border-width: 1px;
 		--gs-focus-width: 2px;
 		--gs-focus-offset: 2px;
-		--gs-duration-fast: 120ms;
+		--gs-duration: 120ms;
 		--gs-ease: cubic-bezier(0.2, 0, 0, 1);
 
 		--gs-panel-bg: #1c130c;
@@ -68,9 +68,10 @@ css`
 		--gs-panel-accent: #d9621e;
 		--gs-panel-focus: #e4733a;
 
-		--gs-syntax-text: #faf0de;
+		--gs-syntax-default: #faf0de;
 		--gs-syntax-keyword: #e4733a;
 		--gs-syntax-string: #f5a623;
+		--gs-syntax-number: #c7744a;
 		--gs-syntax-comment: #b48a55;
 		--gs-syntax-punctuation: #faf0deb3;
 
@@ -82,7 +83,7 @@ css`
 
 	@media (prefers-reduced-motion: reduce) {
 		[data-devtools] {
-			--gs-duration-fast: 0ms;
+			--gs-duration: 0ms;
 		}
 	}
 `;

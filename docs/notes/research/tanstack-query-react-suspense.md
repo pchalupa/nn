@@ -381,7 +381,7 @@ In **5.101.4**, the official guide documented `useQuery().promise` plus `React.u
 
 React's own `use(promise)` remains a separate React API. The removal is of TanStack's experimental integration and query result property, not React's ability to consume a suitable externally managed promise. Pending-query dehydration for Server Components and the experimental Next.js package are also separate features and remain documented. [React use][react-use] · [Advanced SSR][advanced] · [Removal commit][promise-removal]
 
-## 12. Relevant observations for `@nn/react`
+## 12. Relevant observations for `@goodstate/react`
 
 These are design takeaways, not implementation changes or claims that the libraries have the same responsibilities.
 

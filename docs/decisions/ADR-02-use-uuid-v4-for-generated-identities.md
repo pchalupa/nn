@@ -15,10 +15,10 @@ An ID identifies an entity. When we need time ordering, we use [`Time`](../../pa
 
 We use [UUID v4 as defined in RFC 9562](https://www.rfc-editor.org/rfc/rfc9562.html#section-5.4) for newly generated identities across the library. It provides 122 random bits without incorporating a clock or requiring coordination between generators. We accept probabilistic uniqueness in exchange for independent generation.
 
-[`@nn/id`](../../packages/id/src/id.ts) exposes `ID.create(): string`, which delegates to the runtime's native [`crypto.randomUUID()`](https://w3c.github.io/webcrypto/#Crypto-method-randomUUID). We use the native cryptographic random source and UUID encoding rather than maintain either ourselves. This adds no runtime package dependency or library-managed generator state.
+[`@goodstate/id`](../../packages/id/src/id.ts) exposes `ID.create(): string`, which delegates to the runtime's native [`crypto.randomUUID()`](https://w3c.github.io/webcrypto/#Crypto-method-randomUUID). We use the native cryptographic random source and UUID encoding rather than maintain either ourselves. This adds no runtime package dependency or library-managed generator state.
 
 ```ts
-import { ID } from "@nn/id";
+import { ID } from "@goodstate/id";
 
 const key = ID.create();
 ```

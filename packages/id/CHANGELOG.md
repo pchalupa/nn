@@ -1,4 +1,4 @@
-# @nn/id
+# @goodstate/id
 
 ## 0.2.0
 

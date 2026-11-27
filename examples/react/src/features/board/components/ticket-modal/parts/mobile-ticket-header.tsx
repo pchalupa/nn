@@ -26,7 +26,7 @@ export const MobileTicketHeader = ({ ticketKey }: MobileTicketHeaderProps) => {
 				</Dialog.Close>
 			}
 			title={ticketKey ?? t("newTicket")}
-			subtitle="nn"
+			subtitle="Goodstate"
 		>
 			{ticketKey !== undefined && (
 				<HeaderButton label={t("copyLink")} onClick={handleCopyLink}>

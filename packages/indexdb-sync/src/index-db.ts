@@ -1,4 +1,4 @@
-import type { Delegatable } from "@nn/observable";
+import type { Delegatable } from "@goodstate/observable";
 
 export interface IndexDbDelegate {
 	indexDbDidChangeVersion(): void;
@@ -12,7 +12,7 @@ export class IndexDb implements Delegatable<IndexDbDelegate> {
 	private transactions = new Map<string, IDBTransaction>();
 	public delegate?: IndexDbDelegate;
 
-	constructor(name = "nn-default") {
+	constructor(name = "goodstate-default") {
 		this.name = name;
 	}
 

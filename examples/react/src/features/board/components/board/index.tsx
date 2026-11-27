@@ -40,10 +40,10 @@ export const Board = ({ search, onNewTicket }: BoardProps) => {
 						<ListIcon size={20} />
 					</HeaderButton>
 				}
-				title="nn"
+				title="Goodstate"
 				subtitle={t("ticketCount", { count })}
 			/>
-			<PageHeader icon={<KanbanIcon size={16} color="var(--gray-a11)" />} title="nn" count={count}>
+			<PageHeader icon={<KanbanIcon size={16} color="var(--gray-a11)" />} title="Goodstate" count={count}>
 				<Button type="button" aria-label={t("newTicket")} onClick={handleNewTicket}>
 					<PlusIcon size={16} />
 					{t("newShort")}

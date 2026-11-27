@@ -1,4 +1,4 @@
-import { createStore } from "@nn/react";
+import { createStore } from "@goodstate/react";
 import { Theme } from "@radix-ui/themes";
 import { act, render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
@@ -422,7 +422,7 @@ describe("TicketModal", () => {
 		expect(probe("priorities")).toBe("low,medium");
 	});
 
-	const pullRequest = "https://github.com/pchalupa/nn/pull/212";
+	const pullRequest = "https://github.com/pchalupa/goodstate/pull/212";
 
 	const storedLinks = (index: number) =>
 		store.query((data) => data.tickets[index]?.links.map((link) => ({ url: link.url, title: link.title })));

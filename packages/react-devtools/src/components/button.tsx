@@ -31,8 +31,8 @@ css`
 		text-transform: uppercase;
 		cursor: pointer;
 		transition:
-			color var(--gs-duration-fast) var(--gs-ease),
-			background-color var(--gs-duration-fast) var(--gs-ease);
+			color var(--gs-duration) var(--gs-ease),
+			background-color var(--gs-duration) var(--gs-ease);
 	}
 	.button:hover {
 		color: var(--gs-panel-bg);

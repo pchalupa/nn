@@ -17,7 +17,7 @@ describe("session", () => {
 		setSession(userId);
 
 		expect(getSession()).toBe(userId);
-		expect(document.cookie).toBe(`nn-current-user=${userId}`);
+		expect(document.cookie).toBe(`goodstate-current-user=${userId}`);
 		expect(localStorage).toHaveLength(0);
 	});
 

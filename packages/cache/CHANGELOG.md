@@ -1,4 +1,4 @@
-# @nn/cache
+# @goodstate/cache
 
 ## 1.0.0
 

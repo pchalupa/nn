@@ -1,11 +1,11 @@
-import type { Encoded } from "@nn/entities/codable";
-import { Codec } from "@nn/entities/codec";
-import type { Entity } from "@nn/entities/entity";
-import type { LWWMap } from "@nn/entities/kinds/lww-map";
-import { Observable, type Unsubscribe } from "@nn/observable/observable";
-import type { InferStateType, Schema } from "@nn/schema";
-import type { ObjectSchema } from "@nn/schema/object-schema";
-import { Time } from "@nn/time";
+import type { Encoded } from "@goodstate/entities/codable";
+import { Codec } from "@goodstate/entities/codec";
+import type { Entity } from "@goodstate/entities/entity";
+import type { LWWMap } from "@goodstate/entities/kinds/lww-map";
+import { Observable, type Unsubscribe } from "@goodstate/observable/observable";
+import type { InferStateType, Schema } from "@goodstate/schema";
+import type { ObjectSchema } from "@goodstate/schema/object-schema";
+import { Time } from "@goodstate/time";
 
 import { Draft } from "./projections/draft";
 import { View } from "./projections/view";

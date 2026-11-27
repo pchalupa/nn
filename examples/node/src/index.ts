@@ -3,8 +3,8 @@ import { readFileSync, watch } from "node:fs";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 
-import { SseSync } from "@nn/sse-sync";
-import { Store } from "@nn/store";
+import { SseSync } from "@goodstate/sse-sync";
+import { Store } from "@goodstate/store";
 import { schema } from "example-schema";
 
 import { logger } from "./modules/logger";

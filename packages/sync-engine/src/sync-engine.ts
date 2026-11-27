@@ -1,4 +1,4 @@
-import { Observable, type Unsubscribe } from "@nn/observable/observable";
+import { Observable, type Unsubscribe } from "@goodstate/observable/observable";
 
 import type { Replica } from "./replica";
 import { Session, type SessionState } from "./session";

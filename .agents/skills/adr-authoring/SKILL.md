@@ -44,7 +44,7 @@ If a question can be answered from the project's source materials or existing de
 
 _Only once the user confirms the thinking is settled. Done when every template section is filled and the file carries no scaffolding._
 
-- Write to `docs/decisions/ADR-NN-<short-kebab-title>.md` using the template's sections exactly: YAML frontmatter (`author` and `date`) plus Context, Decision, Alternatives considered, and Consequences. Make the `<short-kebab-title>` a present-tense imperative verb phrase — `choose-realtime-transport`, not `realtime-transport-decision` — so the filename reads as the decision itself.
+- Write to `docs/decisions/ADR-NN-<short-kebab-title>.md` using the selected template's frontmatter and sections. The bundled template has `author` and `date` frontmatter plus Context, Decision, Alternatives considered, and Consequences; a repo-local `templates/adr.md` takes precedence, including any additional fields or sections such as `status` and Review date. Make the `<short-kebab-title>` a present-tense imperative verb phrase — `choose-realtime-transport`, not `realtime-transport-decision` — so the filename reads as the decision itself.
 - **One decision per ADR.** Each record captures a single architecture decision. If the grill surfaces a second decision riding along, split it into its own ADR (next number) and cross-reference — one ADR triggering follow-on ADRs is normal, not a smell.
 - **Link inline, so a reader can follow every claim.** Anything a reader would otherwise go and search for becomes a link the first time it appears:
   - **A sibling record** — a relative link that resolves from this file: `[ADR-03](ADR-03-adopt-expo-as-the-framework.md)`, `[RFC-05](../requests-for-comments/RFC-05-api-error-resilience.md)`.
@@ -100,7 +100,7 @@ The document earns nothing if the next agent never opens it, so make the repo's 
   - **Keep the table above accurate.** A new document gets a row, a deleted one loses its row, and a row whose file has moved gets the new path.
   ```
 
-- `AGENTS.md` is tables and bullets, not prose. Keep the whole file under 100 lines.
+- Keep the `## Documentation` section concise, using tables and bullets. Preserve unrelated instructions even if the file already exceeds 100 lines.
 
 ## Voice
 

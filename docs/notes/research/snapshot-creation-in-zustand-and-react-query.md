@@ -271,7 +271,7 @@ Sources: `@tanstack/react-query/src/useIsFetching.ts`, `@tanstack/react-query/sr
 
 ---
 
-## 10. What this means for `@nn/store`
+## 10. What this means for `@goodstate/store`
 
 Confirmed by both libraries:
 

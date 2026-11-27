@@ -1,12 +1,12 @@
-# Emit JSON Schema documents from `@nn/schema`
+# Emit JSON Schema documents from `@goodstate/schema`
 
 ## Context
 
-[ADR-01](../decisions/ADR-01-adopt-json-schema-as-the-schema-format.md) committed `@nn/schema` to JSON Schema 2020-12 as its description format. The vocabulary alignment is done: a schema's `type` is the spec's type name, annotations are `title` and `description`, and composite schemas expose `properties` and `items`. `Store.fromSchema` already reads `propertySchema.type` (`packages/store/src/store.ts`), so the typed discriminant is in use.
+[ADR-01](../decisions/ADR-01-adopt-json-schema-as-the-schema-format.md) committed `@goodstate/schema` to JSON Schema 2020-12 as its description format. The vocabulary alignment is done: a schema's `type` is the spec's type name, annotations are `title` and `description`, and composite schemas expose `properties` and `items`. `Store.fromSchema` already reads `propertySchema.type` (`packages/store/src/store.ts`), so the typed discriminant is in use.
 
 What is still missing is the part the ADR was written for. The schema cannot leave the process. It is data in memory, but there is no way to write it to disk, compare it with the version that wrote an existing database, or send it to a server. This step adds that: a `toJSONSchema()` that returns a real 2020-12 document.
 
-Validation stays out. `@nn/schema` describes structure, it does not assert it, and nothing here changes that.
+Validation stays out. `@goodstate/schema` describes structure, it does not assert it, and nothing here changes that.
 
 ## Design
 
@@ -112,7 +112,7 @@ For the schema in `examples/react/src/store.ts`:
 | `packages/schema/src/index.ts`           | re-export the new type                                |
 | `packages/schema/src/JSONSchema.test.ts` | new: colocated vitest, matching the sibling packages  |
 | `packages/schema/README.md`              | document `toJSONSchema()` and show a real document    |
-| `.changeset/*.md`                        | minor bump for `@nn/schema`                           |
+| `.changeset/*.md`                        | minor bump for `@goodstate/schema`                    |
 
 ## Verification
 
@@ -129,6 +129,6 @@ Run `pnpm vitest run packages/schema`. The tests should cover:
 
 Assert whole documents with `toMatchInlineSnapshot`, the way `packages/store/src/store.test.ts` does.
 
-Then run `pnpm --filter @nn/schema ts:check` for a clean type signal. The root `pnpm ts:check` already fails on five pre-existing `Observable` errors in `@nn/store`, so it will not tell us much. Finish with `pnpm lint:check`, `pnpm format:check` and `pnpm spell:check`.
+Then run `pnpm --filter @goodstate/schema ts:check` for a clean type signal. The root `pnpm ts:check` already fails on five pre-existing `Observable` errors in `@goodstate/store`, so it will not tell us much. Finish with `pnpm lint:check`, `pnpm format:check` and `pnpm spell:check`.
 
 For an end-to-end check, emit the schema from `examples/react/src/store.ts` and compare it with the document above. It exercises nesting, a reused titled schema (`user` appears in `users` and again as `ticket.assignee`), two arrays and descriptions in one go. Paste the result into a 2020-12 validator such as <https://www.jsonschemavalidator.net/> to confirm the document itself is well formed.

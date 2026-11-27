@@ -1,4 +1,4 @@
-# @nn/entities
+# @goodstate/entities
 
 ## 5.0.0
 

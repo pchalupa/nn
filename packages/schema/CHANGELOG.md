@@ -1,4 +1,4 @@
-# @nn/schema
+# @goodstate/schema
 
 ## 2.1.0
 

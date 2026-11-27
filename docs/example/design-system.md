@@ -271,7 +271,7 @@ Below Radix's `md` breakpoint (1024px) the app switches to the mobile frames: Si
 - The sign-up `TextField` size 3 has radius 3 (6px) where the file draws radius 4 (8px); on desktop both use radius 2.
 - Ticket cards keep the desktop footer (comment count, link count, priority icon, assignee with name); the file's sync notes are not built.
 - The description field keeps its 200px minimum height (a 176px editor); the file draws the editor 116px tall.
-- The nn devtools "DevTools" button floats over the bottom right of the action bars; it is a library overlay, not part of the design.
+- The Goodstate DevTools "DevTools" button floats over the bottom right of the action bars; it is a library overlay, not part of the design.
 
 ## Not built in the example app
 

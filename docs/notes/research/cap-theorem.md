@@ -1,4 +1,4 @@
-# The CAP theorem: what Brewer conjectured, what Gilbert and Lynch proved, what it does not say, and where `@nn` sits
+# The CAP theorem: what Brewer conjectured, what Gilbert and Lynch proved, what it does not say, and where `@goodstate` sits
 
 Researched **2026-11-21**. Every claim below was read in the paper, slide deck, vendor page or source file that owns it. Where the only reachable copy was a course or author mirror of the published text, the table says so. Mirrors are reproductions, not secondary sources. The few secondary sources are flagged where they are used.
 
@@ -21,9 +21,9 @@ Researched **2026-11-21**. Every claim below was read in the paper, slide deck, 
 
 **Vendor documentation**, fetched 2026-11-21: Apache Cassandra 5.0 docs source at [`cassandra-5.0@3e3892ce`][cass-guarantees] (`guarantees.adoc`, `dynamo.adoc`); Amazon DynamoDB [global tables][ddb-global]; CockroachDB [FAQ][crdb-faq] (v26.4, `dateModified` 2026-11-12); YugabyteDB [design goals][yb] (`/preview/` docs, modified 2026-11-03); FoundationDB [CAP Theorem][fdb] (8.0.1 docs, "Last updated on Nov 17, 2026"); MongoDB [elections][mongo-el] and [rollbacks][mongo-rb] (`/docs/manual/`, no version shown); Azure Cosmos DB [consistency levels][cosmos] (`updated_at` 2026-04-27); Google Cloud Spanner [TrueTime and external consistency][spanner-tt] ("Last updated 2026-11-12 UTC"); HashiCorp Consul [consistency modes][consul].
 
-**This repository** at `02ee4f2` (2026-11-21), the commit after `e76db28` "Advance hlc on newer remote". One runtime probe of `@nn/time` was run (§6.6); nothing else was executed.
+**This repository** at `02ee4f2` (2026-11-21), the commit after `e76db28` "Advance hlc on newer remote". One runtime probe of `@goodstate/time` was run (§6.6); nothing else was executed.
 
-Companions in this directory: [Consistency models](consistency-models.md) (definitions of every model named here, the availability classes, and `@nn`'s session guarantees), [Replication topologies](replication-topologies.md) (who accepts writes and what a partition does to each arrangement), [Hybrid Logical Clocks](hybrid-logical-clocks.md) and [Local-first web architecture](local-first-architecture.md). This note does not repeat their definitions; it covers CAP itself.
+Companions in this directory: [Consistency models](consistency-models.md) (definitions of every model named here, the availability classes, and `@goodstate`'s session guarantees), [Replication topologies](replication-topologies.md) (who accepts writes and what a partition does to each arrangement), [Hybrid Logical Clocks](hybrid-logical-clocks.md) and [Local-first web architecture](local-first-architecture.md). This note does not repeat their definitions; it covers CAP itself.
 
 ---
 
@@ -39,7 +39,7 @@ Companions in this directory: [Consistency models](consistency-models.md) (defin
 
 **How vendors classify themselves.** CockroachDB, YugabyteDB and FoundationDB call themselves CP and stress that "highly available" is a different property from CAP's A. Cassandra calls itself AP. Brewer calls Spanner "technically a CP system" that can claim to be "effectively CA". DynamoDB and MongoDB do not use CAP vocabulary on the pages read; their documented partition behaviour places MRSC global tables and majority-acknowledged MongoDB writes on the CP side, MREC global tables on the AP side. Cosmos DB frames its levels with PACELC (§5).
 
-**Where `@nn` sits.** Every `query` and `mutate` completes against the tab's in-memory replica without waiting for any message [`store.ts:53–83`][nn-store], so the store meets Gilbert and Lynch's availability even with every message lost: it is AP, and in PACELC terms PA/EL. It therefore cannot be linearizable. Within AP, `e76db28` added the HLC receive rule [`global-time.ts:42–50`][nn-global-time] [`lww-register.ts:68–76`][nn-register], which restores writes-follow-reads in the arbitration sense that [Consistency models](consistency-models.md) §6.4 found missing. Causal visibility across roots, atomic multi-root visibility, list order and the replacing server still keep the store below causal+, the ceiling for a last-writer-wins store (§6.4). The receive rule also opened a liveness hole: a remote time ahead of the wall clock with a saturated counter makes the next local `Time.now()` throw (§6.6, probed).
+**Where `@goodstate` sits.** Every `query` and `mutate` completes against the tab's in-memory replica without waiting for any message [`store.ts:53–83`][nn-store], so the store meets Gilbert and Lynch's availability even with every message lost: it is AP, and in PACELC terms PA/EL. It therefore cannot be linearizable. Within AP, `e76db28` added the HLC receive rule [`global-time.ts:42–50`][nn-global-time] [`lww-register.ts:68–76`][nn-register], which restores writes-follow-reads in the arbitration sense that [Consistency models](consistency-models.md) §6.4 found missing. Causal visibility across roots, atomic multi-root visibility, list order and the replacing server still keep the store below causal+, the ceiling for a last-writer-wins store (§6.4). The receive rule also opened a liveness hole: a remote time ahead of the wall clock with a saturated counter makes the next local `Time.now()` throw (§6.6, probed).
 
 ---
 
@@ -275,7 +275,7 @@ These results answer the question CAP leaves open. Definitions are in [Consisten
 
 - **CAC (Mahajan, Alvisi, Dahlin).** "we close the gap between what is known to be impossible (i.e. CAP) and known systems that are highly-available but that provide weaker consistency such as causal." Availability: "all reads and writes can complete regardless of which messages are lost and which nodes can communicate." Convergence is added because without it "there exist many semantics that (1) are stronger than causal consistency, (2) are always available to reads and writes, and (3) 'feel' somehow 'artificial'". **Theorem 3.1**: "No consistency semantics stronger than real time causal consistency can be implemented using a one-way convergent and always available distributed storage implementation." [CAC abstract, §1, §2.2–2.3, §3.1, TR pp. 1–4][cac11] The bound is real-time causal (RTC), not plain causal: "Why isn't causal the strongest?" answers with an execution that is causal but not RTC. [§5, TR p. 9][cac11] Brewer's 2012 paraphrase ("this kind of causal consistency is the best possible outcome") compresses that.
 - **HATs (Bailis et al.).** The introduction states the scope problem directly: "As formally proven [35], the CAP Theorem pertains to a data consistency model called linearizability … However, despite its narrow scope, the CAP Theorem is often misconstrued as a broad result regarding the ability to provide ACID database properties with high availability". [§1, p. 181][hat13] They adopt Gilbert and Lynch's availability and note its strictness: "systems that require a majority of servers to be online are not available. Similarly, a system which guarantees that servers provide a response with high probability is not available." [§4, fn. 2, p. 184][hat13] Preventing lost update "reduces to a requirement for linearizability, which is, via Gilbert and Lynch's proof of the CAP Theorem, provably at odds with high availability". [§5.2.1, p. 187][hat13] Summary: "With sticky availability, a system can achieve read your writes guarantees and PRAM and causal consistency. However, many other prominent semantics, such as Snapshot Isolation, One-Copy Serializability, and Strong Serializability cannot be achieved". [§5.3, p. 187; Table 3, p. 188][hat13]
-- **OCC (Attiya, Ellen, Morrison).** For stores of multi-value registers: "An eventually consistent data store implementing MVRs cannot satisfy a consistency model strictly stronger than observable causal consistency (OCC)", under stated assumptions. [abstract][aem15] It does not bind a last-writer-wins store such as `@nn` ([Consistency models](consistency-models.md) §2.3).
+- **OCC (Attiya, Ellen, Morrison).** For stores of multi-value registers: "An eventually consistent data store implementing MVRs cannot satisfy a consistency model strictly stronger than observable causal consistency (OCC)", under stated assumptions. [abstract][aem15] It does not bind a last-writer-wins store such as `@goodstate` ([Consistency models](consistency-models.md) §2.3).
 
 ---
 
@@ -370,7 +370,7 @@ Theorem 1 applies unchanged. Replay its α:
 ```text
 Device A (offline):  mutate(title = "Final")   → returns immediately
 Device B (offline):                                 query(title) → "Draft"   ← read began after A's write returned
-No algorithm could make B return "Final" without a message from A; @nn returns at once, so it is not linearizable.
+No algorithm could make B return "Final" without a message from A; @goodstate returns at once, so it is not linearizable.
 ```
 
 The same holds for two tabs in one browser, because `BroadcastChannel.postMessage` is asynchronous [`broadcast-sync.ts:39–43`][nn-bc]. Every guarantee the store can offer is therefore below the availability boundary in [Consistency models](consistency-models.md) §3.
@@ -379,14 +379,14 @@ In PACELC terms the store is **PA/EL**: it chooses availability under partition 
 
 ### 6.3 Partition handling in Brewer's terms
 
-| Brewer 2012 step                | `@nn` at `02ee4f2`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| Brewer 2012 step                | `@goodstate` at `02ee4f2`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | ------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Detect the partition            | Each engine has a `Session` state machine (`connected`, `disconnected`, …) [`session.ts:121–155`][nn-session], and SSE drops the session when the stream closes [`sse-sync.ts:34`][nn-sse]. The store does not consult it: operations behave the same in every state.                                                                                                                                                                                                                                                         |
 | Partition mode                  | Permanent. No operation is limited, delayed or modified while disconnected, so no invariant is protected. Brewer's operation × invariant table is empty because the schema has no cross-replica invariants.                                                                                                                                                                                                                                                                                                                   |
 | Recovery: make state consistent | On connect an engine pulls each root and merges it [`sync-engine.ts:27–46`][nn-engine], and then pushes its whole encoded state [`sync-engine.ts:47–48`][nn-engine]; the server sends its snapshot as the first SSE event [`routes/sync.ts:55`][nn-route]. ADR-16 chose this over an outbox: "pushing every field on connection reaches the same result without storing anything" ([ADR-16][adr16] line 63). Merge is a join of state-based CRDTs, which is Brewer's "represent values on a lattice" route [p. 27][brewer12]. |
 | Recovery: compensate            | None. Conflicts resolve by last-writer-wins, which Brewer lists as the "trivial" fix "which ignores some updates" [p. 28][brewer12], and tombstones win over concurrent edits ([Consistency models](consistency-models.md) §6.8, row 8).                                                                                                                                                                                                                                                                                      |
 
-### 6.4 Where `@nn` sits inside AP
+### 6.4 Where `@goodstate` sits inside AP
 
 **Convergence.** [Consistency models](consistency-models.md) §6.3 still holds at `02ee4f2`. The example server replaces each pushed field instead of merging [`memory-database.ts:8–10`][nn-memdb] [`redis-database.ts:30–38`][nn-redisdb] ([ADR-15][adr15] line 42), and [ADR-16][adr16] line 87 records the race where one client's push overwrites another's. So the store is strongly eventually consistent for register values and row membership only on condition that every replica eventually reconnects. Row order does not converge (`// TODO!: Ordering is not converged yet`, [`rga.ts:8`][nn-rga]), so the README's "merge into the same result" holds for values and membership, not for list order. In CAC's vocabulary, BroadcastChannel and IndexedDB paths behave like one-way anti-entropy between live replicas; the server path is not one-way convergent while it replaces. That is an inference from the code.
 
@@ -421,7 +421,7 @@ The register setter stamps with `Time.now()` [`lww-register.ts:33–37`][nn-regi
 - **One bad stamp**: a peer or server that sends a register stamped ahead with a saturated counter blocks every local write on every replica that decodes it.
 - **Ordinary skew**: after receiving a stamp T ahead, each local write until the wall clock reaches T uses the next counter value, so about a million local register writes during the skew window exhaust it.
 
-In CAP terms this is a liveness failure caused by input rather than by a partition: a non-failing node stops answering write requests. The [HLC note](hybrid-logical-clocks.md) §7.3 describes the drift bounds other systems use (reject or clamp remote times beyond a maximum offset); `@nn` has none at `02ee4f2`.
+In CAP terms this is a liveness failure caused by input rather than by a partition: a non-failing node stops answering write requests. The [HLC note](hybrid-logical-clocks.md) §7.3 describes the drift bounds other systems use (reject or clamp remote times beyond a maximum offset); `@goodstate` has none at `02ee4f2`.
 
 ### 6.7 For the thesis
 
@@ -464,7 +464,7 @@ The CAP subsection of the thesis [`consistency-models.tex:38–55`][thesis-cap] 
 
 - Only `Time.now`/`Time.receive` were executed (§6.6). That `Store.mutate` throws in the overflow case, and that writes-follow-reads now holds end to end across devices, are inferences from the code and the unit tests.
 - Whether the BroadcastChannel and IndexedDB paths meet CAC's one-way convergence definition exactly was not proved; §6.4 states it as an inference.
-- The classification PA/EL is mine; no source classifies `@nn`.
+- The classification PA/EL is mine; no source classifies `@goodstate`.
 
 ---
 

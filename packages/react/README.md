@@ -16,9 +16,9 @@ npm install @goodstate/react @goodstate/schema
 import { createStore } from "@goodstate/react";
 import { array, object, string } from "@goodstate/schema";
 
-export const { store, useQuery, useMutation } = createStore(
-	object({ todos: array(object({ id: string(), title: string() })) }),
-);
+const schema = object({ todos: array(object({ id: string(), title: string() })) });
+
+export const { store, useQuery, useMutation } = createStore(schema);
 
 function TodoCount() {
 	const count = useQuery((data) => data.todos.length);

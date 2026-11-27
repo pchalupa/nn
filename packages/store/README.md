@@ -14,7 +14,9 @@ npm install @goodstate/store @goodstate/schema
 import { array, object, string } from "@goodstate/schema";
 import { Store } from "@goodstate/store";
 
-const store = new Store(object({ todos: array(object({ id: string(), title: string() })) }));
+const schema = object({ todos: array(object({ id: string(), title: string() })) });
+
+const store = new Store(schema);
 
 store.mutate((draft) => {
 	draft.todos.push({ id: "1", title: "Write README" });

@@ -144,7 +144,7 @@ The README is the main promotion surface, on GitHub and on npm. Only the branded
 Rules:
 
 - Three branded images at most, and never put essential information only in an image.
-- Use absolute image URLs (`raw.githubusercontent.com`), because npmjs.com doesn't reliably resolve relative paths. Point them at a tag, not `main`, so a published version's npm page keeps its images.
+- Use absolute image URLs (`raw.githubusercontent.com`), because npmjs.com doesn't reliably resolve relative paths. Point them at `main`, so the banner needs no tag to load. An older version's npm page then shows the current banner, and breaks if the file moves.
 - GitHub strips `<style>` and `style` attributes, so bake colors and the image grade into the files.
 - Use native `> [!NOTE]` and `> [!WARNING]` callouts.
 

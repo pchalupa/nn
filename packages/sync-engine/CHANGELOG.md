@@ -1,5 +1,16 @@
 # @goodstate/sync-engine
 
+## 7.0.0
+
+### Major Changes
+
+- a91d14d: The package scope is now `@goodstate`. Replace `@nn/` with `@goodstate/` in your dependencies and imports. Nothing else in the API changed.
+
+### Patch Changes
+
+- Updated dependencies [a91d14d]
+  - @goodstate/observable@4.0.0
+
 ## 6.0.0
 
 ### Major Changes

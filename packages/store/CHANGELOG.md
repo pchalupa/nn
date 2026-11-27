@@ -1,5 +1,22 @@
 # @goodstate/store
 
+## 6.0.0
+
+### Major Changes
+
+- a91d14d: The package scope is now `@goodstate`. Replace `@nn/` with `@goodstate/` in your dependencies and imports. Nothing else in the API changed.
+
+### Patch Changes
+
+- Updated dependencies [a91d14d]
+  - @goodstate/cache@2.0.0
+  - @goodstate/entities@6.0.0
+  - @goodstate/observable@4.0.0
+  - @goodstate/schema@3.0.0
+  - @goodstate/time@2.0.0
+  - @goodstate/guards@0.5.0
+  - @goodstate/id@0.3.0
+
 ## 5.0.1
 
 ### Patch Changes

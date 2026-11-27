@@ -1,5 +1,17 @@
 # @goodstate/time
 
+## 2.0.0
+
+### Major Changes
+
+- a91d14d: The package scope is now `@goodstate`. Replace `@nn/` with `@goodstate/` in your dependencies and imports. Nothing else in the API changed.
+
+### Patch Changes
+
+- Updated dependencies [a91d14d]
+  - @goodstate/cache@2.0.0
+  - @goodstate/id@0.3.0
+
 ## 1.2.0
 
 ### Minor Changes

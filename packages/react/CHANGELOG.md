@@ -1,5 +1,18 @@
 # @goodstate/react
 
+## 5.0.0
+
+### Major Changes
+
+- a91d14d: The package scope is now `@goodstate`. Replace `@nn/` with `@goodstate/` in your dependencies and imports. Nothing else in the API changed.
+
+### Patch Changes
+
+- Updated dependencies [a91d14d]
+  - @goodstate/schema@3.0.0
+  - @goodstate/store@6.0.0
+  - @goodstate/guards@0.5.0
+
 ## 4.0.0
 
 ### Major Changes

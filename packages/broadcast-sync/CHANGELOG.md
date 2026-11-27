@@ -1,5 +1,18 @@
 # @goodstate/broadcast-sync
 
+## 6.0.0
+
+### Major Changes
+
+- a91d14d: The default database and channel name is now `goodstate-default` instead of `nn-default`. If you construct an engine without a name and want to keep reading the data already on the device, pass the old name: `new IndexDbSync(store, "nn-default")` and `new BroadcastSync(store, "nn-default")`.
+- a91d14d: The package scope is now `@goodstate`. Replace `@nn/` with `@goodstate/` in your dependencies and imports. Nothing else in the API changed.
+
+### Patch Changes
+
+- Updated dependencies [a91d14d]
+  - @goodstate/sync-engine@7.0.0
+  - @goodstate/guards@0.5.0
+
 ## 5.0.0
 
 ### Major Changes

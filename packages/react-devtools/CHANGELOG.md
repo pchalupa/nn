@@ -1,5 +1,17 @@
 # @goodstate/react-devtools
 
+## 2.0.0
+
+### Major Changes
+
+- a91d14d: The package scope is now `@goodstate`. Replace `@nn/` with `@goodstate/` in your dependencies and imports. Nothing else in the API changed.
+
+### Patch Changes
+
+- a91d14d: The panel is labelled "Goodstate DevTools" and its host element carries `data-goodstate-devtools` instead of `data-nn-devtools`. Numbers now have their own syntax color.
+- Updated dependencies [a91d14d]
+  - @goodstate/guards@0.5.0
+
 ## 1.1.0
 
 ### Minor Changes

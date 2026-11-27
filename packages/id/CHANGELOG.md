@@ -1,5 +1,11 @@
 # @goodstate/id
 
+## 0.3.0
+
+### Minor Changes
+
+- a91d14d: The package scope is now `@goodstate`. Replace `@nn/` with `@goodstate/` in your dependencies and imports. Nothing else in the API changed.
+
 ## 0.2.0
 
 ### Minor Changes

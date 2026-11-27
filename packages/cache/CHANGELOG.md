@@ -1,5 +1,11 @@
 # @goodstate/cache
 
+## 2.0.0
+
+### Major Changes
+
+- a91d14d: The package scope is now `@goodstate`. Replace `@nn/` with `@goodstate/` in your dependencies and imports. Nothing else in the API changed.
+
 ## 1.0.0
 
 ### Major Changes

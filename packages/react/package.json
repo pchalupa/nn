@@ -1,6 +1,6 @@
 {
 	"name": "@goodstate/react",
-	"version": "4.0.0",
+	"version": "5.0.0",
 	"description": "React hooks for reading and updating a store",
 	"keywords": [
 		"crdt",

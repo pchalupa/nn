@@ -10,6 +10,7 @@
 			"@goodstate/guards",
 			"@goodstate/id",
 			"@goodstate/indexdb-sync",
+			"@goodstate/local-storage-sync",
 			"@goodstate/observable",
 			"@goodstate/react",
 			"@goodstate/react-devtools",

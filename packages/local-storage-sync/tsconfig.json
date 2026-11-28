@@ -1,0 +1,3 @@
+{
+	"extends": "@goodstate/typescript-config/library.json"
+}

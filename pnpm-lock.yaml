@@ -672,6 +672,40 @@ importers:
         specifier: 'catalog:'
         version: 5.1.1(@types/node@26.6.6)(@vitest/coverage-v8@5.1.1)(jsdom@31.0.1)(vite@8.3.8(@types/node@26.6.6)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(tsx@4.23.15)(yaml@2.9.1))
 
+  packages/local-storage-sync:
+    dependencies:
+      '@goodstate/observable':
+        specifier: workspace:^
+        version: link:../observable
+      '@goodstate/sync-engine':
+        specifier: workspace:^
+        version: link:../sync-engine
+    devDependencies:
+      '@goodstate/build-config':
+        specifier: workspace:^
+        version: link:../build-config
+      '@goodstate/schema':
+        specifier: workspace:^
+        version: link:../schema
+      '@goodstate/store':
+        specifier: workspace:^
+        version: link:../store
+      '@goodstate/typescript-config':
+        specifier: workspace:^
+        version: link:../typescript-config
+      jsdom:
+        specifier: ^31.0.1
+        version: 31.0.1
+      tsdown:
+        specifier: 'catalog:'
+        version: 0.23.7(@arethetypeswrong/core@0.18.5)(oxc-resolver@11.24.2)(publint@0.3.25)(tsx@4.23.15)(typescript@7.0.2)
+      typescript:
+        specifier: 'catalog:'
+        version: 7.0.2
+      vitest:
+        specifier: 'catalog:'
+        version: 5.1.1(@types/node@26.6.6)(@vitest/coverage-v8@5.1.1)(jsdom@31.0.1)(vite@8.3.8(@types/node@26.6.6)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(tsx@4.23.15)(yaml@2.9.1))
+
   packages/observable:
     devDependencies:
       '@goodstate/build-config':

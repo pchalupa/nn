@@ -1,0 +1,48 @@
+\section{A Local-First Kanban Board}
+\label{sec:a-local-first-kanban-board}
+
+The TypeScript library developed for this thesis lets a web application accept edits on one device and share them with others when a connection is available.
+A Kanban board serves as its demonstration application.
+Each card represents a ticket: its column shows how far the work has progressed, and its priority indicates how urgently the team should address it.
+Moving a card changes its status; opening it lets a team member edit its details, assign it to someone, or leave a comment.
+
+Alice opens the board on her laptop and Bob opens it on his phone.
+Both see the ticket \enquote{Fix the sign-in error} in the \emph{Backlog} column, as shown in Figure~\ref{fig:kanban-board}.
+Its priority is \emph{Medium}.
+
+\begin{illustration}[htbp]
+	\centering
+	\caption{The ticket before Alice takes her laptop offline}
+	\label{fig:kanban-board}
+	\includegraphics[width=\linewidth]{kanban-board.png}
+	\figuresource{Author's screenshot of the example application. The equals sign on the card denotes medium priority.}
+\end{illustration}
+\FloatBarrier
+
+Alice loses her connection just as she starts investigating the error.
+She drags the card to \emph{In progress}, and her board shows it in the new column immediately.
+Meanwhile, Bob learns that the error prevents several people from signing in.
+On his phone the ticket is still in \emph{Backlog}.
+He opens it and raises its priority to \emph{High}.
+At this point each person can see their own edit, but neither can see the other's.
+
+\begin{table}[htbp]
+	\centering
+	\caption{Status and priority of the same ticket on each device}
+	\label{tab:kanban-ticket}
+	\begin{tabular}{@{}lll@{}}
+		\toprule
+		& Alice's laptop & Bob's phone \\
+		\midrule
+		Before disconnection & Backlog, Medium & Backlog, Medium \\
+		After both edits, laptop offline & In progress, Medium & Backlog, High \\
+		After synchronization & In progress, High & In progress, High \\
+		\bottomrule
+	\end{tabular}
+\end{table}
+\FloatBarrier
+
+When Alice reconnects, Bob sees the card move and Alice sees its priority rise.
+Table~\ref{tab:kanban-ticket} records the three states observed in two separate browser sessions running the application.
+The outcome differs from the concurrent renames in Section~\ref{sec:conflict-free-replicated-data-types}: a ticket can display only one title, but Alice changed its status and Bob changed its priority, so both edits can take effect.
+How does the library record a move on a disconnected laptop so that another device can incorporate it later?

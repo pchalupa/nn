@@ -1,6 +1,6 @@
 {
 	"name": "@goodstate/observable",
-	"version": "7.0.2",
+	"version": "7.0.3",
 	"description": "Observer and delegate primitives for change notification",
 	"keywords": [
 		"delegate",

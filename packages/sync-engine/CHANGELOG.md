@@ -1,5 +1,11 @@
 # @goodstate/sync-engine
 
+## 7.0.3
+
+### Patch Changes
+
+- @goodstate/observable@7.0.3
+
 ## 7.0.2
 
 ### Patch Changes

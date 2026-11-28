@@ -1,6 +1,6 @@
 {
 	"name": "@goodstate/sync-engine",
-	"version": "7.0.2",
+	"version": "7.0.3",
 	"description": "Base class for sync engines",
 	"keywords": [
 		"crdt",

@@ -1,6 +1,6 @@
 {
 	"name": "@goodstate/local-storage-sync",
-	"version": "1.0.0",
+	"version": "7.0.3",
 	"description": "Sync engine that persists a store to localStorage and shares it between tabs",
 	"keywords": [
 		"local-first",

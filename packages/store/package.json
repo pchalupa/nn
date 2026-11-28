@@ -1,6 +1,6 @@
 {
 	"name": "@goodstate/store",
-	"version": "7.0.2",
+	"version": "7.0.3",
 	"description": "Schema-typed state container that merges concurrent changes without conflicts",
 	"keywords": [
 		"crdt",

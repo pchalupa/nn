@@ -1,6 +1,6 @@
 {
 	"name": "@goodstate/broadcast-sync",
-	"version": "7.0.2",
+	"version": "7.0.3",
 	"description": "Sync engine that shares a store between browsing contexts over a broadcast channel",
 	"keywords": [
 		"broadcast-channel",

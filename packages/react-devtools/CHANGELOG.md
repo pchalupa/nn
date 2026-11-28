@@ -1,5 +1,11 @@
 # @goodstate/react-devtools
 
+## 7.0.3
+
+### Patch Changes
+
+- @goodstate/guards@7.0.3
+
 ## 7.0.2
 
 ### Patch Changes

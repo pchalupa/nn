@@ -1,6 +1,6 @@
 {
 	"name": "@goodstate/guards",
-	"version": "7.0.2",
+	"version": "7.0.3",
 	"description": "Runtime type guards",
 	"keywords": [
 		"assertion",

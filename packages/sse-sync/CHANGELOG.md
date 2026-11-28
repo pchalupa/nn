@@ -1,5 +1,13 @@
 # @goodstate/sse-sync
 
+## 7.0.3
+
+### Patch Changes
+
+- @goodstate/guards@7.0.3
+  - @goodstate/observable@7.0.3
+  - @goodstate/sync-engine@7.0.3
+
 ## 7.0.2
 
 ### Patch Changes

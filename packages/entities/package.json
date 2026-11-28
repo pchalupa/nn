@@ -1,6 +1,6 @@
 {
 	"name": "@goodstate/entities",
-	"version": "7.0.2",
+	"version": "7.0.3",
 	"description": "Conflict-free replicated data types that a store keeps its state in",
 	"keywords": [
 		"crdt",

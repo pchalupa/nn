@@ -1,8 +1,8 @@
-import { VersionedCache } from "@nn/cache/versioned-cache";
-import { Entity } from "@nn/entities/entity";
-import { LWWRegister } from "@nn/entities/kinds/lww-register";
-import { isArray } from "@nn/guards/is-array";
-import { isObject } from "@nn/guards/is-object";
+import { VersionedCache } from "@goodstate/cache/versioned-cache";
+import { Entity } from "@goodstate/entities/entity";
+import { LWWRegister } from "@goodstate/entities/kinds/lww-register";
+import { isArray } from "@goodstate/guards/is-array";
+import { isObject } from "@goodstate/guards/is-object";
 
 /**
  * Frozen projections of the entity tree for `Store.query`, cached per entity by `revision`, so unchanged subtrees

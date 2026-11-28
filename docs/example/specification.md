@@ -9,7 +9,7 @@ This describes what the example apps in `examples/` should do. It's a direction,
 
 ## Purpose
 
-The example app is a kanban board that I use to build `nn`. It does two jobs:
+The example app is a kanban board that I use to build Goodstate. It does two jobs:
 
 1. **A real tool.** I track the work on this project in it, so it has to be good enough to use every day.
 2. **The library's demo.** Anyone who opens it should see local-first behavior without reading code. The app keeps working offline, a change in one tab shows up in the other tabs, and edits made on different devices merge into the same board.

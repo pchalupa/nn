@@ -212,7 +212,7 @@ The boards list lives at `/` and each board at `/boards/$boardId`, its tickets a
 - **Grid**: three equal columns with `gap="4"` inside a scrolling `Box` (`py="7" px="8"`). The `Grid` itself does not scroll: as a scroll container with overflowing content it would squeeze its rows, and the clipped cards would lose their descriptions.
 - **`Board Card`** (`BoardCard`, `src/features/boards/components/board-card`): `<Card size="2">` (`p="4"`, radius 4), a column with `gap="3"` that fills the row height. A top row (`align="center" gap="3"`): `BoardMark`, the name in `<Heading as="h2" size="3">` as a link whose `::after` covers the card (`.board-card-link`), and the `DotsThree` menu button (`.board-card-menu` lifts it over the link). The truncated heading would clip the link's focus ring, so the whole card takes a 2px `--focus-8` outline while the link has keyboard focus. The description (`<Text size="2" color="gray">`, two lines at most, `.board-card-description`) shows only when set. A spacer, then the progress group (`gap="2"`): "24 tickets" and "38% done" in Small at the row's ends, and the progress bar: 6px, radius 1, `2px` gaps, one segment per status that has tickets, as wide as its count (backlog `--gray-a5`, to do `--gray-a8`, in progress `--blue-9`, done `--green-9`). An empty board shows one `--gray-a5` track.
 - **`BoardMark`**: 32px, radius 3, `--accent-a3` fill with a 16px `Kanban` icon in `--accent-11`.
-- **Menu**: Radix `DropdownMenu`, 200px, aligned to the end: "Open in new tab" (`ArrowSquareOut`, a link with `target="_blank"`), "Rename" (`PencilSimple`), "Copy link" (`Link`, copies the board URL), a separator, then red "Delete" (`Trash`). Delete asks in an `AlertDialog` ("Delete nn?", soft gray "Cancel", red "Delete") and removes the board with its tickets.
+- **Menu**: Radix `DropdownMenu`, 200px, aligned to the end: "Open in new tab" (`ArrowSquareOut`, a link with `target="_blank"`), "Rename" (`PencilSimple`), "Copy link" (`Link`, copies the board URL), a separator, then red "Delete" (`Trash`). Delete asks in an `AlertDialog` ("Delete Goodstate?", soft gray "Cancel", red "Delete") and removes the board with its tickets.
 - **`BoardDialog`**: `Dialog.Content maxWidth="440px"` titled "New board" or "Rename board" over the gray body line. Fields `gap="4"`: "Name" (`TextField`, required, "Enter a name.") and "Description" (72px `TextArea`, "What is this board for? (optional)"). The actions row (`mt="5" gap="3"`) is soft gray "Cancel" and primary "Create board" (`Plus`) or "Save changes", right-aligned from `md` up and two equal `size="4"` buttons below, their labels in `<Text size="2">` (14px, as in the file) that does not wrap. Names and descriptions are trimmed.
 
 ### Board
@@ -289,7 +289,7 @@ Below Radix's `md` breakpoint (1024px) the app switches to the mobile frames: Si
 - Ticket cards keep the desktop footer (comment count, link count, priority icon, assignee with name); the file's sync notes are not built.
 - The description field keeps its 200px minimum height (a 176px editor); the file draws the editor 116px tall.
 - The board card's menu button is 24px (`IconButton size="1"` ghost) where the file draws 28px.
-- The nn devtools "DevTools" button floats over the bottom right of the action bars; it is a library overlay, not part of the design.
+- The Goodstate DevTools "DevTools" button floats over the bottom right of the action bars; it is a library overlay, not part of the design.
 
 ## Not built in the example app
 

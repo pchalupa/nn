@@ -1,6 +1,6 @@
 {
-	"name": "@nn/guards",
-	"version": "0.4.0",
+	"name": "@goodstate/guards",
+	"version": "7.0.2",
 	"description": "Runtime type guards",
 	"keywords": [
 		"assertion",
@@ -8,15 +8,15 @@
 		"type-guard",
 		"typescript"
 	],
-	"homepage": "https://github.com/pchalupa/nn/tree/main/packages/guards#readme",
+	"homepage": "https://github.com/pchalupa/goodstate/tree/main/packages/guards#readme",
 	"bugs": {
-		"url": "https://github.com/pchalupa/nn/issues"
+		"url": "https://github.com/pchalupa/goodstate/issues"
 	},
 	"license": "MIT",
 	"author": "pchalupa <chalupa.petr93@gmail.com> (https://github.com/pchalupa)",
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/pchalupa/nn.git",
+		"url": "git+https://github.com/pchalupa/goodstate.git",
 		"directory": "packages/guards"
 	},
 	"files": [
@@ -54,8 +54,8 @@
 		"test:watch": "vitest watch"
 	},
 	"devDependencies": {
-		"@nn/build-config": "workspace:^",
-		"@nn/typescript-config": "workspace:^",
+		"@goodstate/build-config": "workspace:^",
+		"@goodstate/typescript-config": "workspace:^",
 		"tsdown": "catalog:",
 		"typescript": "catalog:",
 		"vitest": "catalog:"

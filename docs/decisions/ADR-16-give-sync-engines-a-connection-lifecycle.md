@@ -56,7 +56,7 @@ This amends two points. ADR-13 says a failed `open()` detaches the engine and a 
 
 **Use XState.** It is a known state machine library. We rejected it because five states and six events don't justify a new dependency in a library that is otherwise small, and `Session` is a few dozen lines.
 
-**Put the state machine in a shared package.** A `@nn/state-machine` package could serve other code later. We rejected it because the connection lifecycle would be its only user. If a second one appears, we can extract it then.
+**Put the state machine in a shared package.** A `@goodstate/state-machine` package could serve other code later. We rejected it because the connection lifecycle would be its only user. If a second one appears, we can extract it then.
 
 **Make `session` public.** Other code, including another engine, could read `session.state` and drive the lifecycle with `session.connect()`, `session.reconnect()`, `session.drop()` and `session.detach()`, without the engine forwarding anything. We rejected it because outside code could then end an engine's sync without its subclass knowing why, and nothing would be reported through `syncEngineDidFail`. Nothing outside an engine drives or reads its lifecycle yet.
 
@@ -76,7 +76,7 @@ This amends two points. ADR-13 says a failed `open()` detaches the engine and a 
 
 `IndexDbSync` reconnects only while schema changes add object stores. If a later migration removes or renames a store, an older tab would reopen without a store it needs, or upgrade the database to add it back. Such a migration has to check the stores after reopening and drop the connection instead.
 
-This is a breaking change for `@nn/sync-engine`, `@nn/indexdb-sync` and `@nn/broadcast-sync`, and each gets a major changeset. Code that implements `syncEngineDidFailToPush` renames it to `syncEngineDidFail`. Code that awaits `IndexDbSync.attach()` or `BroadcastSync.attach()` drops the `await`, and a subclass's static factory calls `this.session.connect()` instead of awaiting `attach()`. A subclass that doesn't use the signal still compiles. `@nn/store` gets a minor release for `State.encode()`.
+This is a breaking change for `@goodstate/sync-engine`, `@goodstate/indexdb-sync` and `@goodstate/broadcast-sync`, and each gets a major changeset. Code that implements `syncEngineDidFailToPush` renames it to `syncEngineDidFail`. Code that awaits `IndexDbSync.attach()` or `BroadcastSync.attach()` drops the `await`, and a subclass's static factory calls `this.session.connect()` instead of awaiting `attach()`. A subclass that doesn't use the signal still compiles. `@goodstate/store` gets a minor release for `State.encode()`.
 
 Pushes of one field aren't serialized. A transport that cancels a pending write when a newer one for the same field starts, as `IndexDb` does, rejects the older push, and the engine reports that rejection through `syncEngineDidFail` although the newer write carries the data. Against a server that doesn't merge, two pushes of one field can also arrive out of order, leaving the older value stored until the field changes again. Serializing pushes per field would close both and is left for later.
 
@@ -86,7 +86,7 @@ An app's `syncEngineDidFail` should not throw. A throw from a failed `push` surf
 
 The connection pushes every field. With a server that doesn't merge, a narrow race remains. Another client's push that lands between this client's pull and its push is overwritten on the server, and the other client doesn't push again, because merging the overwritten value doesn't change its state. The data reaches the server on that client's next change or when it attaches a new engine. A cancelled push whose request already left can overwrite a newer value the same way. A server-side merge would close both.
 
-`Session` is part of the surface of `@nn/sync-engine` that subclasses use, so changing its states, events or methods is a breaking change for them. If another engine needs to drive this one's lifecycle, the engine can expose that then.
+`Session` is part of the surface of `@goodstate/sync-engine` that subclasses use, so changing its states, events or methods is a breaking change for them. If another engine needs to drive this one's lifecycle, the engine can expose that then.
 
 `SseSync` adapts to this lifecycle on its own branch. A stream error after the snapshot becomes a call to `this.session.drop()`, which leaves the engine disconnected. `SseSync` reports the stream error itself if the app needs it. Its own notes that a failed bootstrap detaches for good need updating there: the engine now reports the failure and stays disconnected until it's detached.
 

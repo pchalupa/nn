@@ -1,4 +1,4 @@
-import type { Unsubscribe } from "@nn/observable/observable";
+import type { Unsubscribe } from "@goodstate/observable/observable";
 
 /** State a `SyncEngine` keeps in sync. */
 export interface Replica {

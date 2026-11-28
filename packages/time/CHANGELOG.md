@@ -1,4 +1,34 @@
-# @nn/time
+# @goodstate/time
+
+## 7.0.2
+
+### Patch Changes
+
+- 089a06c: Releases are now built and published by GitHub Actions with a provenance attestation, so npm shows which commit and workflow a version came from. Nothing in the API changed.
+- Updated dependencies [089a06c]
+  - @goodstate/cache@7.0.2
+  - @goodstate/id@7.0.2
+
+## 7.0.1
+
+### Patch Changes
+
+- 60eb15a: All `@goodstate/*` packages now share one version number and are released together. Install the same version of every `@goodstate/*` package you use. Nothing in the API changed.
+- Updated dependencies [60eb15a]
+  - @goodstate/cache@7.0.1
+  - @goodstate/id@7.0.1
+
+## 2.0.0
+
+### Major Changes
+
+- a91d14d: The package scope is now `@goodstate`. Replace `@nn/` with `@goodstate/` in your dependencies and imports. Nothing else in the API changed.
+
+### Patch Changes
+
+- Updated dependencies [a91d14d]
+  - @goodstate/cache@2.0.0
+  - @goodstate/id@0.3.0
 
 ## 1.2.0
 

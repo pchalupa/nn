@@ -1,17 +1,17 @@
-# @nn/sse-sync
+# @goodstate/sse-sync
 
 Sync engine that keeps a store in sync with a server over [server-sent events](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events).
 
 ## Installation
 
 ```sh
-npm install @nn/sse-sync @nn/store
+npm install @goodstate/sse-sync @goodstate/store
 ```
 
 ## Usage
 
 ```ts
-import { SseSync } from "@nn/sse-sync";
+import { SseSync } from "@goodstate/sse-sync";
 
 const sync = new SseSync(store, new URL("https://example.com/sync"));
 

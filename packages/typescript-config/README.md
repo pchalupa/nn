@@ -1,18 +1,18 @@
-# @nn/typescript-config
+# @goodstate/typescript-config
 
 Shared [TypeScript configuration](https://www.typescriptlang.org/tsconfig/).
 
 ## Installation
 
 ```sh
-npm install --save-dev @nn/typescript-config
+npm install --save-dev @goodstate/typescript-config
 ```
 
 ## Usage
 
 ```json
 {
-	"extends": "@nn/typescript-config/library.json"
+	"extends": "@goodstate/typescript-config/library.json"
 }
 ```
 

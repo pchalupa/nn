@@ -27,7 +27,7 @@ jobs:
       - uses: millionco/react-doctor@v2
         with:
           comment: false
-          project: "@nn/react-devtools,@nn/react,example-react"
+          project: "@goodstate/react-devtools,@goodstate/react,example-react"
   e2e:
     runs-on: ubuntu-latest
     timeout-minutes: 5

@@ -29,7 +29,7 @@ These are already cited in the note, not new sources. All three old paths are mi
 | §2.4, manuscript pp. 5–6 / PDF pp. 6–7                             | Explicitly assumes reliable causal broadcast delivering each message exactly once. Theorem 2 also requires concurrent operations to commute and delivery preconditions to be satisfied. Supports the op-based row of §7.3.                                                                 |
 | §3.1, manuscript p. 6 / PDF p. 7; §7, manuscript p. 14 / PDF p. 15 | Communicating subsets can converge during partitions; the conclusion restates eventual delivery, with causal delivery for op-based objects. Supports availability/convergence comparisons in §8.                                                                                           |
 
-**Limits:** these are sufficient conditions under the paper's model, including non-Byzantine processes and crash recovery with memory intact (§2, manuscript p. 2 / PDF p. 3). “Op-based needs causal broadcast” describes this construction, not a universal lower bound for every operation-based design. The paper does not verify `@nn`'s delivery mechanism or a replacing server's stored state.
+**Limits:** these are sufficient conditions under the paper's model, including non-Byzantine processes and crash recovery with memory intact (§2, manuscript p. 2 / PDF p. 3). “Op-based needs causal broadcast” describes this construction, not a universal lower bound for every operation-based design. The paper does not verify `@goodstate`'s delivery mechanism or a replacing server's stored state.
 
 ### Kleppmann et al., Local-First Software (Onward! 2019)
 
@@ -68,7 +68,7 @@ All relevant passages are in §4.2.4 “Findings”:
 | §5.6 “Cobject preservation,” printed pp. 363–364 / PDF pp. 10–11             | Tombstones preserve objects referenced by delayed operations. Safe RGA purging uses per-site vector-clock knowledge and two conditions: all sites have executed the deletion, plus an ordering condition protecting the next node used as an insertion reference. Merely knowing that everyone saw the deletion is not the whole rule. |
 | §5.6, printed p. 364 / PDF p. 11; §7, printed pp. 365–366 / PDF pp. 12–13    | A paused site can block purging until its clock is obtained. Causal delivery can also delay unrelated operations; relaxing causality for RGAs requires algorithm changes and is left as future work.                                                                                                                                   |
 
-**Limits:** the paper presents operation-based RADTs with explicit membership/session assumptions. It is not a proof of `@nn`'s state-based RGA, nor a ready-made collector for an unknown set of offline clients.
+**Limits:** the paper presents operation-based RADTs with explicit membership/session assumptions. It is not a proof of `@goodstate`'s state-based RGA, nor a ready-made collector for an unknown set of offline clients.
 
 ## New secondary sources
 
@@ -97,7 +97,7 @@ These books explain protocols and point to original work; they remain secondary 
 - **§5 sloppy quorums:** replace the interpretation “overlap among reachable nodes” with a conditional statement about actual replica-set intersection. Reachability and `R + W > N` alone do not establish it.
 - **§8 quorum row:** qualify the strict-quorum read-your-writes claim with its additional assumptions; DDIA explicitly discusses failures of the simple rule.
 - **§7.3 relay ordering:** retain the note's label that this is a derivation. These local papers do not prove the single-relay claim or its behavior across reconnections and failover.
-- **§9.3 deletion:** the RGA paper adds a structure-specific constraint beyond everyone observing a deletion. Neither its collector nor YATA's historical timeout can be transferred to `@nn` without checking the model.
+- **§9.3 deletion:** the RGA paper adds a structure-specific constraint beyond everyone observing a deletion. Neither its collector nor YATA's historical timeout can be transferred to `@goodstate` without checking the model.
 - **§9 implementation and traffic counts:** these sources explain principles; they do not revalidate the repository snapshot, fan-out probe or proposed origin-filtering changes.
 
 ## Lower-priority sources screened

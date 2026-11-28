@@ -1,5 +1,5 @@
-import { isObject } from "@nn/guards/is-object";
-import { isString } from "@nn/guards/is-string";
+import { isObject } from "@goodstate/guards/is-object";
+import { isString } from "@goodstate/guards/is-string";
 
 import type { Entity } from "./entity";
 import { LWWMap } from "./lww-map";

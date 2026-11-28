@@ -1,6 +1,6 @@
 # example-node
 
-Node.js script that watches this repository for `TODO` comments and adds them to the board as tickets. It uses `@nn/store` and `@nn/sse-sync`.
+Node.js script that watches this repository for `TODO` comments and adds them to the board as tickets. It uses `@goodstate/store` and `@goodstate/sse-sync`.
 
 ## Running
 

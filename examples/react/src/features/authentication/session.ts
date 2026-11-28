@@ -1,6 +1,6 @@
 import Cookies from "js-cookie";
 
-const KEY = "nn-current-user";
+const KEY = "goodstate-current-user";
 
 const session = Cookies.withAttributes({ expires: 365, sameSite: "strict" });
 

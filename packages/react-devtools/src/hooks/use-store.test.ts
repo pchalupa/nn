@@ -1,5 +1,5 @@
-import { object, string } from "@nn/schema";
-import { Store } from "@nn/store";
+import { object, string } from "@goodstate/schema";
+import { Store } from "@goodstate/store";
 import { renderHook } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 

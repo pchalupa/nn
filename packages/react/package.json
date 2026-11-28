@@ -1,6 +1,6 @@
 {
-	"name": "@nn/react",
-	"version": "4.0.0",
+	"name": "@goodstate/react",
+	"version": "7.0.2",
 	"description": "React hooks for reading and updating a store",
 	"keywords": [
 		"crdt",
@@ -9,15 +9,15 @@
 		"react",
 		"state-management"
 	],
-	"homepage": "https://github.com/pchalupa/nn/tree/main/packages/react#readme",
+	"homepage": "https://github.com/pchalupa/goodstate/tree/main/packages/react#readme",
 	"bugs": {
-		"url": "https://github.com/pchalupa/nn/issues"
+		"url": "https://github.com/pchalupa/goodstate/issues"
 	},
 	"license": "MIT",
 	"author": "pchalupa <chalupa.petr93@gmail.com> (https://github.com/pchalupa)",
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/pchalupa/nn.git",
+		"url": "git+https://github.com/pchalupa/goodstate.git",
 		"directory": "packages/react"
 	},
 	"files": [
@@ -41,14 +41,14 @@
 		"test:watch": "vitest watch"
 	},
 	"dependencies": {
-		"@nn/guards": "workspace:^",
-		"@nn/schema": "workspace:^",
-		"@nn/store": "workspace:^",
+		"@goodstate/guards": "workspace:^",
+		"@goodstate/schema": "workspace:^",
+		"@goodstate/store": "workspace:^",
 		"use-sync-external-store": "^1.7.0"
 	},
 	"devDependencies": {
-		"@nn/build-config": "workspace:^",
-		"@nn/typescript-config": "workspace:^",
+		"@goodstate/build-config": "workspace:^",
+		"@goodstate/typescript-config": "workspace:^",
 		"@testing-library/react": "^16.3.3",
 		"@types/react": "catalog:",
 		"@types/react-dom": "catalog:",

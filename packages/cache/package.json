@@ -1,21 +1,21 @@
 {
-	"name": "@nn/cache",
-	"version": "1.0.0",
+	"name": "@goodstate/cache",
+	"version": "7.0.2",
 	"description": "Caches for values derived from other state",
 	"keywords": [
 		"cache",
 		"invalidation",
 		"memoization"
 	],
-	"homepage": "https://github.com/pchalupa/nn/tree/main/packages/cache#readme",
+	"homepage": "https://github.com/pchalupa/goodstate/tree/main/packages/cache#readme",
 	"bugs": {
-		"url": "https://github.com/pchalupa/nn/issues"
+		"url": "https://github.com/pchalupa/goodstate/issues"
 	},
 	"license": "MIT",
 	"author": "pchalupa <chalupa.petr93@gmail.com> (https://github.com/pchalupa)",
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/pchalupa/nn.git",
+		"url": "git+https://github.com/pchalupa/goodstate.git",
 		"directory": "packages/cache"
 	},
 	"files": [
@@ -41,8 +41,8 @@
 		"test:watch": "vitest watch"
 	},
 	"devDependencies": {
-		"@nn/build-config": "workspace:^",
-		"@nn/typescript-config": "workspace:^",
+		"@goodstate/build-config": "workspace:^",
+		"@goodstate/typescript-config": "workspace:^",
 		"tsdown": "catalog:",
 		"typescript": "catalog:",
 		"vitest": "catalog:"

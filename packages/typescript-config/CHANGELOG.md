@@ -1,4 +1,4 @@
-# @nn/typescript-config
+# @goodstate/typescript-config
 
 ## 1.0.1
 

@@ -1,6 +1,6 @@
 {
-	"name": "@nn/store",
-	"version": "5.0.1",
+	"name": "@goodstate/store",
+	"version": "7.0.2",
 	"description": "Schema-typed state container that merges concurrent changes without conflicts",
 	"keywords": [
 		"crdt",
@@ -8,15 +8,15 @@
 		"state-management",
 		"store"
 	],
-	"homepage": "https://github.com/pchalupa/nn/tree/main/packages/store#readme",
+	"homepage": "https://github.com/pchalupa/goodstate/tree/main/packages/store#readme",
 	"bugs": {
-		"url": "https://github.com/pchalupa/nn/issues"
+		"url": "https://github.com/pchalupa/goodstate/issues"
 	},
 	"license": "MIT",
 	"author": "pchalupa <chalupa.petr93@gmail.com> (https://github.com/pchalupa)",
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/pchalupa/nn.git",
+		"url": "git+https://github.com/pchalupa/goodstate.git",
 		"directory": "packages/store"
 	},
 	"files": [
@@ -40,18 +40,18 @@
 		"test:watch": "vitest watch"
 	},
 	"dependencies": {
-		"@nn/cache": "workspace:^",
-		"@nn/entities": "workspace:^",
-		"@nn/guards": "workspace:^",
-		"@nn/id": "workspace:^",
-		"@nn/observable": "workspace:^",
-		"@nn/schema": "workspace:^",
-		"@nn/time": "workspace:^"
+		"@goodstate/cache": "workspace:^",
+		"@goodstate/entities": "workspace:^",
+		"@goodstate/guards": "workspace:^",
+		"@goodstate/id": "workspace:^",
+		"@goodstate/observable": "workspace:^",
+		"@goodstate/schema": "workspace:^",
+		"@goodstate/time": "workspace:^"
 	},
 	"devDependencies": {
-		"@nn/build-config": "workspace:^",
-		"@nn/test-config": "workspace:^",
-		"@nn/typescript-config": "workspace:^",
+		"@goodstate/build-config": "workspace:^",
+		"@goodstate/test-config": "workspace:^",
+		"@goodstate/typescript-config": "workspace:^",
 		"@types/node": "catalog:",
 		"tsdown": "catalog:",
 		"typescript": "catalog:",

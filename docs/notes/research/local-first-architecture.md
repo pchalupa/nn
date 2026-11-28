@@ -1,6 +1,6 @@
 # Local-first web architecture: the building blocks, where authority lives, and how real systems choose
 
-Every local-first web app answers the same six questions. Where does the local copy live, and what technology stores it? Who decides the final state: no one, a server, or a database the app already had? What is shipped over the wire: operations, row changes, or whole state? What happens to a local write the server later disagrees with? How do several tabs of the same origin share one database? What happens when the schema changes under a client that has been offline for a month? This note shows how fifteen real systems answer them, using their own docs, code and authors. It then places `@nn` among them.
+Every local-first web app answers the same six questions. Where does the local copy live, and what technology stores it? Who decides the final state: no one, a server, or a database the app already had? What is shipped over the wire: operations, row changes, or whole state? What happens to a local write the server later disagrees with? How do several tabs of the same origin share one database? What happens when the schema changes under a client that has been offline for a month? This note shows how fifteen real systems answer them, using their own docs, code and authors. It then places `@goodstate` among them.
 
 Researched **2026-11-09**. Every repository was shallow-cloned and read without running any code. Line numbers and symbols refer to the commit given.
 
@@ -118,7 +118,7 @@ So the systems that persist to SQLite in the browser converge on one shape: a lo
 4. **Lenses that translate between versions**: Jazz 2.0.
 5. **Force the client to update**: Replicache and Zero `onUpdateNeeded` → `location.reload()`; Triplit refuses to connect; Electric `409 must-refetch` on any column change.
 
-**Where `@nn` sits** (§8):
+**Where `@goodstate` sits** (§8):
 
 - It is model 1: state-based CRDT roots with LWW and RGA, pushed whole, and a server that stores and fans out without merging.
 - Its transport is closest to Replicache's "Reset" strategy: a whole snapshot on every connect.
@@ -744,16 +744,16 @@ These are patterns across the sources. Each one rests on the citations in §§1�
 
 ---
 
-## 8. Where `@nn` sits, and the gaps this exposes
+## 8. Where `@goodstate` sits, and the gaps this exposes
 
 Everything in this section was read from the working tree at `5031df0` (2026-11-09). Claims about the example server are about `examples/react/api/_server`, which is example code, not a published package.
 
 ### 8.1 Layer mapping
 
-| Layer       | `@nn` today                                                                                                                                                                                                                                                                                                            |
+| Layer       | `@goodstate` today                                                                                                                                                                                                                                                                                                     |
 | ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Local store | [`Store`][nn-store] and [`State`][nn-state]: a schema-typed tree of state-based CRDT entities ([`LWWRegister`][nn-register], `LWWMap`, `RGA`), stamped with the HLC in [`@nn/time`][nn-time]                                                                                                                           |
-| Reactivity  | `View` caches a frozen projection per entity `revision` ([`projectors/view.ts`][nn-view]); [`@nn/react`][nn-react] binds it with `useSyncExternalStoreWithSelector`. Full recomputation on invalidation; see [Materialized views](materialized-view.md) §6                                                             |
+| Local store | [`Store`][nn-store] and [`State`][nn-state]: a schema-typed tree of state-based CRDT entities ([`LWWRegister`][nn-register], `LWWMap`, `RGA`), stamped with the HLC in [`@goodstate/time`][nn-time]                                                                                                                    |
+| Reactivity  | `View` caches a frozen projection per entity `revision` ([`projectors/view.ts`][nn-view]); [`@goodstate/react`][nn-react] binds it with `useSyncExternalStoreWithSelector`. Full recomputation on invalidation; see [Materialized views](materialized-view.md) §6                                                      |
 | Persistence | [`IndexDbSync`][nn-idbsync]: one IndexedDB object store per top-level field, holding a whole encoded root, written with `put` and resolved on `oncomplete` ([`index-db.ts`][nn-idb]). Persistence is "just another sync engine" ([ADR-14][adr14])                                                                      |
 | Sync engine | abstract [`SyncEngine`][nn-engine] with `open`/`close`/`pull`/`push`, a five-state [`Session`][nn-session] ([ADR-16][adr16], [ADR-17][adr17]) and listener methods ([ADR-18][adr18])                                                                                                                                   |
 | Transport   | [`SseSync`][nn-sse] (`EventSource` on `/subscribe`, `POST /push`) and [`BroadcastSync`][nn-bc] for tabs ([ADR-15][adr15])                                                                                                                                                                                              |
@@ -769,7 +769,7 @@ Everything in this section was read from the working tree at `5031df0` (2026-11-
 - Among the surveyed systems, the closest analogues are:
   - **TinyBase**: a state-based LWW CRDT with a thin routing server.
   - **Evolu**: a relay that does not decide order.
-- Evolu's relay **stores every change**. Automerge Repo's server **merges**. `@nn`'s example server **replaces** each root field with the last one pushed.
+- Evolu's relay **stores every change**. Automerge Repo's server **merges**. `@goodstate`'s example server **replaces** each root field with the last one pushed.
 
 **Inference from the code; not tested.** Because the server replaces rather than joins, its stored copy equals whichever push of a field arrived **last**, not the join of all pushes.
 
@@ -838,7 +838,7 @@ None of the surveyed server-mediated systems have this property, for two differe
 - Every tab therefore opens its own `EventSource`, pushes every field to the server on connect, and `put`s whole roots into the same IndexedDB keys.
 - The multi-tab lost-update window documented in [Persisting CRDT metadata](crdt-metadata-persistence.md) §4 is narrowed by `BroadcastSync`, because tabs merge each other's state and re-persist. It is not closed by a single owner.
 - This is the Replicache, Automerge Repo and Yjs pattern: every tab writes, and BroadcastChannel notifies (§5.3).
-- That pattern is sound when stored values are mergeable or keyed per writer. `@nn` writes a whole merged root per key, so correctness depends on the last `put` being a superset of the others.
+- That pattern is sound when stored values are mergeable or keyed per writer. `@goodstate` writes a whole merged root per key, so correctness depends on the last `put` being a superset of the others.
 
 **Web platform:**
 
@@ -862,7 +862,7 @@ These are observations against the surveyed field, not decisions. Any of them wo
    - the server keeps an append-only set of pushed states and joins them on read, as Evolu's relay keeps all changes;
    - the client sequences pushes per field, the way `IndexDb.set` already does locally.
 2. **No cursor or version on the wire.** Every catch-up is a full snapshot, and every edit sends a whole root. Per-root versions, such as the HLC already carried in entities, would allow `Last-Event-ID`-style resume and smaller pushes. Delta options are in [CRDT deltas](crdt-deltas.md) §8.
-3. **No partial replication or read authorization.** Every surveyed server-mediated system scopes sync by the auth context (§3.4, §7.5). `@nn` has one global key.
+3. **No partial replication or read authorization.** Every surveyed server-mediated system scopes sync by the auth context (§3.4, §7.5). `@goodstate` has one global key.
 4. **No write authorization, and no way to reject a write.** Model 1 rules out server rollback. The choices the field shows are data-level authority (signatures or write keys, see [Keyhive](keyhive.md)) or accepting a trusted server that can refuse a push. A refused push currently produces only an `onError`, and the field is re-sent on its next change.
 5. **No single owner across tabs.** Each tab runs persistence and a network connection. The field's answer for single-connection or single-writer storage is a Web Lock, elected in a worker where possible, with a fallback where SharedWorker is missing (§5.3).
 6. **Eviction and durability are unaddressed.** There is no `persist()` request, no durability hint, and no storage-failure path like Replicache's `StorageFailureKind` (§5.2).

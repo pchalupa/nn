@@ -1,4 +1,4 @@
-import { isArray } from "@nn/guards/is-array";
+import { isArray } from "@goodstate/guards/is-array";
 import { type ReactNode, useState } from "react";
 
 import { Text } from "../components/text";

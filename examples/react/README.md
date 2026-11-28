@@ -1,6 +1,6 @@
 # example-react
 
-Kanban board that works offline, syncs between tabs, and merges edits from other devices through a server. It uses `@nn/react`, `@nn/indexdb-sync`, `@nn/broadcast-sync` and `@nn/sse-sync`.
+Kanban board that works offline, syncs between tabs, and merges edits from other devices through a server. It uses `@goodstate/react`, `@goodstate/indexdb-sync`, `@goodstate/broadcast-sync` and `@goodstate/sse-sync`.
 
 ## Running
 

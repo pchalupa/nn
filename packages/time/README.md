@@ -1,11 +1,11 @@
-# @nn/time
+# @goodstate/time
 
 [Hybrid logical clock](https://cse.buffalo.edu/tech-reports/2014-04.pdf).
 
 ## Installation
 
 ```sh
-npm install @nn/time
+npm install @goodstate/time
 ```
 
 ## Usage
@@ -13,7 +13,7 @@ npm install @nn/time
 A hybrid logical clock combines the wall clock time with a counter and a replica identity. Times keep a consistent order across replicas even when events happen in the same millisecond.
 
 ```ts
-import { Time } from "@nn/time";
+import { Time } from "@goodstate/time";
 
 const first = Time.now();
 const second = Time.now();

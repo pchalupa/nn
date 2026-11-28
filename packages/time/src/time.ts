@@ -1,4 +1,4 @@
-import { InvalidatableCache } from "@nn/cache/invalidatable-cache";
+import { InvalidatableCache } from "@goodstate/cache/invalidatable-cache";
 
 import { TimestampMalformedError } from "./errors/timestamp-malformed-error";
 import { COUNTER_DIGITS, GlobalTime } from "./global-time";

@@ -1,4 +1,4 @@
-import { createStore } from "@nn/react";
+import { createStore } from "@goodstate/react";
 import { Theme } from "@radix-ui/themes";
 import { act, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
@@ -47,7 +47,7 @@ describe("TicketModal", () => {
 
 	beforeEach(() => {
 		store.mutate((data) => {
-			data.boards = [{ id: "nn", name: "nn", description: "", tickets: [structuredClone(commented)] }];
+			data.boards = [{ id: "goodstate", name: "Goodstate", description: "", tickets: [structuredClone(commented)] }];
 			data.users = [];
 		});
 	});
@@ -65,7 +65,7 @@ describe("TicketModal", () => {
 				<I18nextProvider i18n={i18n}>
 					<Theme>
 						<Suspense fallback="fallback">
-							<TicketModal boardId="nn" id="commented" />
+							<TicketModal boardId="goodstate" id="commented" />
 							<Labels />
 						</Suspense>
 					</Theme>

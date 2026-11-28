@@ -1,8 +1,8 @@
 {
-	"name": "nn",
+	"name": "goodstate",
 	"version": "1.0.0",
 	"private": true,
-	"description": "",
+	"description": "Local-first state management for TypeScript",
 	"keywords": [],
 	"license": "MIT",
 	"author": "",
@@ -24,8 +24,7 @@
 		"bench": "vitest bench --run",
 		"bench:watch": "vitest bench",
 		"changeset:add": "changeset ",
-		"changeset:version": "changeset version",
-		"changeset:publish": "changeset publish"
+		"changeset:version": "changeset version"
 	},
 	"devDependencies": {
 		"@changesets/cli": "^3.0.3",

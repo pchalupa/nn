@@ -37,10 +37,10 @@ We don't add timestamps, insertion anchors, or a clock in this phase. Permanent 
 
 ## Consequences
 
-Removals now converge. Merging in any order, or merging the same replica twice, gives the same live rows, and a reload from IndexedDB keeps removed rows removed. `@nn/store`, `@nn/sync-engine` and `@nn/react` don't change.
+Removals now converge. Merging in any order, or merging the same replica twice, gives the same live rows, and a reload from IndexedDB keeps removed rows removed. `@goodstate/store`, `@goodstate/sync-engine` and `@goodstate/react` don't change.
 
 We accept unbounded growth, as ADR-03 did. Every removed key stays in the set and in every encoded root. That costs one UUID string per removed row, and we haven't defined when it would be safe to drop one.
 
-This is a breaking change for `@nn/entities`, so it ships as a major release. A removed key can't come back: code that removes a row and pushes it again under the same key, or drops a key by assigning `current` and adds it later, sees the row ignored. `encode()` now always includes `metadata.tombstones`, so code that compares encoded lists exactly sees a new shape. Lists encoded by earlier versions no longer decode, so every replica has to run the new version, and a payload from an older one fails with an error that `SyncEngine` reports. The store always creates rows under fresh keys, so `@nn/store` and the sync packages only pick up the new dependency range.
+This is a breaking change for `@goodstate/entities`, so it ships as a major release. A removed key can't come back: code that removes a row and pushes it again under the same key, or drops a key by assigning `current` and adds it later, sees the row ignored. `encode()` now always includes `metadata.tombstones`, so code that compares encoded lists exactly sees a new shape. Lists encoded by earlier versions no longer decode, so every replica has to run the new version, and a payload from an older one fails with an error that `SyncEngine` reports. The store always creates rows under fresh keys, so `@goodstate/store` and the sync packages only pick up the new dependency range.
 
 Row order still doesn't converge across replicas, as ADR-11 describes. The ordering phase will turn this tombstone set into tombstoned sequence elements, and that work will also decide how anchors are encoded.

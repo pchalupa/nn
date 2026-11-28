@@ -1,7 +1,7 @@
 # Swift delegates and observation
 
 Research date: **2026-10-31** (Apple documentation, Swift Evolution proposals, Swift book and `swiftlang/swift` source at pinned commits).
-Scope: how Swift and Apple frameworks propagate changes (delegates, Observation, Combine, KVO, NotificationCenter, `AsyncStream`), and what that means for the proposed delegate-based change propagation in `@nn/entities`, `@nn/store` and `@nn/remote`.
+Scope: how Swift and Apple frameworks propagate changes (delegates, Observation, Combine, KVO, NotificationCenter, `AsyncStream`), and what that means for the proposed delegate-based change propagation in `@goodstate/entities`, `@goodstate/store` and `@goodstate/remote`.
 
 ## Short answer
 

@@ -30,7 +30,8 @@
 		"eventsource",
 		"hset",
 		"hgetall",
-		"codspeed"
+		"codspeed",
+		"goodstate"
 	],
 	"ignorePaths": ["docs/{notes,plans,research}"],
 	"useGitignore": true

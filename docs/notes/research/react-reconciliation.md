@@ -1,6 +1,6 @@
 # React reconciliation: what changed, and which DOM mutations to apply
 
-Research date: **2026-09-30**. Source of every mechanism claim below is the React repo at tag **`v19.3.0`**, commit `1d34f91dfde6bba84d08b683aaba164c7194dacb`, read from a sparse clone. Contrasts with the older model are read from tag **`v18.3.1`**, commit `f1338f8080abd1386454a10bbf93d67bfe37ce85`. This repo pins `react` and `react-dom` to **19.3.0** in the `pnpm-workspace.yaml` catalog, and `node_modules/.pnpm` has `react@19.3.0` installed, so the tag matches what `@nn/react` builds against.
+Research date: **2026-09-30**. Source of every mechanism claim below is the React repo at tag **`v19.3.0`**, commit `1d34f91dfde6bba84d08b683aaba164c7194dacb`, read from a sparse clone. Contrasts with the older model are read from tag **`v18.3.1`**, commit `f1338f8080abd1386454a10bbf93d67bfe37ce85`. This repo pins `react` and `react-dom` to **19.3.0** in the `pnpm-workspace.yaml` catalog, and `node_modules/.pnpm` has `react@19.3.0` installed, so the tag matches what `@goodstate/react` builds against.
 
 Docs are cited only where they state intent, guarantees, or heuristics. Where a doc page simplifies or lags the implementation, that is flagged explicitly.
 

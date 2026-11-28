@@ -1,17 +1,17 @@
-# @nn/schema
+# @goodstate/schema
 
 Typed schema builders that describe the shape of store state.
 
 ## Installation
 
 ```sh
-npm install @nn/schema
+npm install @goodstate/schema
 ```
 
 ## Usage
 
 ```ts
-import { array, boolean, enumeration, type InferStateType, number, object, string } from "@nn/schema";
+import { array, boolean, enumeration, type InferStateType, number, object, string } from "@goodstate/schema";
 
 const todo = object({
 	id: string(),

@@ -23,7 +23,7 @@ We will let a session leave `disconnected` with a new `retry` event. Engines don
 
 [`Session`](../../packages/sync-engine/src/session.ts) gets `SessionEvent.Retry` and `retry()`. `disconnected` plus `retry` goes to `connecting`, and every other state ignores `retry`. The attempt runs the usual effects: open, pull, then push every field once connected. `reconnect` keeps its meaning and still applies only to `connected`.
 
-`Session` also gets `changes`, an [`Observable`](../../packages/observable/src/observable.ts) that notifies with the new state once per transition, after that transition's effects have run. It doesn't deliver the current state on subscribe. An event sent from an observer is queued like one sent from a delegate method, and observers must not throw. `SessionState` is exported from `@nn/sync-engine`.
+`Session` also gets `changes`, an [`Observable`](../../packages/observable/src/observable.ts) that notifies with the new state once per transition, after that transition's effects have run. It doesn't deliver the current state on subscribe. An event sent from an observer is queued like one sent from a delegate method, and observers must not throw. `SessionState` is exported from `@goodstate/sync-engine`.
 
 [`SseSync`](../../packages/sse-sync/src/sse-sync.ts) calls `session.drop()` when the browser closes the stream for good, and waits there. It references no browser globals, uses no timer, and doesn't watch the store.
 
@@ -51,4 +51,4 @@ A server that keeps refusing the stream, or keeps sending a first event the engi
 
 An app that retries on `store.changes` must not also write into the synced store from a `session.changes` observer when the engine disconnects. Against a server that keeps refusing, each write would trigger an attempt whose failure triggers the next write, which turns into a retry loop.
 
-`IndexDbSync` and `BroadcastSync` don't send `retry`, so their behavior is unchanged unless an app calls `session.retry()` on them. Adding `retry` and `changes` is a minor release for `@nn/sync-engine`. Dropping the fixed-delay reopen is a minor release for `@nn/sse-sync`.
+`IndexDbSync` and `BroadcastSync` don't send `retry`, so their behavior is unchanged unless an app calls `session.retry()` on them. Adding `retry` and `changes` is a minor release for `@goodstate/sync-engine`. Dropping the fixed-delay reopen is a minor release for `@goodstate/sse-sync`.

@@ -1,10 +1,10 @@
-import type { Schema } from "@nn/schema";
-import { ArraySchema } from "@nn/schema/array-schema";
-import { BooleanSchema } from "@nn/schema/boolean-schema";
-import { EnumerationSchema } from "@nn/schema/enumeration-schema";
-import { NumberSchema } from "@nn/schema/number-schema";
-import { ObjectSchema } from "@nn/schema/object-schema";
-import { StringSchema } from "@nn/schema/string-schema";
+import type { Schema } from "@goodstate/schema";
+import { ArraySchema } from "@goodstate/schema/array-schema";
+import { BooleanSchema } from "@goodstate/schema/boolean-schema";
+import { EnumerationSchema } from "@goodstate/schema/enumeration-schema";
+import { NumberSchema } from "@goodstate/schema/number-schema";
+import { ObjectSchema } from "@goodstate/schema/object-schema";
+import { StringSchema } from "@goodstate/schema/string-schema";
 
 import { ListStrategy } from "./list-strategy";
 import { MapStrategy } from "./map-strategy";

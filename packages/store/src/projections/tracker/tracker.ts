@@ -1,5 +1,5 @@
-import type { Entity } from "@nn/entities/entity";
-import { isObject } from "@nn/guards/is-object";
+import type { Entity } from "@goodstate/entities/entity";
+import { isObject } from "@goodstate/guards/is-object";
 
 import type { Trackers } from "./trackers";
 

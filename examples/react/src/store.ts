@@ -1,7 +1,7 @@
-import { BroadcastSync } from "@nn/broadcast-sync";
-import { IndexDbSync } from "@nn/indexdb-sync";
-import { createStore } from "@nn/react";
-import { SseSync } from "@nn/sse-sync";
+import { BroadcastSync } from "@goodstate/broadcast-sync";
+import { IndexDbSync } from "@goodstate/indexdb-sync";
+import { createStore } from "@goodstate/react";
+import { SseSync } from "@goodstate/sse-sync";
 import { schema } from "example-schema";
 
 const { store, useQuery, useMutation } = createStore(schema);

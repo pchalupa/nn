@@ -1,6 +1,6 @@
 # Query engines: from query text to results, and what fits a reactive in-memory layer
 
-How does a database query engine turn a query into results? Which of those designs fit a small, in-memory, reactive query layer written in TypeScript? This note follows the classical pipeline (parse, plan, optimize, execute) through its original papers and two production engines. It then reads the code of six client-side engines that keep query results live. The last section is separate from the sourced findings and lists concrete options for `@nn`.
+How does a database query engine turn a query into results? Which of those designs fit a small, in-memory, reactive query layer written in TypeScript? This note follows the classical pipeline (parse, plan, optimize, execute) through its original papers and two production engines. It then reads the code of six client-side engines that keep query results live. The last section is separate from the sourced findings and lists concrete options for `@goodstate`.
 
 The note assumes the vocabulary of [`materialized-view.md`][nn-mv]: views vs. materialized views, recomputation vs. incremental view maintenance (IVM), immediate vs. deferred maintenance, and the overview of differential dataflow, DBSP and Noria. That material is not repeated here.
 
@@ -37,7 +37,7 @@ Researched **2026-11-18**. Repositories were shallow-cloned and read without run
 | Dexie       | `dexie/Dexie.js@95666bf5370a222a21d7f53130d87b42e9b7bac7`                               | 4.4.7                                                        |
 | DataScript  | `tonsky/datascript@34915cf673c02cbc64779fe56e0288d70fea63f8`                            | 1.8.1                                                        |
 
-`@nn` was read from branch `nn-query` at `6f7bf0a`.
+`@goodstate` was read from branch `nn-query` at `6f7bf0a`.
 
 ---
 
@@ -60,7 +60,7 @@ Researched **2026-11-18**. Repositories were shallow-cloned and read without run
   - a top-K window for `orderBy` + `limit`;
   - aggregates where `min`/`max` fall back to rescanning the group;
   - one flush per transaction, with unchanged rows keeping object identity.
-- **For `@nn`** (§6, my reasoning): define the query as a small declarative IR first. Execute it by recomputation that reuses `View`'s identity-stable projections. Make the operators incremental later, filter and map first, then equi-join and top-K. Doing that needs a row-level change feed that `Store.commit` does not expose today. Adopting TanStack DB through a collection adapter is a credible alternative.
+- **For `@goodstate`** (§6, my reasoning): define the query as a small declarative IR first. Execute it by recomputation that reuses `View`'s identity-stable projections. Make the operators incremental later, filter and map first, then equi-join and top-K. Doing that needs a row-level change feed that `Store.commit` does not expose today. Adopting TanStack DB through a collection adapter is a credible alternative.
 
 ---
 
@@ -417,7 +417,7 @@ There is no planner. The user's clause order is the join order, and predicates m
 
 ---
 
-## 6. What this means for `@nn`
+## 6. What this means for `@goodstate`
 
 _This section is my analysis. It uses the findings above and the current code, but it is not a sourced finding._
 
@@ -426,7 +426,7 @@ _This section is my analysis. It uses the findings above and the current code, b
 - **Identity-stable, frozen projections.**
   - `Store.read()` returns `View.read(root)` ([`store.ts`][nn-store] L34–L37). `View` caches each entity's frozen projection by `(entity, entity.revision)` in a `VersionedCache` ([`view.ts`][nn-view] L36, L45; [`versioned-cache.ts`][nn-versioned-cache]).
   - `Entity.revision` increments on every `didChange`, and containers re-emit when a child changes ([`entity.ts`][nn-entity] L47–L50, [`rga.ts`][nn-rga] L45, [`lww-map.ts`][nn-lww-map] L20).
-  - So after a write, an unchanged row returns the _same object_ it did before. That is the identity guarantee §5.5 calls the output contract, and Zero and TanStack DB both work to provide it. `@nn` already has it on the input side.
+  - So after a write, an unchanged row returns the _same object_ it did before. That is the identity guarantee §5.5 calls the output contract, and Zero and TanStack DB both work to provide it. `@goodstate` already has it on the input side.
 - **Change notifications are coarse.**
   - `Store.commit` installs a delegate on the root and records only the root's direct children, the top-level fields ([`store.ts`][nn-store] L77–L104). `onChange` then delivers those fields encoded.
   - Below the root, the delegate chain does carry `child` at every level: `RGA.entityDidChange(child)` knows which row changed. `Store` discards that.
@@ -456,9 +456,9 @@ _This section is my analysis. It uses the findings above and the current code, b
 - apply rule-based rewrites only: split ANDs, push single-source predicates to their source, hash-join with the smaller side as build side using exact sizes;
 - use on-demand sorted or hash indexes keyed by `(collection, columns)`, kept for the collection's lifetime as Zero does, built lazily on first use.
 
-| Pros                                                                                                                                                                                               | Cons                                                                                                                                                                                 |
-| -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| The IR is the stable contract. Index use and pushdown come almost free. Hierarchical "include" results match `@nn`'s nested schema. Execution can later be replaced by C without changing the API. | Still recompute-per-change at the query level. Indexes must be maintained on every write, so the store has to tell them which rows changed. That is the same row-level feed C needs. |
+| Pros                                                                                                                                                                                                      | Cons                                                                                                                                                                                 |
+| --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| The IR is the stable contract. Index use and pushdown come almost free. Hierarchical "include" results match `@goodstate`'s nested schema. Execution can later be replaced by C without changing the API. | Still recompute-per-change at the query level. Indexes must be maintained on every write, so the store has to tell them which rows changed. That is the same row-level feed C needs. |
 
 **C. An incremental operator graph fed by row-level deltas.** Same IR as B, compiled to push-based operators over signed changes:
 
@@ -476,11 +476,11 @@ This needs a change feed of `(collection, rowKey, before, after)` per commit. It
 | ------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Per-change cost proportional to the change for filter, join and top-K. Same contract as TanStack DB and Zero. | Largest implementation, comparable to `db-ivm` plus a compiler. Operator state costs memory (TanStack DB indexes both join sides). `RGA`'s missing total order must be replaced by an explicit `orderBy` plus a row-key tie-breaker. Needs the store API change ADR-08 deferred. |
 
-**D. Adapt to TanStack DB.** Expose `@nn` collections as TanStack DB collections, in the way `rxdb-db-collection` and `electric-db-collection` exist in that repo, and use its live queries. `@tanstack/db-ivm` "doesn't depend on the TanStack DB and so could be used in other projects" ([`db-ivm/README.md`][td-ivm-readme] L5).
+**D. Adapt to TanStack DB.** Expose `@goodstate` collections as TanStack DB collections, in the way `rxdb-db-collection` and `electric-db-collection` exist in that repo, and use its live queries. `@tanstack/db-ivm` "doesn't depend on the TanStack DB and so could be used in other projects" ([`db-ivm/README.md`][td-ivm-readme] L5).
 
-| Pros                                                                    | Cons                                                                                                                                                                                                                                        |
-| ----------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| An existing, tested optimizer, IVM and index layer. Framework bindings. | A second materialization of every row (TanStack DB's collection state), a large dependency, and its semantics: version-free, `limit` requires `orderBy`, equality joins only. Optimistic-mutation and sync layers overlap with `@nn`'s own. |
+| Pros                                                                    | Cons                                                                                                                                                                                                                                               |
+| ----------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| An existing, tested optimizer, IVM and index layer. Framework bindings. | A second materialization of every row (TanStack DB's collection state), a large dependency, and its semantics: version-free, `limit` requires `orderBy`, equality joins only. Optimistic-mutation and sync layers overlap with `@goodstate`'s own. |
 
 ### 6.3 Recommendation
 
@@ -498,7 +498,7 @@ This needs a change feed of `(collection, rowKey, before, after)` per commit. It
    2. equi-join/include with indexed state, or Zero-style refetch through the source's indexes when memory matters more than CPU;
    3. top-K;
    4. aggregates, with `min`/`max` recomputing their group.
-5. **Revisit D** if `@nn` needs partial or on-demand loading from a server. TanStack DB's `loadSubset` and lazy joins solve that problem, and none of A–C does.
+5. **Revisit D** if `@goodstate` needs partial or on-demand loading from a server. TanStack DB's `loadSubset` and lazy joins solve that problem, and none of A–C does.
 
 ---
 
@@ -523,7 +523,7 @@ This needs a change feed of `(collection, rowKey, before, after)` per commit. It
   - `planner/SELECTIVITY_PLAN.md`, referenced from `sqlite-stat-fanout.ts`, is missing from the checkout.
   - The server-side `pipeline-driver.ts` batching was not read.
   - The Noria resemblance in §4.4 is my reading, not a stated design lineage.
-- **`@nn` change feed.** That a row-level feed can be derived from the delegate chain and `View`'s cache (§6.2 C) was reasoned from the code, not prototyped.
+- **`@goodstate` change feed.** That a row-level feed can be derived from the delegate chain and `View`'s cache (§6.2 C) was reasoned from the code, not prototyped.
 
 ---
 

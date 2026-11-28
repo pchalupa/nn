@@ -1,4 +1,4 @@
-import { array, boolean, object, string } from "@nn/schema";
+import { array, boolean, object, string } from "@goodstate/schema";
 import { describe, it } from "vitest";
 
 import { Store } from "./store";

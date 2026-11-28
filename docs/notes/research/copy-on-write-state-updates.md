@@ -1,6 +1,6 @@
 # Copy-on-write state updates
 
-Researched 2026-10-29 against **Mutative 2.0.1** (tag `v2.0.1`, commit `7ef4bb8`), **Valtio 2.3.2** (tag `v2.3.2`, commit `15c64d4`), **limu 4.1.3** (the `src/` directory shipped in the npm tarball, see the note below) and **structura.js 0.12.9** (npm package `structurajs`, tag `v.0.12.9`, commit `0c1af36`). **Immer 11.2.9** (commit `75a290e`) is the baseline. `@nn/store` was read from the working tree of branch `feat/view` at `94f1578`, uncommitted changes included.
+Researched 2026-10-29 against **Mutative 2.0.1** (tag `v2.0.1`, commit `7ef4bb8`), **Valtio 2.3.2** (tag `v2.3.2`, commit `15c64d4`), **limu 4.1.3** (the `src/` directory shipped in the npm tarball, see the note below) and **structura.js 0.12.9** (npm package `structurajs`, tag `v.0.12.9`, commit `0c1af36`). **Immer 11.2.9** (commit `75a290e`) is the baseline. `@goodstate/store` was read from the working tree of branch `feat/view` at `94f1578`, uncommitted changes included.
 
 Each library was cloned at the pinned commit and read from source. Official docs are cited where they state intent or guarantees. Every performance number below is the vendor's own and was not reproduced here.
 
@@ -17,7 +17,7 @@ Immer is covered in depth in [`immer-copy-on-write.md`](./immer-copy-on-write.md
 - **Valtio** is not a draft library. State is a long-lived mutable proxy. Writes bump a global version counter, and `snapshot()` rebuilds only the nodes whose version changed, reusing cached snapshots for the rest. Copying happens when a snapshot is read, not when a write happens.
 - **limu** shallow-copies on **read** (the proxy target _is_ the copy) and only flags on write. Finalize chooses `copy` or `self` for each node it visited.
 - **structura.js** copies on **write** and walks the parent links right away, copying every ancestor and linking the child copy in, so there is no finalize pass. It builds patches during that walk.
-- **`@nn/store` today** `structuredClone`s the whole projection on every `update`, then makes about four more full passes (identity transfer, `normalize`, `prepare`, `reconcile`) to find changes **by value equality at the leaves**. It never records which paths were written. Its output shares structure only per top-level field: inside a changed field, every node is rebuilt. That was confirmed with a probe.
+- **`@goodstate/store` today** `structuredClone`s the whole projection on every `update`, then makes about four more full passes (identity transfer, `normalize`, `prepare`, `reconcile`) to find changes **by value equality at the leaves**. It never records which paths were written. Its output shares structure only per top-level field: inside a changed field, every node is rebuilt. That was confirmed with a probe.
 - A draft-based CoW would cut the write cost to O(touched paths). The cheapest fit is probably to **keep `prepare`/`reconcile` and prune any subtree whose next value `===` the previous projection node**, because array patches are positional and do not map onto `RGA` row keys. The constraints are row identity by object identity, `LWWRegister` timestamps (writes must be value-gated), the prepare-then-apply split that makes updates atomic, and two existing tests that depend on the clone (detached drafts and `defineProperty` on a draft).
 
 ---
@@ -162,7 +162,7 @@ Source: <https://github.com/GiuseppeRaso/structura.js/tree/0c1af36ead5d9285dc260
 
 ---
 
-## 8. `@nn/store` today: clone the projection, then diff it
+## 8. `@goodstate/store` today: clone the projection, then diff it
 
 ### The pipeline
 
@@ -217,7 +217,7 @@ Sharing is therefore **per top-level field only**, and only the root object is f
 
 ---
 
-## 9. What a draft-based CoW in `@nn/store` would have to do
+## 9. What a draft-based CoW in `@goodstate/store` would have to do
 
 ### What `reconcile` consumes today
 
@@ -268,4 +268,4 @@ These are options, not decisions.
 - limu 4.1.3: <https://unpkg.com/limu@4.1.3/src/> (`core/{build-limu-apis,helper,copy,meta,scope,data-node-processor}.ts`, `support/inner-data.ts`, `inner-types.ts`, `index.ts`), <https://unpkg.com/limu@4.1.3/README.md>.
 - structura.js 0.12.9: <https://github.com/GiuseppeRaso/structura.js/tree/0c1af36ead5d9285dc260583676c688581319ef9> (`src/proxy/{createProxy,proxyHandler}.ts`, `src/internals/walkParents.ts`, `src/core/produce.ts`, `src/helpers/settings.ts`). npm: `structurajs@0.12.9`, `gitHead` `0c1af36`.
 - Immer 11.2.9: <https://github.com/immerjs/immer/blob/75a290e44ba14bd723c8ef8546b6559c8ef3ae88/src/core/proxy.ts>, `src/core/immerClass.ts`. npm: `immer@11.2.9`, `gitHead` `75a290e`.
-- `@nn/store` (working tree, `feat/view` at `94f1578` plus uncommitted changes): `packages/store/src/{State,RowIdentity,plain,normalize,reconcile,View,entities,Batch}.ts`, `State.snapshot.test.ts`, `View.test.ts`; `packages/entities/src/{Entity,LWWMap,LWWRegister,RGA}.ts`.
+- `@goodstate/store` (working tree, `feat/view` at `94f1578` plus uncommitted changes): `packages/store/src/{State,RowIdentity,plain,normalize,reconcile,View,entities,Batch}.ts`, `State.snapshot.test.ts`, `View.test.ts`; `packages/entities/src/{Entity,LWWMap,LWWRegister,RGA}.ts`.

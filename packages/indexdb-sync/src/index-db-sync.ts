@@ -1,5 +1,5 @@
-import { SyncEngine } from "@nn/sync-engine";
-import type { Replica } from "@nn/sync-engine/replica";
+import { SyncEngine } from "@goodstate/sync-engine";
+import type { Replica } from "@goodstate/sync-engine/replica";
 
 import { IndexDb } from "./index-db";
 
@@ -12,7 +12,7 @@ import { IndexDb } from "./index-db";
 export class IndexDbSync extends SyncEngine {
 	private readonly indexDb: IndexDb;
 
-	constructor(replica: Replica, name = "nn-default") {
+	constructor(replica: Replica, name = "goodstate-default") {
 		super(replica);
 
 		this.indexDb = new IndexDb(name);

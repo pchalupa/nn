@@ -1,5 +1,5 @@
-import type { Delegatable } from "@nn/observable";
-import { Observable } from "@nn/observable/observable";
+import type { Delegatable } from "@goodstate/observable";
+import { Observable } from "@goodstate/observable/observable";
 
 /** Connection state of a sync engine, see `Session.transition` for how it changes */
 export type SessionState = "idle" | "connecting" | "connected" | "disconnected" | "disposed";

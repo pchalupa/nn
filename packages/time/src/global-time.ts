@@ -1,4 +1,4 @@
-import { ID } from "@nn/id";
+import { ID } from "@goodstate/id";
 
 import { CounterOverflowError } from "./errors/counter-overflow-error";
 import type { Time } from "./time";

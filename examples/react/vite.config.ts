@@ -6,7 +6,7 @@ import React, { reactCompilerPreset } from "@vitejs/plugin-react";
 import { defineConfig, loadEnv } from "vite";
 import { VitePWA } from "vite-plugin-pwa";
 
-const serverHost = withRelatedProject({ projectName: "nn-example-server", defaultHost: "" });
+const serverHost = withRelatedProject({ projectName: "goodstate-example-server", defaultHost: "" });
 
 if (serverHost) {
 	process.env.VITE_REMOTE_URL = new URL("/sync", serverHost).href;

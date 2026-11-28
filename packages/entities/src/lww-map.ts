@@ -1,5 +1,5 @@
-import { isArray } from "@nn/guards/is-array";
-import { isObject } from "@nn/guards/is-object";
+import { isArray } from "@goodstate/guards/is-array";
+import { isObject } from "@goodstate/guards/is-object";
 
 import type { Decoder, Encoded } from "./codable";
 import { Entity, type EntityDelegate } from "./entity";

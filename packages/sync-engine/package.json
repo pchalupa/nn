@@ -1,6 +1,6 @@
 {
-	"name": "@nn/sync-engine",
-	"version": "6.0.0",
+	"name": "@goodstate/sync-engine",
+	"version": "7.0.2",
 	"description": "Base class for sync engines",
 	"keywords": [
 		"crdt",
@@ -9,15 +9,15 @@
 		"sync",
 		"sync-engine"
 	],
-	"homepage": "https://github.com/pchalupa/nn/tree/main/packages/sync-engine#readme",
+	"homepage": "https://github.com/pchalupa/goodstate/tree/main/packages/sync-engine#readme",
 	"bugs": {
-		"url": "https://github.com/pchalupa/nn/issues"
+		"url": "https://github.com/pchalupa/goodstate/issues"
 	},
 	"license": "MIT",
 	"author": "pchalupa <chalupa.petr93@gmail.com> (https://github.com/pchalupa)",
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/pchalupa/nn.git",
+		"url": "git+https://github.com/pchalupa/goodstate.git",
 		"directory": "packages/sync-engine"
 	},
 	"files": [
@@ -43,15 +43,15 @@
 		"test:watch": "vitest watch"
 	},
 	"dependencies": {
-		"@nn/observable": "workspace:^"
+		"@goodstate/observable": "workspace:^"
 	},
 	"devDependencies": {
-		"@nn/build-config": "workspace:^",
-		"@nn/entities": "workspace:^",
-		"@nn/schema": "workspace:^",
-		"@nn/store": "workspace:^",
-		"@nn/time": "workspace:^",
-		"@nn/typescript-config": "workspace:^",
+		"@goodstate/build-config": "workspace:^",
+		"@goodstate/entities": "workspace:^",
+		"@goodstate/schema": "workspace:^",
+		"@goodstate/store": "workspace:^",
+		"@goodstate/time": "workspace:^",
+		"@goodstate/typescript-config": "workspace:^",
 		"tsdown": "catalog:",
 		"typescript": "catalog:",
 		"vitest": "catalog:"

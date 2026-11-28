@@ -10,45 +10,18 @@ npm install @goodstate/sync-engine
 
 ## Usage
 
-A sync engine keeps a replica in sync with something outside it, such as storage, another tab, or a server. Extend `SyncEngine` and implement how to open and close the connection and how to push a changed entry. Call `receive` with incoming entries to merge them into the replica.
+A sync engine keeps a replica in sync with something outside it, such as storage, another tab, or a server. Extend `SyncEngine` and implement four hooks: `open` and `close` for the connection, `push` for a changed entry, and the optional `pull` to load saved state. Call `receive` with incoming entries to merge them into the replica.
 
-```ts
-import { SyncEngine } from "@goodstate/sync-engine";
+Start from the built-in engine closest to your transport. Each one is a single short file:
 
-class LocalStorageSync extends SyncEngine {
-	protected async open(): Promise<void> {
-		window.addEventListener("storage", this.onStorage);
-	}
+| Engine                                                                                                                      | Transport                                                                                             | What it shows                                                                                                                                                                                 |
+| --------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [`BroadcastSync`](https://github.com/pchalupa/goodstate/blob/main/packages/broadcast-sync/src/broadcast-sync.ts)            | [`BroadcastChannel`](https://developer.mozilla.org/en-US/docs/Web/API/BroadcastChannel)               | Push only, with no `pull`. Checks each incoming message before passing it to `receive`.                                                                                                       |
+| [`IndexDbSync`](https://github.com/pchalupa/goodstate/blob/main/packages/indexdb-sync/src/index-db-sync.ts)                 | [IndexedDB](https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API)                           | `pull` restores saved state. The storage code lives in its own class with a delegate. Calls `session.reopen()` when another tab upgrades the database and `session.drop()` when it's deleted. |
+| [`LocalStorageSync`](https://github.com/pchalupa/goodstate/blob/main/packages/local-storage-sync/src/local-storage-sync.ts) | [`localStorage`](https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage)                | `pull` restores saved state, and `storage` events merge what other tabs write. The listener is removed through the `signal` that `open` receives, so `close` has nothing to do.               |
+| [`SseSync`](https://github.com/pchalupa/goodstate/blob/main/packages/sse-sync/src/sse-sync.ts)                              | [Server-sent events](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events) and `fetch` | `open` waits for the server's first event and passes on the `signal`. Calls `session.drop()` when the stream closes.                                                                          |
 
-	protected close(): void {
-		window.removeEventListener("storage", this.onStorage);
-	}
-
-	protected async pull(name: string): Promise<unknown> {
-		const value = localStorage.getItem(name);
-
-		return value === null ? undefined : JSON.parse(value);
-	}
-
-	protected async push(name: string, entry: unknown): Promise<void> {
-		localStorage.setItem(name, JSON.stringify(entry));
-	}
-
-	private readonly onStorage = (event: StorageEvent) => {
-		if (event.key && event.newValue) {
-			const entry: unknown = JSON.parse(event.newValue);
-
-			this.receive({ [event.key]: entry });
-		}
-	};
-}
-
-const sync = new LocalStorageSync(store);
-
-sync.connect();
-```
-
-`pull` is optional. The engine calls it for each property in the replica's schema when it connects, so saved state loads into the replica. Here the `storage` event delivers changes that other tabs write to `localStorage`.
+Each package's tests show how to test an engine in Node, with a fake or in-process transport.
 
 ### Replica
 
@@ -82,7 +55,7 @@ interface Replica {
 
 If `open` or `pull` throws, the engine reports the error to `onError` and moves to the `"disconnected"` state. If `push` throws, the engine reports the error and stays connected.
 
-The built-in engines are complete examples: [`@goodstate/broadcast-sync`](https://github.com/pchalupa/goodstate/tree/main/packages/broadcast-sync) for push-only messaging, [`@goodstate/indexdb-sync`](https://github.com/pchalupa/goodstate/tree/main/packages/indexdb-sync) for storage with `pull`, and [`@goodstate/sse-sync`](https://github.com/pchalupa/goodstate/tree/main/packages/sse-sync) for a server connection.
+A subclass whose transport goes away calls `this.session.drop()`, which moves the engine to `"disconnected"`. A subclass whose transport can open again calls `this.session.reopen()`, which closes the connection and runs `connect()`'s steps again.
 
 ### Observing the connection
 

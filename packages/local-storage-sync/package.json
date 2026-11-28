@@ -1,0 +1,57 @@
+{
+	"name": "@goodstate/local-storage-sync",
+	"version": "0.0.0",
+	"description": "Sync engine that persists a store to localStorage and shares it between tabs",
+	"keywords": [
+		"local-first",
+		"localstorage",
+		"persistence",
+		"sync",
+		"tabs"
+	],
+	"homepage": "https://github.com/pchalupa/goodstate/tree/main/packages/local-storage-sync#readme",
+	"bugs": {
+		"url": "https://github.com/pchalupa/goodstate/issues"
+	},
+	"license": "MIT",
+	"author": "pchalupa <chalupa.petr93@gmail.com> (https://github.com/pchalupa)",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/pchalupa/goodstate.git",
+		"directory": "packages/local-storage-sync"
+	},
+	"files": [
+		"dist"
+	],
+	"type": "module",
+	"exports": {
+		".": "./src/local-storage-sync.ts",
+		"./package.json": "./package.json"
+	},
+	"publishConfig": {
+		"exports": {
+			".": "./dist/index.js",
+			"./package.json": "./package.json"
+		}
+	},
+	"scripts": {
+		"build": "tsdown",
+		"ts:check": "tsc --noEmit",
+		"test": "vitest run",
+		"test:watch": "vitest watch"
+	},
+	"dependencies": {
+		"@goodstate/observable": "workspace:^",
+		"@goodstate/sync-engine": "workspace:^"
+	},
+	"devDependencies": {
+		"@goodstate/build-config": "workspace:^",
+		"@goodstate/schema": "workspace:^",
+		"@goodstate/store": "workspace:^",
+		"@goodstate/typescript-config": "workspace:^",
+		"jsdom": "^31.0.1",
+		"tsdown": "catalog:",
+		"typescript": "catalog:",
+		"vitest": "catalog:"
+	}
+}

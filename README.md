@@ -52,7 +52,7 @@ persistence.connect();
 remote.connect();
 ```
 
-`IndexDbSync` saves the state on the device and `SseSync` syncs it with a server. Use either one or both.
+`IndexDbSync` saves the state on the device and `SseSync` syncs it with a server. Use either one or both. For small state, [`@goodstate/local-storage-sync`](packages/local-storage-sync) saves it to `localStorage` and shares it between tabs in one engine.
 
 > [!NOTE]
 > Engines start idle, so you can add listeners before calling `connect()`.

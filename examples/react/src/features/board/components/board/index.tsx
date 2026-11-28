@@ -1,6 +1,6 @@
 import { KanbanIcon, ListIcon, PlusIcon } from "@phosphor-icons/react";
-import { Box, Button, Flex, Grid, Text } from "@radix-ui/themes";
-import { type Status as TicketStatus, status } from "example-schema";
+import { Box, Button, Flex, Text } from "@radix-ui/themes";
+import type { Status as TicketStatus } from "example-schema";
 import { useRef } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -11,9 +11,8 @@ import { PageHeader } from "@/components/page-header";
 import { useUser } from "@/features/authentication/authentication";
 import { type BoardSearch, matchesBoardSearch } from "@/features/board/board-search";
 import { BoardFilters } from "@/features/board/components/board-filters";
-import { Column } from "@/features/board/components/column";
+import { BoardGrid } from "@/features/board/components/board/parts/board-grid";
 import { Drawer, type DrawerHandle } from "@/features/navigation/components/drawer";
-import { statusLabels } from "@/i18n";
 import { useQuery } from "@/store";
 
 interface BoardProps {
@@ -64,19 +63,7 @@ export const Board = ({ boardId, search, onNewTicket }: BoardProps) => {
 				<Box px={{ initial: "4", md: "0" }}>
 					<BoardFilters boardId={boardId} search={search} onOpenFilters={handleOpenMenu} />
 				</Box>
-				<Grid
-					columns={{ initial: "repeat(4, 300px)", md: "4" }}
-					rows="1"
-					gap={{ initial: "3", md: "4" }}
-					px={{ initial: "4", md: "0" }}
-					overflowX={{ initial: "auto", md: "visible" }}
-					flexGrow="1"
-					minHeight="0"
-				>
-					{status.literals.map((literal) => (
-						<Column key={literal} boardId={boardId} title={t(statusLabels[literal])} status={literal} search={search} />
-					))}
-				</Grid>
+				<BoardGrid boardId={boardId} search={search} />
 			</Flex>
 			<ActionBar>
 				<Button type="button" size="4" aria-label={t("newTicket")} onClick={handleNewTicket}>

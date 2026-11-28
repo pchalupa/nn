@@ -1,7 +1,9 @@
+import type { DraggableSyntheticListeners } from "@dnd-kit/core";
 import { ChatCircleIcon, LinkIcon } from "@phosphor-icons/react";
 import { Card, Flex, Text } from "@radix-ui/themes";
 import { Link } from "@tanstack/react-router";
 import type { Priority } from "example-schema";
+import type { Ref } from "react";
 import { useTranslation } from "react-i18next";
 
 import { Assignee } from "@/features/board/components/assignee";
@@ -11,27 +13,47 @@ import { ticketKey } from "@/features/board/ticket-key";
 import { priorityLabels } from "@/i18n";
 import { useQuery } from "@/store";
 
+/** Ticket fields a board card shows. */
+export interface CardTicket {
+	id: string;
+	title: string;
+	priority: Priority;
+	assignee: string;
+	labels: readonly string[];
+	comments: readonly unknown[];
+	links: readonly unknown[];
+}
+
 interface TicketCardProps {
 	boardId: string;
-	ticket: {
-		id: string;
-		title: string;
-		priority: Priority;
-		assignee: string;
-		labels: readonly string[];
-		comments: readonly unknown[];
-		links: readonly unknown[];
-	};
+	ticket: CardTicket;
+	ref?: Ref<HTMLAnchorElement>;
+	dragListeners?: DraggableSyntheticListeners;
+	dragDescribedBy?: string;
 }
 
 /** Renders a board card linking to the ticket, keeping the current board filters. */
-export const TicketCard = ({ boardId, ticket }: TicketCardProps) => {
+export const TicketCard = ({ boardId, ticket, ref, dragListeners, dragDescribedBy }: TicketCardProps) => {
 	const { t } = useTranslation();
 	const assignee = useQuery((data) => data.users.find((user) => user.id === ticket.assignee));
 
 	return (
 		<Card asChild size="1">
-			<Link to="/boards/$boardId/tickets/$ticketId" params={{ boardId, ticketId: ticket.id }} search={true}>
+			<Link
+				ref={ref}
+				to="/boards/$boardId/tickets/$ticketId"
+				params={{ boardId, ticketId: ticket.id }}
+				search={true}
+				draggable={false}
+				aria-describedby={dragDescribedBy}
+				style={{
+					WebkitTouchCallout: "none",
+					WebkitUserSelect: "none",
+					userSelect: "none",
+					touchAction: "manipulation",
+				}}
+				{...dragListeners}
+			>
 				<Flex direction="column" gap="2">
 					<Flex justify="between" align="start" gap="2">
 						<Text size="2" weight="medium">

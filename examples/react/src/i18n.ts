@@ -114,6 +114,13 @@ const resources = {
 			addLinkPlaceholder: "Paste a URL…",
 			invalidLink: "Enter a URL.",
 			removeLink: "Remove {{title}}",
+			dragInstructions:
+				"To pick up a ticket, press Space. Use the arrow keys to move it, then press Space or Enter to drop it, or Escape to cancel.",
+			dragStart: "Picked up {{title}}.",
+			dragOver: "{{title}} is at position {{position}} of {{count}} in {{column}}.",
+			dragOutside: "{{title}} is not over a column.",
+			dragEnd: "Dropped {{title}} at position {{position}} of {{count}} in {{column}}.",
+			dragCancel: "Moving {{title}} was cancelled.",
 		},
 	},
 	cs: {
@@ -217,6 +224,13 @@ const resources = {
 			addLinkPlaceholder: "Vložte URL…",
 			invalidLink: "Zadejte URL.",
 			removeLink: "Odebrat {{title}}",
+			dragInstructions:
+				"Úkol zvednete mezerníkem. Šipkami ho posunete, mezerníkem nebo klávesou Enter ho položíte a klávesou Escape přesun zrušíte.",
+			dragStart: "Zvednuto: {{title}}.",
+			dragOver: "{{title}} je na pozici {{position}} z {{count}} ve sloupci {{column}}.",
+			dragOutside: "{{title}} není nad žádným sloupcem.",
+			dragEnd: "Položeno: {{title}} na pozici {{position}} z {{count}} ve sloupci {{column}}.",
+			dragCancel: "Přesun úkolu {{title}} byl zrušen.",
 		},
 	},
 };

@@ -6,6 +6,7 @@ concurrency: ${{ github.workflow }}-${{ github.ref }}
 permissions:
   contents: write
   pull-requests: write
+  id-token: write
 jobs:
   release:
     runs-on: ubuntu-latest
@@ -18,9 +19,10 @@ jobs:
           node-version: 26
           cache: "pnpm"
       - run: pnpm install
+      - run: pnpm --filter "./packages/*" build
       - uses: changesets/action@v2
         with:
           version-script: pnpm changeset:version
-          publish-script: pnpm changeset git-tag
+          publish-script: pnpm changeset publish
           commit-message: "Version packages"
           pr-title: "Version packages"

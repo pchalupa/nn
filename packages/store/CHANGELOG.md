@@ -1,5 +1,33 @@
 # @goodstate/store
 
+## 7.0.2
+
+### Patch Changes
+
+- 089a06c: Releases are now built and published by GitHub Actions with a provenance attestation, so npm shows which commit and workflow a version came from. Nothing in the API changed.
+- Updated dependencies [089a06c]
+  - @goodstate/cache@7.0.2
+  - @goodstate/entities@7.0.2
+  - @goodstate/guards@7.0.2
+  - @goodstate/id@7.0.2
+  - @goodstate/observable@7.0.2
+  - @goodstate/schema@7.0.2
+  - @goodstate/time@7.0.2
+
+## 7.0.1
+
+### Patch Changes
+
+- 60eb15a: All `@goodstate/*` packages now share one version number and are released together. Install the same version of every `@goodstate/*` package you use. Nothing in the API changed.
+- Updated dependencies [60eb15a]
+  - @goodstate/cache@7.0.1
+  - @goodstate/entities@7.0.1
+  - @goodstate/guards@7.0.1
+  - @goodstate/id@7.0.1
+  - @goodstate/observable@7.0.1
+  - @goodstate/schema@7.0.1
+  - @goodstate/time@7.0.1
+
 ## 6.0.0
 
 ### Major Changes

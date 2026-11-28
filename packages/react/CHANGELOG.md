@@ -1,5 +1,25 @@
 # @goodstate/react
 
+## 7.0.2
+
+### Patch Changes
+
+- 089a06c: Releases are now built and published by GitHub Actions with a provenance attestation, so npm shows which commit and workflow a version came from. Nothing in the API changed.
+- Updated dependencies [089a06c]
+  - @goodstate/guards@7.0.2
+  - @goodstate/schema@7.0.2
+  - @goodstate/store@7.0.2
+
+## 7.0.1
+
+### Patch Changes
+
+- 60eb15a: All `@goodstate/*` packages now share one version number and are released together. Install the same version of every `@goodstate/*` package you use. Nothing in the API changed.
+- Updated dependencies [60eb15a]
+  - @goodstate/guards@7.0.1
+  - @goodstate/schema@7.0.1
+  - @goodstate/store@7.0.1
+
 ## 5.0.0
 
 ### Major Changes
